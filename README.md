@@ -1,2 +1,2 @@
 # Bro Maker
- Allow you to make your Bro for Broforce
+ Allow you to make your Bro for Broforce.
