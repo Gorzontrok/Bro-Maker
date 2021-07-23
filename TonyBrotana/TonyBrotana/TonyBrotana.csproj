@@ -48,6 +48,9 @@
     <Reference Include="HatLib">
       <HintPath>D:\SteamLibrary\steamapps\common\Broforce\Mods\HatLib\HatLib.dll</HintPath>
     </Reference>
+    <Reference Include="RocketLib">
+      <HintPath>E:\SteamLibrary\steamapps\common\Broforce\Mods\RocketLib\RocketLib.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -95,13 +98,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Bullet.cs" />
+    <Compile Include="TonyBrotanaRocket.cs" />
     <Compile Include="TonyBrotana.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>start XCOPY /Y /R "$(TargetPath)" "D:\SteamLibrary\steamapps\common\Broforce\Mods\$(ProjectName)\$(ProjectName).dll*"</PostBuildEvent>
+    <PostBuildEvent>start XCOPY /Y /R "$(TargetPath)" "E:\SteamLibrary\steamapps\common\Broforce\Mods\$(ProjectName)\$(ProjectName).dll*"</PostBuildEvent>
   </PropertyGroup>
 </Project>
