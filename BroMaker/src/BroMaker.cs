@@ -10,34 +10,13 @@ namespace BroMaker
 {
     public static class BroMaker
     {
-        private static Dictionary<HeroType, HeroController.HeroDefinition> heroDefinition = Traverse.Create(HeroController.Instance).Field("_heroData").GetValue() as Dictionary<HeroType, HeroController.HeroDefinition>;
-
-        private static bool switchToBase = false;
-        private static HeroType heroBase = HeroType.Rambro;
-
         private static void Logging(object str)
         {
             BroMakerLoadMod.Main.Log(str);
         }
 
-        public static void SpawnHero(HeroType broBase, SpriteSM sprite, string SpriteCharacterPath, string SpriteGunPath = null, string SpriteProjectilePath = null, string SpriteArmlessPath = null)
-        {
-            try
-            {
-                switchToBase = true;
-                heroBase = broBase;
-                /*if(SpriteArmlessPath != null)
-                    MakeSprite(sprite, ConvertToTexture2D(SpriteCharacterPath), ConvertToTexture2D(SpriteGunPath), ConvertToTexture2D(SpriteProjectilePath), ConvertToTexture2D(SpriteArmlessPath));
-                else MakeSprite(sprite, ConvertToTexture2D(SpriteCharacterPath), ConvertToTexture2D(SpriteGunPath), ConvertToTexture2D(SpriteProjectilePath));*/
-            }
-            catch (Exception ex)
-            {
-                Logging(ex);
-            }
 
-        }
-
-        public static Texture2D LoadCharacterSprite(string SpriteImage, SpriteSM sprite)
+        public static Texture2D CreateCharacterSprite(string SpriteImage, SpriteSM sprite)
         {
             // Load the image
             var tex = new Texture2D(2, 2, TextureFormat.ARGB32, false);
@@ -58,11 +37,12 @@ namespace BroMaker
             {
                 Logging(ex);
             }
+
             return tex;
 
         }
 
-        public static Texture2D LoadGunSprite(string SpriteImage, TestVanDammeAnim newbro)
+        public static Texture2D CreateGunSprite(string SpriteImage, Texture origGun)
         {
             var texGun = new Texture2D(2, 2, TextureFormat.ARGB32, false);
             try
@@ -71,8 +51,6 @@ namespace BroMaker
                 texGun.LoadImage(File.ReadAllBytes(SpriteImage));
                 texGun.wrapMode = TextureWrapMode.Clamp;
 
-                Texture origGun = newbro.gunSprite.GetComponent<Renderer>().sharedMaterial.GetTexture("_MainTex");
-                
                 texGun.anisoLevel = origGun.anisoLevel;
                 texGun.filterMode = origGun.filterMode;
                 texGun.mipMapBias = origGun.mipMapBias;
@@ -86,7 +64,7 @@ namespace BroMaker
             return texGun;
         }
 
-        public static Texture2D LoadCharacterArmlessSprite(string SpriteImage, SpriteSM sprite)
+        public static Texture2D CreateAmmoSprite(string SpriteImage, MeshRenderer meshRenderer)
         {
             var tex = new Texture2D(2, 2, TextureFormat.ARGB32, false);
             try
@@ -94,21 +72,39 @@ namespace BroMaker
                 tex.LoadImage(File.ReadAllBytes(SpriteImage));
                 tex.wrapMode = TextureWrapMode.Clamp;
 
-                Texture orig = sprite.meshRender.sharedMaterial.GetTexture("_MainTex");
+                Texture orig = meshRenderer.sharedMaterial.mainTexture;
 
                 tex.anisoLevel = orig.anisoLevel;
                 tex.filterMode = orig.filterMode;
                 tex.mipMapBias = orig.mipMapBias;
                 tex.wrapMode = orig.wrapMode;
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
                 Logging(ex);
             }
-
             return tex;
         }
 
+        public static SpriteSM CreateAvatar(string filePath, ref PlayerHUD PHUD) //Create avatar sprite
+        {
+            if (!File.Exists(filePath)) throw new Exception("The specified file does not exist !\n");
+            Texture2D tex = new Texture2D(2, 2, TextureFormat.ARGB32, false);
+            tex.LoadImage(File.ReadAllBytes(filePath));
+            tex.wrapMode = TextureWrapMode.Clamp;
 
+            SpriteSM sprite = PHUD.avatar;
+
+            Texture orig = sprite.meshRender.sharedMaterial.GetTexture("_MainTex");
+
+            tex.anisoLevel = orig.anisoLevel;
+            tex.filterMode = orig.filterMode;
+            tex.mipMapBias = orig.mipMapBias;
+            tex.wrapMode = orig.wrapMode;
+
+            sprite.meshRender.sharedMaterial.SetTexture("_MainTex", tex);
+
+            return sprite;
+        }
     }
 }
