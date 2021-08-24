@@ -1,0 +1,7 @@
+{
+    "Releases":
+    [
+        {"Id": "BroMaker", "Version": "1.0.0", "DownloadUrl": "https://github.com/Gorzon38/Bro-Maker/raw/main/BroMaker/Release/BroMaker.zip"},
+        {"Id": "TonyBrotanaMod", "Version": "1.0.0", "DownloadUrl": "https://github.com/Gorzon38/Bro-Maker/raw/main/TonyBrotana/Release/TonyBrotanaMod.zip"}
+    ]
+}
