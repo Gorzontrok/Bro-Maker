@@ -1,4 +1,22 @@
 # Bro Maker [WIP]
+
  Allow you to make your Bro for Broforce.
 
- based on Captain Ameribro Mod from alexneargarder.
+ Thanks to alexneargarder who have make the base of custom Bro.
+
+ If you find an issue, please inform me.
+
+## Installation
+
+* All of my mods require [Unity Mod Manager](https://www.nexusmods.com/site/mods/21).  
+* The installation guide can be found [here](https://steamcommunity.com/sharedfiles/filedetails/?id=2434812447).  
+* The latest Release it's in the `/Release` folder.
+
+## Know Issue
+
+* You can't take special ammo
+* Freeze the faces huggers
+
+## How to use (user)
+
+ In order to spawn with a Custom Bro you need to install one.
