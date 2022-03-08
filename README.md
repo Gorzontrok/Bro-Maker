@@ -16,7 +16,12 @@
 
 * You can't take special ammo
 * Freeze the faces huggers
+* You can't flex
 
 ## How to use (user)
 
  In order to spawn with a Custom Bro you need to install one.
+
+## Guide to Developper
+
+ [Steam Guide](https://steamcommunity.com/sharedfiles/filedetails/?id=2738232988)
