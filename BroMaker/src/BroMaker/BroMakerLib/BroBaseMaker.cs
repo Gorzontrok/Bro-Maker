@@ -28,12 +28,24 @@ namespace BroMakerLib
                 defaultMaterial = value;
             }
         }
-
+        /// <summary>
+        /// Sprite of the bro
+        /// </summary>
+        public SpriteSM Sprite
+        {
+            get
+            {
+                return sprite;
+            }
+            set
+            {
+                sprite = value;
+            }
+        }
         /// <summary>
         /// Default material for gun sprite
         /// </summary>
         public Material bm_DefaultGunMaterial;
-
         /// <summary>
         /// Default material for avatar
         /// </summary>
@@ -42,7 +54,6 @@ namespace BroMakerLib
         /// Default material for ammo icon
         /// </summary>
         public Material bm_ammoMaterial;
-
         /// <summary>
         /// Default material for a second sprite
         /// </summary>
@@ -51,17 +62,14 @@ namespace BroMakerLib
         /// Default material for a second gun sprite
         /// </summary>
         public Material bm_secondGunMaterial;
-
         /// <summary>
         ///
         /// </summary>
         public Shrapnel bm_bulletShell;
-
         /// <summary>
         ///
         /// </summary>
         public bool bm_IsInGame = false;
-
         /// <summary>
         /// original speed of the character
         /// </summary>
@@ -70,7 +78,12 @@ namespace BroMakerLib
         ///
         /// </summary>
         protected int bm_fireCount;
+        /// <summary>
+        /// Change the range of the projectile. 400 is default
+        /// </summary>
+        protected float bm_ProjectileXRange = 400f;
 
+        protected MeleeHolder meleeHolder;
 
         /// <summary>
         /// This function is for setup the bro.
@@ -141,7 +154,7 @@ namespace BroMakerLib
 
 
 
-                UnityEngine.Object.Destroy(player.character.gameObject.GetComponent(HeroController.GetHeroPrefab(player.character.heroType).GetType()));
+                UnityEngine.Object.Destroy(player.character.gameObject.GetComponent(BroMaker.GetBroType(player.character.heroType)));
                 this.SetUpHero(playerNum, player.character.heroType, true);
                 Main.Debug("setup hero");
 
@@ -238,8 +251,6 @@ namespace BroMakerLib
             useNewThrowingFrames = true;
             useNewKnifingFrames = true;
             useNewKnifeClimbingFrames = true;
-            //useNewHighFivingFrames = true;
-            //hasNewAirFlexFrames = true;
 
             // Extra.
             // End of the basic variable
@@ -248,7 +259,46 @@ namespace BroMakerLib
             health = 1;
             bm_originalSpeed = speed;
             base.Awake();
+            meleeHolder = base.gameObject.AddComponent<MeleeHolder>();
+            meleeHolder.character = this;
         }
+
+        protected override void StartMelee()
+        {
+            base.counter = 0f;
+            this.currentMeleeType = this.meleeType;
+            RaycastHit raycastHit;
+            if ((Physics.Raycast(new Vector3(base.X, base.Y + 5f, 0f), Vector3.down, out raycastHit, 16f, this.platformLayer) || Physics.Raycast(new Vector3(base.X + 4f, base.Y + 5f, 0f), Vector3.down, out raycastHit, 16f, this.platformLayer) || Physics.Raycast(new Vector3(base.X - 4f, base.Y + 5f, 0f), Vector3.down, out raycastHit, 16f, this.platformLayer)) && raycastHit.collider.GetComponentInParent<Animal>() != null)
+            {
+                this.currentMeleeType = BroBase.MeleeType.Knife;
+            }
+            switch (this.currentMeleeType)
+            {
+                case BroBase.MeleeType.Knife:
+                    this.StartKnifeMelee();
+                    break;
+                case BroBase.MeleeType.Punch:
+                case BroBase.MeleeType.JetpackPunch:
+                    this.StartPunch();
+                    break;
+                case BroBase.MeleeType.Disembowel:
+                case BroBase.MeleeType.FlipKick:
+                case BroBase.MeleeType.Tazer:
+                case BroBase.MeleeType.Custom:
+                case BroBase.MeleeType.ChuckKick:
+                case BroBase.MeleeType.VanDammeKick:
+                case BroBase.MeleeType.ChainSaw:
+                case BroBase.MeleeType.ThrowingKnife:
+                case BroBase.MeleeType.Smash:
+                case BroBase.MeleeType.BrobocopPunch:
+                case BroBase.MeleeType.PistolWhip:
+                case BroBase.MeleeType.HeadButt:
+                case BroBase.MeleeType.TeleportStab:
+                    this.StartCustomMelee();
+                    break;
+            }
+        }
+
 
         /// <summary>
         /// Start is called on the frame when a script is enabled just before any of the Update methods are called the first time. (Unity)
@@ -260,7 +310,6 @@ namespace BroMakerLib
             this.soundHolder = rambroPrefab.soundHolder;
             this.soundHolderFootSteps = rambroPrefab.soundHolderFootSteps;
             soundHolderVoice = rambroPrefab.soundHolderVoice;
-            //jetPackSprite = rambroPrefab.jetPackSprite;
             parachute = rambroPrefab.parachute;
             gibs = rambroPrefab.gibs;
             player1Bubble = rambroPrefab.player1Bubble;
@@ -272,7 +321,7 @@ namespace BroMakerLib
             high5Bubble = rambroPrefab.high5Bubble;
 
             base.Start();
-            base.gameObject.AddComponent<WavyGrassEffector>();
+            //currentGesture = GestureElement.Gestures.Flex;
         }
 
         /// <summary>
@@ -282,7 +331,7 @@ namespace BroMakerLib
         {
             if (HeroController.CheckRescueBros(base.playerNum, base.X, base.Y, 12f))
             {
-                this.DestroyUnit();
+                this.bm_DestroyBro();
             }
             base.CheckRescues();
         }
@@ -336,11 +385,6 @@ namespace BroMakerLib
         }
 
         /// <summary>
-        /// Change the range of the projectile. 400 is default
-        /// </summary>
-        protected float bm_ProjectileXRange = 400f;
-
-        /// <summary>
         /// Shoot like a shotgun
         /// </summary>
         /// <param name="projectile"></param>
@@ -356,6 +400,44 @@ namespace BroMakerLib
             ProjectileController.SpawnProjectileLocally(projectile, this, x, y, xSpeed * 0.85f, ySpeed - 40f - UnityEngine.Random.value * 35f, base.playerNum);
             ProjectileController.SpawnProjectileLocally(projectile, this, x, y, xSpeed * 0.85f, ySpeed - 50f + UnityEngine.Random.value * 80f, base.playerNum);
         }
+        /// <summary>
+        /// Number of burst shots.
+        /// </summary>
+        protected int bm_burstShotsLeft = 0;
+        /// <summary>
+        ///
+        /// </summary>
+        protected float bm_burstFireCounter = 0;
+        /// <summary>
+        /// Time between burst shots
+        /// </summary>
+        protected float bm_burstShotsFireInterval = 0.07f;
+        /// <summary>
+        /// Burst
+        /// </summary>
+        public virtual void bm_BurstShots()
+        {
+            if (this.bm_burstShotsLeft > 0)
+            {
+                this.bm_burstFireCounter += this.t;
+                if (this.bm_burstFireCounter >= bm_burstShotsFireInterval)
+                {
+                    this.bm_burstShotsLeft--;
+                    this.bm_burstFireCounter -= bm_burstShotsFireInterval;
+                    this.FireWeapon(base.X + base.transform.localScale.x * 14f, base.Y + 8.5f, base.transform.localScale.x * bm_ProjectileXRange, 0f);
+                    this.PlayAttackSound();
+                }
+            }
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        protected override void Update()
+        {
+            base.Update();
+            bm_BurstShots();
+        }
 
         /// <summary>
         /// Call to destroy the bro
@@ -364,7 +446,7 @@ namespace BroMakerLib
         {
             destroyed = true;
             UnityEngine.Object.Destroy(base.gameObject);
-            UnityEngine.Object.Destroy(this);
+            //UnityEngine.Object.Destroy(this);
         }
 
         /// <summary>

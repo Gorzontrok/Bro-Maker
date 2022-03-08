@@ -19,6 +19,9 @@ namespace BroMakerLoadMod
 
         internal static bool Switch = false;
 
+        internal static string cantSwapMessage;
+        private static GUIStyle cantSwapMsgStyle = new GUIStyle();
+
         private static int playerNumSelected = 1;
         static bool Load(UnityModManager.ModEntry modEntry)
         {
@@ -39,7 +42,8 @@ namespace BroMakerLoadMod
             {
                 Main.Log(ex);
             }
-
+            cantSwapMsgStyle.normal.textColor = Color.yellow;
+            cantSwapMsgStyle.alignment = TextAnchor.MiddleCenter;
             //createFromJSON.Load();
             return true;
         }
@@ -56,6 +60,7 @@ namespace BroMakerLoadMod
             GUILayout.Space(15);
             if(NewBroInfo.Names.Length != 0)
             {
+                GUILayout.Label(cantSwapMessage, cantSwapMsgStyle);
                 GUILayout.Label("Swap to :");
                 GUILayout.BeginHorizontal();
                 if (CustomBroSelected != (CustomBroSelected = GUILayout.SelectionGrid(CustomBroSelected, NewBroInfo.Names, 5, GUILayout.Height(20 * NewBroInfo.Names.Length % 5))))
@@ -115,41 +120,5 @@ namespace BroMakerLoadMod
             Save(this, modEntry);
         }
     }
-
-    /*  [HarmonyPatch(typeof(BroBase), "Update")]
-      static class UpdateBrobase_Patch
-      {
-          static void Postfix(BroBase __instance)
-          {
-              if (!Main.enabled) return;
-
-              try
-              {
-                  Main.CurrentBro = __instance;
-                  if (Main.Switch)
-                  {
-                      /*if(CustomBroController.CustomBros[Main.CustomBroSelected] ==null)
-                      {
-                          Main.Log("cus null");
-                      }
-                          var t = CustomBroController.CustomBros[Main.CustomBroSelected].GetInstance(__instance as Rambro) as BroBase;
-                      if(t == null)
-                      {
-                          Main.Log("ssaqd");
-                      }
-
-                          Main.CustomBroSelected = -1;
-                      Main.Switch = false;
-                  }
-              }
-              catch(Exception ex)
-              {
-                  Main.Log(ex);
-                  Main.CustomBroSelected = -1;
-                  Main.Switch = false;
-              }
-
-          }
-      }*/
 }
 

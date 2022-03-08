@@ -117,6 +117,12 @@ public class TonyBrotana : BroBaseMaker
         this.gunSprite.transform.localPosition = new Vector3(xOffset, yOffset, -1f);
     }
 
+    protected override void UseFire()
+    {
+        this.bm_burstFireCounter = 3;
+        base.UseFire();
+    }
+
     protected override void UseSpecial()
     {
         if (this.SpecialAmmo > 0)
@@ -149,10 +155,16 @@ public class TonyBrotana : BroBaseMaker
     {
         if (HeroController.CheckRescueBros(base.playerNum, base.X, base.Y, 12f))
         {
-            UnityEngine.Object.Destroy(projRocket.gameObject.GetComponent<MeshRenderer>());
-            UnityEngine.Object.Destroy(projRocket);
+            bm_DestroyBro();
         }
         base.CheckRescues();
+    }
+
+    protected override void bm_DestroyBro()
+    {
+        UnityEngine.Object.Destroy(projRocket.gameObject.GetComponent<MeshRenderer>());
+        UnityEngine.Object.Destroy(projRocket);
+        base.bm_DestroyBro();
     }
 
     // Come from AshBrolliams. It's the custom Melee.
