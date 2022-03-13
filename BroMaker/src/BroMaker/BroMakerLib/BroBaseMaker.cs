@@ -21,11 +21,15 @@ namespace BroMakerLib
         {
             get
             {
-                return defaultMaterial;
+                return bm_defaultMaterial;
             }
             set
             {
-                defaultMaterial = value;
+                bm_defaultMaterial = value;
+                if(bm_defaultMaterial != null)
+                {
+                    defaultMaterial = bm_defaultMaterial;
+                }
             }
         }
         /// <summary>
@@ -67,9 +71,13 @@ namespace BroMakerLib
         /// </summary>
         public Shrapnel bm_bulletShell;
         /// <summary>
-        ///
+        /// (Unusued)
         /// </summary>
         public bool bm_IsInGame = false;
+        /// <summary>
+        /// Default material of the bro
+        /// </summary>
+        protected Material bm_defaultMaterial;
         /// <summary>
         /// original speed of the character
         /// </summary>
@@ -95,7 +103,6 @@ namespace BroMakerLib
                 try
                 {
                     this.player = player;
-                    this.playerNum = player.character.playerNum;
                     Main.Debug("player");
                 }
                 catch(Exception ex)
@@ -108,10 +115,14 @@ namespace BroMakerLib
                 {
                     Rambro rambroPrefab = HeroController.GetHeroPrefab(HeroType.Rambro) as Rambro;
                     sprite = gameObject.GetComponent<SpriteSM>();
+                    //sprite.transform.localPosition = new Vector3(sprite.transform.localPosition.x + 0.5f, sprite.transform.localPosition.y, -0.002f);
                     //sprite = SpriteSM.Instantiate(player.character.GetComponent<SpriteSM>());
+                    //sprite.Copy(rambroPrefab.GetComponent<SpriteSM>());
+
                     gunSprite = SpriteSM.Instantiate(rambroPrefab.gunSprite, base.transform);
-                    //gunSprite.Copy(rambroPrefab.gunSprite);
+
                     UnityEngine.Object.Destroy(HeroController.players[playerNum].character.gunSprite.gameObject);
+                    //gunSprite.Copy(rambroPrefab.gunSprite);
                     Main.Debug("sprite");
                 }
                 catch(Exception ex)
@@ -121,27 +132,24 @@ namespace BroMakerLib
 
                 try
                 {
-                    if (defaultMaterial != null && sprite != null)
-                    {
-                        this.sprite.MeshRenderer.sharedMaterial = defaultMaterial;
-                       // base.GetComponent<Renderer>().material = defaultMaterial;
-                       // sprite.GetComponent<Renderer>().sharedMaterial = defaultMaterial;
-                       // sprite.GetComponent<Renderer>().material = defaultMaterial;
-                    }
-                    else if(sprite != null)
+                    if(bm_defaultMaterial == null)
                     {
                         bm_DefaultMaterial = BroMakerLib.Assets.EmptyCharacter;
-                        this.sprite.MeshRenderer.sharedMaterial = defaultMaterial;
+                    }
+                    if (bm_defaultMaterial != null && sprite != null)
+                    {
+                        this.sprite.MeshRenderer.sharedMaterial = bm_DefaultMaterial;
+                        //base.GetComponent<Renderer>().material = bm_DefaultMaterial;
+                        //sprite.GetComponent<Renderer>().sharedMaterial = bm_DefaultMaterial;
+                        //sprite.GetComponent<Renderer>().material = bm_DefaultMaterial;
                     }
                     Main.Debug("default material");
-                    if (bm_DefaultGunMaterial != null && gunSprite != null)
-                    {
-                        gunSprite.GetComponent<Renderer>().material = bm_DefaultGunMaterial;
-                        gunSprite.GetComponent<Renderer>().sharedMaterial = bm_DefaultGunMaterial;
-                    }
-                    else if (gunSprite != null)
+                    if(bm_DefaultGunMaterial == null)
                     {
                         bm_DefaultGunMaterial = BroMakerLib.Assets.EmptyGun;
+                    }
+                    if (bm_DefaultGunMaterial != null && gunSprite != null)
+                    {
                         gunSprite.GetComponent<Renderer>().material = bm_DefaultGunMaterial;
                         gunSprite.GetComponent<Renderer>().sharedMaterial = bm_DefaultGunMaterial;
                     }
@@ -152,28 +160,27 @@ namespace BroMakerLib
                     Main.ExceptionLog("Failed Assign Player and PlayernUm", ex);
                 }
 
-
-
                 UnityEngine.Object.Destroy(player.character.gameObject.GetComponent(BroMaker.GetBroType(player.character.heroType)));
                 this.SetUpHero(playerNum, player.character.heroType, true);
                 Main.Debug("setup hero");
 
+                if (bm_avatarMaterial == null)
+                {
+                    bm_avatarMaterial = BroMakerLib.Assets.EmptyAvatar;
+                }
                 if (bm_avatarMaterial != null)
                 {
                     HeroController.SetAvatarMaterial(playerNum, bm_avatarMaterial);
                 }
-                else
-                {
-                    HeroController.SetAvatarMaterial(playerNum, BroMakerLib.Assets.EmptyAvatar);
-                }
                 Main.Debug("avatar material");
+
+                if(bm_ammoMaterial == null)
+                {
+                    bm_ammoMaterial = BroMakerLib.Assets.DefaultGrenadeIcon;
+                }
                 if (bm_ammoMaterial != null)
                 {
                     Traverse.Create(player.hud).Method("SetGrenadeMaterials", new object[] { bm_ammoMaterial }).GetValue();
-                }
-                else
-                {
-                    Traverse.Create(player.hud).Method("SetGrenadeMaterials", new object[] { BroMakerLib.Assets.DefaultGrenadeIcon }).GetValue();
                 }
                 Main.Debug("ammo material");
 
@@ -312,6 +319,7 @@ namespace BroMakerLib
             soundHolderVoice = rambroPrefab.soundHolderVoice;
             parachute = rambroPrefab.parachute;
             gibs = rambroPrefab.gibs;
+            gibs.SetMaterialOnGibs(bm_defaultMaterial);
             player1Bubble = rambroPrefab.player1Bubble;
             player2Bubble = rambroPrefab.player2Bubble;
             player3Bubble = rambroPrefab.player3Bubble;
