@@ -23,7 +23,7 @@
  In order to spawn with a Custom Bro you need to install one.
 
  Once you are in a level, open the menu of BroMaker and click on the name of a bro.
- [](InGameGUI.jpg)
+ ![](InGameGUI.jpg?raw=true)
  
 
 ## Guide to Developper
