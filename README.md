@@ -29,3 +29,5 @@
 ## Guide to Developper
 
  [Steam Guide](https://steamcommunity.com/sharedfiles/filedetails/?id=2738232988)
+
+ [Wiki](https://github.com/Gorzon38/Bro-Maker/wiki)
