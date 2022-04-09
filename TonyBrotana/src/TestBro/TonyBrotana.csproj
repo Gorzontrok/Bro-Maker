@@ -79,6 +79,14 @@
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="assets\avatar_TonyBrotana.png" />
+    <EmbeddedResource Include="assets\avatar_TonyBrotanaBloody.png" />
+    <EmbeddedResource Include="assets\TonyBrotana_anim.png" />
+    <EmbeddedResource Include="assets\TonyBrotana_gun_anim.png" />
+    <EmbeddedResource Include="assets\TonyBrotana_Special.png" />
+    <EmbeddedResource Include="assets\TonyBrotana_SpecialHUD.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>start XCOPY /Y /R "$(TargetPath)" "E:\SteamLibrary\steamapps\common\Broforce\Mods\$(ProjectName)Mod\$(ProjectName).dll*"</PostBuildEvent>
