@@ -65,7 +65,8 @@ namespace TonyBrotanaMod
             {
                 if (_TonyBrotana_Avatar == null)
                 {
-                    _TonyBrotana_Avatar = BroMaker.CreateMaterialFromFile(Main.AvatarImgPath);
+                    //_TonyBrotana_Avatar = BroMaker.CreateMaterialFromFile(Main.AvatarImgPath, BroMaker.AvatarShader);
+                    _TonyBrotana_Avatar = BroMaker.CreateMaterialFromResources(Main.AvatarImgPath, BroMaker.AvatarShader);
                 }
                 return _TonyBrotana_Avatar;
             }
