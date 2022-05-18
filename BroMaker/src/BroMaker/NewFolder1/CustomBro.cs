@@ -14,7 +14,7 @@ namespace BroMakerLib
         public readonly string NameToShow = string.Empty;
 
         protected readonly string FolderPath = string.Empty;
-        protected readonly string CharacterImagePath = string.Empty;
+        protected readonly string CharacterImagePath = string.Empty;-
         protected readonly string GunImagePath = string.Empty;
         protected readonly string AvatarImagePath = string.Empty;
 

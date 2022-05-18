@@ -39,9 +39,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>E:\SteamLibrary\steamapps\common\Broforce\Broforce_beta_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net35\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -79,8 +76,8 @@
   <ItemGroup>
     <Compile Include="Assets.cs" />
     <Compile Include="BroMaker.cs" />
-    <Compile Include="NewFolder1\CreateFromJSON.cs" />
-    <Compile Include="NewFolder1\CustomBro.cs" />
+    <None Include="NewFolder1\CreateFromJSON.cs" />
+    <None Include="NewFolder1\CustomBro.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="BroMakerLib\BroBaseMaker.cs" />
     <Compile Include="BroMakerLib\MeleeHolder.cs" />

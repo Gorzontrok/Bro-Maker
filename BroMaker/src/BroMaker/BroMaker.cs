@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Reflection;
 using HarmonyLib;
 using UnityEngine;
 using BroMakerLoadMod;
@@ -15,22 +15,56 @@ namespace BroMakerLib
         /// <summary>
         ///
         /// </summary>
+        public static Shader Shader1
+        {
+            get
+            {
+                return avatarShader;
+            }
+        }
+       /* /// <summary>
+        /// Unlit/Depth Cutout With ColouredImage
+        /// </summary>
+        public static Shader CharacterShader
+        {
+            get
+            {
+                return Shader.Find("Unlit/Depth Cutout With ColouredImage");
+            }
+        }*/
+
+        private static Shader avatarShader;
+        private static bool hasInit;
+
+        internal static void Init()
+        {
+            if(!hasInit)
+            {
+                Main.Log("Initialization of BroMaker");
+                avatarShader = HeroController.GetAvatarMaterial(HeroType.Rambro).shader;
+                hasInit = true;
+                Main.Log("Finish Initialization");
+            }
+        }
+        /// <summary>
+        ///
+        /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static T FindGameObject<T>() where T : MonoBehaviour
+        internal static T FindGameObject<T>() where T : MonoBehaviour
         {
             return UnityEngine.Object.FindObjectOfType<T>();
         }
-
         /// <summary>
-        /// Create a material from a file.
+        /// Create a material from a file with a specific shader
         /// </summary>
         /// <param name="ImagePath"></param>
         /// <returns></returns>
         public static Material CreateMaterialFromFile(string ImagePath)
         {
-            return CreateMaterialFromFile(ImagePath, Shader.Find("Unlit/Depth Cutout With ColouredImage"));
+            return CreateMaterialFromFile(ImagePath, Shader1);
         }
+
         /// <summary>
         /// Create a material from a file with a specific shader
         /// </summary>
@@ -52,6 +86,7 @@ namespace BroMakerLib
 
             return mat;
         }
+
 
         internal static Type GetBroType(HeroType heroType)
         {
@@ -152,17 +187,6 @@ namespace BroMakerLib
                 case "TrentBroser": return HeroType.TrentBroser;
             }
             return HeroType.Rambro;
-        }
-        internal static Texture2D CreateTexture(string ImagePath)
-        {
-            Texture2D tex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-            tex.LoadImage(File.ReadAllBytes(ImagePath));
-            tex.filterMode = FilterMode.Point;
-            tex.anisoLevel = 1;
-            tex.mipMapBias = 0;
-            tex.wrapMode = TextureWrapMode.Repeat;
-
-            return tex;
         }
     }
 }

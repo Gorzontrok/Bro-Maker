@@ -120,5 +120,14 @@ namespace BroMakerLoadMod
             Save(this, modEntry);
         }
     }
+
+    [HarmonyPatch(typeof(Map), "Awake")]
+    static class Awake_map_Patch
+    {
+        static void Prefix()
+        {
+            BroMaker.Init();
+        }
+    }
 }
 

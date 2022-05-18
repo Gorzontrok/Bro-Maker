@@ -5,10 +5,19 @@ using UnityEngine;
 
 namespace BroMakerLib
 {
+	/// <summary>
+	///
+	/// </summary>
     public class MeleeHolder : MonoBehaviour
     {
+		/// <summary>
+		///
+		/// </summary>
 		public BroBaseMaker character;
-
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="meleeType"></param>
         public void StartMelee(BroBase.MeleeType meleeType)
         {
 			/*if(character != null)

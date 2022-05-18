@@ -28,7 +28,7 @@ namespace BroMakerLib
             {
                 if (_defaultGrenadeIcon == null)
                 {
-                    _defaultGrenadeIcon = BroMaker.CreateMaterialFromFile(Path.Combine(assetsPath, "grenadeIcon.png"));
+                    _defaultGrenadeIcon = BroMaker.CreateMaterialFromFile(Path.Combine(assetsPath, "grenadeIcon.png"), BroMaker.Shader1);
                 }
                 return _defaultGrenadeIcon;
             }
@@ -44,7 +44,7 @@ namespace BroMakerLib
             {
                 if (_emptyAvatar == null)
                 {
-                    _emptyAvatar = BroMaker.CreateMaterialFromFile(Path.Combine(assetsPath, "avatar_empty.png"));
+                    _emptyAvatar = BroMaker.CreateMaterialFromFile(Path.Combine(assetsPath, "avatar_empty.png"), BroMaker.Shader1);
                 }
                 return _emptyAvatar;
             }
@@ -60,7 +60,7 @@ namespace BroMakerLib
             {
                 if (_emptyCharacter == null)
                 {
-                    _emptyCharacter = BroMaker.CreateMaterialFromFile(Path.Combine(assetsPath, "emptyBody_anim.png"));
+                    _emptyCharacter = BroMaker.CreateMaterialFromFile(Path.Combine(assetsPath, "emptyBody_anim.png"), BroMaker.Shader1);
                 }
                 return _emptyCharacter;
             }
@@ -77,7 +77,7 @@ namespace BroMakerLib
             {
                 if (_emptyGun == null)
                 {
-                    _emptyGun = BroMaker.CreateMaterialFromFile(Path.Combine(assetsPath, "empty_gun_anim.png"));
+                    _emptyGun = BroMaker.CreateMaterialFromFile(Path.Combine(assetsPath, "empty_gun_anim.png"), BroMaker.Shader1);
                 }
                 return _emptyGun;
             }

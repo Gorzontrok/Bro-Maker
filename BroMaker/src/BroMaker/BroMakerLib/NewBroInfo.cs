@@ -21,7 +21,7 @@ namespace BroMakerLib
         /// </summary>
         public string name;
         /// <summary>
-        /// Is fighting terrorist in game? (Unused)
+        /// Is fighting terrorist in game?
         /// </summary>
         public bool Swaped;
 
@@ -55,7 +55,6 @@ namespace BroMakerLib
         {
             try
             {
-                Main.Log(playerNum);
                 Player oldPlayer = HeroController.players[playerNum];
                 if(HeroController.players[playerNum] != null)
                 {
@@ -67,10 +66,10 @@ namespace BroMakerLib
                             HeroController.players[playerNum].character.RecallBro();
                             //Player oldPlayer = Player.Instantiate(HeroController.players[playerNum]);
                             var Bro = HeroController.players[playerNum].character.gameObject.AddComponent(broType) as BroBaseMaker;
-
+                            Bro.playerNum = playerNum;
                             //UnityEngine.Object.Destroy(Bro.gameObject.GetComponent<WavyGrassEffector>());
                             UnityEngine.Object.Destroy(HeroController.players[playerNum].character.gameObject.GetComponent<WavyGrassEffector>());
-                            Bro.playerNum = playerNum;
+
                             Bro.bm_SetupBro(HeroController.players[playerNum]);
 
                             /* if (HeroController.players[playerNum].character.gameObject.GetComponent(broType) != null)
