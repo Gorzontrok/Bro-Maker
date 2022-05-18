@@ -1,5 +1,5 @@
-v1.0.1 :
- - Update
+v1.0.2 :
+ - Make the mod works again
 
-v1.0.0 :
- - initial release.
+v1.0.1 :
+ - Rewrite it.

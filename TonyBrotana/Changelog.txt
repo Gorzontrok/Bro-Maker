@@ -1,8 +1,9 @@
+v0.8.3 :
+ - Fix shader missing
+
 v0.8.2 :
  - Update to new BroMaker Version
  - Shoot slower
- - Add avatar
- - Chainsaw melee
 
 v0.8.1 :
  - You can't swap with TankBro and Indiana Brones anymore, avoid some sprite bug.

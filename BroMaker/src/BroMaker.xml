@@ -34,9 +34,21 @@
             
              </summary>
         </member>
+        <member name="P:BroMakerLib.BroMaker.Shader1">
+             <summary>
+            
+             </summary>
+        </member>
+        <member name="M:BroMakerLib.BroMaker.FindGameObject``1">
+             <summary>
+            
+             </summary>
+             <typeparam name="T"></typeparam>
+             <returns></returns>
+        </member>
         <member name="M:BroMakerLib.BroMaker.CreateMaterialFromFile(System.String)">
             <summary>
-            Create a material from a file.
+            Create a material from a file with a specific shader
             </summary>
             <param name="ImagePath"></param>
             <returns></returns>
@@ -57,6 +69,11 @@
         <member name="P:BroMakerLib.BroBaseMaker.bm_DefaultMaterial">
             <summary>
             Default material for the sprite
+            </summary>
+        </member>
+        <member name="P:BroMakerLib.BroBaseMaker.Sprite">
+            <summary>
+            Sprite of the bro
             </summary>
         </member>
         <member name="F:BroMakerLib.BroBaseMaker.bm_DefaultGunMaterial">
@@ -104,6 +121,16 @@
             
              </summary>
         </member>
+        <member name="F:BroMakerLib.BroBaseMaker.bm_ProjectileXRange">
+            <summary>
+            Change the range of the projectile. 400 is default
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.BroBaseMaker.meleeHolder">
+             <summary>
+            
+             </summary>
+        </member>
         <member name="M:BroMakerLib.BroBaseMaker.bm_SetupBro(Player)">
             <summary>
             This function is for setup the bro.
@@ -143,11 +170,6 @@
             <param name="xSpeed"></param>
             <param name="ySpeed"></param>
         </member>
-        <member name="F:BroMakerLib.BroBaseMaker.bm_ProjectileXRange">
-            <summary>
-            Change the range of the projectile. 400 is default
-            </summary>
-        </member>
         <member name="M:BroMakerLib.BroBaseMaker.bm_ShotgunShot(Projectile,System.Single,System.Single,System.Single,System.Single)">
             <summary>
             Shoot like a shotgun
@@ -157,6 +179,31 @@
             <param name="y"></param>
             <param name="xSpeed"></param>
             <param name="ySpeed"></param>
+        </member>
+        <member name="F:BroMakerLib.BroBaseMaker.bm_burstShotsLeft">
+            <summary>
+            Number of burst shots.
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.BroBaseMaker.bm_burstFireCounter">
+             <summary>
+            
+             </summary>
+        </member>
+        <member name="F:BroMakerLib.BroBaseMaker.bm_burstShotsFireInterval">
+            <summary>
+            Time between burst shots
+            </summary>
+        </member>
+        <member name="M:BroMakerLib.BroBaseMaker.bm_BurstShots">
+            <summary>
+            Burst
+            </summary>
+        </member>
+        <member name="M:BroMakerLib.BroBaseMaker.Update">
+             <summary>
+            
+             </summary>
         </member>
         <member name="M:BroMakerLib.BroBaseMaker.bm_DestroyBro">
             <summary>
@@ -173,6 +220,22 @@
             
              </summary>
         </member>
+        <member name="T:BroMakerLib.MeleeHolder">
+             <summary>
+            
+             </summary>
+        </member>
+        <member name="F:BroMakerLib.MeleeHolder.character">
+             <summary>
+            
+             </summary>
+        </member>
+        <member name="M:BroMakerLib.MeleeHolder.StartMelee(BroBase.MeleeType)">
+             <summary>
+            
+             </summary>
+             <param name="meleeType"></param>
+        </member>
         <member name="T:BroMakerLib.NewBroInfo">
             <summary>
             Class to add a new character
@@ -186,6 +249,11 @@
         <member name="F:BroMakerLib.NewBroInfo.name">
             <summary>
             Name of the bro
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.NewBroInfo.Swaped">
+            <summary>
+            Is fighting terrorist in game?
             </summary>
         </member>
         <member name="M:BroMakerLib.NewBroInfo.#ctor(System.Type,System.String)">
@@ -210,6 +278,11 @@
             <summary>
             Names array of the custom character
             </summary>
+        </member>
+        <member name="T:BroMakerLib.SwordBroMaker">
+             <summary>
+            
+             </summary>
         </member>
         <member name="T:BroMakerLoadMod.Settings">
              <summary>
