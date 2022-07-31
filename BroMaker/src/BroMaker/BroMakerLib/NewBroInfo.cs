@@ -56,50 +56,45 @@ namespace BroMakerLib
             try
             {
                 Player oldPlayer = HeroController.players[playerNum];
-                if(HeroController.players[playerNum] != null)
-                {
-                    if (BroMaker.GetBroType(oldPlayer.character.heroType) != null)
-                    {
-                        if(HeroController.players[playerNum].GetComponent(broType) == null)
-                        {
-                            Main.cantSwapMessage = string.Empty;
-                            HeroController.players[playerNum].character.RecallBro();
-                            //Player oldPlayer = Player.Instantiate(HeroController.players[playerNum]);
-                            var Bro = HeroController.players[playerNum].character.gameObject.AddComponent(broType) as BroBaseMaker;
-                            Bro.playerNum = playerNum;
-                            //UnityEngine.Object.Destroy(Bro.gameObject.GetComponent<WavyGrassEffector>());
-                            UnityEngine.Object.Destroy(HeroController.players[playerNum].character.gameObject.GetComponent<WavyGrassEffector>());
-
-                            Bro.bm_SetupBro(HeroController.players[playerNum]);
-
-                            /* if (HeroController.players[playerNum].character.gameObject.GetComponent(broType) != null)
-                             {
-                                 HeroController.players[playerNum].character = (TestVanDammeAnim)HeroController.players[playerNum].character.gameObject.GetComponent(broType);
-                                 // Main.Debug("dsqdsq");
-                             }*/
-                            // UnityEngine.Object.Destroy(Bro.gameObject.GetComponent(HeroController.GetHeroPrefab(Bro.heroType).GetType()));
-                            //UnityEngine.Object.Destroy(HeroController.players[playerNum].character.gameObject.GetComponent(HeroController.GetHeroPrefab(HeroController.players[playerNum].character.heroType).GetType()));
-
-                            //Bro.SetUpHero(playerNum, HeroController.players[playerNum].character.heroType, true);
-
-                            //UnityEngine.Object.Destroy(oldPlayer);
-                            HeroController.players[playerNum].AssignCharacter(Bro);
-                            Swaped = true;
-                        }
-                        else
-                        {
-                            Main.cantSwapMessage = "The bro is actually fighting terrorism.";
-                        }
-                    }
-                    else
-                    {
-                        Main.cantSwapMessage = "You can't swap with this bro.";
-                    }
-                }
-                else
+                if(HeroController.players[playerNum] = null)
                 {
                     Main.cantSwapMessage = "The player don't exist.";
+                    return;
                 }
+                if(BroMaker.GetBroType(oldPlayer.character.heroType) == null)
+                {
+                    Main.cantSwapMessage = "You can't swap with this bro.";
+                    return;
+                }
+                if (HeroController.players[playerNum].GetComponent(broType) != null)
+                {
+                    Main.cantSwapMessage = "The bro is actually fighting terrorism.";
+                    return;
+                }
+
+                Main.cantSwapMessage = string.Empty;
+                HeroController.players[playerNum].character.RecallBro();
+                //Player oldPlayer = Player.Instantiate(HeroController.players[playerNum]);
+                var Bro = HeroController.players[playerNum].character.gameObject.AddComponent(broType) as BroBaseMaker;
+                Bro.playerNum = playerNum;
+                //UnityEngine.Object.Destroy(Bro.gameObject.GetComponent<WavyGrassEffector>());
+                UnityEngine.Object.Destroy(HeroController.players[playerNum].character.gameObject.GetComponent<WavyGrassEffector>());
+
+                Bro.bm_SetupBro(HeroController.players[playerNum]);
+
+                /* if (HeroController.players[playerNum].character.gameObject.GetComponent(broType) != null)
+                 {
+                     HeroController.players[playerNum].character = (TestVanDammeAnim)HeroController.players[playerNum].character.gameObject.GetComponent(broType);
+                     // Main.Debug("dsqdsq");
+                 }*/
+                // UnityEngine.Object.Destroy(Bro.gameObject.GetComponent(HeroController.GetHeroPrefab(Bro.heroType).GetType()));
+                //UnityEngine.Object.Destroy(HeroController.players[playerNum].character.gameObject.GetComponent(HeroController.GetHeroPrefab(HeroController.players[playerNum].character.heroType).GetType()));
+
+                //Bro.SetUpHero(playerNum, HeroController.players[playerNum].character.heroType, true);
+
+                //UnityEngine.Object.Destroy(oldPlayer);
+                HeroController.players[playerNum].AssignCharacter(Bro);
+                Swaped = true;
             }
             catch(Exception ex)
             {
