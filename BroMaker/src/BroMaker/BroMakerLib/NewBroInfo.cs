@@ -56,7 +56,7 @@ namespace BroMakerLib
             try
             {
                 Player oldPlayer = HeroController.players[playerNum];
-                if(HeroController.players[playerNum] = null)
+                if(HeroController.players[playerNum] == null)
                 {
                     Main.cantSwapMessage = "The player don't exist.";
                     return;
