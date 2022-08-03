@@ -45,6 +45,7 @@ namespace BroMakerLoadMod
             cantSwapMsgStyle.normal.textColor = Color.yellow;
             cantSwapMsgStyle.alignment = TextAnchor.MiddleCenter;
             //createFromJSON.Load();
+            //BroMakerLib.FromJSON.CreateBroFromJSON.Load();
             return true;
         }
 
