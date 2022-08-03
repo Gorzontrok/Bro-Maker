@@ -1,0 +1,10 @@
+{
+    "Id": "BroMaker",
+    "DisplayName": "BroMaker",
+    "Author": "Gorzon",
+    "Version": "1.0.2",
+    "AssemblyName": "BroMaker.dll",
+    "EntryMethod": "BroMakerLoadMod.Main.Load",
+    "Repository": "https://raw.githubusercontent.com/Gorzon38/Bro-Maker/main/Repository.json"
+
+}
