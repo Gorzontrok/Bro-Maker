@@ -12,6 +12,8 @@
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -21,7 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>E:\SteamLibrary\steamapps\common\Broforce\Mods\BroMaker\BroMaker.xml</DocumentationFile>
+    <DocumentationFile>_Mod\BroMaker.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -45,6 +47,9 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="Tiny-JSON">
+      <HintPath>E:\SteamLibrary\steamapps\common\Broforce\Mods\BroMaker\Tiny-JSON.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>E:\SteamLibrary\steamapps\common\Broforce\Broforce_beta_Data\Managed\UnityEngine.dll</HintPath>
@@ -76,8 +81,10 @@
   <ItemGroup>
     <Compile Include="Assets.cs" />
     <Compile Include="BroMaker.cs" />
-    <None Include="NewFolder1\CreateFromJSON.cs" />
-    <None Include="NewFolder1\CustomBro.cs" />
+    <None Include="_Mod\Info.json" />
+    <None Include="BroMakerLib.JSON\CreateFromJSON.cs" />
+    <None Include="BroMakerLib.JSON\CustomBro.cs" />
+    <None Include="BroMakerLib.JSON\CustomBroFromJSON.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="BroMakerLib\BroBaseMaker.cs" />
     <Compile Include="BroMakerLib\MeleeHolder.cs" />
@@ -85,8 +92,13 @@
     <Compile Include="BroMakerLib\NewBroInfo.cs" />
     <Compile Include="BroMakerLib\SwordBroMaker.cs" />
   </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="_Mod\Changelog.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>start XCOPY /Y /R "$(TargetPath)" "E:\SteamLibrary\steamapps\common\Broforce\Mods\$(ProjectName)\$(ProjectName).dll*"</PostBuildEvent>
+    <PostBuildEvent>start XCOPY /Y /R "$(TargetPath)" "$(ProjectDir)\_Mod\$(ProjectName).dll*"
+start XCOPY /Y /I "$(ProjectDir)_Mod\*.*" "E:\SteamLibrary\steamapps\common\Broforce\Mods\$(ProjectName)\"</PostBuildEvent>
   </PropertyGroup>
 </Project>
