@@ -106,15 +106,11 @@ namespace BroMakerLib
                     Main.ExceptionLog("Failed assign player and playerNum", ex);
                 }
 
-                //pockettedSpecialAmmo = (player.character as BroBase).pockettedSpecialAmmo;
                 try
                 {
                     Rambro rambroPrefab = HeroController.GetHeroPrefab(HeroType.Rambro) as Rambro;
                     sprite = gameObject.GetComponent<SpriteSM>();
-                    //sprite = SpriteSM.Instantiate(player.character.GetComponent<SpriteSM>());
-                    gunSprite = SpriteSM.Instantiate(rambroPrefab.gunSprite, base.transform);
-                    //gunSprite.Copy(rambroPrefab.gunSprite);
-                    UnityEngine.Object.Destroy(HeroController.players[playerNum].character.gunSprite.gameObject);
+                    gunSprite = HeroController.players[playerNum].character.gunSprite;
                     Main.Debug("sprite");
                 }
                 catch(Exception ex)
@@ -127,13 +123,10 @@ namespace BroMakerLib
                     if (defaultMaterial != null && sprite != null)
                     {
                         this.sprite.MeshRenderer.sharedMaterial = defaultMaterial;
-                       // base.GetComponent<Renderer>().material = defaultMaterial;
-                       // sprite.GetComponent<Renderer>().sharedMaterial = defaultMaterial;
-                       // sprite.GetComponent<Renderer>().material = defaultMaterial;
                     }
                     else if(sprite != null)
                     {
-                        bm_DefaultMaterial = BroMakerLib.Assets.EmptyCharacter;
+                        bm_DefaultMaterial = Assets.EmptyCharacter;
                         this.sprite.MeshRenderer.sharedMaterial = defaultMaterial;
                     }
                     Main.Debug("default material");
@@ -144,7 +137,7 @@ namespace BroMakerLib
                     }
                     else if (gunSprite != null)
                     {
-                        bm_DefaultGunMaterial = BroMakerLib.Assets.EmptyGun;
+                        bm_DefaultGunMaterial = Assets.EmptyGun;
                         gunSprite.GetComponent<Renderer>().material = bm_DefaultGunMaterial;
                         gunSprite.GetComponent<Renderer>().sharedMaterial = bm_DefaultGunMaterial;
                     }
@@ -156,7 +149,7 @@ namespace BroMakerLib
                 }
 
 
-
+                this.transform.SetPositionAndRotation(player.character.transform.position, player.character.transform.rotation);
                 UnityEngine.Object.Destroy(player.character.gameObject.GetComponent(BroMaker.GetBroType(player.character.heroType)));
                 this.SetUpHero(playerNum, player.character.heroType, true);
                 Main.Debug("setup hero");
@@ -167,7 +160,7 @@ namespace BroMakerLib
                 }
                 else
                 {
-                    HeroController.SetAvatarMaterial(playerNum, BroMakerLib.Assets.EmptyAvatar);
+                    HeroController.SetAvatarMaterial(playerNum, Assets.EmptyAvatar);
                 }
                 Main.Debug("avatar material");
                 if (bm_ammoMaterial != null)
@@ -176,10 +169,11 @@ namespace BroMakerLib
                 }
                 else
                 {
-                    Traverse.Create(player.hud).Method("SetGrenadeMaterials", new object[] { BroMakerLib.Assets.DefaultGrenadeIcon }).GetValue();
+                    Traverse.Create(player.hud).Method("SetGrenadeMaterials", new object[] { Assets.DefaultGrenadeIcon }).GetValue();
                 }
                 Main.Debug("ammo material");
 
+                gameObject.AddComponent<WavyGrassEffector>();
                 this.bm_IsInGame = true;
             }
             catch(Exception ex)
@@ -234,7 +228,7 @@ namespace BroMakerLib
              * // ?
              * this.canTouchLeftWalls = false; // ?
              * this.canTouchRightWalls = false; // ?
-             * this.canCeilingHang = false; // Only for enemy
+             * this.canCeilingHang = false;
              */
 
             // Some action of the bro.
@@ -267,9 +261,7 @@ namespace BroMakerLib
             meleeHolder = base.gameObject.AddComponent<MeleeHolder>();
             meleeHolder.character = this;
         }
-        /// <summary>
-        ///
-        /// </summary>
+
         /*protected override void StartMelee()
         {
             base.counter = 0f;
@@ -329,7 +321,6 @@ namespace BroMakerLib
             high5Bubble = rambroPrefab.high5Bubble;
 
             base.Start();
-            currentGesture = GestureElement.Gestures.Flex;
         }
 
         /// <summary>
