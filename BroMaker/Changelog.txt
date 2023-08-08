@@ -1,5 +1,31 @@
+v2.0.0 :
+Use preset to spawn a bro
+Can now spawn a custom bro with any other bro(was restraint to fix some issues)
+
+v1.0.6 :
+Added Missing save file button in editor
+Fix clone button
+
+v1.0.5 :
+Added an editor
+Added a Json file creator
+Rework the GUI
+Change/fix a various things
+
+v1.0.4 :
+Fix grenade doing self damage bug
+Now spawn with the projectiles and grenade of the current bro
+Enum in json: integers have been replace by strings
+Swap automatically with a given probability after a vanilla bro has spawn
+
+v1.0.3 :
+BroMaker dll is now seperate from the part which load the mod.
+Sort classes in namespaces
+Remove unused classes and namespace
+Can load custombro from JSON and XML
+
 v1.0.2 :
- - Make the mod works again
+- Add WIP Sword Bro class
 
 v1.0.1 :
- - Rewrite it.
+ - Change the way of how it work

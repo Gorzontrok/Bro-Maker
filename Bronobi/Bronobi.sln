@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32510.428
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bronobi", "Bronobi\Bronobi.csproj", "{B07FB4DD-0BC1-4B64-83EA-850BD5D8B914}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B07FB4DD-0BC1-4B64-83EA-850BD5D8B914}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B07FB4DD-0BC1-4B64-83EA-850BD5D8B914}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B07FB4DD-0BC1-4B64-83EA-850BD5D8B914}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B07FB4DD-0BC1-4B64-83EA-850BD5D8B914}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0230C8C6-E9CC-4882-90D2-AC895E66CE6C}
+	EndGlobalSection
+EndGlobal

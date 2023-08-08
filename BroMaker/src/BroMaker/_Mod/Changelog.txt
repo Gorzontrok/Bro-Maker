@@ -1,5 +1,0 @@
-v1.0.2 :
-- Add WIP Sword Bro class
-
-v1.0.1 :
- - Change the way of how it work
