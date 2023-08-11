@@ -5,6 +5,8 @@ using Newtonsoft.Json;
 using UnityEngine;
 using BroMakerLib;
 using BroMakerLib.Loggers;
+using Networking;
+using Net = Networking.Networking;
 
 namespace BroMakerLib.Infos
 {
@@ -24,6 +26,7 @@ namespace BroMakerLib.Infos
             return SerializeJSON(DirectoriesManager.BrosDirectory);
         }
 
+        [AllowedRPC]
         public override void ReadParameters(object obj)
         {
             base.ReadParameters(obj);
@@ -31,11 +34,15 @@ namespace BroMakerLib.Infos
             var character = obj.As<BroBase>();
             if (GetParameterValue<bool>("Halo"))
             {
-                character.halo = HeroController.GetHeroPrefab(HeroType.Broffy).halo;
+                var halo = HeroController.GetHeroPrefab(HeroType.Broffy).halo;
+                character.halo = Net.Instantiate(halo, halo.transform.localPosition, Quaternion.identity);
+                character.halo.transform.parent = character.transform;
             }
             if (GetParameterValue<bool>("JetPackSprite"))
             {
-                character.jetPackSprite = UnityEngine.Object.Instantiate(HeroController.GetHeroPrefab(HeroType.Rambro).As<BroBase>().jetPackSprite, character.transform);
+                var jetPackSprite = HeroController.GetHeroPrefab(HeroType.Rambro).As<BroBase>().jetPackSprite;
+                character.jetPackSprite = Net.Instantiate(jetPackSprite, jetPackSprite.transform.localPosition, Quaternion.identity);
+                character.jetPackSprite.transform.parent = character.transform;
             }
             if (GetParameterValue<bool>("BetterAnimation"))
             {

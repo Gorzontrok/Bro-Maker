@@ -4,6 +4,8 @@ using BroMakerLib.Loggers;
 using RocketLib;
 using System;
 using UnityEngine;
+using Networking;
+using Net = Networking.Networking;
 
 namespace BroMakerLib
 {
@@ -14,6 +16,7 @@ namespace BroMakerLib
         /// </summary>
         /// <param name="hero"></param>
         /// <param name="character"></param>
+        [AllowedRPC]
         public static void AssignNullVariables(this ICustomHero hero, BroBase character)
         {
             if (hero.character == null)
@@ -51,6 +54,7 @@ namespace BroMakerLib
         /// <summary>
         /// Before Awake
         /// </summary>
+        [AllowedRPC]
         public static void FixOtherComponentValues(this ICustomHero hero)
         {
             if (hero.character == null)
@@ -102,6 +106,7 @@ namespace BroMakerLib
         /// </summary>
         /// <param name="hero"></param>
         /// <exception cref="NullReferenceException"></exception>
+        [AllowedRPC]
         public static void SetupCustomHero(this ICustomHero hero)
         {
             /*Registry.RegisterDeterminsiticObject(hero.character);
@@ -111,17 +116,22 @@ namespace BroMakerLib
             if (otherBroComponent != null)
             {
                 hero.AssignNullVariables(otherBroComponent);
+                //Net.RPC(PID.TargetAll, new RpcSignature<BroBase>(hero.AssignNullVariables), otherBroComponent);
                 var type = otherBroComponent.GetType();
                 UnityEngine.Object.Destroy(otherBroComponent);
+                //Net.RPC(PID.TargetAll, new RpcSignature<UnityEngine.Object>(UnityEngine.Object.Destroy), otherBroComponent);
                 BMLogger.Debug($"SetupCustomHero: Has destroy {type} component.");
                 hero.info.ReadParameters(hero.character);
+                //Net.RPC(PID.TargetAll, new RpcSignature<object>(hero.info.ReadParameters), hero.character);
                 BMLogger.Debug("SetupCustomHero: Has read parameters");
             }
             else
                 BMLogger.Log("SetupCustomHero: No other bro component founded");
 
             hero.FixOtherComponentValues();
+            //Net.RPC(PID.TargetAll, new RpcSignature(hero.FixOtherComponentValues));
             hero.RemoveDuplicateGlowLight();
+            //Net.RPC(PID.TargetAll, new RpcSignature(hero.RemoveDuplicateGlowLight));
 
             EffectsController.CreateHeroIndicator(hero.character);
             hero.character.maxHealth = 1;
@@ -132,6 +142,7 @@ namespace BroMakerLib
             hero.character.specialGrenade.playerNum = LoadHero.playerNum;
         }
 
+        [AllowedRPC]
         public static void RemoveDuplicateGlowLight(this ICustomHero hero)
         {
             var transform = hero.character.transform;
