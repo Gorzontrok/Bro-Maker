@@ -94,6 +94,21 @@ namespace BroMakerLib.Loaders
 
                 TestVanDammeAnim hero = Net.InstantiateBuffered<GameObject>(original, previousPosition, Quaternion.identity, new object[0], false).GetComponent(type) as TestVanDammeAnim;
                 BMLogger.Debug($"AfterInstantiation: InstantiateBuffered.");
+                switch ( playerNum )
+                {
+                    case 0:
+                        hero.player1Bubble.SetPosition( hero.player1Bubble.transform.localPosition );
+                        break;
+                    case 1:
+                        hero.player2Bubble.SetPosition( hero.player2Bubble.transform.localPosition );
+                        break;
+                    case 2:
+                        hero.player3Bubble.SetPosition( hero.player3Bubble.transform.localPosition );
+                        break;
+                    case 3:
+                        hero.player4Bubble.SetPosition( hero.player4Bubble.transform.localPosition );
+                        break;
+                }
 
 
                 var bro = AfterInstantiation(hero, heroType, playerNum, type, previousPosition);
