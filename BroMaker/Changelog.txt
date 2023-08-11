@@ -1,3 +1,6 @@
+v2.0.1 :
+Fix player bubble position
+
 v2.0.0 :
 Use preset to spawn a bro
 Can now spawn a custom bro with any other bro(was restraint to fix some issues)
