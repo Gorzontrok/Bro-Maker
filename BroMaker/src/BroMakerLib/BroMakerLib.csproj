@@ -125,6 +125,7 @@
     <Compile Include="EditorIgnoreAttribute.cs" />
     <Compile Include="Enumerators.cs" />
     <Compile Include="Extensions\CustomHeroExtensions.cs" />
+    <Compile Include="Extensions\GameObjectExtensions.cs" />
     <Compile Include="Extensions\GrenadeExtensions.cs" />
     <Compile Include="Extensions\ICustomHeroExtensions.cs" />
     <Compile Include="Extensions\InvulnerabilityFlashExtensions.cs" />
