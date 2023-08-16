@@ -138,7 +138,14 @@ namespace BroMakerLib
             if(!hero.info.beforeAwake.ContainsKey("specialGrenade.playerNum"))
                 hero.info.beforeAwake.Add("specialGrenade.playerNum", LoadHero.playerNum);
             if(!hero.info.beforeAwake.ContainsKey("maxHealth"))
+            {
                 hero.info.beforeAwake.Add("maxHealth", 1);
+                hero.info.beforeAwake.Add("health", 1);
+            }
+            else if(!hero.info.beforeAwake.ContainsKey("health"))
+            {
+                hero.info.beforeAwake.Add("health", hero.info.beforeAwake.GetFieldValue("maxHealth"));
+            }
             hero.character.specialGrenade.playerNum = LoadHero.playerNum;
         }
 
