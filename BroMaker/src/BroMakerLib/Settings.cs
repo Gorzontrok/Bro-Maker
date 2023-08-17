@@ -20,7 +20,7 @@ namespace BroMakerLib
         [JsonIgnore]
         public static Settings instance;
         [JsonIgnore]
-        public static string directory = Assembly.GetExecutingAssembly().Location;
+        public static string directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
         public bool automaticSpawn = false;
         public float automaticSpawnProbabilty = 25;
