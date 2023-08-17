@@ -135,10 +135,25 @@ namespace BroMakerLib
 
             EffectsController.CreateHeroIndicator(hero.character);
             hero.character.maxHealth = 1;
-            if(!hero.info.beforeAwake.ContainsKey("specialGrenade.playerNum"))
-                hero.info.beforeAwake.Add("specialGrenade.playerNum", LoadHero.playerNum);
-            if(!hero.info.beforeAwake.ContainsKey("maxHealth"))
-                hero.info.beforeAwake.Add("maxHealth", 1);
+            var info = hero.info;
+            if (!info.beforeAwake.ContainsKey("specialGrenade.playerNum"))
+                info.beforeAwake.Add("specialGrenade.playerNum", LoadHero.playerNum);
+            if(!info.beforeAwake.ContainsKey("health"))
+                info.beforeAwake.Add("health", 1);
+
+            if(Settings.instance.maxHealthAtOne)
+            {
+                if (info.afterStart.ContainsKey("health"))
+                    info.afterStart["health"] = 1;
+                else
+                    info.afterStart.Add("health", 1);
+
+                if (info.afterStart.ContainsKey("maxHealth"))
+                    info.afterStart["maxHealth"] = 1;
+                else
+                    info.afterStart.Add("maxHealth", 1);
+            }
+
             hero.character.specialGrenade.playerNum = LoadHero.playerNum;
         }
 
