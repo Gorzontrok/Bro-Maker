@@ -7,6 +7,7 @@ using BroMakerLib.Loggers;
 using BroMakerLib.Storages;
 using UnityEngine;
 using RocketLib;
+using BSett = BroMakerLib.Settings;
 
 namespace BroMakerLib.UnityMod
 {
@@ -105,6 +106,9 @@ namespace BroMakerLib.UnityMod
         private static void SelectedBroUI(StoredCharacter bro)
         {
             if (bro.Equals(null)) return;
+
+            Main.selectedPlayerNum = RGUI.HorizontalSliderInt("Player Num: ", Main.selectedPlayerNum, 0, 3, 200);
+
             GUILayout.BeginVertical("box");
             //_objectToEdit = bro.GetInfo<CustomBroInfo>();
             FileEditor.makerObjectType = MakerObjectType.Bros;
@@ -158,9 +162,9 @@ namespace BroMakerLib.UnityMod
             }
             GUILayout.EndHorizontal ();
 
-            Main.selectedPlayerNum = RGUI.HorizontalSliderInt("Player Num: ",Main.selectedPlayerNum , 0, 3, 200);
-            _Settings.automaticSpawn = GUILayout.Toggle(_Settings.automaticSpawn, "Test Automatic Spawn");
-            _Settings.automaticSpawnProbabilty = RGUI.HorizontalSlider("Spawn Probability: ", _Settings.automaticSpawnProbabilty, 0f, 100f);
+            BSett.instance.automaticSpawn = GUILayout.Toggle(BSett.instance.automaticSpawn, "Test Automatic Spawn");
+            BSett.instance.automaticSpawnProbabilty = RGUI.HorizontalSlider("Spawn Probability: ", BSett.instance.automaticSpawnProbabilty, 0f, 100f);
+            BSett.instance.maxHealthAtOne = GUILayout.Toggle(BSett.instance.maxHealthAtOne, "Max health always at 1");
             _Settings.debugLogs = GUILayout.Toggle(_Settings.debugLogs, "Debug Logs");
         }
 

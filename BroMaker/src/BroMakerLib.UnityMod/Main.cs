@@ -3,11 +3,9 @@ using System.IO;
 using System.Reflection;
 using BroMakerLib.Editor;
 using BroMakerLib.Stats;
-using CielaSpike;
 using HarmonyLib;
 using UnityEngine;
 using UnityModManagerNet;
-using static TFBGames.Logging.MemoryDebugTools;
 
 namespace BroMakerLib.UnityMod
 {
@@ -17,8 +15,6 @@ namespace BroMakerLib.UnityMod
         public static bool enabled;
         public static Settings settings;
         public static int selectedPlayerNum = 0;
-
-
 
         static bool Load(UnityModManager.ModEntry modEntry)
         {
@@ -94,6 +90,7 @@ namespace BroMakerLib.UnityMod
 
         static void OnSaveGUI(UnityModManager.ModEntry modEntry)
         {
+            BroMakerLib.Settings.instance.Save();
             settings.Save(modEntry);
         }
     }
@@ -101,8 +98,6 @@ namespace BroMakerLib.UnityMod
     public class Settings : UnityModManager.ModSettings
     {
         public bool debugLogs = false;
-        public bool automaticSpawn = false;
-        public float automaticSpawnProbabilty = 25;
 
         public override void Save(UnityModManager.ModEntry modEntry)
         {
