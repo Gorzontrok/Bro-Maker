@@ -1,3 +1,7 @@
+v2.0.2:
+Health value is at 1 by default
+Move some settings to Settings.json
+
 v2.0.1 :
 Fix player bubble position
 

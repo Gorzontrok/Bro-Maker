@@ -20,7 +20,6 @@ namespace BroMakerLib
         }
 
         public static bool areCheatsActive = false;
-        public static bool automaticSpawn = false;
 
         internal static Harmony harmony;
 
@@ -35,11 +34,11 @@ namespace BroMakerLib
                 harmony = new Harmony("BroMakerLib");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
 
+                Settings.Load();
                 DirectoriesManager.Initialize();
 
                 MakerObjectStorage.Initialize();
                 PresetManager.Initialize();
-
                 _hasInit = true;
                 BMLogger.Log("Finish Initialization");
             }

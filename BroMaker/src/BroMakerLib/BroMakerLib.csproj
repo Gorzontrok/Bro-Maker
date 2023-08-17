@@ -141,6 +141,7 @@
     <Compile Include="Loaders\LoadGrenade.cs" />
     <Compile Include="Loaders\LoadHeroOld.cs" />
     <Compile Include="PresetManager.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="Stats\Bros\AshBrolliamsStats.cs" />
     <Compile Include="Stats\Grenades\AirstrikeStats.cs" />
     <Compile Include="Stats\Grenades\TeargasStats.cs" />

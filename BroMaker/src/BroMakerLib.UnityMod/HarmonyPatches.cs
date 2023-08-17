@@ -5,6 +5,7 @@ using BroMakerLib.Storages;
 using BroMakerLib.Loggers;
 using UnityEngine;
 using BroMakerLib.Loaders;
+using BSett = BroMakerLib.Settings;
 
 namespace BroMakerLib.UnityMod.HarmonyPatches
 {
@@ -36,7 +37,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
         {
             try
             {
-                if (__instance.rescuingThisBro != null && Main.settings.automaticSpawn && UnityEngine.Random.value < (Main.settings.automaticSpawnProbabilty / 100))
+                if (__instance.rescuingThisBro != null && BSett.instance.automaticSpawn && UnityEngine.Random.value < (BSett.instance.automaticSpawnProbabilty / 100))
                 {
                     var choice = MakerObjectStorage.Bros.RandomElement();
                     LoadHero.spawnFromPlayer = true;
