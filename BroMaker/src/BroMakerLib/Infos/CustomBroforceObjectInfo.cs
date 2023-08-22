@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using UnityEngine;
+using RocketLib;
 
 namespace BroMakerLib.Infos
 {
@@ -19,15 +20,19 @@ namespace BroMakerLib.Infos
         public string name;
 
         public Dictionary<string, object> parameters = new Dictionary<string, object>();
+        // Ability names: [On + Method Name, *]
+        public Dictionary<string, string[]> abilities = new Dictionary<string, string[]>();
 
         public Dictionary<string, object> beforeAwake = new Dictionary<string, object>();
         public Dictionary<string, object> afterAwake = new Dictionary<string, object>();
         public Dictionary<string, object> beforeStart = new Dictionary<string, object>();
         public Dictionary<string, object> afterStart = new Dictionary<string, object>();
 
+        protected Dictionary<string, string[]> callableAbilities = new Dictionary<string, string[]>();
+
         [JsonIgnore]
         public string path = string.Empty;
-       // [JsonIgnore]
+
         protected string _defaultName = "BroforceObject";
         public CustomBroforceObjectInfo()
         {
@@ -112,6 +117,38 @@ namespace BroMakerLib.Infos
                 beforeStart = new Dictionary<string, object>();
             if(afterStart == null)
                 afterStart = new Dictionary<string, object>();
+            if(abilities == null)
+                abilities = new Dictionary<string, string[]>();
+            if(callableAbilities == null)
+                callableAbilities = new Dictionary<string, string[]>();
+
+            foreach(KeyValuePair<string, string[]> pair in abilities)
+            {
+                var ability = pair.Key;
+                if (AbilitiesManager.GetAbilityType(ability) != null)
+                {
+                    foreach(string method in pair.Value)
+                    {
+                        if (method.IsNotNullOrEmpty())
+                        {
+                            if (!callableAbilities.ContainsKey(method))
+                                callableAbilities.Add(method, new string[] { pair.Key });
+                            else
+                                callableAbilities[method].AddItem(pair.Key);
+                        }
+                    }
+                }
+            }
+        }
+        public virtual void InvokeAbility(string method, bool throwMissingMethodException = false, params object[] parameters)
+        {
+            if (!callableAbilities.ContainsKey(method))
+                return;
+            var abilities = callableAbilities[method];
+            foreach (var ability in abilities)
+            {
+                AbilitiesManager.InvokeStaticMethod(ability, method, throwMissingMethodException, parameters);
+            }
         }
 
         public override string ToString()
