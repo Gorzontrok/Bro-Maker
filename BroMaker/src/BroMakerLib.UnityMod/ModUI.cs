@@ -155,7 +155,7 @@ namespace BroMakerLib.UnityMod
                 DirectoriesManager.Initialize();
             if (GUILayout.Button("Show Presets", GUILayout.ExpandWidth(false)))
             {
-                foreach(KeyValuePair<string, Type> kvp in PresetManager.heroPreset)
+                foreach(KeyValuePair<string, Type> kvp in PresetManager.heroesPreset)
                 {
                     Main.Log($"{kvp.Key}\t{kvp.Value}");
                 }
