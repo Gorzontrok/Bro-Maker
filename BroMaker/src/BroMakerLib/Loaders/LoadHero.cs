@@ -33,11 +33,11 @@ namespace BroMakerLib.Loaders
             {
                 throw new NullReferenceException("'characterPreset' is null or empty");
             }
-            if (!PresetManager.heroPreset.ContainsKey(preset))
+            if (!PresetManager.heroesPreset.ContainsKey(preset))
             {
                 throw new Exception($"'characterPreset': {preset} doesn't exist. Check if you have the preset install or if there is a typo.");
             }
-            WithCustomBroInfo(selectedPlayerNum, customBroInfo, PresetManager.heroPreset[preset]);
+            WithCustomBroInfo(selectedPlayerNum, customBroInfo, PresetManager.heroesPreset[preset]);
         }
 
 
