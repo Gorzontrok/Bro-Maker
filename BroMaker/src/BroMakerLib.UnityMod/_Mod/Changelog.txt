@@ -1,3 +1,8 @@
+v2.1.0:
+Fix Halo and JetPackSprite Instantiation
+Halo has two presets: "Halo_Default" and "Halo_AlwaysShown" ;  Assign them with parameters "HaloType"
+Grenade and Projectiles assets can be loaded with the resource name.
+
 v2.0.2:
 Health value is at 1 by default
 Move some settings to Settings.json
