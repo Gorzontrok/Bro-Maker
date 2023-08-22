@@ -91,13 +91,18 @@ namespace BroMakerLib.Infos
             Projectile result = null;
             try
             {
-                var go = InstantiationController.GetPrefabFromResourceName(projectileVanilla[name]);
+                string resourceName = string.Empty;
+                if (name.Contains(":"))
+                    resourceName = name;
+                else
+                    resourceName = projectileVanilla[name];
+                var go = InstantiationController.GetPrefabFromResourceName(resourceName);
                 if (go != null)
                     return go.GetComponent<Projectile>();
             }
             catch (Exception e)
             {
-                BMLogger.Debug(e);
+                BMLogger.Log(e.ToString(), UnityEngine.LogType.Warning);
             }
             return InstantiationController.GetPrefabFromResourceName(projectileVanilla["Default"]).GetComponent<Projectile>();
         }
