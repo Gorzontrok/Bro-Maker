@@ -106,11 +106,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abilities.cs" />
+    <Compile Include="AbilitiesManager.cs" />
+    <Compile Include="Attributes\AbilityPresetAttribute.cs" />
     <Compile Include="Attributes\HeroPresetAttribute.cs" />
     <Compile Include="BroMaker.cs" />
     <Compile Include="Attributes\CustomObjectPresetAttribute.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="CustomObjects\Bros\SwordHero.cs" />
+    <Compile Include="CustomObjects\Miscellaneous\BroHaloM.cs" />
+    <Compile Include="CustomObjects\Miscellaneous\HaloAlwaysShown.cs" />
     <Compile Include="CustomObjects\Weapons\Shotgun.cs" />
     <Compile Include="CustomObjects\Weapons\WeaponBase.cs" />
     <Compile Include="Cutscenes\CustomCustsceneController.cs" />
@@ -124,6 +129,7 @@
     <Compile Include="DamageObjectE.cs" />
     <Compile Include="EditorIgnoreAttribute.cs" />
     <Compile Include="Enumerators.cs" />
+    <Compile Include="Examples\AbilityExample.cs" />
     <Compile Include="Extensions\CustomHeroExtensions.cs" />
     <Compile Include="Extensions\GameObjectExtensions.cs" />
     <Compile Include="Extensions\GrenadeExtensions.cs" />
