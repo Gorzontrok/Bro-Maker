@@ -35,8 +35,20 @@ namespace BroMakerLib.Infos
             if (GetParameterValue<bool>("Halo"))
             {
                 var halo = HeroController.GetHeroPrefab(HeroType.Broffy).halo;
-                character.halo = Net.Instantiate(halo, halo.transform.localPosition, Quaternion.identity);
+
+                string haloPreset = GetParameterValue<string>("HaloType");
+                if (haloPreset.IsNullOrEmpty())
+                    haloPreset = "Halo_Default";
+
+                character.halo = UnityEngine.Object.Instantiate(halo, halo.transform.localPosition, Quaternion.identity);
                 character.halo.transform.parent = character.transform;
+                Type haloType = null;
+                if (PresetManager.customObjectsPreset.TryGetValue(haloPreset, out haloType))
+                {
+                    character.halo.gameObject.AddComponent(haloType);
+                }
+                else
+                    BMLogger.Log($"Halo preset {haloPreset} not founded.", LogType.Warning);
             }
             if (GetParameterValue<bool>("JetPackSprite"))
             {
