@@ -17,46 +17,31 @@ namespace BroMakerLib.Infos
 
         public string characterPreset = "CustomHero";
 
-        //public string weaponName = string.Empty;
-        [JsonIgnore, EditorIgnore]
-        public CustomWeaponInfo weaponInfo;
-
-        //public string specialName = string.Empty;
-        [JsonIgnore, EditorIgnore]
-        public CustomSpecialInfo specialInfo;
-
-
         public override void Initialize()
         {
             base.Initialize();
-
-            /*if(string.IsNullOrEmpty(weaponName))
-                weaponInfo = new CustomWeaponInfo();
-            else
-                weaponInfo = DeserializeJSON<CustomWeaponInfo>(weaponName);
-            weaponInfo.Initialize();
-
-            if(string.IsNullOrEmpty(specialName))
-                specialInfo = new CustomSpecialInfo();
-            else
-                specialInfo = DeserializeJSON<CustomSpecialInfo>(weaponName);
-            specialInfo.Initialize();*/
         }
 
         public override void ReadParameters(object obj)
         {
             base.ReadParameters(obj);
             TestVanDammeAnim character = obj as TestVanDammeAnim;
-            /*string grenadeName = GetParameterValue<string>("Grenade");
-            if (grenadeName.IsNotNullOrEmpty())
+
+            string special = GetParameterValue<string>("Special");
+            if (special.IsNotNullOrEmpty())
             {
-                character.specialGrenade = CustomGrenadeInfo.GetGrenadeFromName(grenadeName);
+                // Get Ability
             }
-            string projectileName = GetParameterValue<string>("Projectile");
-            if (projectileName.IsNotNullOrEmpty())
+            string attack = GetParameterValue<string>("Attack");
+            if (attack.IsNotNullOrEmpty())
             {
-                character.projectile = CustomProjectileInfo.GetProjectileFromName(projectileName);
-            }*/
+                // Get Ability
+            }
+            string melee = GetParameterValue<string>("melee");
+            if (melee.IsNotNullOrEmpty())
+            {
+                // Get Ability
+            }
         }
     }
 }
