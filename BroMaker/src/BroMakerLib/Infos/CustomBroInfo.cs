@@ -53,7 +53,7 @@ namespace BroMakerLib.Infos
             if (GetParameterValue<bool>("JetPackSprite"))
             {
                 var jetPackSprite = HeroController.GetHeroPrefab(HeroType.Rambro).As<BroBase>().jetPackSprite;
-                character.jetPackSprite = Net.Instantiate(jetPackSprite, jetPackSprite.transform.localPosition, Quaternion.identity);
+                character.jetPackSprite = UnityEngine.Object.Instantiate(jetPackSprite, jetPackSprite.transform.localPosition, Quaternion.identity);
                 character.jetPackSprite.transform.parent = character.transform;
             }
             if (GetParameterValue<bool>("BetterAnimation"))
