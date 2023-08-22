@@ -46,9 +46,6 @@ namespace BronobiMod
                  }*/
                 try
                 {
-                    forceWave = new GameObject("BronobiForceWave", new Type[] { typeof(Transform) }).AddComponent<BronobiForceWave>();
-                    forceWave.transform.position = this.transform.position;
-                    forceWave.Setup(playerNum, this, DirectionEnum.Any);
 
                 }
                 catch (Exception ex)

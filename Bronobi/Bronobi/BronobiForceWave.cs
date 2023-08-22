@@ -2,12 +2,21 @@
 using System;
 using System.Collections.Generic;
 using BroMakerLib;
+using BroMakerLib.Attributes;
 using UnityEngine;
 
 namespace BronobiMod
 {
+    [AbilityPreset("BronobiForceWave", BronobiForceWave.CallMethod)]
     public class BronobiForceWave : FlameWallExplosion
     {
+        public static void CallMethod(TestVanDammeAnim testVanDammeAnim)
+        {
+            var forceWave = new GameObject("BronobiForceWave", new Type[] { typeof(Transform) }).AddComponent<BronobiForceWave>();
+            forceWave.transform.position = testVanDammeAnim.transform.position;
+            forceWave.Setup(testVanDammeAnim.playerNum, testVanDammeAnim, DirectionEnum.Any);
+        }
+
         protected override void TryAssassinateUnits(float x, float y, int xRange, int yRange, int playerNum)
         {
             Mook closestMook = Map.GetNearbyMook((float)xRange, (float)yRange, x, y, (forceDirection == DirectionEnum.Left ? -1 : 1), true);
