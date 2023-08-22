@@ -5,7 +5,7 @@ using BroMakerLib.Loggers;
 using BroMakerLib.Loaders;
 using BroMakerLib.Stats;
 using UnityEngine;
-using Net = Networking.Networking;
+using System.Collections.Generic;
 
 namespace BroMakerLib.CustomObjects.Bros
 {
@@ -18,6 +18,14 @@ namespace BroMakerLib.CustomObjects.Bros
         public BroBase character { get; set; }
 
 
+        #region Private Variable Becomes
+        #region Publics
+        #endregion
+        #region Protected
+        #endregion
+        #endregion
+
+
         protected override void Awake()
         {
             character = this;
@@ -25,12 +33,9 @@ namespace BroMakerLib.CustomObjects.Bros
             try
             {
                 EnableSyncing(true, true);
-                //Net.RPC(PID.TargetAll, new RpcSignature(this.SetupCustomHero));
-                //Net.RPC(PID.TargetAll, new RpcSignature<object>(info.BeforeAwake), this);
                 this.SetupCustomHero();
                 info.BeforeAwake(this);
                 base.Awake();
-                //Net.RPC(PID.TargetAll, new RpcSignature<object>(info.AfterAwake), this);
                 info.AfterAwake(this);
             }
             catch (Exception ex)
@@ -44,11 +49,9 @@ namespace BroMakerLib.CustomObjects.Bros
         {
             try
             {
-                //Net.RPC(PID.TargetAll, new RpcSignature<object>(info.BeforeStart), this);
                 info.BeforeStart(this);
                 base.Start();
                 info.AfterStart(this);
-                //Net.RPC(PID.TargetAll, new RpcSignature<object>(info.AfterStart), this);
             }
             catch (Exception ex)
             {
@@ -56,6 +59,5 @@ namespace BroMakerLib.CustomObjects.Bros
                 enabled = false;
             }
         }
-
     }
 }
