@@ -59,13 +59,18 @@ namespace BroMakerLib.Infos
             Grenade result = null;
             try
             {
-                var go = InstantiationController.GetPrefabFromResourceName(grenadesVanilla[name]);
+                string resourceName = string.Empty;
+                if (name.Contains(":"))
+                    resourceName = name;
+                else
+                    resourceName = grenadesVanilla[name];
+                var go = InstantiationController.GetPrefabFromResourceName(resourceName);
                 if(go != null)
                     return go.GetComponent<Grenade>();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                BMLogger.Debug(e);
+                BMLogger.Log($"Error with loading {name}\n{e}", LogType.Warning);
             }
             return InstantiationController.GetPrefabFromResourceName(grenadesVanilla["Default"]).GetComponent<Grenade>();
         }
