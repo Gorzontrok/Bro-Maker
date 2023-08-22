@@ -1,4 +1,5 @@
-﻿using BroMakerLib.Loggers;
+﻿using BroMakerLib.Attributes;
+using BroMakerLib.Loggers;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -12,7 +13,8 @@ namespace BroMakerLib
         /// Add yours if your assembly contains presets.
         /// </summary>
         public static List<Assembly> assemblies = new List<Assembly>();
-        public static Dictionary<string, Type> heroPreset = new Dictionary<string, Type>();
+        public static Dictionary<string, Type> heroesPreset = new Dictionary<string, Type>();
+        public static Dictionary<string, Type> customObjectsPreset = new Dictionary<string, Type>();
 
         static PresetManager()
         {
@@ -27,9 +29,9 @@ namespace BroMakerLib
 
         public static Type GetPreset(string presetName)
         {
-            if (!heroPreset.ContainsKey(presetName))
+            if (!heroesPreset.ContainsKey(presetName))
                 throw new Exception($"No preset named: {presetName} founded");
-            return heroPreset[presetName];
+            return heroesPreset[presetName];
         }
 
         private static void GetPresetsInAssemblies()
@@ -62,15 +64,31 @@ namespace BroMakerLib
                         if (first.GetType() == typeof(HeroPresetAttribute))
                         {
                             string name = first.As<HeroPresetAttribute>().name;
-                            if (heroPreset.ContainsKey(name))
+                            if (heroesPreset.ContainsKey(name))
                                 BMLogger.Log($"Preset of name {first.As<HeroPresetAttribute>().name} already exist.\nPreset comes from {type} in {type.Assembly.FullName}");
                             else
-                                heroPreset.Add(name, type);
+                                heroesPreset.Add(name, type);
+                        }
+                        else if (first.GetType() == typeof(AbilityPresetAttribute))
+                        {
+                            string name = first.As<AbilityPresetAttribute>().name;
+                            if (AbilitiesManager.abilities.ContainsKey(name))
+                                BMLogger.Log($"Abilities of name {first.As<AbilityPresetAttribute>().name} already exist.\nAbilities comes from {type} in {type.Assembly.FullName}");
+                            else
+                                AbilitiesManager.abilities.Add(name, type);
+                        }
+                        else
+                        {
+                            string name = first.As<CustomObjectPresetAttribute>().name;
+                            if (customObjectsPreset.ContainsKey(name))
+                                BMLogger.Log($"Preset of name {first.As<CustomObjectPresetAttribute>().name} already exist.\nPreset comes from {type} in {type.Assembly.FullName}");
+                            else
+                                customObjectsPreset.Add(name, type);
                         }
                     }
                     catch (Exception ex)
                     {
-                        BMLogger.ExceptionLog($"{first.As<HeroPresetAttribute>().name}", ex);
+                        BMLogger.ExceptionLog($"{first.As<CustomObjectPresetAttribute>().name}", ex);
                     }
                 }
             }
