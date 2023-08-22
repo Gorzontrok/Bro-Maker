@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using UnityEngine;
 using BroMakerLib.Loggers;
+using TFBGames.Systems;
 
 namespace BroMakerLib
 {
@@ -120,6 +121,11 @@ namespace BroMakerLib
         }
         public static Texture2D CreateTexture(string path, string fileName)
         {
+            if (fileName.Contains(":"))
+            {
+                return GameSystems.ResourceManager.LoadAssetSync<Texture2D>(fileName);
+            }
+
             byte[] imageBytes = null;
             string filePath = Path.Combine(path, fileName);
             if (File.Exists(filePath))
