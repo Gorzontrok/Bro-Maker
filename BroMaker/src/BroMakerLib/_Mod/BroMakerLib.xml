@@ -19,6 +19,12 @@
             <param name="shader"></param>
             <returns></returns>
         </member>
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.SpawnGrenade(Grenade)">
+            <summary>
+            Throw grenade and handle direction if characters crouching
+            </summary>
+            <param name="grenade"></param>
+        </member>
         <member name="M:BroMakerLib.ICustomHeroExtensions.AssignNullVariables(BroMakerLib.CustomObjects.ICustomHero,BroBase)">
             <summary>
             Before base.Awake()
@@ -53,6 +59,14 @@
             The assembly that contains presets.
             Add yours if your assembly contains presets.
             </summary>
+        </member>
+        <member name="M:BroMakerLib.PresetManager.GetHeroPreset(System.String)">
+            <summary>
+            Return hero Preset
+            </summary>
+            <param name="presetName"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
         </member>
         <member name="F:BroMakerLib.Stats.Grenades.AirstrikeStats.numberOfProjectile">
             <summary>

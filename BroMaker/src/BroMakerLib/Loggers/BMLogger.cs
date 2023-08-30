@@ -25,6 +25,10 @@ namespace BroMakerLib.Loggers
 
         private static string _errorSwapingMessage = string.Empty;
 
+        public static void Warning(string message)
+        {
+            Log(message, LogType.Warning);
+        }
 
         public static void Log(string message, LogType logType = LogType.Log, bool useColors = true)
         {

@@ -56,7 +56,6 @@ namespace BroMakerLib.Infos
 
         public static Grenade GetGrenadeFromName(string name)
         {
-            Grenade result = null;
             try
             {
                 string resourceName = string.Empty;

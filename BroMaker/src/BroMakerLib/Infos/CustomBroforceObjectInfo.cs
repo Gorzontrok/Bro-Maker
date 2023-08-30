@@ -119,38 +119,7 @@ namespace BroMakerLib.Infos
                 afterStart = new Dictionary<string, object>();
             if(abilities == null)
                 abilities = new Dictionary<string, string[]>();
-            if(callableAbilities == null)
-                callableAbilities = new Dictionary<string, string[]>();
-
-            foreach(KeyValuePair<string, string[]> pair in abilities)
-            {
-                var ability = pair.Key;
-                if (AbilitiesManager.GetAbilityType(ability) != null)
-                {
-                    foreach(string method in pair.Value)
-                    {
-                        if (method.IsNotNullOrEmpty())
-                        {
-                            if (!callableAbilities.ContainsKey(method))
-                                callableAbilities.Add(method, new string[] { pair.Key });
-                            else
-                                callableAbilities[method].AddItem(pair.Key);
-                        }
-                    }
-                }
-            }
         }
-        public virtual void InvokeAbility(string method, bool throwMissingMethodException = false, params object[] parameters)
-        {
-            if (!callableAbilities.ContainsKey(method))
-                return;
-            var abilities = callableAbilities[method];
-            foreach (var ability in abilities)
-            {
-                AbilitiesManager.InvokeStaticMethod(ability, method, throwMissingMethodException, parameters);
-            }
-        }
-
         public override string ToString()
         {
             return name;

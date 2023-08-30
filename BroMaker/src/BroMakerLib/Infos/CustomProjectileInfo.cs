@@ -88,7 +88,6 @@ namespace BroMakerLib.Infos
 
         public static Projectile GetProjectileFromName(string name)
         {
-            Projectile result = null;
             try
             {
                 string resourceName = string.Empty;

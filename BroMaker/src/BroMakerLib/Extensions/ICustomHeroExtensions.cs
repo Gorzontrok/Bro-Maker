@@ -109,9 +109,6 @@ namespace BroMakerLib
         [AllowedRPC]
         public static void SetupCustomHero(this ICustomHero hero)
         {
-            /*Registry.RegisterDeterminsiticObject(hero.character);
-            BMLogger.Debug($"Register Object of type {hero.character.GetType()}.");*/
-
             var otherBroComponent = hero.GetTheOtherBroBaseComponent();
             if (otherBroComponent != null)
             {
@@ -179,13 +176,6 @@ namespace BroMakerLib
                 UnityEngine.Object.Destroy(lastGlowLight);
                 BMLogger.Debug("GlowLight Destroyed");
             }
-            /*
-            var glowLight = hero.character.FindChildOfName("Glow Light(Clone)");
-            if (glowLight != null)
-            {
-                UnityEngine.Object.Destroy(glowLight);
-                BMLogger.Debug("GlowLight Destroyed");
-            }*/
         }
     }
 }

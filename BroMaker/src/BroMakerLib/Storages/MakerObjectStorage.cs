@@ -49,6 +49,11 @@ namespace BroMakerLib.Storages
             BMLogger.Debug("MakerObjectStorage Initialized.");
         }
 
+        public static StoredAbility GetAbiltyByName(string name)
+        {
+            return _abilities.First(s => s.name == name);
+        }
+
         private static void StoreJsonFiles()
         {
             StoreCharacterJsonFiles();

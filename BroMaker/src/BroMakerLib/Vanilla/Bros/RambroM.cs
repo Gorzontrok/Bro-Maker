@@ -1,55 +1,23 @@
 ﻿using BroMakerLib.CustomObjects;
+using BroMakerLib.CustomObjects.Bros;
 using BroMakerLib.Infos;
 using BroMakerLib.Loaders;
 using BroMakerLib.Loggers;
 using System;
+using World.Generation.MapGenV4;
 
 namespace BroMakerLib.Vanilla.Bros
 {
     [HeroPreset("Rambro")]
-    public class RambroM : Rambro, ICustomHero
+    public class RambroM : CustomHero
     {
-        public CustomBroInfo info { get; set; }
-        public BroBase character { get; set; }
-
-        protected override void Awake()
+        protected override void FireWeapon(float x, float y, float xSpeed, float ySpeed)
         {
-            character = this;
-            info = LoadHero.currentInfo;
-            try
+            base.FireWeapon(x, y, xSpeed, ySpeed);
+            if (this.attachedToZipline != null)
             {
-                FixNullVariableLocal();
-                this.SetupCustomHero();
-                info.BeforeAwake(this);
-                base.Awake();
-                info.AfterAwake(this);
+                this.SetGunSprite(3, 0);
             }
-            catch (Exception ex)
-            {
-                BMLogger.ExceptionLog(ex);
-                enabled = false;
-            }
-        }
-
-        protected override void Start()
-        {
-            try
-            {
-                info.BeforeStart(this);
-                base.Start();
-                info.AfterStart(this);
-            }
-            catch (Exception ex)
-            {
-                BMLogger.ExceptionLog(ex);
-                enabled = false;
-            }
-        }
-
-        protected virtual void FixNullVariableLocal()
-        {
-            var bro = HeroController.GetHeroPrefab(HeroType.Rambro).As<Rambro>();
-            bulletShell = bro.bulletShell;
         }
     }
 }

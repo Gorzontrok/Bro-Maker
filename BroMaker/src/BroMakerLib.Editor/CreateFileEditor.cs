@@ -65,7 +65,7 @@ namespace BroMakerLib.Editor
                         c.SerializeJSON(DirectoriesManager.CutscenesDirectory, _fileName);*/
                         return;
                     case MakerObjectType.Ability:
-                        var a = new CustomAbilityInfo(fileName);
+                        var a = new AbilityInfo(fileName);
                         a.Initialize();
                         a.SerializeJSON(DirectoriesManager.AbilitiesDirectory);
                         return;

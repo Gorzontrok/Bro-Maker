@@ -54,7 +54,9 @@ namespace BroMakerLib.Vanilla.Bros
         {
             var bro = HeroController.GetHeroPrefab(HeroType.BroniversalSoldier).As<BroniversalSoldier>();
             bulletShell = bro.bulletShell;
+#pragma warning disable
             serumParticles = this.FindChildOfName("SerumParticles").GetComponent<ParticleEmitter>();
+#pragma warning restore
             reviveBlastPrefab = bro.reviveBlastPrefab;
             reviveClips = bro.reviveClips;
         }

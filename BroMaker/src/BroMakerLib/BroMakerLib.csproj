@@ -106,22 +106,24 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Abilities.cs" />
-    <Compile Include="AbilitiesManager.cs" />
+    <Compile Include="Abilities\Ability.cs" />
+    <Compile Include="Abilities\CharacterAbility.cs" />
+    <Compile Include="Abilities\Jetpack.cs" />
     <Compile Include="Attributes\AbilityPresetAttribute.cs" />
     <Compile Include="Attributes\HeroPresetAttribute.cs" />
+    <Compile Include="Attributes\ParameterAttribute.cs" />
+    <Compile Include="Attributes\WeaponPresetAttribute.cs" />
     <Compile Include="BroMaker.cs" />
     <Compile Include="Attributes\CustomObjectPresetAttribute.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="CustomObjects\Bros\SwordHero.cs" />
-    <Compile Include="CustomObjects\Miscellaneous\BroHaloM.cs" />
-    <Compile Include="CustomObjects\Miscellaneous\HaloAlwaysShown.cs" />
-    <Compile Include="CustomObjects\Weapons\Shotgun.cs" />
-    <Compile Include="CustomObjects\Weapons\WeaponBase.cs" />
+    <Compile Include="CustomObjects\Halo\BroHaloM.cs" />
+    <Compile Include="CustomObjects\Halo\HaloAlwaysShown.cs" />
+    <Compile Include="Abilities\Weapons\Shotgun.cs" />
     <Compile Include="Cutscenes\CustomCustsceneController.cs" />
     <Compile Include="CustomObjects\Components\BroExtended.cs" />
     <Compile Include="CustomObjects\Components\CharacterExtended.cs" />
-    <Compile Include="CustomObjects\Components\WeaponHolder.cs" />
+    <Compile Include="Abilities\Weapons\Weapon.cs" />
     <Compile Include="CustomObjects\Grenades\CustomGrenadeFromFile.cs" />
     <Compile Include="CustomObjects\ICustomObjectFromFile.cs" />
     <Compile Include="Cutscenes\CustomIntroCutscene.cs" />
@@ -136,7 +138,7 @@
     <Compile Include="Extensions\ICustomHeroExtensions.cs" />
     <Compile Include="Extensions\InvulnerabilityFlashExtensions.cs" />
     <Compile Include="Extensions\TestVanDammeAnimExtensions.cs" />
-    <Compile Include="Infos\CustomAbilityInfo.cs" />
+    <Compile Include="Infos\AbilityInfo.cs" />
     <Compile Include="Infos\CustomBroforceObjectInfo.cs" />
     <Compile Include="Infos\CustomCharacterInfo.cs" />
     <Compile Include="Infos\CustomSpecialInfo.cs" />
@@ -146,6 +148,7 @@
     <Compile Include="Infos\CustomProjectileInfo.cs" />
     <Compile Include="Loaders\LoadGrenade.cs" />
     <Compile Include="Loaders\LoadHeroOld.cs" />
+    <Compile Include="Parameters.cs" />
     <Compile Include="PresetManager.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Stats\Bros\AshBrolliamsStats.cs" />

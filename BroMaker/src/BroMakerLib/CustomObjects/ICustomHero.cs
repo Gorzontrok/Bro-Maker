@@ -1,4 +1,5 @@
-﻿using BroMakerLib.Infos;
+﻿using BroMakerLib.CustomObjects.Components;
+using BroMakerLib.Infos;
 
 namespace BroMakerLib.CustomObjects
 {
