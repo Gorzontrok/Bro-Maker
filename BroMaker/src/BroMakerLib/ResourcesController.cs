@@ -5,6 +5,8 @@ using System.Reflection;
 using UnityEngine;
 using BroMakerLib.Loggers;
 using TFBGames.Systems;
+using RocketLib;
+using Mono.Cecil;
 
 namespace BroMakerLib
 {
@@ -54,92 +56,133 @@ namespace BroMakerLib
 
         public static string resourceFolder = "BroMaker.Assets.";
 
-        private static Dictionary<string, Material> materialResources = new Dictionary<string, Material>();
+        private static Dictionary<string, Material> materials = new Dictionary<string, Material>();
+        private static Dictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
 
+        [Obsolete("Use 'ResourcesController.GetMaterial' instead.")]
         public static Material GetMaterialResource(string resourceName, Shader shader)
         {
             Material result;
-            if (materialResources.ContainsKey(resourceName))
+            if (materials.ContainsKey(resourceName))
             {
-                return materialResources[resourceName];
+                return materials[resourceName];
             }
             else
             {
                 result = CreateMaterial(resourceName, shader);
                 if (result != null)
                 {
-                    materialResources.Add(resourceName, result);
+                    materials.Add(resourceName, result);
                 }
             }
             return result;
         }
 
-        public static Material CreateMaterial(string imageName, Shader shader)
+        public static Material GetMaterial(string filePath)
         {
-            try
+            Material result = null;
+            if (materials.ContainsKey(filePath))
             {
-                byte[] imageBytes = ExtractResource(imageName);
-                string filePath = GetFilePath(imageName);
-                if (File.Exists(filePath))
-                {
-                    imageBytes = File.ReadAllBytes(filePath);
-                }
-                if (imageBytes != null)
-                {
-                    Material mat = new Material(shader);
-                    Texture2D tex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-                    tex.LoadImage(imageBytes);
-                    tex.filterMode = FilterMode.Point;
-                    tex.anisoLevel = 1;
-                    tex.mipMapBias = 0;
-                    tex.wrapMode = TextureWrapMode.Repeat;
-
-                    mat.mainTexture = tex;
-                    return mat;
-                }
+                return materials[filePath];
             }
-            catch (Exception ex)
+
+            if (filePath.Contains(":"))
             {
-                BMLogger.Log(ex);
+                result = LoadAssetSync<Material>(filePath);
+            }
+            else
+            {
+                result = CreateMaterial(filePath, Unlit_DepthCutout);
+            }
+
+            if (result != null)
+            {
+                materials.Add(filePath, result);
+            }
+            return result;
+        }
+
+        public static Material CreateMaterial(string filePath, Shader shader)
+        {
+            var tex = CreateTexture(filePath);
+            if (tex != null)
+            {
+                var mat = new Material(shader);
+                mat.mainTexture = tex;
+                return mat;
+            }
+            return null;
+        }
+        public static Material CreateMaterial(string filePath, Material source)
+        {
+            var tex = CreateTexture(filePath);
+            if (tex != null)
+            {
+                var mat = new Material(source);
+                mat.mainTexture = tex;
+                return mat;
             }
             return null;
         }
 
-        public static Texture2D CreateTexture(string imageName)
+        public static Texture2D GetTexture(string path, string fileName)
         {
-            byte[] imageBytes = ExtractResource(imageName);
-            string filePath = GetFilePath(imageName);
+            Texture2D tex = null;
+            textures.TryGetValue(fileName, out tex);
+            if (tex != null)
+                return tex;
+
+            var filePath = Path.Combine(path, fileName);
             if (File.Exists(filePath))
             {
-                imageBytes = File.ReadAllBytes(filePath);
+                tex = new Texture2D(2, 2, TextureFormat.ARGB32, false);
+                tex.LoadImage(File.ReadAllBytes(filePath));
+                tex.filterMode = FilterMode.Point;
+                textures.Add(fileName, tex);
             }
-            if (imageBytes != null)
+
+            if (fileName.Contains(":"))
             {
-                return CreateTexture(imageBytes);
+                try
+                {
+                    tex = LoadAssetSync<Texture2D>(fileName);
+                }
+                catch (Exception ex)
+                {
+                    BMLogger.ExceptionLog(ex);
+                }
             }
-            return null;
+            else
+                tex = CreateTexture(path, fileName);
+
+            if (tex != null)
+                textures.Add(fileName, tex);
+            return tex;
         }
+
+        public static Texture2D CreateTexture(string filePath)
+        {
+            if (!File.Exists(filePath))
+                throw new FileNotFoundException("File not found", filePath);
+
+            return CreateTexture(File.ReadAllBytes(filePath));
+        }
+
         public static Texture2D CreateTexture(string path, string fileName)
         {
             if (fileName.Contains(":"))
             {
-                return GameSystems.ResourceManager.LoadAssetSync<Texture2D>(fileName);
+                BMLogger.Warning($"The argument '{nameof(fileName)}' contains ':' which means it's a asset path. Use 'ResourcesController.GetTexture' method instead.");
+                return LoadAssetSync<Texture2D>(fileName);
             }
-
-            byte[] imageBytes = null;
-            string filePath = Path.Combine(path, fileName);
-            if (File.Exists(filePath))
-            {
-                imageBytes = File.ReadAllBytes(filePath);
-            }
-            if (imageBytes != null)
-            {
-                return CreateTexture(imageBytes);
-            }
-            return null;
+            return CreateTexture(Path.Combine(path, fileName));
         }
+
         public static Texture2D CreateTexture(byte[] imageBytes)
         {
+            if (imageBytes.IsNullOrEmpty())
+                throw new ArgumentException("Is null or empty", nameof(imageBytes));
+
             Texture2D tex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
             tex.LoadImage(imageBytes);
             tex.filterMode = FilterMode.Point;
@@ -149,29 +192,15 @@ namespace BroMakerLib
             return tex;
         }
 
+        [Obsolete("It get the resource from 'BroMakerLib.dll'. Return value is null.")]
         public static byte[] ExtractResource(string filename)
         {
-            Assembly a = Assembly.GetExecutingAssembly();
-            using (Stream resFilestream = a.GetManifestResourceStream(resourceFolder + filename))
-            {
-                if (resFilestream == null) return null;
-                byte[] ba = new byte[resFilestream.Length];
-                resFilestream.Read(ba, 0, ba.Length);
-                return ba;
-            }
+            return null;
         }
 
-        private static string GetFilePath(string imageName)
+        public static T LoadAssetSync<T>(string name) where T : UnityEngine.Object
         {
-            string[] s = imageName.Split('.');
-            string path = AssetsFolder;
-
-            for (int i = 0; i < s.Length - 2; i++)
-            {
-                Path.Combine(path, s[i]);
-            }
-            path = Path.Combine(path, s[s.Length - 2] + "." + s[s.Length - 1]);
-            return path;
+            return GameSystems.ResourceManager.LoadAssetSync<T>(name);
         }
     }
 }
