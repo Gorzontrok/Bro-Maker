@@ -48,12 +48,19 @@ namespace BroMakerLib.UnityMod
             _toolTipStyle.normal.textColor = Color.white;
 
             _brosNames = MakerObjectStorage.Bros.Select((sc) => sc.ToString()).ToArray();
+
+            BSett.instance.countEnabledBros();
+
+            if ( BSett.instance.equalSpawnProbability )
+            {
+                BSett.instance.automaticSpawnProbabilty = BSett.instance.calculateSpawnProbability();
+            }
         }
 
         public static void UI()
         {
             string[] tabsNames = _tabs.Keys.ToArray();
-            _tabSelected = GUILayout.SelectionGrid(_tabSelected, tabsNames, 8);
+            _tabSelected = GUILayout.SelectionGrid(_tabSelected, tabsNames, 4);
             GUILayout.Space(15);
             _toolTipRect = GUILayoutUtility.GetLastRect();
             GUILayout.Space(10);
@@ -115,8 +122,17 @@ namespace BroMakerLib.UnityMod
 
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
 
-            if(GUILayout.Button(new GUIContent("Load Bro")))
+            if (GUILayout.Button(new GUIContent("Load Bro")))
                 bro.LoadBro(Main.selectedPlayerNum);
+            bool broEnabled = BSett.instance.getBroEnabled(bro.name);
+            if (GUILayout.Button( (broEnabled ? "Autospawn Enabled" : "Autospawn Disabled") ))
+            {
+                BSett.instance.setBroEnabled(bro.name, !broEnabled);
+                if ( BSett.instance.equalSpawnProbability )
+                {
+                    BSett.instance.automaticSpawnProbabilty = BSett.instance.calculateSpawnProbability();
+                }
+            }
             if (GUILayout.Button("Edit File"))
             {
                 _tabSelected = 2;
@@ -162,9 +178,26 @@ namespace BroMakerLib.UnityMod
             }
             GUILayout.EndHorizontal ();
 
-            BSett.instance.automaticSpawn = GUILayout.Toggle(BSett.instance.automaticSpawn, "Test Automatic Spawn");
-            BSett.instance.automaticSpawnProbabilty = RGUI.HorizontalSlider("Spawn Probability: ", BSett.instance.automaticSpawnProbabilty, 0f, 100f);
+            GUILayout.Space(15);
+            GUILayout.BeginHorizontal();
+            BSett.instance.automaticSpawn = GUILayout.Toggle(BSett.instance.automaticSpawn, "Automatic Spawn");
+            if ( BSett.instance.equalSpawnProbability != (BSett.instance.equalSpawnProbability = GUILayout.Toggle(BSett.instance.equalSpawnProbability, "Custom characters have an equal chance of spawning as normal characters")) )
+            {
+                if ( BSett.instance.equalSpawnProbability )
+                {
+                    BSett.instance.automaticSpawnProbabilty = BSett.instance.calculateSpawnProbability();
+                }
+            }
+            GUILayout.EndHorizontal();
+            GUILayout.Space(15);
+            //if ( BSett.instance.automaticSpawnProbabilty != (BSett.instance.automaticSpawnProbabilty = RGUI.HorizontalSlider("Spawn Probability: ", BSett.instance.automaticSpawnProbabilty, 0f, 100f)) )
+            if (BSett.instance.automaticSpawnProbabilty != (BSett.instance.automaticSpawnProbabilty = RGUI.HorizontalSlider("Spawn Probability: ", BSett.instance.automaticSpawnProbabilty, 0f, 100f)))
+            {
+                BSett.instance.equalSpawnProbability = false;
+            }
+            GUILayout.Space(15);
             BSett.instance.maxHealthAtOne = GUILayout.Toggle(BSett.instance.maxHealthAtOne, "Max health always at 1");
+            GUILayout.Space(15);
             _Settings.debugLogs = GUILayout.Toggle(_Settings.debugLogs, "Debug Logs");
         }
 
