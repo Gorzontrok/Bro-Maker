@@ -3,6 +3,7 @@ using System.IO;
 using BroMakerLib.Infos;
 using BroMakerLib.Loggers;
 using BroMakerLib.CustomObjects.Bros;
+using BSett = BroMakerLib.Settings;
 
 namespace BroMakerLib.Storages
 {
@@ -28,6 +29,7 @@ namespace BroMakerLib.Storages
             this.path = path;
             name = Path.GetFileNameWithoutExtension(this.path);
             this.type = type ?? typeof(CustomHero);
+            BSett.instance.addBroEnabled(this.name, true);
         }
 
         public TInfo GetInfo<TInfo>() where TInfo : CustomCharacterInfo

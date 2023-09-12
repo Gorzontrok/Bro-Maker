@@ -58,7 +58,7 @@ namespace BroMakerLib.CustomObjects.Components
 
         public virtual void InvokeAbility(string method, params object[] parameters)
         {
-            if (!characterAbilities.ContainsKey(method))
+            if ( characterAbilities == null || !characterAbilities.ContainsKey(method))
                 return;
             var abilities = characterAbilities[method];
             foreach (var ability in abilities)

@@ -6,8 +6,15 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BroMakerLib", "BroMakerLib\BroMakerLib.csproj", "{1D628CEE-72B0-4318-B136-AA16203256FF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BroMakerLib.UnityMod", "BroMakerLib.UnityMod\BroMakerLib.UnityMod.csproj", "{EE73D5BE-AFAD-41B4-91B0-3AD78EF2B35A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{384DE594-93E2-4050-AA44-FFDE06283896} = {384DE594-93E2-4050-AA44-FFDE06283896}
+		{1D628CEE-72B0-4318-B136-AA16203256FF} = {1D628CEE-72B0-4318-B136-AA16203256FF}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BroMakerLib.Editor", "BroMakerLib.Editor\BroMakerLib.Editor.csproj", "{384DE594-93E2-4050-AA44-FFDE06283896}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1D628CEE-72B0-4318-B136-AA16203256FF} = {1D628CEE-72B0-4318-B136-AA16203256FF}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
