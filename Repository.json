@@ -1,6 +1,6 @@
 {
     "Releases":
     [
-        {"Id": "BroMaker", "Version": "2.0.2", "DownloadUrl": "https://github.com/Gorzon38/Bro-Maker/raw/main/BroMaker/Release/BroMaker.zip"}
+        {"Id": "BroMaker", "Version": "2.0.2", "DownloadUrl": "https://github.com/Gorzon38/Bro-Maker/raw/main/Release/BroMaker.zip"}
     ]
 }
