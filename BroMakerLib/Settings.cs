@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using BroMakerLib.Storages;
+using System.Collections;
 
 namespace BroMakerLib
 {
@@ -92,6 +93,31 @@ namespace BroMakerLib
         public bool getBroEnabled(string name)
         {
             return enabledBros[name];
+        }
+
+        public void checkForDeletedBros()
+        {
+            List<string> toBeRemoved = new List<string>();
+            foreach (KeyValuePair<string, bool> bro in this.enabledBros)
+            {
+                bool found = false;
+                for (int i = 0; i < MakerObjectStorage.Bros.Length; ++i)
+                {
+                    if (MakerObjectStorage.Bros[i].name == bro.Key )
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if ( !found )
+                {
+                    toBeRemoved.Add(bro.Key);
+                }
+            }
+            foreach ( string remove in toBeRemoved )
+            {
+                this.enabledBros.Remove(remove);
+            }
         }
 
         public void countEnabledBros()

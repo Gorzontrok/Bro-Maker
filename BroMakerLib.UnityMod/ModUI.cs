@@ -49,6 +49,7 @@ namespace BroMakerLib.UnityMod
 
             _brosNames = MakerObjectStorage.Bros.Select((sc) => sc.ToString()).ToArray();
 
+            BSett.instance.checkForDeletedBros();
             BSett.instance.countEnabledBros();
 
             if ( BSett.instance.equalSpawnProbability )
@@ -79,7 +80,15 @@ namespace BroMakerLib.UnityMod
             GUILayout.Space(15);
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Reload Files", GUILayout.ExpandWidth(false)))
+            {
                 ReloadFiles();
+                BSett.instance.checkForDeletedBros();
+                BSett.instance.countEnabledBros();
+                if (BSett.instance.equalSpawnProbability)
+                {
+                    BSett.instance.automaticSpawnProbabilty = BSett.instance.calculateSpawnProbability();
+                }
+            }
             if (GUILayout.Button("Reload Preset", GUILayout.ExpandWidth(false)))
                 PresetManager.Initialize();
             GUILayout.EndHorizontal();
