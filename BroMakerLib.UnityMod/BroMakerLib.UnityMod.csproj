@@ -37,20 +37,20 @@
   <ItemGroup>
     <Reference Include="0Harmony, Version=2.2.2.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\lib\0Harmony.dll</HintPath>
+      <HintPath>..\lib\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\lib\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\lib\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="BroMakerLib">
-      <HintPath>_Mod\BroMakerLib.dll</HintPath>
+      <HintPath>..\BroMakerLib\bin\Debug\BroMakerLib.dll</HintPath>
     </Reference>
     <Reference Include="BroMakerLib.Editor">
-      <HintPath>_Mod\BroMakerLib.Editor.dll</HintPath>
+      <HintPath>..\BroMakerLib.Editor\bin\Debug\BroMakerLib.Editor.dll</HintPath>
     </Reference>
     <Reference Include="RocketLib">
-      <HintPath>E:\SteamLibrary\steamapps\common\Broforce\Mods\RocketLib\RocketLib.dll</HintPath>
+      <HintPath>..\lib\RocketLib.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -58,23 +58,23 @@
     <Reference Include="System.Data" />
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\lib\UnityEngine.dll</HintPath>
+      <HintPath>..\lib\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\lib\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>..\lib\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\lib\UnityEngine.IMGUIModule.dll</HintPath>
+      <HintPath>..\lib\UnityEngine.IMGUIModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\lib\UnityEngine.TextRenderingModule.dll</HintPath>
+      <HintPath>..\lib\UnityEngine.TextRenderingModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityModManager, Version=0.25.5.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\lib\UnityModManager.dll</HintPath>
+      <HintPath>..\lib\UnityModManager.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

@@ -20,6 +20,11 @@ namespace BroMakerLib.Loaders
         private static Dictionary<string, int> prefabIndex = new Dictionary<string, int>();
 
         public static bool spawnFromPlayer = false;
+        public static bool[] willReplaceBro = new bool[] { false, false, false, false };
+        public static bool[] spawningCustomBro = new bool[] { false, false, false, false };
+        public static bool anyCustomSpawning = false;
+        public static bool broBeingRescued = false;
+        public static Player.SpawnType[] previousSpawnInfo = new Player.SpawnType[] { Player.SpawnType.Unknown, Player.SpawnType.Unknown, Player.SpawnType.Unknown, Player.SpawnType.Unknown };
 
         public static void WithCustomBroInfo<T>(int selectedPlayerNum, CustomBroInfo customBroInfo) where T : CustomHero
         {
@@ -69,9 +74,13 @@ namespace BroMakerLib.Loaders
                 if(player == null)
                     throw new NullReferenceException($"Player number {playerNum} doesn't exist.");
                 Vector3 previousPosition = Vector3.zero;
+                ReactionBubble previousCharacterBubble = null;
+                Traverse previousCharacterTraverse = null;
                 if (player.character != null && player.character.IsAlive())
                 {
                     previousPosition = player.character.GetFollowPosition();
+                    previousCharacterTraverse = Traverse.Create(player.character);
+                    previousCharacterBubble = player.character.playerBubble;
                     Net.RPC(PID.TargetAll, new RpcSignature(player.character.RecallBro), false);
                 }
 
@@ -94,24 +103,22 @@ namespace BroMakerLib.Loaders
 
                 TestVanDammeAnim hero = Net.InstantiateBuffered<GameObject>(original, previousPosition, Quaternion.identity, new object[0], false).GetComponent(type) as TestVanDammeAnim;
                 BMLogger.Debug($"AfterInstantiation: InstantiateBuffered.");
-                switch ( playerNum )
-                {
-                    case 0:
-                        hero.player1Bubble.SetPosition( hero.player1Bubble.transform.localPosition );
-                        break;
-                    case 1:
-                        hero.player2Bubble.SetPosition( hero.player2Bubble.transform.localPosition );
-                        break;
-                    case 2:
-                        hero.player3Bubble.SetPosition( hero.player3Bubble.transform.localPosition );
-                        break;
-                    case 3:
-                        hero.player4Bubble.SetPosition( hero.player4Bubble.transform.localPosition );
-                        break;
-                }
-
 
                 var bro = AfterInstantiation(hero, heroType, playerNum, type, previousPosition);
+                if ( previousCharacterTraverse != null )
+                {
+                    // Make previous character sprite disappear faster
+                    previousCharacterTraverse.Field("recallCounter").SetValue(1f);
+                    if ( previousCharacterBubble != null )
+                    {
+                        previousCharacterBubble.GoAway();
+                    }
+                }
+                hero.playerBubble.SetPosition(hero.playerBubble.transform.localPosition);
+                Traverse bubbleTrav = Traverse.Create(hero.playerBubble);
+                hero.playerBubble.RestartBubble();
+                bubbleTrav.Field("yStart").SetValue(hero.playerBubble.transform.localPosition.y + 5);
+
                 BMLogger.Debug("Spawner: Finished AfterInstantiation.");
 
                 BMLogger.Debug("Spawner: Spawning Process has ended.");

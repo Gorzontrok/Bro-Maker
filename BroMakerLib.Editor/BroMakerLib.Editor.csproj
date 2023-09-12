@@ -33,18 +33,18 @@
   <ItemGroup>
     <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\lib\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\lib\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="BroMakerLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>E:\SteamLibrary\steamapps\common\Broforce\Mods\BroMaker\BroMakerLib.dll</HintPath>
+      <HintPath>..\BroMakerLib\bin\Debug\BroMakerLib.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>E:\SteamLibrary\steamapps\common\Broforce\Mods\RocketLib\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="RocketLib">
-      <HintPath>E:\SteamLibrary\steamapps\common\Broforce\Mods\RocketLib\RocketLib.dll</HintPath>
+      <HintPath>..\lib\RocketLib.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -54,19 +54,19 @@
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\lib\UnityEngine.dll</HintPath>
+      <HintPath>..\lib\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\lib\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>..\lib\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\lib\UnityEngine.IMGUIModule.dll</HintPath>
+      <HintPath>..\lib\UnityEngine.IMGUIModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\lib\UnityEngine.TextRenderingModule.dll</HintPath>
+      <HintPath>..\lib\UnityEngine.TextRenderingModule.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
