@@ -82,6 +82,9 @@ namespace BroMakerLib.UnityMod
             if (GUILayout.Button("Reload Files", GUILayout.ExpandWidth(false)))
             {
                 ReloadFiles();
+                PresetManager.disableWarnings = true;
+                PresetManager.Initialize();
+                PresetManager.disableWarnings = false;
                 BSett.instance.checkForDeletedBros();
                 BSett.instance.countEnabledBros();
                 if (BSett.instance.equalSpawnProbability)

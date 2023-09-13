@@ -21,6 +21,8 @@ namespace BroMakerLib
         public static Dictionary<string, Type> customObjectsPreset = new Dictionary<string, Type>();
         public static Dictionary<string, Type> abilities = new Dictionary<string, Type>();
 
+        public static bool disableWarnings = false;
+
         static PresetManager()
         { }
 
@@ -163,7 +165,12 @@ namespace BroMakerLib
                 throw new ArgumentNullException(nameof(name), "is null or empty.");
 
             if (collection.ContainsKey(name))
-                BMLogger.Warning($"{collectionName} Preset of name {name} already exist. Type: {preset} ; Assembly: {preset.Assembly.FullName}");
+            {
+                if ( !disableWarnings )
+                {
+                    BMLogger.Warning($"{collectionName} Preset of name {name} already exist. Type: {preset} ; Assembly: {preset.Assembly.FullName}");
+                }
+            }
             else
                 collection.Add(name, preset);
         }
