@@ -1,4 +1,6 @@
 v2.1.0:
+Fixed automatic spawning for custom bros
+Added option to enable / disable automatic spawning for specific bros
 Fix Halo and JetPackSprite Instantiation
 Halo has two presets: "Halo_Default" and "Halo_AlwaysShown" ;  Assign them with parameters "HaloType"
 Grenade and Projectiles assets can be loaded with the resource name.
