@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using BroMakerLib.Storages;
 using BroMakerLib.Loggers;
 using UnityEngine;
@@ -138,6 +139,51 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
             {
                 __result = LoadHero.previousSpawnInfo[__instance.playerNum];
             }
+        }
+    }
+
+    [HarmonyPatch(typeof(PlayerHUD), "SetGrenadeMaterials", new Type[] { typeof(HeroType) })]
+    static class PlayerHUD_SetGrenadeMaterials_Patch
+    {
+        public static bool Prefix(PlayerHUD __instance, ref HeroType type)
+        {
+            int playerNum = Convert.ToInt32(Traverse.Create(__instance).Field("playerNum").GetValue());
+            TestVanDammeAnim currentCharacter = HeroController.players[playerNum].character;
+            if ( currentCharacter is BroMakerLib.CustomObjects.Bros.CustomHero )
+            {
+                for (int i = 0; i < __instance.grenadeIcons.Length; i++)
+                {
+                    if (playerNum % 2 == 0)
+                    {
+                        __instance.grenadeIcons[i].SetOffset(new Vector3(0, 0f, 0f));
+                    }
+                    else
+                    {
+                        __instance.grenadeIcons[i].SetOffset(new Vector3(0, 0f, 0f));
+                    }
+                }
+
+                BroMakerLib.CustomObjects.Bros.CustomHero customHero = (currentCharacter as BroMakerLib.CustomObjects.Bros.CustomHero);
+                customHero.info.LoadSpecialIcons();
+                List<Material> specialIcons = customHero.info.specialMaterials;
+                if ( specialIcons.Count() > 1 )
+                {
+                    for ( int i = 0; i < specialIcons.Count(); ++i )
+                    {
+                        __instance.grenadeIcons[i].GetComponent<Renderer>().material = specialIcons[i];
+                    }
+                    return false;
+                }
+                else if ( specialIcons.Count() > 0 )
+                {
+                    for ( int i = 0; i < __instance.grenadeIcons.Count(); ++i )
+                    {
+                        __instance.grenadeIcons[i].GetComponent<Renderer>().material = specialIcons[0];
+                    }
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

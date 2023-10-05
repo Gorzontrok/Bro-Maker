@@ -1,7 +1,9 @@
 ﻿using BroMakerLib.Stats;
 using System;
 using System.IO;
+using System.Collections.Generic;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 using BroMakerLib;
 using BroMakerLib.Loggers;
@@ -15,6 +17,8 @@ namespace BroMakerLib.Infos
         protected new string _defaultName = "BRO";
         public CustomBroInfo() : base() { }
         public CustomBroInfo(string name) : base(name) { }
+
+        public List<Material> specialMaterials = new List<Material>();
 
         public override void Initialize()
         {
@@ -69,6 +73,27 @@ namespace BroMakerLib.Infos
                 character.useNewKnifeClimbingFrames = true;
                 character.useDuckingFrames = true;
                 character.useNewDuckingFrames = true;
+            }
+        }
+        public void LoadSpecialIcons()
+        {
+            if (!parameters.IsNullOrEmpty() && parameters.ContainsKey("SpecialIcons") && specialMaterials.Count == 0)
+            {
+                if (parameters["SpecialIcons"] is JArray)
+                {
+                    JArray iconFiles = parameters["SpecialIcons"] as JArray;
+                    for (int i = 0; i < iconFiles.Count; ++i)
+                    {
+                        Material specialMat = BroMaker.CreateMaterialFromFile(Path.Combine(path, iconFiles[i].ToObject<string>()));
+                        specialMaterials.Add(specialMat);
+                    }
+                }
+                else
+                {
+                    string iconFile = parameters["SpecialIcons"] as string;
+                    Material specialMat = BroMaker.CreateMaterialFromFile(Path.Combine(path, iconFile));
+                    specialMaterials.Add(specialMat);
+                }
             }
         }
     }
