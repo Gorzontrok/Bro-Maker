@@ -1,8 +1,10 @@
 ﻿using BroMakerLib.Infos;
+using BroMakerLib.Loggers;
 using RocketLib.JsonConverters;
 using Newtonsoft.Json;
 using System;
 using System.IO;
+using System.Collections.Generic;
 using TFBGames.Systems;
 using UnityEngine;
 
@@ -12,13 +14,16 @@ namespace BroMakerLib.Cutscenes
     public class CustomIntroCutscene
     {
         [JsonIgnore, EditorIgnore]
-        public static CutsceneIntroData rambroCutscene;
+        public static CutsceneIntroData rambroCutscene, requestedCutscene;
 
-        public string heading = string.Empty;
-        public string subtitle1 = string.Empty;
-        public string subtitle2 = string.Empty;
-        public float headingScale = 0.132f;
-        public float subtitleScale = 0.15f;
+        [JsonIgnore]
+        public string path = string.Empty;
+
+        public string heading = "???";
+        public string subtitle1 = "Joins the Battle!";
+        public string subtitle2 = string.Empty; // This won't be shown unless we use a cutscene with an existing mesh for this or create our own mesh
+        public float headingScale = 0.15f;
+        public float subtitleScale = 0.10f;
         public string spritePath = string.Empty;
         [JsonConverter(typeof(Vector2Converter))]
         public Vector2 spriteSize = Vector2.zero;
@@ -26,11 +31,15 @@ namespace BroMakerLib.Cutscenes
         public Rect spriteRect = Rect.zero;
         [JsonConverter(typeof(Vector3Converter))]
         public Vector3 spriteAnimRateFramesWidth = Vector3.zero;
+        public string barkPath = string.Empty;
+        public string fanfarePath = string.Empty;
+        public string anim = string.Empty;
+        public bool playDefaultFanfare = true;
 
         // To Implement
-        //public AudioClip bark;
-        //public AudioClip introFanfare;
         //public AnimationClip animClip; // I don't think i can implement it. Maybe swaping between the existing animation clips.
+        // I also looked into this anim clip thing, it seems to be possible to create with a script but I didn't have any luck getting it to work
+        // I'll leave this here for future reference - https://docs.unity3d.com/2021.2/Documentation/ScriptReference/AnimationClip.SetCurve.html
 
         public static T DeserializeJSON<T>(string jsonPath) where T : CustomBroforceObjectInfo
         {
@@ -51,42 +60,101 @@ namespace BroMakerLib.Cutscenes
         {
             // get Rambro cutscene
             if (rambroCutscene == null)
-                LoadRambro(root);
+            {
+                LoadCutscene("Intro_Bro_Rambro");
+                rambroCutscene = requestedCutscene;
+            }
 
             var data = new CutsceneIntroData();
+            data.heading = heading;
             data.subtitle1 = subtitle1;
             data.subtitle2 = subtitle2;
             data.headingScale = headingScale;
             data.subtitleScale = subtitleScale;
 
             if (string.IsNullOrEmpty(spritePath))
-                data.spriteTexture = rambroCutscene.spriteTexture;
+            {
+                // Load default sprite when the Json doesn't provide one
+                data.spriteTexture = ResourcesController.CreateTexture(ResourcesController.ExtractResource("BroMakerLib.Cutscenes.rambroSilhouette.png"));
+            }
             else
-                data.spriteTexture = ResourcesController.CreateTexture(spritePath);
+            {
+                try
+                {
+                    data.spriteTexture = ResourcesController.CreateTexture(path, spritePath);
+                }
+                catch (Exception ex)
+                {
+                    BMLogger.Log(ex);
+                    data.spriteTexture = rambroCutscene.spriteTexture;
+                }
+            }
             data.spriteSize = spriteSize;
             data.spriteRect = spriteRect;
             data.spriteAnimRateFramesWidth = spriteAnimRateFramesWidth;
 
+            if ( anim.IsNullOrEmpty() )
+            {
+                data.animClip = rambroCutscene.animClip;
+            }
+            else
+            {
+                LoadCutscene(anim);
+                data.animClip = requestedCutscene.animClip;
+            }
 
-            data.animClip = rambroCutscene.animClip;
-            data.bark = rambroCutscene.bark;
-            data.introFanfare = rambroCutscene.introFanfare;
+            if ( barkPath.IsNullOrEmpty() )
+            {
+                data.bark = null;
+            }
+            else
+            {
+                try
+                {
+                    AudioClip bark = ResourcesController.CreateAudioClip(path, barkPath);
+                    data.bark = bark;
+                }
+                catch ( Exception ex )
+                {
+                    BMLogger.Log(ex);
+                    data.bark = null;
+                }
+            }
+            
+            if ( fanfarePath.IsNullOrEmpty() )
+            {
+                data.introFanfare = null;
+            }
+            else
+            {
+                try
+                {
+                    AudioClip fanfare = ResourcesController.CreateAudioClip(path, fanfarePath);
+                    data.introFanfare = fanfare;
+                }
+                catch ( Exception ex )
+                {
+                    BMLogger.Log(ex);
+                    data.introFanfare = null;
+                }
+            }
 
             return data;
         }
 
-        private void LoadRambro(CutsceneIntroRoot root)
+        private void LoadCutscene(string resourceName)
         {
             ResourceManager resourceManager = GameSystems.ResourceManager;
             if (resourceManager != null)
             {
-                var _curIntroResourceName = string.Format("{0}:{1}", root.bundleName, "Intro_Bro_Rambro");
+                var _curIntroResourceName = string.Format("{0}:{1}", "cutscenes", resourceName);
                 resourceManager.Load(_curIntroResourceName, false, OnLoadComplete);
             }
         }
         private void OnLoadComplete(string resourceName, object asset)
         {
-            rambroCutscene = (CutsceneIntroData)asset;
+            requestedCutscene = (CutsceneIntroData)asset;
         }
     }
 }
+

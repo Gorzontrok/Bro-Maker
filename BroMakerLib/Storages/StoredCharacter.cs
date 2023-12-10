@@ -42,6 +42,7 @@ namespace BroMakerLib.Storages
             {
                 info = CustomBroInfo.DeserializeJSON<TInfo>(path);
                 info.path = Path.GetDirectoryName(path);
+                info.cutscene.path = info.path;
             }
             BMLogger.Debug("End Deserialization");
             return info;

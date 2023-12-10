@@ -100,6 +100,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\UnityEngine.UI.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestWWWModule">
+      <HintPath>..\lib\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityModManager, Version=0.25.5.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\UnityModManager.dll</HintPath>
@@ -120,7 +123,7 @@
     <Compile Include="CustomObjects\Halo\BroHaloM.cs" />
     <Compile Include="CustomObjects\Halo\HaloAlwaysShown.cs" />
     <Compile Include="Abilities\Weapons\Shotgun.cs" />
-    <Compile Include="Cutscenes\CustomCustsceneController.cs" />
+    <Compile Include="Cutscenes\CustomCutsceneController.cs" />
     <Compile Include="CustomObjects\Components\BroExtended.cs" />
     <Compile Include="CustomObjects\Components\CharacterExtended.cs" />
     <Compile Include="Abilities\Weapons\Weapon.cs" />
@@ -268,6 +271,7 @@
     <Compile Include="Vanilla\Grenades\GrenadeM.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Cutscenes\rambroSilhouette.png" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

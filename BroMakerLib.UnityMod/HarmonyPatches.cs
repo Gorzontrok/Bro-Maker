@@ -2,8 +2,8 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using BroMakerLib.Storages;
 using BroMakerLib.Loggers;
+using BroMakerLib.Cutscenes;
 using UnityEngine;
 using BroMakerLib.Loaders;
 using BSett = BroMakerLib.Settings;
@@ -147,6 +147,11 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
     {
         public static bool Prefix(PlayerHUD __instance, ref HeroType type)
         {
+            if ( !Main.enabled )
+            {
+                return true;
+            }
+
             int playerNum = Convert.ToInt32(Traverse.Create(__instance).Field("playerNum").GetValue());
             TestVanDammeAnim currentCharacter = HeroController.players[playerNum].character;
             if ( currentCharacter is BroMakerLib.CustomObjects.Bros.CustomHero )
@@ -184,6 +189,57 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 }
             }
             return true;
+        }
+    }
+
+    [HarmonyPatch(typeof(CutsceneIntroRoot), "OnLoadComplete")]
+    static class CutsceneIntroRoot_OnLoadComplete_Patch
+    {
+        public static void Prefix(CutsceneIntroRoot __instance, ref string resourceName, ref object asset)
+        {
+            if ( !Main.enabled || !CustomCutsceneController.willLoadCustomCutscene )
+            {
+                return;
+            }
+
+            Traverse.Create(__instance).Field("_curIntroResourceName").SetValue(string.Format("{0}:{1}", "cutscenes", "Intro_Bro_Rambro"));
+
+            CutsceneIntroData data = CustomCutsceneController.cutsceneToLoad.ToCutsceneIntroData(__instance);
+
+            if ( CustomCutsceneController.cutsceneToLoad.fanfarePath.IsNotNullOrEmpty() )
+            {
+                __instance.fanfareSource = __instance.gameObject.AddComponent<AudioSource>();
+            }
+
+            asset = data;
+        }
+
+        public static void Postfix(CutsceneIntroRoot __instance)
+        {
+            if (!Main.enabled || !CustomCutsceneController.willLoadCustomCutscene)
+            {
+                return;
+            }
+
+            if ( CustomCutsceneController.cutsceneToLoad.fanfarePath.IsNotNullOrEmpty() )
+            {
+                __instance.fanfareSource.Play();
+            }
+
+            if ( !CustomCutsceneController.cutsceneToLoad.playDefaultFanfare )
+            {
+                AudioSource[] allSources = UnityEngine.Object.FindObjectsOfType<AudioSource>();
+                for (int i = 0; i < allSources.Length; ++i)
+                {
+                    if (allSources[i].isPlaying && allSources[i].name == "camShake")
+                    {
+                        // For whatever reason the default bro fanfare isn't passed to the fanfare source to be played,
+                        // instead it is played by an AudioSource called camShake.
+                        allSources[i].Pause();
+                    }
+                }
+            }
+            
         }
     }
 }

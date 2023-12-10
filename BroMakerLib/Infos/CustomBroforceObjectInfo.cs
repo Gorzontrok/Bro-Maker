@@ -1,4 +1,5 @@
 ﻿using BroMakerLib.Loggers;
+using BroMakerLib.Cutscenes;
 using HarmonyLib;
 using Newtonsoft.Json;
 using System;
@@ -18,6 +19,8 @@ namespace BroMakerLib.Infos
         /// </summary>
         [JsonProperty(Required = Required.Always, Order = -9)]
         public string name;
+
+        public CustomIntroCutscene cutscene = new CustomIntroCutscene();
 
         public Dictionary<string, object> parameters = new Dictionary<string, object>();
         // Ability names: [On + Method Name, *]
@@ -119,6 +122,8 @@ namespace BroMakerLib.Infos
                 afterStart = new Dictionary<string, object>();
             if(abilities == null)
                 abilities = new Dictionary<string, string[]>();
+            if (cutscene == null)
+                cutscene = new CustomIntroCutscene();
         }
         public override string ToString()
         {

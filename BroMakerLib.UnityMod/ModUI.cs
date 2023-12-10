@@ -151,6 +151,11 @@ namespace BroMakerLib.UnityMod
             }
             if (GUILayout.Button("Duplicate File"))
                 CreateFileEditor.DuplicateFile(bro.path);
+            if (GUILayout.Button("Load Cutscene"))
+            {
+                Cutscenes.CustomCutsceneController.LoadHeroCutscene(bro.GetInfo<CustomCharacterInfo>().cutscene);
+
+            }
             GUILayout.EndHorizontal();
 
             GUILayout.EndVertical();

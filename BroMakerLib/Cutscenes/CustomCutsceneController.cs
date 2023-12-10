@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BroMakerLib.Cutscenes
 {
-    public static class CustomCustsceneController
+    public static class CustomCutsceneController
     {
         public static bool willLoadCustomCutscene = false;
         public static CustomIntroCutscene cutsceneToLoad;

@@ -9,9 +9,9 @@ namespace BroMakerLib.Cutscenes
      {
          static void Prefix(CutsceneIntroRoot __instance, ref string resourceName, ref object asset)
          {
-             if (CustomCustsceneController.willLoadCustomCutscene)
+             if (CustomCutsceneController.willLoadCustomCutscene)
              {
-                 asset = CustomCustsceneController.cutsceneToLoad.ToCutsceneIntroData(__instance);
+                 asset = CustomCutsceneController.cutsceneToLoad.ToCutsceneIntroData(__instance);
              }
          }
      }

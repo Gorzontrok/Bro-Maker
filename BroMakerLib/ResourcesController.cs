@@ -58,6 +58,7 @@ namespace BroMakerLib
 
         private static Dictionary<string, Material> materials = new Dictionary<string, Material>();
         private static Dictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
+        private static Dictionary<string, AudioClip> audioClips = new Dictionary<string, AudioClip>();
 
         [Obsolete("Use 'ResourcesController.GetMaterial' instead.")]
         public static Material GetMaterialResource(string resourceName, Shader shader)
@@ -192,10 +193,61 @@ namespace BroMakerLib
             return tex;
         }
 
-        [Obsolete("It get the resource from 'BroMakerLib.dll'. Return value is null.")]
+        public static AudioClip GetAudioClip(string filePath)
+        {
+            AudioClip result = null;
+            if (audioClips.ContainsKey(filePath))
+            {
+                return audioClips[filePath];
+            }
+
+            if (filePath.Contains(":"))
+            {
+                result = LoadAssetSync<AudioClip>(filePath);
+            }
+            else
+            {
+                result = CreateAudioClip(filePath);
+            }
+
+            if (result != null)
+            {
+                audioClips.Add(filePath, result);
+            }
+            return result;
+        }
+
+        public static AudioClip CreateAudioClip(string path, string fileName)
+        {
+            // Get full path converts / to \ which is needed because WWW doesn't like /
+            return CreateAudioClip(Path.GetFullPath(Path.Combine(path, fileName)));
+        }
+
+        public static AudioClip CreateAudioClip(string filePath)
+        {
+            WWW getClip = new WWW("file:////" + filePath);
+
+            while ( !getClip.isDone )
+            {
+            };
+
+
+            AudioClip result = getClip.GetAudioClip(false, true);
+
+            return result;
+        }
+
+        //[Obsolete("It get the resource from 'BroMakerLib.dll'. Return value is null.")]
         public static byte[] ExtractResource(string filename)
         {
-            return null;
+            Assembly a = Assembly.GetExecutingAssembly();
+            using (Stream resFilestream = a.GetManifestResourceStream(filename))
+            {
+                if (resFilestream == null) return null;
+                byte[] ba = new byte[resFilestream.Length];
+                resFilestream.Read(ba, 0, ba.Length);
+                return ba;
+            }
         }
 
         public static T LoadAssetSync<T>(string name) where T : UnityEngine.Object
