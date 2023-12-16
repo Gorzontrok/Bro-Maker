@@ -28,9 +28,27 @@ namespace BroMakerLib
         public bool automaticSpawn = true;
         public float automaticSpawnProbabilty = 25;
         public bool maxHealthAtOne = true;
+        public bool onlyCustomInHardcore = false;
 
         public Dictionary<string, bool> enabledBros = new Dictionary<string, bool>();
         public int enabledBroCount = 0;
+        // These lists are for tracking bro unlocks in IronBro
+        public List<List<string>> _notUnlockedBros;
+        public List<List<string>> _availableBros;
+
+        [JsonIgnore]
+        public List<string> notUnlockedBros
+        {
+            get => _notUnlockedBros[PlayerProgress.currentWorldMapSaveSlot];
+            set => _notUnlockedBros[PlayerProgress.currentWorldMapSaveSlot] = value;
+        }
+
+        [JsonIgnore]
+        public List<string> availableBros
+        {
+            get => _availableBros[PlayerProgress.currentWorldMapSaveSlot];
+            set => _availableBros[PlayerProgress.currentWorldMapSaveSlot] = value;
+        }
 
         public static void Load()
         {
@@ -38,6 +56,14 @@ namespace BroMakerLib
                 instance = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(FilePath));
             if (instance == null)
                 instance = new Settings();
+            if ( instance._notUnlockedBros == null )
+            {
+                instance._notUnlockedBros = new List<List<string>> { new List<string>(), new List<string>(), new List<string>(), new List<string>(), new List<string>() };
+            }
+            if (instance._availableBros == null)
+            {
+                instance._availableBros = new List<List<string>> { new List<string>(), new List<string>(), new List<string>(), new List<string>(), new List<string>() };
+            }
             instance.Save();
         }
 
@@ -158,6 +184,42 @@ namespace BroMakerLib
             }
 
             return MakerObjectStorage.Bros[0];
+        }
+
+        public StoredCharacter getRandomHardcoreBro(bool isRescue)
+        {
+            if ( isRescue && this.notUnlockedBros.Count() > 0 )
+            {
+                int chosen = UnityEngine.Random.Range(0, this.notUnlockedBros.Count());
+                string chosenName = this.notUnlockedBros[chosen];
+                this.availableBros.Add(this.notUnlockedBros[chosen]);
+                this.notUnlockedBros.RemoveAt(chosen);
+
+                for (int i = 0; i < MakerObjectStorage.Bros.Length; ++i)
+                {
+                    if (MakerObjectStorage.Bros[i].name == chosenName)
+                    {
+                        return MakerObjectStorage.Bros[i];
+                    }
+                }
+
+                return MakerObjectStorage.Bros[0];
+            }
+            else
+            {
+                int chosen = UnityEngine.Random.Range(0, this.availableBros.Count());
+                string chosenName = this.availableBros[chosen];
+
+                for (int i = 0; i < MakerObjectStorage.Bros.Length; ++i)
+                {
+                    if (MakerObjectStorage.Bros[i].name == chosenName)
+                    {
+                        return MakerObjectStorage.Bros[i];
+                    }
+                }
+
+                return MakerObjectStorage.Bros[0];
+            }
         }
     }
 }

@@ -237,7 +237,6 @@ namespace BroMakerLib
             return result;
         }
 
-        //[Obsolete("It get the resource from 'BroMakerLib.dll'. Return value is null.")]
         public static byte[] ExtractResource(string filename)
         {
             Assembly a = Assembly.GetExecutingAssembly();

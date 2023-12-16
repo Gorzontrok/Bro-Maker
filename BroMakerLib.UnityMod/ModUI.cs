@@ -154,7 +154,6 @@ namespace BroMakerLib.UnityMod
             if (GUILayout.Button("Load Cutscene"))
             {
                 Cutscenes.CustomCutsceneController.LoadHeroCutscene(bro.GetInfo<CustomCharacterInfo>().cutscene);
-
             }
             GUILayout.EndHorizontal();
 
@@ -195,6 +194,8 @@ namespace BroMakerLib.UnityMod
             }
             GUILayout.EndHorizontal ();
 
+            GUILayout.Space(15);
+            BSett.instance.onlyCustomInHardcore = GUILayout.Toggle(BSett.instance.onlyCustomInHardcore, "Only custom characters will spawn in IronBro mode");
             GUILayout.Space(15);
             GUILayout.BeginHorizontal();
             BSett.instance.automaticSpawn = GUILayout.Toggle(BSett.instance.automaticSpawn, "Automatic Spawn");

@@ -24,6 +24,7 @@ namespace BroMakerLib.Loaders
         public static bool[] spawningCustomBro = new bool[] { false, false, false, false };
         public static bool anyCustomSpawning = false;
         public static bool broBeingRescued = false;
+        public static bool playCutscene = false;
         public static Player.SpawnType[] previousSpawnInfo = new Player.SpawnType[] { Player.SpawnType.Unknown, Player.SpawnType.Unknown, Player.SpawnType.Unknown, Player.SpawnType.Unknown };
 
         public static void WithCustomBroInfo<T>(int selectedPlayerNum, CustomBroInfo customBroInfo) where T : CustomHero
