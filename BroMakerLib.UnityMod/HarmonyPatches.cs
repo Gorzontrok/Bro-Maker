@@ -116,6 +116,10 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                     else
                     {
                         choice = BSett.instance.getRandomEnabledBro();
+                        if ( LoadHero.playCutscene = !BSett.instance.seenBros.Contains(choice.name) && choice.GetInfo<CustomCharacterInfo>().cutscene.playCutsceneOnFirstSpawn )
+                        {
+                            BSett.instance.seenBros.Add(choice.name);
+                        }
                     }
                     LoadHero.spawnFromPlayer = (__instance.rescuingThisBro != null);
 

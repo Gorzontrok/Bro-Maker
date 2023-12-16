@@ -24,6 +24,7 @@ namespace BroMakerLib.Cutscenes
         public string subtitle2 = string.Empty; // This won't be shown unless we use a cutscene with an existing mesh for this or create our own mesh
         public float headingScale = 0.15f;
         public float subtitleScale = 0.10f;
+        public bool playCutsceneOnFirstSpawn = false;
         public string spritePath = string.Empty;
         [JsonConverter(typeof(Vector2Converter))]
         public Vector2 spriteSize = Vector2.zero;
