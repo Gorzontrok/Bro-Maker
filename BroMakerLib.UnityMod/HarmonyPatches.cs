@@ -442,4 +442,147 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
             }
         }
     }
+
+    // Fix being unable to pilot mech
+    [HarmonyPatch(typeof(Unit), "PilotUnit")]
+    static class Unit_PilotUnit_Patch
+    {
+        public static bool Prefix(Unit __instance, ref Unit pilotUnit)
+        {
+            if (!Main.enabled)
+            {
+                return true;
+            }
+
+            if ( pilotUnit is BroMakerLib.CustomObjects.Bros.CustomHero )
+            {
+                __instance.PilotUnitRPC(pilotUnit);
+                return false;
+            }
+
+            return true;
+        }
+    }
+
+    // Fix being unable to enter worm tunnel
+    [HarmonyPatch(typeof(AssMouthOrifice), "TryConsumeObject")]
+    static class AssMouthOrifice_TryConsumeObject_Patch
+    {
+        public static int customBroIsConsumed = 0;
+        public static void Postfix(AssMouthOrifice __instance, ref BroforceObject obj, ref bool __result )
+        {
+            if (!Main.enabled)
+            {
+                return;
+            }
+
+            if ( __result && obj is BroMakerLib.CustomObjects.Bros.CustomHero )
+            {
+                ++customBroIsConsumed;
+                Traverse assTraverse = Traverse.Create(__instance);
+                assTraverse.SetFieldValue("playSwallowAnim", true);
+                assTraverse.SetFieldValue("swallowFrameTimer", 0f);
+                assTraverse.SetFieldValue("swallowFrame", 0);
+                AssMouthTransportWrapper assMouthTransportWrapper = UnityEngine.Object.Instantiate<AssMouthTransportWrapper>(__instance.wrapperPrefab);
+                assMouthTransportWrapper.Setup(obj, __instance.root);
+                (assTraverse.GetFieldValue("consumedThisFrame") as List<BroforceObject>).Add(obj);
+                __instance.open = true;
+                if (__instance.enterSound)
+                {
+                    Sound.GetInstance().PlaySoundEffect(__instance.enterSound, 0.7f);
+                }
+            }
+            
+        }
+    }
+
+    // Fix being unable to exit worm tunnel
+    [HarmonyPatch(typeof(AssMouthTransportWrapper), "RunAssMouthMovement")]
+    static class AssMouthTransportWrapper_RunAssMouthMovement_Patch
+    {
+        public static void Postfix(AssMouthTransportWrapper __instance)
+        {
+            if (!Main.enabled)
+            {
+                return;
+            }
+
+            if ( AssMouthOrifice_TryConsumeObject_Patch.customBroIsConsumed > 0 )
+            {
+                Traverse assTraverse = Traverse.Create(__instance);
+                if ( assTraverse.GetFieldValue("CurrentAssMouthBlock") == null && assTraverse.GetFieldValue("transportedObject") is BroMakerLib.CustomObjects.Bros.CustomHero )
+                {
+                    __instance.ExitAssMouth((assTraverse.GetFieldValue("PrevAssMouthBlock") as AssMouthBlock).orificeInstance);
+                    --AssMouthOrifice_TryConsumeObject_Patch.customBroIsConsumed;
+                }
+            }
+        }
+    }
+
+    // Fix being unable to be impaled by spikes
+    [HarmonyPatch(typeof(Impaler), "ImpaleUnit")]
+    static class Impaler_ImpaleUnit_Patch
+    {
+        public static bool Prefix(Impaler __instance, ref TestVanDammeAnim unit)
+        {
+            if (!Main.enabled)
+            {
+                return true;
+            }
+
+            if ( unit.impaledByTransform == null && unit is BroMakerLib.CustomObjects.Bros.CustomHero )
+            {
+                __instance.ImpaleUnitRPC(unit);
+                return false;
+            }
+
+            return true;
+        }
+    }
+
+    // Fix being unable to pickup items
+    [HarmonyPatch(typeof(PickupableController), "UsePickupables")]
+    static class PickupableController_UsePickupables_Patch
+    {
+        public static bool Prefix(ref TestVanDammeAnim self, ref float range, ref float x, ref float y, ref bool onlyAmmo )
+        {
+            if (!Main.enabled)
+            {
+                return true;
+            }
+
+            if ( self is BroMakerLib.CustomObjects.Bros.CustomHero )
+            {
+                List<Pickupable> pickupables = Traverse.Create(typeof(PickupableController)).GetFieldValue("pickupables") as List<Pickupable>;
+                for (int i = pickupables.Count - 1; i >= 0; i--)
+                {
+                    Pickupable pickupable = pickupables[i];
+                    if (pickupable != null && (pickupable.pickupType == PickupType.Ammo || !onlyAmmo))
+                    {
+                        float f = pickupable.X - x;
+                        if (Mathf.Abs(f) - range < pickupable.collectionRadius)
+                        {
+                            float f2 = pickupable.Y + pickupable.yOffset - y;
+                            if (Mathf.Abs(f2) - range < pickupable.collectionRadius && pickupable.pickupDelay <= 0f && !pickupable.collected)
+                            {
+                                if (pickupable.pickupType == PickupType.FlexAirJump || pickupable.pickupType == PickupType.FlexGoldenLight || pickupable.pickupType == PickupType.FlexInvulnerability || 
+                                    pickupable.pickupType == PickupType.FlexTeleport || pickupable.pickupType == PickupType.FlexAlluring )
+                                {
+                                    pickupable.AddFlexPowerRPC(self, pickupable.pickupType, false);
+                                }
+                                else
+                                {
+                                    pickupable.Collect(self);
+                                }
+                            }
+                        }
+                    }
+                }
+                return false;
+            }
+
+            return true;
+        }
+    }
+
 }
