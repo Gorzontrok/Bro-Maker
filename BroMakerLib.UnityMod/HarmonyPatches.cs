@@ -96,6 +96,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 {
                     LoadHero.willReplaceBro[__instance.playerNum] = UnityEngine.Random.value <= (BSett.instance.automaticSpawnProbabilty / 100.0f);
                 }
+                LoadHero.playerNum = __instance.playerNum;
             }
             
         }
@@ -585,4 +586,34 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
         }
     }
 
+    // Fix default character avatar's being overwritten by custom ones
+    [HarmonyPatch(typeof(HeroController), "SwitchAvatarMaterial")]
+    static class HeroController_SwitchAvatarMaterial_Patch
+    {
+        public static bool Prefix(ref SpriteSM sprite, ref bool __result)
+        {
+            if (!Main.enabled)
+            {
+                return true;
+            }
+
+            if ( LoadHero.tryReplaceAvatar && HeroController.players[LoadHero.playerNum].character is BroMakerLib.CustomObjects.Bros.CustomHero )
+            {
+                LoadHero.tryReplaceAvatar = false;
+
+                BroMakerLib.CustomObjects.Bros.CustomHero customHero = (HeroController.players[LoadHero.playerNum].character as BroMakerLib.CustomObjects.Bros.CustomHero);
+                Material mat = customHero.info.LoadAvatar();
+
+                if ( mat != null )
+                {
+                    sprite.GetComponent<Renderer>().material = mat;
+
+                    __result = false;
+                    return false;
+                }               
+            }
+
+            return true;
+        }
+    }
 }

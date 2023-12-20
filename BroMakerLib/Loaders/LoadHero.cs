@@ -25,6 +25,7 @@ namespace BroMakerLib.Loaders
         public static bool anyCustomSpawning = false;
         public static bool broBeingRescued = false;
         public static bool playCutscene = false;
+        public static bool tryReplaceAvatar = false;
         public static Player.SpawnType[] previousSpawnInfo = new Player.SpawnType[] { Player.SpawnType.Unknown, Player.SpawnType.Unknown, Player.SpawnType.Unknown, Player.SpawnType.Unknown };
 
         public static void WithCustomBroInfo<T>(int selectedPlayerNum, CustomBroInfo customBroInfo) where T : CustomHero
@@ -49,6 +50,7 @@ namespace BroMakerLib.Loaders
 
         public static void WithCustomBroInfo(int selectedPlayerNum, CustomBroInfo customBroInfo, Type type)
         {
+            tryReplaceAvatar = true;
             try
             {
                 if (!typeof(ICustomHero).IsAssignableFrom(type))

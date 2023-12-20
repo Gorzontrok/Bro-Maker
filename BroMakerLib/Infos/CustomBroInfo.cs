@@ -96,5 +96,15 @@ namespace BroMakerLib.Infos
                 }
             }
         }
+
+        public Material LoadAvatar()
+        {
+            Material result = null;
+            if (!parameters.IsNullOrEmpty() && parameters.ContainsKey("Avatar") )
+            {
+                result = BroMaker.CreateMaterialFromFile(Path.Combine(path, parameters["Avatar"] as string));
+            }
+            return result;
+        }
     }
 }
