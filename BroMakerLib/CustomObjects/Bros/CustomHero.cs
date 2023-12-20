@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using BroMakerLib.CustomObjects.Components;
 using BroMakerLib.Abilities.Weapons;
 using BroMakerLib.Abilities;
+using HarmonyLib;
 
 namespace BroMakerLib.CustomObjects.Bros
 {
@@ -24,7 +25,7 @@ namespace BroMakerLib.CustomObjects.Bros
         public CharacterAbility primaryAbility;
         public CharacterAbility specialAbility;
         public CharacterAbility meleeAbility;
-
+		public MuscleTempleFlexEffect flexEffect;
 
         #region Private Variable Becomes
         #region Publics
@@ -258,6 +259,38 @@ namespace BroMakerLib.CustomObjects.Bros
 						}
 					}
 				}
+			}
+		}
+		protected override void TriggerFlexEvent()
+        {
+			if (this.player.HasFlexPower(PickupType.FlexAlluring))
+			{
+				Map.AttractMooks(base.X, base.Y, 96f, 30f);
+			}
+			if (this.player.HasFlexPower(PickupType.FlexGoldenLight))
+			{
+				if (flexEffect == null)
+				{
+					this.flexEffect = Traverse.Create((this as BroBase)).GetFieldValue("flexEffect") as MuscleTempleFlexEffect;
+				}
+				if (this.flexEffect != null)
+				{
+					this.flexEffect.PlaySoundEffect();
+				}
+				if (base.IsMine)
+				{
+					int num = 8 + UnityEngine.Random.Range(0, 5);
+					for (int i = 0; i < num; i++)
+					{
+						float angle = -1.88495576f + 1.2f / (float)(num - 1) * 3.14159274f * (float)i;
+						Vector2 vector = global::Math.Point2OnCircle(angle, 1f);
+						ProjectileController.SpawnProjectileLocally(ProjectileController.instance.goldenLightProjectile, this, base.X, base.Y + 12f, vector.x * 400f, vector.y * 400f, true, 15, false, true, -15f);
+					}
+				}
+			}
+			else if (this.player.HasFlexPower(PickupType.FlexInvulnerability) && this.flexEffect != null)
+			{
+				this.flexEffect.PlaySoundEffect();
 			}
 		}
 		#endregion
