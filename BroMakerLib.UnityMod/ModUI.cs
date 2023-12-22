@@ -8,6 +8,7 @@ using BroMakerLib.Storages;
 using UnityEngine;
 using RocketLib;
 using BSett = BroMakerLib.Settings;
+using BroMakerLib.CustomObjects.Bros;
 
 namespace BroMakerLib.UnityMod
 {
@@ -33,6 +34,9 @@ namespace BroMakerLib.UnityMod
         private static int _selectedCustomBros = -1;
         private static string[] _brosNames;
         private static StoredCharacter _selectedBro;
+        private static CustomHero _selectedHero;
+        private static GameObject heroHolder;
+        private static bool heroCreated = false;
 
         public static void Initialize()
         {
@@ -111,6 +115,7 @@ namespace BroMakerLib.UnityMod
                 {
                     _selectedBro = bros[_selectedCustomBros];
                     _objectToEdit = bros[_selectedCustomBros].GetInfo<CustomBroInfo>();
+                    CreateSelectedBro();
                     FieldsEditor.editHasError = false;
                 }
 
@@ -119,6 +124,39 @@ namespace BroMakerLib.UnityMod
             else
             {
                 GUILayout.Label("No Bros File Found");
+            }
+        }
+
+        private static void CreateSelectedBro()
+        {
+            try
+            {
+                if (_selectedHero != null)
+                {
+                    _selectedHero.DestroyMe();
+                }
+                string preset = (_objectToEdit as CustomBroInfo).characterPreset;
+                if (preset.IsNullOrEmpty())
+                {
+                    throw new NullReferenceException("'characterPreset' is null or empty");
+                }
+                if (!PresetManager.heroesPreset.ContainsKey(preset))
+                {
+                    throw new Exception($"'characterPreset': {preset} doesn't exist. Check if you have the preset installed or if there is a typo.");
+                }
+                if (heroHolder == null)
+                {
+                    heroHolder = new GameObject();
+                    heroHolder.SetActive(false);
+                }
+                _selectedHero = heroHolder.AddComponent(PresetManager.heroesPreset[preset]) as CustomHero;
+                _selectedHero.enabled = false;
+                heroCreated = true;
+            }
+            catch (Exception ex)
+            {
+                BMLogger.Log(ex.ToString());
+                heroCreated = false;
             }
         }
 
@@ -156,6 +194,23 @@ namespace BroMakerLib.UnityMod
                 Cutscenes.CustomCutsceneController.LoadHeroCutscene(bro.GetInfo<CustomCharacterInfo>().cutscene);
             }
             GUILayout.EndHorizontal();
+
+            // Display any UI options the bro developer added
+            if ( _selectedHero != null )
+            {
+                try
+                {
+                    _selectedHero.UIOptions();
+                }
+                catch (Exception ex)
+                {
+                }
+            }
+            // If hero was created before but is now null, the game object was probably deleted
+            else if ( heroCreated )
+            {
+                CreateSelectedBro();
+            }
 
             GUILayout.EndVertical();
         }

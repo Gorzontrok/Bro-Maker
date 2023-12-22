@@ -42,7 +42,7 @@ namespace BroMakerLib.Loaders
             }
             if (!PresetManager.heroesPreset.ContainsKey(preset))
             {
-                throw new Exception($"'characterPreset': {preset} doesn't exist. Check if you have the preset install or if there is a typo.");
+                throw new Exception($"'characterPreset': {preset} doesn't exist. Check if you have the preset installed or if there is a typo.");
             }
             WithCustomBroInfo(selectedPlayerNum, customBroInfo, PresetManager.heroesPreset[preset]);
         }
@@ -54,13 +54,13 @@ namespace BroMakerLib.Loaders
             try
             {
                 if (!typeof(ICustomHero).IsAssignableFrom(type))
-                    throw new ArgumentException($"Type {type.Name} should inherited from 'ICustomHero'", "type");
+                    throw new ArgumentException($"Type {type.Name} should inherit from 'ICustomHero'", "type");
 
                 // Assign static variables
                 if (selectedPlayerNum < 0)
-                    throw new ArgumentException("Player Num must be greater or equal to 0");
+                    throw new ArgumentException("Player Num must be greater than or equal to 0");
                 else if (selectedPlayerNum > 3)
-                    throw new ArgumentException("Player Num must be smaller or equal to 3");
+                    throw new ArgumentException("Player Num must be smaller than or equal to 3");
                 else
                     playerNum = selectedPlayerNum;
 

@@ -311,6 +311,11 @@ namespace BroMakerLib.CustomObjects.Bros
                 ProjectileController.SpawnGrenadeOverNetwork(grenade, this, X + Mathf.Sign(transform.localScale.x) * 8f, Y + 8f, 0.001f, 0.011f, Mathf.Sign(transform.localScale.x) * 200f, 150f, base.playerNum);
             }
         }
+
+		public virtual void UIOptions()
+        {
+
+        }
         #endregion
     }
 }
