@@ -8,6 +8,7 @@ using BroMakerLib.Infos;
 using UnityEngine;
 using BroMakerLib.Loaders;
 using BSett = BroMakerLib.Settings;
+using BroMakerLib.CustomObjects.Bros;
 
 namespace BroMakerLib.UnityMod.HarmonyPatches
 {
@@ -183,6 +184,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
             }
             else if ( LoadHero.previousSpawnInfo[__instance.playerNum] == Player.SpawnType.AddBroToTransport )
             {
+                (bro as CustomHero).info.BeforeStart(bro as CustomHero); 
                 // Need to manually call AddBroToHeroTransport, because WorkoutSpawnPosition won't do it for custom characters for some reason
                 Map.AddBroToHeroTransport(bro);
 
@@ -228,7 +230,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
 
             int playerNum = Convert.ToInt32(Traverse.Create(__instance).Field("playerNum").GetValue());
             TestVanDammeAnim currentCharacter = HeroController.players[playerNum].character;
-            if ( currentCharacter is BroMakerLib.CustomObjects.Bros.CustomHero )
+            if ( currentCharacter is CustomHero )
             {
                 for (int i = 0; i < __instance.grenadeIcons.Length; i++)
                 {
@@ -242,7 +244,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                     }
                 }
 
-                BroMakerLib.CustomObjects.Bros.CustomHero customHero = (currentCharacter as BroMakerLib.CustomObjects.Bros.CustomHero);
+                CustomHero customHero = (currentCharacter as CustomHero);
                 customHero.info.LoadSpecialIcons();
                 List<Material> specialIcons = customHero.info.specialMaterials;
                 if ( specialIcons.Count() > 1 )
@@ -410,9 +412,9 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 return true;
             }
 
-            if ( GameModeController.IsHardcoreMode && __instance.character is BroMakerLib.CustomObjects.Bros.CustomHero )
+            if ( GameModeController.IsHardcoreMode && __instance.character is CustomHero )
             {
-                BroMakerLib.CustomObjects.Bros.CustomHero customHero = (__instance.character as BroMakerLib.CustomObjects.Bros.CustomHero);
+                CustomHero customHero = (__instance.character as CustomHero);
                 string broName = customHero.info.name;
                 BSett.instance.availableBros.Remove(broName);
                 __instance.Lives--;
@@ -455,7 +457,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 return true;
             }
 
-            if ( pilotUnit is BroMakerLib.CustomObjects.Bros.CustomHero )
+            if ( pilotUnit is CustomHero )
             {
                 __instance.PilotUnitRPC(pilotUnit);
                 return false;
@@ -477,7 +479,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 return;
             }
 
-            if ( __result && obj is BroMakerLib.CustomObjects.Bros.CustomHero )
+            if ( __result && obj is CustomHero )
             {
                 ++customBroIsConsumed;
                 Traverse assTraverse = Traverse.Create(__instance);
@@ -511,7 +513,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
             if ( AssMouthOrifice_TryConsumeObject_Patch.customBroIsConsumed > 0 )
             {
                 Traverse assTraverse = Traverse.Create(__instance);
-                if ( assTraverse.GetFieldValue("CurrentAssMouthBlock") == null && assTraverse.GetFieldValue("transportedObject") is BroMakerLib.CustomObjects.Bros.CustomHero )
+                if ( assTraverse.GetFieldValue("CurrentAssMouthBlock") == null && assTraverse.GetFieldValue("transportedObject") is CustomHero )
                 {
                     __instance.ExitAssMouth((assTraverse.GetFieldValue("PrevAssMouthBlock") as AssMouthBlock).orificeInstance);
                     --AssMouthOrifice_TryConsumeObject_Patch.customBroIsConsumed;
@@ -531,7 +533,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 return true;
             }
 
-            if ( unit.impaledByTransform == null && unit is BroMakerLib.CustomObjects.Bros.CustomHero )
+            if ( unit.impaledByTransform == null && unit is CustomHero )
             {
                 __instance.ImpaleUnitRPC(unit);
                 return false;
@@ -552,7 +554,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 return true;
             }
 
-            if ( self is BroMakerLib.CustomObjects.Bros.CustomHero )
+            if ( self is CustomHero )
             {
                 List<Pickupable> pickupables = Traverse.Create(typeof(PickupableController)).GetFieldValue("pickupables") as List<Pickupable>;
                 for (int i = pickupables.Count - 1; i >= 0; i--)
@@ -597,11 +599,11 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 return true;
             }
 
-            if ( LoadHero.tryReplaceAvatar && HeroController.players[LoadHero.playerNum].character is BroMakerLib.CustomObjects.Bros.CustomHero )
+            if ( LoadHero.tryReplaceAvatar && HeroController.players[LoadHero.playerNum].character is CustomHero )
             {
                 LoadHero.tryReplaceAvatar = false;
 
-                BroMakerLib.CustomObjects.Bros.CustomHero customHero = (HeroController.players[LoadHero.playerNum].character as BroMakerLib.CustomObjects.Bros.CustomHero);
+                CustomHero customHero = (HeroController.players[LoadHero.playerNum].character as CustomHero);
                 Material mat = customHero.info.LoadAvatar();
 
                 if ( mat != null )
