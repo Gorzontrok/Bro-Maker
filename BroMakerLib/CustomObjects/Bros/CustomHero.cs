@@ -67,7 +67,8 @@ namespace BroMakerLib.CustomObjects.Bros
             try
             {
                 info.BeforeStart(this);
-                base.Start();
+				character.gameObject.AddComponent<InvulnerabilityFlash>().SetCharacter(character);
+				base.Start();
                 info.AfterStart(this);
 
                 characterExtended.InvokeAbility(nameof(Start));

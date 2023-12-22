@@ -71,8 +71,6 @@ namespace BroMakerLib
             character.RemoveComponent<WavyGrassEffector>();
             BMLogger.Debug($"FixOtherComponentValues: Removed 'WavyGrassEffector' component.");
             character.gameObject.RemoveComponent<InvulnerabilityFlash>();
-            character.gameObject.AddComponent<InvulnerabilityFlash>();
-            BMLogger.Debug("FixOtherComponentValues: Readded 'InvulnerabilityFlash' component.");
             character.RemoveComponent<PathAgent>();
             BMLogger.Debug("FixOtherComponentValues: Removed 'PathAgent' component.");
         }
