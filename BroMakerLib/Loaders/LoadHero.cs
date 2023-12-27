@@ -27,7 +27,7 @@ namespace BroMakerLib.Loaders
         public static bool playCutscene = false;
         public static bool tryReplaceAvatar = false;
         public static Player.SpawnType[] previousSpawnInfo = new Player.SpawnType[] { Player.SpawnType.Unknown, Player.SpawnType.Unknown, Player.SpawnType.Unknown, Player.SpawnType.Unknown };
-
+        public static Dictionary<int, CustomBroInfo> customBroDeaths;
         public static void WithCustomBroInfo<T>(int selectedPlayerNum, CustomBroInfo customBroInfo) where T : CustomHero
         {
             WithCustomBroInfo(selectedPlayerNum, customBroInfo, typeof(T));

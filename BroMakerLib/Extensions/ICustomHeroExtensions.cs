@@ -3,6 +3,7 @@ using BroMakerLib.Loaders;
 using BroMakerLib.Loggers;
 using RocketLib;
 using System;
+using System.IO;
 using UnityEngine;
 using Networking;
 using Net = Networking.Networking;
@@ -147,6 +148,17 @@ namespace BroMakerLib
                     info.afterStart["maxHealth"] = 1;
                 else
                     info.afterStart.Add("maxHealth", 1);
+            }
+
+            if (info.beforeStart.ContainsKey("sprite"))
+            {
+                info.spritePath = Path.Combine( info.path, info.beforeStart["sprite"] as string );
+                info.gunSpritePath = Path.Combine( info.path, info.beforeStart["gunSprite"] as string );
+            }
+            else if (info.afterStart.ContainsKey("sprite"))
+            {
+                info.spritePath = Path.Combine(info.path, info.afterStart["sprite"] as string );
+                info.gunSpritePath = Path.Combine(info.path, info.afterStart["gunSprite"] as string);
             }
 
             hero.character.specialGrenade.playerNum = LoadHero.playerNum;

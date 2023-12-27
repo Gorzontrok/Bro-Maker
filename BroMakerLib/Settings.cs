@@ -163,6 +163,19 @@ namespace BroMakerLib
             }
         }
 
+        public StoredCharacter getStoredCharacter( string name )
+        {
+            for (int i = 0; i < MakerObjectStorage.Bros.Length; ++i)
+            {
+                if (MakerObjectStorage.Bros[i].name == name)
+                {
+                    return MakerObjectStorage.Bros[i];
+                }
+            }
+
+            return MakerObjectStorage.Bros[0];
+        }
+
         public StoredCharacter getRandomEnabledBro()
         {
             int chosen = UnityEngine.Random.Range(0, enabledBroCount);
@@ -180,15 +193,7 @@ namespace BroMakerLib
                 }
             }
 
-            for ( int i = 0; i < MakerObjectStorage.Bros.Length; ++i )
-            {
-                if ( MakerObjectStorage.Bros[i].name == chosenName )
-                {
-                    return MakerObjectStorage.Bros[i];
-                }
-            }
-
-            return MakerObjectStorage.Bros[0];
+            return getStoredCharacter(chosenName);
         }
 
         public StoredCharacter getRandomHardcoreBro(bool isRescue)
@@ -200,30 +205,14 @@ namespace BroMakerLib
                 this.availableBros.Add(this.notUnlockedBros[chosen]);
                 this.notUnlockedBros.RemoveAt(chosen);
 
-                for (int i = 0; i < MakerObjectStorage.Bros.Length; ++i)
-                {
-                    if (MakerObjectStorage.Bros[i].name == chosenName)
-                    {
-                        return MakerObjectStorage.Bros[i];
-                    }
-                }
-
-                return MakerObjectStorage.Bros[0];
+                return getStoredCharacter(chosenName);
             }
             else
             {
                 int chosen = UnityEngine.Random.Range(0, this.availableBros.Count());
                 string chosenName = this.availableBros[chosen];
 
-                for (int i = 0; i < MakerObjectStorage.Bros.Length; ++i)
-                {
-                    if (MakerObjectStorage.Bros[i].name == chosenName)
-                    {
-                        return MakerObjectStorage.Bros[i];
-                    }
-                }
-
-                return MakerObjectStorage.Bros[0];
+                return getStoredCharacter(chosenName);
             }
         }
     }

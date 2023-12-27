@@ -20,6 +20,11 @@ namespace BroMakerLib.Infos
 
         public List<Material> specialMaterials = new List<Material>();
 
+        public string spritePath;
+        public string gunSpritePath;
+        public float deathGunspriteOffsetX = 0f;
+        public float deathGunspriteOffsetY = 0f; 
+
         public override void Initialize()
         {
             base.Initialize();
@@ -93,6 +98,21 @@ namespace BroMakerLib.Infos
                     string iconFile = parameters["SpecialIcons"] as string;
                     Material specialMat = BroMaker.CreateMaterialFromFile(Path.Combine(path, iconFile));
                     specialMaterials.Add(specialMat);
+                }
+            }
+        }
+
+        public void LoadOffset()
+        {
+            if (!parameters.IsNullOrEmpty())
+            {
+                if (parameters.ContainsKey("deathGunspriteOffsetX"))
+                {
+                    this.deathGunspriteOffsetX = float.Parse(parameters["deathGunspriteOffsetX"].ToString());
+                }
+                if (parameters.ContainsKey("deathGunspriteOffsetY"))
+                {
+                    this.deathGunspriteOffsetY = float.Parse(parameters["deathGunspriteOffsetY"].ToString());
                 }
             }
         }
