@@ -44,6 +44,16 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
         {
             if (Main.enabled)
             {
+                if ( BSett.instance.overrideNextBroSpawn )
+                {
+                    LoadHero.willReplaceBro[__instance.playerNum] = true;
+                    return;
+                }
+                else if ( BSett.instance.disableSpawning )
+                {
+                    LoadHero.willReplaceBro[__instance.playerNum] = false;
+                    return;
+                }
                 if ( GameModeController.IsHardcoreMode && BSett.instance.enabledBroCount > 0 )
                 {
                     // Check if we're unlocking a bro or just normally spawning one

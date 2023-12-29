@@ -24,6 +24,14 @@ namespace BroMakerLib
         [JsonIgnore]
         public static string directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
+        // These variables allow other mods to control custom bro spawning
+        [JsonIgnore]
+        public bool overrideNextBroSpawn = false;
+        [JsonIgnore]
+        public string nextBroSpawn = "";
+        [JsonIgnore]
+        public bool disableSpawning = false;
+
         public bool equalSpawnProbability = true;
         public bool automaticSpawn = true;
         public float automaticSpawnProbabilty = 25;
@@ -178,6 +186,12 @@ namespace BroMakerLib
 
         public StoredCharacter getRandomEnabledBro()
         {
+            if ( this.overrideNextBroSpawn )
+            {
+                this.overrideNextBroSpawn = false;
+                return getStoredCharacter(this.nextBroSpawn);
+            }
+
             int chosen = UnityEngine.Random.Range(0, enabledBroCount);
             string chosenName = "";
             foreach (KeyValuePair<string, bool> bro in this.enabledBros)
@@ -198,6 +212,12 @@ namespace BroMakerLib
 
         public StoredCharacter getRandomHardcoreBro(bool isRescue)
         {
+            if (this.overrideNextBroSpawn)
+            {
+                this.overrideNextBroSpawn = false;
+                return getStoredCharacter(this.nextBroSpawn);
+            }
+
             if ( isRescue && this.notUnlockedBros.Count() > 0 )
             {
                 int chosen = UnityEngine.Random.Range(0, this.notUnlockedBros.Count());
