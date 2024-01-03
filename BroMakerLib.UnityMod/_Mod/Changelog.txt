@@ -1,3 +1,15 @@
+v2.2.0:
+Added custom bro cutscene support.
+Added custom bro IronBro support.
+Added option to replace special sprites for custom bros.
+Added option to display UI options for custom bros.
+Fixed bug with custom bros being unable to be killed by spikes, enter worm tunnels, pilot mechs, and pickup special ammo.
+Fixed wrong sprite showing up on end screen when custom bros died.
+Fixed default bros having their avatars overwritten by custom bros.
+Fixed custom bros being unable to use golden flex power.
+Fixed custom bros not showing up on helicopter when dropping in.
+Fixed invulnerability flash not working for custom bros.
+
 v2.1.0:
 Fixed automatic spawning for custom bros
 Added option to enable / disable automatic spawning for specific bros
