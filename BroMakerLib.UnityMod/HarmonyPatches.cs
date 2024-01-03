@@ -22,7 +22,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
             {
                 Main.Log(BMLogger.logs.Last(), Log.PREFIX);
             }
-            
+
         }
     }
 
@@ -109,7 +109,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 }
                 LoadHero.playerNum = __instance.playerNum;
             }
-            
+
         }
         static void Postfix(Player __instance)
         {
@@ -176,7 +176,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
             }
             // Check Unit's pos because sometimes this function is called with a unit that has not had its position set yet
             else if ( LoadHero.anyCustomSpawning && (!LoadHero.broBeingRescued || (unit.X <= 0 && unit.Y <= 0) ) )
-            {      
+            {
                 return false;
             }
             return true;
@@ -341,7 +341,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
             }
 
             // If there are no available vanilla bros but still more custom bros, make sure the herotype is set to rambro so the game still tries to spawn the player in
-            if ( GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count() == 0 && BSett.instance.availableBros.Count() > 0 )
+            if (GameModeController.IsHardcoreMode && GameState.Instance.currentWorldmapSave != null && GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count() == 0 && BSett.instance.availableBros.Count() > 0 )
             {
                 __result = HeroType.Rambro;
                 return false;
@@ -401,7 +401,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 {
                     return false;
                 }
-                else if ( BSett.instance.notUnlockedBros.Count() + 
+                else if ( BSett.instance.notUnlockedBros.Count() +
                     GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count() + PlayerProgress.Instance.yetToBePlayedUnlockedHeroes.Count() == 0 )
                 {
                     return false;
@@ -505,7 +505,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                     Sound.GetInstance().PlaySoundEffect(__instance.enterSound, 0.7f);
                 }
             }
-            
+
         }
     }
 
@@ -578,7 +578,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                             float f2 = pickupable.Y + pickupable.yOffset - y;
                             if (Mathf.Abs(f2) - range < pickupable.collectionRadius && pickupable.pickupDelay <= 0f && !pickupable.collected)
                             {
-                                if (pickupable.pickupType == PickupType.FlexAirJump || pickupable.pickupType == PickupType.FlexGoldenLight || pickupable.pickupType == PickupType.FlexInvulnerability || 
+                                if (pickupable.pickupType == PickupType.FlexAirJump || pickupable.pickupType == PickupType.FlexGoldenLight || pickupable.pickupType == PickupType.FlexInvulnerability ||
                                     pickupable.pickupType == PickupType.FlexTeleport || pickupable.pickupType == PickupType.FlexAlluring )
                                 {
                                     pickupable.AddFlexPowerRPC(self, pickupable.pickupType, false);
@@ -622,7 +622,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
 
                     __result = false;
                     return false;
-                }               
+                }
             }
 
             return true;
