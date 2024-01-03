@@ -1,3 +1,6 @@
+v2.2.1:
+Fix the mod breaking Arcade Mode
+
 v2.2.0:
 Added custom bro cutscene support.
 Added custom bro IronBro support.
