@@ -79,6 +79,25 @@ namespace BroMakerLib
             return result;
         }
 
+        public static Material GetMaterial(string path, string fileName)
+        {
+            string filePath = Path.Combine(path, fileName);
+
+            Material result = null;
+            if (materials.ContainsKey(filePath))
+            {
+                return materials[filePath];
+            }
+
+            result = CreateMaterial(filePath, Unlit_DepthCutout);
+
+            if (result != null)
+            {
+                materials.Add(filePath, result);
+            }
+            return result;
+        }
+
         public static Material GetMaterial(string filePath)
         {
             Material result = null;
@@ -100,6 +119,21 @@ namespace BroMakerLib
             {
                 materials.Add(filePath, result);
             }
+            return result;
+        }
+
+        public static Material GetMaterial(byte[] imageBytes)
+        {
+            Material result = null;
+
+            var tex = CreateTexture(imageBytes);
+            if (tex != null)
+            {
+                var mat = new Material(Unlit_DepthCutout);
+                mat.mainTexture = tex;
+                return mat;
+            }
+
             return result;
         }
 
