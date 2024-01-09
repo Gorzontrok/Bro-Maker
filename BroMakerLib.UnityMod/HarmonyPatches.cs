@@ -47,6 +47,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 if ( BSett.instance.overrideNextBroSpawn )
                 {
                     LoadHero.willReplaceBro[__instance.playerNum] = true;
+                    nextHeroType = HeroType.Rambro;
                     return;
                 }
                 else if ( BSett.instance.disableSpawning )
@@ -106,6 +107,11 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 else if (BSett.instance.automaticSpawn && BSett.instance.enabledBroCount > 0)
                 {
                     LoadHero.willReplaceBro[__instance.playerNum] = UnityEngine.Random.value <= (BSett.instance.automaticSpawnProbabilty / 100.0f);
+                }
+                if ( LoadHero.willReplaceBro[__instance.playerNum] )
+                {
+                    // Ensure player doesn't spawn as boondock bros
+                    nextHeroType = HeroType.Rambro;
                 }
                 LoadHero.playerNum = __instance.playerNum;
             }
