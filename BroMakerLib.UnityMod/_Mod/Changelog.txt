@@ -1,3 +1,6 @@
+v2.2.2:
+Fixed boondock bro being left behind when spawning a custom bro.
+
 v2.2.1:
 Fix the mod breaking Arcade Mode
 
