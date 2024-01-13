@@ -200,9 +200,13 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
             }
             else if ( LoadHero.previousSpawnInfo[__instance.playerNum] == Player.SpawnType.AddBroToTransport )
             {
-                (bro as CustomHero).info.BeforeStart(bro as CustomHero);
-                // Need to manually call AddBroToHeroTransport, because WorkoutSpawnPosition won't do it for custom characters for some reason
-                Map.AddBroToHeroTransport(bro);
+                var hero = bro as CustomHero;
+                if (hero != null)
+                {
+                    hero.info.BeforeStart(hero);
+                    // Need to manually call AddBroToHeroTransport, because WorkoutSpawnPosition won't do it for custom characters for some reason
+                    Map.AddBroToHeroTransport(bro);
+                }
 
                 return false;
             }
