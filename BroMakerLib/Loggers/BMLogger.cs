@@ -59,6 +59,11 @@ namespace BroMakerLib.Loggers
             Log(sb.ToString(), LogType.Exception, useColors);
         }
 
+        public static void Error(object message, bool useColors = true)
+        {
+            Log(message, LogType.Error, useColors);
+        }
+
         public static void Debug(object message, LogType logType = LogType.Log, bool useColors = true)
         {
             StringBuilder sb = new StringBuilder(FormatLogType(logType));
