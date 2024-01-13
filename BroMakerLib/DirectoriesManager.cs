@@ -38,7 +38,7 @@ namespace BroMakerLib
         public static void UpdateDirectories()
         {
             if (string.IsNullOrEmpty(_storageDirectory))
-                _storageDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Storage\\");
+                _storageDirectory = Path.Combine(Directory.GetCurrentDirectory(), "BroMaker_Storage\\");
 
             BrosDirectory = Path.Combine(StorageDirectory, "Bros\\");
             AbilitiesDirectory = Path.Combine(StorageDirectory, "Abilities\\");

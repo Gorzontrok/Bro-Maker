@@ -49,7 +49,7 @@ namespace BroMakerLib.Storages
             BMLogger.Debug("MakerObjectStorage Initialized.");
         }
 
-        public static StoredAbility GetAbiltyByName(string name)
+        public static StoredAbility GetAbilityByName(string name)
         {
             if (_abilities.IsNullOrEmpty())
                 return new StoredAbility();
@@ -66,13 +66,33 @@ namespace BroMakerLib.Storages
             StoreProjectileJsonFiles();
         }
 
+        public static void StoreCharactersFromMod(BroMakerMod mod)
+        {
+            if (mod == null || mod.CustomBros == null || mod.CustomBros.Length == 0)
+                return;
+
+            foreach(var broFile in mod.CustomBros)
+            {
+                if (broFile.IsNotNullOrEmpty())
+                {
+                    var path = Path.Combine(mod.Path, broFile);
+                    _bros.Add(new StoredCharacter(path));
+                    BMLogger.Debug($"Found file: '{path}'");
+                }
+            }
+        }
+
         private static void StoreCharacterJsonFiles()
         {
+            return;
             var jsonFiles = Directory.GetFiles(DirectoriesManager.BrosDirectory, "*.json", SearchOption.AllDirectories);
             foreach (var file in jsonFiles)
             {
-                _bros.Add(new StoredCharacter(file));
-                BMLogger.Debug($"Found file: '{file}'");
+                if (!file.Contains(".mod."))
+                {
+                    _bros.Add(new StoredCharacter(file));
+                    BMLogger.Debug($"Found file: '{file}'");
+                }
             }
         }
         private static void StoreWeaponJsonFiles()
