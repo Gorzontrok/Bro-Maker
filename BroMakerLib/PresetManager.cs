@@ -26,6 +26,10 @@ namespace BroMakerLib
 
         public static void Initialize()
         {
+            heroesPreset = new Dictionary<string, Type>();
+            customObjectsPreset = new Dictionary<string, Type>();
+            abilities = new Dictionary<string, Type>();
+
             assemblies = new List<Assembly>();
             assemblies.Add(Assembly.GetExecutingAssembly());
             assemblies.AddRange(DirectoriesManager.LoadAssembliesInStorage());
