@@ -9,6 +9,7 @@ using UnityEngine;
 using RocketLib;
 using BSett = BroMakerLib.Settings;
 using BroMakerLib.CustomObjects.Bros;
+using BroMakerLib.ModManager;
 
 namespace BroMakerLib.UnityMod
 {
@@ -16,7 +17,8 @@ namespace BroMakerLib.UnityMod
     {
         private static Dictionary<string, Action> _tabs = new Dictionary<string, Action>()
         {
-            { "Main", Spawner },
+            { "Spawner", Spawner },
+            { "Mods", Mods },
             { "Create New Object", CreateFileEditor.UnityUI },
             { "Edit file", EditCurrentFile},
             { "Settings", Settings }
@@ -78,6 +80,7 @@ namespace BroMakerLib.UnityMod
             GUI.Label(_toolTipRect, GUI.tooltip, _toolTipStyle);
         }
 
+
         public static void Spawner()
         {
             GUILayout.Label(BMLogger.errorSwapingMessage, _errorSwapingMessageStyle);
@@ -127,6 +130,33 @@ namespace BroMakerLib.UnityMod
             }
         }
 
+        private static void Mods()
+        {
+            GUILayout.Label("Mods :");
+            foreach (BroMakerMod mod in ModLoader.mods)
+            {
+                var name = mod.Name;
+                if (name.IsNullOrEmpty())
+                    name = mod.Id;
+
+                GUILayout.BeginHorizontal();
+                GUILayout.Label(name);
+                GUILayout.Label(mod.Author);
+                GUILayout.Label(mod.Version);
+                if (mod.CanBeUpdated)
+                {
+                    if (GUILayout.Button("Update Mod"))
+                    {
+                        ModUpdater.Update(mod);
+                    }
+
+                    GUILayout.BeginHorizontal();
+                    GUILayout.TextField((int)ModUpdater.DownloadingProgression + "%");
+                    GUILayout.EndHorizontal();
+                }
+                GUILayout.EndHorizontal();
+            }
+        }
         private static void CreateSelectedBro()
         {
             try

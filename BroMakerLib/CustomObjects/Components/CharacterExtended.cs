@@ -57,7 +57,7 @@ namespace BroMakerLib.CustomObjects.Components
 
         protected virtual CharacterAbility TryToGetAbilityFromFiles(string abilityName)
         {
-            var storedAbility = MakerObjectStorage.GetAbiltyByName(abilityName);
+            var storedAbility = MakerObjectStorage.GetAbilityByName(abilityName);
             if (storedAbility.IsEmpty)
             {
                 BMLogger.Warning($"Ability {abilityName} not founded");

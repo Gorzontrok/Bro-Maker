@@ -5,6 +5,7 @@ using UnityEngine;
 using System.IO;
 using BroMakerLib.Loggers;
 using BroMakerLib.Storages;
+using BroMakerLib.ModManager;
 
 namespace BroMakerLib
 {
@@ -36,6 +37,8 @@ namespace BroMakerLib
 
                 Settings.Load();
                 DirectoriesManager.Initialize();
+
+                ModLoader.Initialize();
 
                 MakerObjectStorage.Initialize();
                 PresetManager.Initialize();

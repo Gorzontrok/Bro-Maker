@@ -47,6 +47,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\BitCode.AssetManagement.dll</HintPath>
     </Reference>
+    <Reference Include="Ionic.Zip">
+      <HintPath>..\lib\Ionic.Zip.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Newtonsoft.Json.dll</HintPath>
@@ -118,6 +121,7 @@
     <Compile Include="Attributes\WeaponPresetAttribute.cs" />
     <Compile Include="BroMaker.cs" />
     <Compile Include="Attributes\CustomObjectPresetAttribute.cs" />
+    <Compile Include="ModManager\BroMakerMod.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="CustomObjects\Bros\SwordHero.cs" />
     <Compile Include="CustomObjects\Halo\BroHaloM.cs" />
@@ -151,6 +155,8 @@
     <Compile Include="Infos\CustomProjectileInfo.cs" />
     <Compile Include="Loaders\LoadGrenade.cs" />
     <Compile Include="Loaders\LoadHeroOld.cs" />
+    <Compile Include="ModManager\ModLoader.cs" />
+    <Compile Include="ModManager\ModUpdater.cs" />
     <Compile Include="Parameters.cs" />
     <Compile Include="PresetManager.cs" />
     <Compile Include="Settings.cs" />
