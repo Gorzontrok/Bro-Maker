@@ -1,10 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-using BroMakerLib.Editor;
-using BroMakerLib.Stats;
 using HarmonyLib;
-using UnityEngine;
 using UnityModManagerNet;
 
 namespace BroMakerLib.UnityMod
@@ -40,7 +37,7 @@ namespace BroMakerLib.UnityMod
             try
             {
                 // Set BroMaker Path
-                DirectoriesManager.StorageDirectory = Path.Combine(mod.Path, "Storage\\");
+                DirectoriesManager.StorageDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Storage\\");
                 // Initialize BroMaker
                 BroMaker.Initialize();
             }

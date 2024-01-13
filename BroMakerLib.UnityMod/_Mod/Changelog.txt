@@ -1,3 +1,7 @@
+v2.3.0:
+Ability are now working.
+The Storage folder is going to be moved at the top Broforce folder
+
 v2.2.2:
 Fixed boondock bro being left behind when spawning a custom bro.
 
