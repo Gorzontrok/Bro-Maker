@@ -51,7 +51,10 @@ namespace BroMakerLib.Storages
 
         public static StoredAbility GetAbiltyByName(string name)
         {
-            return _abilities.First(s => s.name == name);
+            if (_abilities.IsNullOrEmpty())
+                return new StoredAbility();
+
+            return _abilities.FirstOrDefault(s => s.name == name);
         }
 
         private static void StoreJsonFiles()

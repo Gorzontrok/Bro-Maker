@@ -46,8 +46,10 @@ namespace BroMakerLib.CustomObjects.Bros
             {
                 EnableSyncing(true, true);
                 this.SetupCustomHero();
-                characterExtended = gameObject.AddComponent<CharacterExtended>();
-                characterExtended.Initialize(info.abilities);
+				characterExtended = GetComponent<CharacterExtended>();
+				if (characterExtended == null)
+					characterExtended = gameObject.AddComponent<CharacterExtended>();
+                characterExtended.Initialize(info.abilities, this);
 
                 info.BeforeAwake(this);
                 base.Awake();
@@ -93,7 +95,7 @@ namespace BroMakerLib.CustomObjects.Bros
                 if (primaryAbility as Weapon != null)
                     primaryAbility.Fire(x, y, xSpeed, ySpeed);
                 else
-                    primaryAbility.Use();
+                    primaryAbility.All();
             }
             else
             {

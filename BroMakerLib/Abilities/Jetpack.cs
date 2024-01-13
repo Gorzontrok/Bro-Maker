@@ -21,7 +21,7 @@ namespace BroMakerLib.Abilities
         protected Countdown jetpackTime;
         protected float flameCounter;
 
-        public override void Use()
+        public override void All()
         {
             UseJetpack();
         }
