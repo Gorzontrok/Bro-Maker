@@ -72,68 +72,6 @@ namespace BroMakerLib
             return temp.ToArray();
         }
 
-        public void CheckModUpdate()
-        {
-            if (Version.IsNullOrEmpty() || Repository.IsNullOrEmpty())
-            {
-                BMLogger.Warning($"Error checking mod update for {Id}. Version or Repository is null or empty.");
-                return;
-            }
-
-            try
-            {
-                using (var wc = new WebClient())
-                {
-                    wc.Encoding = System.Text.Encoding.UTF8;
-                    wc.DownloadStringCompleted += (sender, e) => { CheckModUpdate_DownloadStringCompleted(sender, e); };
-                    wc.DownloadStringAsync(new Uri(Repository));
-                }
-            }
-            catch (Exception ex)
-            {
-                BMLogger.ExceptionLog($"Error checking mod update on '{Repository}' for {Id}.", ex);
-            }
-        }
-
-        private void CheckModUpdate_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
-        {
-            /* The code stop at the next if with the following Error
-             * System.Net.WebException: Error getting response stream (Write: The authentication or decryption has failed.): SendFailure
-             * ---> System.IO.IOException: The authentication or decryption has failed.
-             * ---> Mono.Security.Protocol.Tls.TlsException: The authentication or decryption has failed.
-             */
-            if (e.Error != null)
-            {
-                BMLogger.Error(e.Error.Message);
-                return;
-            }
-
-            if (!e.Cancelled && !string.IsNullOrEmpty(e.Result))
-            {
-                try
-                {
-                    var repository = JsonConvert.DeserializeObject<UnityModManager.Repository>(e.Result);
-                    if (repository == null || repository.Releases == null || repository.Releases.Length == 0)
-                        return;
-
-                    var release = repository.Releases.FirstOrDefault(x => x.Id == Id);
-                    if (release != null && !string.IsNullOrEmpty(release.Version))
-                    {
-                        Release = release;
-                        var ver = UnityModManager.ParseVersion(release.Version);
-                        if (UnityModManager.ParseVersion(Version) < ver)
-                        {
-                            CanBeUpdated = true;
-                            BMLogger.Log($"Update is available for {Id}.");
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    BMLogger.ExceptionLog($"Error checking mod update on '{Repository}' for {Id}.", ex);
-                }
-            }
-        }
 
         private void Log(string message)
         {

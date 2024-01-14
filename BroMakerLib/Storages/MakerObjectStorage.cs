@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using BroMakerLib.Loggers;
+using BroMakerLib.ModManager;
 
 namespace BroMakerLib.Storages
 {
@@ -55,6 +56,12 @@ namespace BroMakerLib.Storages
             _abilities = new List<StoredAbility>();
             _projectiles = new List<StoredProjectile>();
 
+            foreach (BroMakerMod mod in ModLoader.mods)
+            {
+                StoreCharactersFromMod(mod);
+                StoreAbilitiesFromMod(mod);
+            }
+
             BMLogger.Debug("MakerObjectStorage Initialized.");
         }
 
@@ -101,65 +108,6 @@ namespace BroMakerLib.Storages
                         BMLogger.Debug($"Found file: '{path}'");
                     }
                 }
-            }
-        }
-
-        [Obsolete("Objects are now loaded from Mods")]
-        private static void StoreJsonFiles()
-        {
-            StoreCharacterJsonFiles();
-            StoreWeaponJsonFiles();
-            StoreAbilityJsonFiles();
-            StoreGrenadeJsonFiles();
-            StoreProjectileJsonFiles();
-        }
-
-        private static void StoreCharacterJsonFiles()
-        {
-            var jsonFiles = Directory.GetFiles(DirectoriesManager.BrosDirectory, "*.json", SearchOption.AllDirectories);
-            foreach (var file in jsonFiles)
-            {
-                if (!file.Contains(".mod."))
-                {
-                    _bros.Add(new StoredCharacter(file));
-                    BMLogger.Debug($"Found file: '{file}'");
-                }
-            }
-        }
-        private static void StoreWeaponJsonFiles()
-        {
-            var  jsonFiles = Directory.GetFiles(DirectoriesManager.WeaponsDirectory, "*.json", SearchOption.AllDirectories);
-            foreach (var file in jsonFiles)
-            {
-                _weapons.Add(new StoredWeapon(file));
-                BMLogger.Debug($"Found file: '{file}'");
-            }
-        }
-        private static void StoreAbilityJsonFiles()
-        {
-            var jsonFiles = Directory.GetFiles(DirectoriesManager.AbilitiesDirectory, "*.json", SearchOption.AllDirectories);
-            foreach (var file in jsonFiles)
-            {
-                _abilities.Add(new StoredAbility(file));
-                BMLogger.Debug($"Found file: '{file}'");
-            }
-        }
-        private static void StoreGrenadeJsonFiles()
-        {
-            var jsonFiles = Directory.GetFiles(DirectoriesManager.GrenadesDirectory, "*.json", SearchOption.AllDirectories);
-            foreach (var file in jsonFiles)
-            {
-                _grenades.Add(new StoredGrenade(file));
-                BMLogger.Debug($"Found file: '{file}'");
-            }
-        }
-        private static void StoreProjectileJsonFiles()
-        {
-            var jsonFiles = Directory.GetFiles(DirectoriesManager.ProjectilesDirectory, "*.json", SearchOption.AllDirectories);
-            foreach (var file in jsonFiles)
-            {
-                _projectiles.Add(new StoredProjectile(file));
-                BMLogger.Debug($"Found file: '{file}'");
             }
         }
     }

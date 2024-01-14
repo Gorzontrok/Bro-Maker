@@ -27,7 +27,7 @@ namespace BroMakerLib.Infos
             base.ReadParameters(obj);
             TestVanDammeAnim character = obj as TestVanDammeAnim;
 
-            string special = GetParameterValue<string>("Special");
+            /*string special = GetParameterValue<string>("Special");
             if (special.IsNotNullOrEmpty())
             {
                 // Get Ability
@@ -41,7 +41,7 @@ namespace BroMakerLib.Infos
             if (melee.IsNotNullOrEmpty())
             {
                 // Get Ability
-            }
+            }*/
         }
     }
 }

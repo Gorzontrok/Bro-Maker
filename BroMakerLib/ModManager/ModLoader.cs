@@ -15,10 +15,6 @@ namespace BroMakerLib.ModManager
         {
             mods = new List<BroMakerMod>();
             LoadMods();
-
-            // Error. See 'BroMakerMod::CheckModUpdate_DownloadStringCompleted'
-            // CheckModsUpdate();
-
             LoadModsContents();
         }
 
@@ -52,16 +48,6 @@ namespace BroMakerLib.ModManager
                 }
             }
             BMLogger.Debug("Finish Loading Mods");
-        }
-
-        private static void CheckModsUpdate()
-        {
-            BMLogger.Debug("Checking Mods Update");
-            foreach(BroMakerMod mod in mods)
-            {
-                mod.CheckModUpdate();
-            }
-            BMLogger.Debug("Finish Checking Mods Update");
         }
 
         private static void LoadModsContents()

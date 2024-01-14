@@ -122,7 +122,7 @@ namespace BroMakerLib
                 BMLogger.Debug("SetupCustomHero: Has read parameters");
             }
             else
-                BMLogger.Log("SetupCustomHero: No other bro component founded");
+                BMLogger.Debug("SetupCustomHero: No other bro component founded");
 
             hero.FixOtherComponentValues();
             //Net.RPC(PID.TargetAll, new RpcSignature(hero.FixOtherComponentValues));

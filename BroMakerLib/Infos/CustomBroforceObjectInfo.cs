@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using UnityEngine;
-using RocketLib;
 using System.Reflection;
 
 namespace BroMakerLib.Infos
@@ -134,30 +133,38 @@ namespace BroMakerLib.Infos
         {
             foreach (KeyValuePair<string, object> pair in parameters)
             {
-                string key = pair.Key;
-                MethodInfo methodInfo = PresetManager.GetParameterMethod(key);
-                if (methodInfo == null)
+                try
                 {
-                    BMLogger.Error($"[{name}] There is no parameter '{key}'. Check if you are not missing a mod.");
-                    continue;
-                }
+                    string key = pair.Key;
+                    MethodInfo methodInfo = PresetManager.GetParameterMethod(key);
+                    if (methodInfo == null)
+                    {
+                        BMLogger.Error($"[{name}] There is no parameter '{key}'. Check if you are not missing a mod.");
+                        continue;
+                    }
 
-                var parameters = methodInfo.GetParameters();
-                Type firstParameterType = parameters[0].ParameterType;
-                Type valueType = pair.Value.GetType();
-                if (!firstParameterType.IsTypeOf(obj.GetType()))
-                {
-                    BMLogger.Error($"[{name}] \"{key}\": Can't cast {obj.GetType()} to {firstParameterType} at first parameter. (Not a user Error)");
-                    continue;
-                }
+                    var parameters = methodInfo.GetParameters();
+                    Type firstParameterType = parameters[0].ParameterType;
+                    Type askerType = obj.GetType();
+                    if (askerType != firstParameterType && !askerType.IsSubclassOf(firstParameterType))
+                    {
+                        BMLogger.Error($"[{name}] \"{key}\": Can't cast {askerType} to {firstParameterType} at first parameter. (Not a user Error)");
+                        continue;
+                    }
 
-                var secondMethodParameterType = methodInfo.GetParameters()[1];
-                if (!secondMethodParameterType.IsTypeOf(valueType))
-                {
-                    BMLogger.Error($"[{name}] \"{key}\": {valueType} is not type of {secondMethodParameterType} at second parameter.");
-                    continue;
+                    Type secondMethodParameterType = parameters[1].ParameterType;
+                    Type valueType = pair.Value.GetType();
+                    if (valueType != secondMethodParameterType && !valueType.IsSubclassOf(secondMethodParameterType))
+                    {
+                        BMLogger.Error($"[{name}] \"{key}\": {valueType} is not type of {secondMethodParameterType} at second parameter.");
+                        continue;
+                    }
+                    methodInfo.Invoke(null, new object[] { obj, pair.Value });
                 }
-                methodInfo.Invoke(null, new object[] { obj, pair.Key });
+                catch (Exception e)
+                {
+                    BMLogger.ExceptionLog(e);
+                }
             }
         }
 

@@ -27,6 +27,7 @@ namespace BroMakerLib
             heroesPreset = new Dictionary<string, Type>();
             customObjectsPreset = new Dictionary<string, Type>();
             abilities = new Dictionary<string, Type>();
+            parameters = new Dictionary<string, MethodInfo>();
 
             CheckAssembly(Assembly.GetExecutingAssembly());
 
@@ -35,10 +36,24 @@ namespace BroMakerLib
             {
                 foreach(string assemblyPath in mod.Assemblies)
                 {
-                    var path = Path.Combine(mod.Path, assemblyPath);
-                    if (File.Exists(path))
+                    try
                     {
-                        CheckAssembly(Assembly.Load(path));
+                        var path = Path.Combine(mod.Path, assemblyPath);
+                        if (File.Exists(path))
+                        {
+                            string destFileName = path + ".cache";
+                            if (!File.Exists (destFileName))
+                            {
+                                //File.Delete(destFileName);
+                                File.Copy(path, destFileName);
+                            }
+                            Assembly assembly = Assembly.LoadFile(path);
+                            CheckAssembly(assembly);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        BMLogger.ExceptionLog(assemblyPath, ex);
                     }
                 }
             }
@@ -80,7 +95,7 @@ namespace BroMakerLib
             }
             catch (Exception ex)
             {
-                BMLogger.ExceptionLog($"{assembly.FullName} - " + ex.Message);
+                BMLogger.ExceptionLog($"{assembly.FullName} - " + ex);
             }
         }
 
@@ -92,11 +107,10 @@ namespace BroMakerLib
                 BMLogger.Warning($"Assembly '{assembly.GetName().Name}' is somehow empty ( ͠° ͟ʖ ͡°)");
                 return;
             }
-            Type paramerterType = types.First((t) => t.Name == "Parameters");
-            if (paramerterType == null)
+            Type paramerterType = types.FirstOrDefault((t) => t.Name == "Parameters");
+            if (paramerterType == null || paramerterType.Name != "Parameters")
                 return;
 
-            BMLogger.Log("Found it");
             var methods = paramerterType.GetMethods();
             foreach(var method in methods)
             {
@@ -113,7 +127,6 @@ namespace BroMakerLib
                         BMLogger.Warning($"Parameter of name {method.Name} already exist in assembly {paramerterType.Assembly.FullName}");
                     else
                         parameters.Add(method.Name, method);
-                    BMLogger.Log("Found this " + method.Name);
                 }
             }
         }

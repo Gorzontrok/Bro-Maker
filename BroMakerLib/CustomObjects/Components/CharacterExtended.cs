@@ -12,8 +12,8 @@ namespace BroMakerLib.CustomObjects.Components
         public TestVanDammeAnim character;
         // Key: Method ; Value: Abilities
         public Dictionary<string, CharacterAbility[]> characterAbilities;
-        private bool _initialized = false;
-
+        protected bool _initialized = false;
+        protected List<CharacterAbility> _characterAbilitiesAlone;
         protected virtual void Awake()
         { }
 
@@ -27,11 +27,50 @@ namespace BroMakerLib.CustomObjects.Components
 
             this.character = character;
             characterAbilities = new Dictionary<string, CharacterAbility[]>();
+            _characterAbilitiesAlone = new List<CharacterAbility>();
 
             GetAbilities(infoAbilities);
 
             _initialized = true;
         }
+
+        #region Info Method to call
+        public virtual void BeforeAwake()
+        {
+            try
+            {
+                foreach (CharacterAbility ability in _characterAbilitiesAlone)
+                {
+                    ability.info.BeforeAwake(ability);
+                }
+            }
+            catch(Exception ex)
+            {
+                BMLogger.Error(ex);
+            }
+        }
+        public virtual void AfterAwake()
+        {
+            foreach(CharacterAbility ability in _characterAbilitiesAlone)
+            {
+                ability.info.AfterAwake(ability);
+            }
+        }
+        public virtual void BeforeStart()
+        {
+            foreach(CharacterAbility ability in _characterAbilitiesAlone)
+            {
+                ability.info.BeforeStart(ability);
+            }
+        }
+        public virtual void AfterStart()
+        {
+            foreach(CharacterAbility ability in _characterAbilitiesAlone)
+            {
+                ability.info.AfterStart(ability);
+            }
+        }
+        #endregion
 
         protected virtual void GetAbilities(Dictionary<string, string[]> infoAbilities)
         {
@@ -83,6 +122,7 @@ namespace BroMakerLib.CustomObjects.Components
                 BMLogger.Warning($"{abilityName} was not made for character");
                 return null;
             }
+            info.BeforeAwake(ability);
             return ability as CharacterAbility;
         }
 
@@ -104,16 +144,33 @@ namespace BroMakerLib.CustomObjects.Components
 
         protected virtual void StoreAbility(CharacterAbility ability, string[] methods)
         {
-            ability.AssignOwner(character);
-            foreach (string method in methods)
+
+            try
             {
-                if (method.IsNotNullOrEmpty())
+                if (ability == null)
+                    return;
+
+                if (characterAbilities == null)
                 {
-                    if (!characterAbilities.ContainsKey(method))
-                        characterAbilities.Add(method, new CharacterAbility[] { ability });
-                    else
-                        characterAbilities[method].Append(ability);
+                    characterAbilities = new Dictionary<string, CharacterAbility[]>();
                 }
+
+                ability.AssignOwner(character);
+                foreach (string method in methods)
+                {
+                    if (method.IsNotNullOrEmpty())
+                    {
+                        if (!characterAbilities.ContainsKey(method))
+                            characterAbilities.Add(method, new CharacterAbility[] { ability });
+                        else
+                            characterAbilities[method].Append(ability);
+                        _characterAbilitiesAlone.Add(ability);
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                BMLogger.ExceptionLog(e);
             }
         }
 

@@ -22,7 +22,9 @@ namespace BroMakerLib.Infos
             {
                 BMLogger.Log($"Ability {type} is not type or subclass of {typeof(Ability <T>)}");
             }
-            return (Ability<T>)Activator.CreateInstance(type);
+            Ability<T> ability = (Ability<T>)Activator.CreateInstance(type);
+            ability.info = this;
+            return ability;
         }
     }
 }

@@ -156,7 +156,6 @@
     <Compile Include="Loaders\LoadGrenade.cs" />
     <Compile Include="Loaders\LoadHeroOld.cs" />
     <Compile Include="ModManager\ModLoader.cs" />
-    <Compile Include="ModManager\ModUpdater.cs" />
     <Compile Include="Parameters.cs" />
     <Compile Include="PresetManager.cs" />
     <Compile Include="Settings.cs" />

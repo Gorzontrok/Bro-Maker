@@ -55,7 +55,9 @@ namespace BroMakerLib.CustomObjects.Bros
                 base.Awake();
                 info.AfterAwake(this);
 
+				characterExtended.BeforeAwake();
                 characterExtended.InvokeAbility(nameof(Awake));
+				characterExtended.AfterAwake();
             }
             catch (Exception ex)
             {
@@ -73,7 +75,9 @@ namespace BroMakerLib.CustomObjects.Bros
 				base.Start();
                 info.AfterStart(this);
 
+				characterExtended.BeforeStart();
                 characterExtended.InvokeAbility(nameof(Start));
+                characterExtended.AfterStart();
             }
             catch (Exception ex)
             {
@@ -111,9 +115,21 @@ namespace BroMakerLib.CustomObjects.Bros
 
         protected override void UseSpecial()
         {
-            base.UseSpecial();
             if(SpecialAmmo > 0)
-                characterExtended.InvokeAbility(nameof(UseSpecial));
+            {
+                this.PlayThrowLightSound(0.4f);
+                this.SpecialAmmo--;
+                this.TriggerBroSpecialEvent();
+				if (base.IsMine)
+                {
+                    characterExtended.InvokeAbility(nameof(UseSpecial));
+                }
+            }
+            else
+            {
+                HeroController.FlashSpecialAmmo(base.playerNum);
+                this.ActivateGun();
+            }
         }
         public override void RecallBro()
         {

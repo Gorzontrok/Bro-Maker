@@ -28,9 +28,8 @@ namespace BroMakerLib.UnityMod
         private static Dictionary<string, Action> _tabs = new Dictionary<string, Action>()
         {
             { "Spawner", Spawner },
-            { "Mods", ModsUI },
             { "Create New Object", CreateFileEditor.UnityUI },
-            { "Edit file", EditCurrentFile},
+            //{ "Edit file", EditCurrentFile},
             { "Settings", Settings }
         };
         private static Settings _Settings
@@ -82,7 +81,6 @@ namespace BroMakerLib.UnityMod
             _toolTipRect = GUILayoutUtility.GetLastRect();
             GUILayout.Space(10);
 
-
             GUILayout.BeginVertical("box");
             _tabs.TryGetValue(tabsNames[_tabSelected], out Action action);
             action.Invoke();
@@ -96,6 +94,10 @@ namespace BroMakerLib.UnityMod
             GUILayout.Label(BMLogger.errorSwapingMessage, _errorSwapingMessageStyle);
             GUILayout.Space(15);
             GUILayout.BeginHorizontal();
+            if (GUILayout.Button("ReloadMods", GUILayout.ExpandWidth(false)))
+            {
+                ModManager.ModLoader.Initialize();
+            }
             if (GUILayout.Button("Reload Files", GUILayout.ExpandWidth(false)))
             {
                 ReloadFiles();
@@ -118,7 +120,7 @@ namespace BroMakerLib.UnityMod
             _spawnerScrollView = GUILayout.BeginScrollView(_spawnerScrollView, GUILayout.Height(400));
             if (Mods.Count <= 0)
             {
-                GUILayout.Label("No mod intalled.");
+                GUILayout.Label("No mod installed.");
                 return;
             }
 
@@ -126,9 +128,9 @@ namespace BroMakerLib.UnityMod
             GUILayout.Label("Name", GUILayout.Width(200));
             GUILayout.Label("Author", GUILayout.Width(100));
             GUILayout.Label("Version", GUILayout.Width(50));
-            GUILayout.Label("BroMaker Version", GUILayout.Width(100));
+            GUILayout.Label("BroMaker Version", GUILayout.Width(150));
             GUILayout.EndHorizontal();
-            GUILayout.Space(30);
+            GUILayout.Space(20);
 
             int broIndex = 0;
             try
@@ -144,7 +146,7 @@ namespace BroMakerLib.UnityMod
                     GUILayout.Label(name, GUILayout.Width(200));
                     GUILayout.Label(mod.Author, GUILayout.Width(100));
                     GUILayout.Label(mod.Version, GUILayout.Width(50));
-                    GUILayout.Label(mod.BroMakerVersion, GUILayout.Width(100));
+                    GUILayout.Label(mod.BroMakerVersion, GUILayout.Width(150));
                     GUILayout.EndHorizontal();
 
                     // Show bros
@@ -165,6 +167,8 @@ namespace BroMakerLib.UnityMod
                         {
                             _selectedCustomBrosIndex = broIndex;
                             _selectedBro = new StoredCharacter(Path.Combine(mod.Path, mod.CustomBros[modIndex]));
+                            _objectToEdit = _selectedBro.GetInfo<CustomBroInfo>();
+                            CreateSelectedBro();
                         }
 
                         if (_selectedCustomBrosIndex == broIndex)
@@ -191,6 +195,10 @@ namespace BroMakerLib.UnityMod
                     if (isHorizontalOpen)
                     {
                         GUILayout.EndHorizontal();
+                        if (willShowOptions)
+                        {
+                            SelectedBroUI(_selectedBro);
+                        }
                     }
                     GUILayout.EndVertical();
 
@@ -206,35 +214,6 @@ namespace BroMakerLib.UnityMod
             }
         }
 
-        private static void ModsUI()
-        {
-            GUILayout.Label("Mods :");
-            if (GUILayout.Button("ReloadMods"))
-                ModManager.ModLoader.Initialize();
-            foreach (BroMakerMod mod in ModLoader.mods)
-            {
-                var name = mod.Name;
-                if (name.IsNullOrEmpty())
-                    name = mod.Id;
-
-                GUILayout.BeginHorizontal();
-                GUILayout.Label(name);
-                GUILayout.Label(mod.Author);
-                GUILayout.Label(mod.Version);
-                if (mod.CanBeUpdated)
-                {
-                    if (GUILayout.Button("Update Mod"))
-                    {
-                        ModUpdater.Update(mod);
-                    }
-
-                    GUILayout.BeginHorizontal();
-                    GUILayout.TextField((int)ModUpdater.DownloadingProgression + "%");
-                    GUILayout.EndHorizontal();
-                }
-                GUILayout.EndHorizontal();
-            }
-        }
         private static void CreateSelectedBro()
         {
             try
@@ -274,16 +253,16 @@ namespace BroMakerLib.UnityMod
             if (bro.Equals(null))
                 return;
 
+            GUILayout.BeginVertical("box");
             Main.selectedPlayerNum = RGUI.HorizontalSliderInt("Player Num: ", Main.selectedPlayerNum, 0, 3, 200);
 
-            GUILayout.BeginVertical("box");
-            //_objectToEdit = bro.GetInfo<CustomBroInfo>();
-            //FileEditor.makerObjectType = MakerObjectType.Bros;
 
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
 
             if (GUILayout.Button(new GUIContent("Load Bro")))
+            {
                 bro.LoadBro(Main.selectedPlayerNum);
+            }
             bool broEnabled = BSett.instance.getBroEnabled(bro.name);
             if (GUILayout.Button( (broEnabled ? "Autospawn Enabled" : "Autospawn Disabled") ))
             {
