@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using BroMakerLib.Loggers;
@@ -54,6 +55,7 @@ namespace BroMakerLib
             if (!Directory.Exists(_storageDirectory))
                 Directory.CreateDirectory(_storageDirectory);
 
+            // Legacy
             if (!Directory.Exists(BrosDirectory))
                 Directory.CreateDirectory(BrosDirectory);
 
@@ -73,6 +75,7 @@ namespace BroMakerLib
                 Directory.CreateDirectory(CutscenesDirectory);
         }
 
+        [Obsolete("Assemblies are loaded from Mods now")]
         public static Assembly[] LoadAssembliesInStorage()
         {
             var assemblies = new List<Assembly>();

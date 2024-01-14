@@ -1,12 +1,12 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static BroMakerLib.Constants;
+using static BroMakerLib.Info;
 
 [assembly: AssemblyTitle(NAME)]
 [assembly: AssemblyCompany(AUTHOR)]
 [assembly: AssemblyProduct(NAME)]
-[assembly: AssemblyCopyright("Copyright ©  2023")]
+[assembly: AssemblyCopyright("Copyright © Gorzontrok 2023")]
 
 [assembly: ComVisible(false)]
 

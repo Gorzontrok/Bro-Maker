@@ -8,6 +8,7 @@ using System.IO;
 using System.Text;
 using UnityEngine;
 using RocketLib;
+using System.Reflection;
 
 namespace BroMakerLib.Infos
 {
@@ -130,7 +131,35 @@ namespace BroMakerLib.Infos
             return name;
         }
         public virtual void ReadParameters(object obj)
-        { }
+        {
+            foreach (KeyValuePair<string, object> pair in parameters)
+            {
+                string key = pair.Key;
+                MethodInfo methodInfo = PresetManager.GetParameterMethod(key);
+                if (methodInfo == null)
+                {
+                    BMLogger.Error($"[{name}] There is no parameter '{key}'. Check if you are not missing a mod.");
+                    continue;
+                }
+
+                var parameters = methodInfo.GetParameters();
+                Type firstParameterType = parameters[0].ParameterType;
+                Type valueType = pair.Value.GetType();
+                if (!firstParameterType.IsTypeOf(obj.GetType()))
+                {
+                    BMLogger.Error($"[{name}] \"{key}\": Can't cast {obj.GetType()} to {firstParameterType} at first parameter. (Not a user Error)");
+                    continue;
+                }
+
+                var secondMethodParameterType = methodInfo.GetParameters()[1];
+                if (!secondMethodParameterType.IsTypeOf(valueType))
+                {
+                    BMLogger.Error($"[{name}] \"{key}\": {valueType} is not type of {secondMethodParameterType} at second parameter.");
+                    continue;
+                }
+                methodInfo.Invoke(null, new object[] { obj, pair.Key });
+            }
+        }
 
         public virtual string SerializeJSON()
         {

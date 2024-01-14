@@ -23,7 +23,7 @@ namespace BroMakerLib.Infos
         public string spritePath;
         public string gunSpritePath;
         public float deathGunspriteOffsetX = 0f;
-        public float deathGunspriteOffsetY = 0f; 
+        public float deathGunspriteOffsetY = 0f;
 
         public override void Initialize()
         {
@@ -39,7 +39,9 @@ namespace BroMakerLib.Infos
         public override void ReadParameters(object obj)
         {
             base.ReadParameters(obj);
-            if (parameters.IsNullOrEmpty()) return;
+           /* if (parameters.IsNullOrEmpty())
+                return;
+
             var character = obj.As<BroBase>();
             if (GetParameterValue<bool>("Halo"))
             {
@@ -78,7 +80,7 @@ namespace BroMakerLib.Infos
                 character.useNewKnifeClimbingFrames = true;
                 character.useDuckingFrames = true;
                 character.useNewDuckingFrames = true;
-            }
+            }*/
         }
         public void LoadSpecialIcons()
         {

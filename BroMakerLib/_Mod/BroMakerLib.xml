@@ -54,12 +54,6 @@
             Name of the Custom Object
             </summary>
         </member>
-        <member name="F:BroMakerLib.PresetManager.assemblies">
-            <summary>
-            The assembly that contains presets.
-            Add yours if your assembly contains presets.
-            </summary>
-        </member>
         <member name="M:BroMakerLib.PresetManager.GetHeroPreset(System.String)">
             <summary>
             Return hero Preset

@@ -38,10 +38,11 @@ namespace BroMakerLib
                 Settings.Load();
                 DirectoriesManager.Initialize();
 
-                ModLoader.Initialize();
 
                 MakerObjectStorage.Initialize();
                 PresetManager.Initialize();
+                ModLoader.Initialize();
+
                 _hasInit = true;
                 BMLogger.Log("Finish Initialization");
             }

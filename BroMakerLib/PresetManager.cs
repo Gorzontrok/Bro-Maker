@@ -1,18 +1,16 @@
 ﻿using BroMakerLib.Attributes;
 using BroMakerLib.Loggers;
+using BroMakerLib.ModManager;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace BroMakerLib
 {
     public static class PresetManager
     {
-        /// <summary>
-        /// The assembly that contains presets.
-        /// Add yours if your assembly contains presets.
-        /// </summary>
-        public static List<Assembly> assemblies = new List<Assembly>();
         public static Dictionary<string, MethodInfo> parameters = new Dictionary<string, MethodInfo>();
 
         public static Dictionary<string, Type> heroesPreset = new Dictionary<string, Type>();
@@ -30,11 +28,20 @@ namespace BroMakerLib
             customObjectsPreset = new Dictionary<string, Type>();
             abilities = new Dictionary<string, Type>();
 
-            assemblies = new List<Assembly>();
-            assemblies.Add(Assembly.GetExecutingAssembly());
-            assemblies.AddRange(DirectoriesManager.LoadAssembliesInStorage());
+            CheckAssembly(Assembly.GetExecutingAssembly());
 
-            CheckAssemblies(assemblies);
+            // Load assemblies of mods
+            foreach (BroMakerMod mod in ModLoader.mods)
+            {
+                foreach(string assemblyPath in mod.Assemblies)
+                {
+                    var path = Path.Combine(mod.Path, assemblyPath);
+                    if (File.Exists(path))
+                    {
+                        CheckAssembly(Assembly.Load(path));
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -63,39 +70,50 @@ namespace BroMakerLib
             return parameters[name];
         }
 
-
-        private static void CheckAssemblies(List<Assembly> assemblies)
+        public static void CheckAssembly(Assembly assembly)
         {
-            foreach (Assembly assembly in assemblies)
+            try
             {
-                try
-                {
-                    RetrieveParameters(assembly);
-                    Type[] presets = FindPresets(assembly);
-                    AddPresets(presets);
-                }
-                catch(Exception ex)
-                {
-                    BMLogger.ExceptionLog($"{assembly.FullName}", ex);
-                }
+                RetrieveParameters(assembly);
+                Type[] presets = FindPresets(assembly);
+                AddPresets(presets);
+            }
+            catch (Exception ex)
+            {
+                BMLogger.ExceptionLog($"{assembly.FullName} - " + ex.Message);
             }
         }
 
         private static void RetrieveParameters(Assembly assembly)
         {
-            var type = assembly.GetType("Parameters");
-            if (type == null) return;
+            Type[] types = assembly.GetTypes();
+            if (types.Length == 0)
+            {
+                BMLogger.Warning($"Assembly '{assembly.GetName().Name}' is somehow empty ( ͠° ͟ʖ ͡°)");
+                return;
+            }
+            Type paramerterType = types.First((t) => t.Name == "Parameters");
+            if (paramerterType == null)
+                return;
 
-            var methods = type.GetMethods();
+            BMLogger.Log("Found it");
+            var methods = paramerterType.GetMethods();
             foreach(var method in methods)
             {
                 var attributes = method.GetCustomAttributes(typeof(ParameterAttribute), true);
                 if (attributes.IsNotNullOrEmpty())
                 {
+                    if (method.GetParameters().Length != 2)
+                    {
+                        BMLogger.Warning($"Parameter '{method.Name}' should have two parameter.");
+                        continue;
+                    }
+
                     if (parameters.ContainsKey(method.Name))
-                        BMLogger.Warning($"Parameter of name {method.Name} already exist in assembly {type.Assembly.FullName}");
+                        BMLogger.Warning($"Parameter of name {method.Name} already exist in assembly {paramerterType.Assembly.FullName}");
                     else
                         parameters.Add(method.Name, method);
+                    BMLogger.Log("Found this " + method.Name);
                 }
             }
         }

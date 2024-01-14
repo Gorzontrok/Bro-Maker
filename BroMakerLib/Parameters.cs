@@ -1,17 +1,13 @@
 using BroMakerLib.Attributes;
 using BroMakerLib.Loggers;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
-using static HarmonyLib.Code;
 
 namespace BroMakerLib
 {
     public static class Parameters
     {
-        [Parameter(typeof(bool))]
+        [Parameter]
         public static void Halo(object obj, bool value)
         {
             if(value && obj as TestVanDammeAnim)
@@ -24,7 +20,7 @@ namespace BroMakerLib
             }
         }
 
-        [Parameter(typeof(string))]
+        [Parameter]
         public static void HaloPreset(object obj, string value)
         {
             if (value.IsNullOrEmpty())
@@ -52,6 +48,12 @@ namespace BroMakerLib
             }
             else
                 BMLogger.Log($"Halo preset {value} not founded.", LogType.Warning);
+        }
+
+        [Parameter]
+        public static void TestParameter(object obj, string value)
+        {
+            BMLogger.Log("TestParameter: " + value);
         }
     }
 }

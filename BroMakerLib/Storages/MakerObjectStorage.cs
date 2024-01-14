@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using BroMakerLib.Loggers;
-using HarmonyLib;
-using BroMakerLib;
 
 namespace BroMakerLib.Storages
 {
@@ -17,6 +15,17 @@ namespace BroMakerLib.Storages
         public static StoredCharacter[] Bros
         {
             get { return _bros.ToArray(); }
+        }
+        public static string[] BrosNames
+        {
+            get
+            {
+                if (_brosNames == null || _brosNames.Length != _bros.Count)
+                {
+                    _brosNames = _bros.Select((sc) => sc.ToString()).ToArray();
+                }
+                return _brosNames;
+            }
         }
         public static StoredGrenade[] Grenades
         {
@@ -33,6 +42,7 @@ namespace BroMakerLib.Storages
 
         private static List<StoredAbility> _abilities = new List<StoredAbility>();
         private static List<StoredCharacter> _bros = new List<StoredCharacter>();
+        private static string[] _brosNames = null;
         private static List<StoredGrenade> _grenades = new List<StoredGrenade>();
         private static List<StoredProjectile> _projectiles = new List<StoredProjectile>();
         private static List<StoredWeapon> _weapons = new List<StoredWeapon>();
@@ -45,7 +55,6 @@ namespace BroMakerLib.Storages
             _abilities = new List<StoredAbility>();
             _projectiles = new List<StoredProjectile>();
 
-            StoreJsonFiles();
             BMLogger.Debug("MakerObjectStorage Initialized.");
         }
 
@@ -57,6 +66,45 @@ namespace BroMakerLib.Storages
             return _abilities.FirstOrDefault(s => s.name == name);
         }
 
+        public static void StoreCharactersFromMod(BroMakerMod mod)
+        {
+            if (mod == null || mod.CustomBros == null || mod.CustomBros.Length == 0)
+                return;
+
+            foreach (var broFile in mod.CustomBros)
+            {
+                if (broFile.IsNotNullOrEmpty())
+                {
+                    var path = Path.Combine(mod.Path, broFile);
+                    if (File.Exists(path))
+                    {
+                        _bros.Add(new StoredCharacter(path));
+                        BMLogger.Debug($"Found file: '{path}'");
+                    }
+                }
+            }
+        }
+
+        public static void StoreAbilitiesFromMod(BroMakerMod mod)
+        {
+            if (mod == null || mod.Abilities == null || mod.Abilities.Length == 0)
+                return;
+
+            foreach (var broFile in mod.Abilities)
+            {
+                if (broFile.IsNotNullOrEmpty())
+                {
+                    var path = Path.Combine(mod.Path, broFile);
+                    if (File.Exists(path))
+                    {
+                        _abilities.Add(new StoredAbility(path));
+                        BMLogger.Debug($"Found file: '{path}'");
+                    }
+                }
+            }
+        }
+
+        [Obsolete("Objects are now loaded from Mods")]
         private static void StoreJsonFiles()
         {
             StoreCharacterJsonFiles();
@@ -66,25 +114,8 @@ namespace BroMakerLib.Storages
             StoreProjectileJsonFiles();
         }
 
-        public static void StoreCharactersFromMod(BroMakerMod mod)
-        {
-            if (mod == null || mod.CustomBros == null || mod.CustomBros.Length == 0)
-                return;
-
-            foreach(var broFile in mod.CustomBros)
-            {
-                if (broFile.IsNotNullOrEmpty())
-                {
-                    var path = Path.Combine(mod.Path, broFile);
-                    _bros.Add(new StoredCharacter(path));
-                    BMLogger.Debug($"Found file: '{path}'");
-                }
-            }
-        }
-
         private static void StoreCharacterJsonFiles()
         {
-            return;
             var jsonFiles = Directory.GetFiles(DirectoriesManager.BrosDirectory, "*.json", SearchOption.AllDirectories);
             foreach (var file in jsonFiles)
             {

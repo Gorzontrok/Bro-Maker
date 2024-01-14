@@ -10,15 +10,25 @@ using RocketLib;
 using BSett = BroMakerLib.Settings;
 using BroMakerLib.CustomObjects.Bros;
 using BroMakerLib.ModManager;
+using System.IO;
+using static HarmonyLib.Code;
 
 namespace BroMakerLib.UnityMod
 {
-    public static class ModUI
+    internal static class ModUI
     {
+        public static List<BroMakerMod> Mods
+        {
+            get
+            {
+                return ModLoader.mods;
+            }
+        }
+
         private static Dictionary<string, Action> _tabs = new Dictionary<string, Action>()
         {
             { "Spawner", Spawner },
-            { "Mods", Mods },
+            { "Mods", ModsUI },
             { "Create New Object", CreateFileEditor.UnityUI },
             { "Edit file", EditCurrentFile},
             { "Settings", Settings }
@@ -33,12 +43,14 @@ namespace BroMakerLib.UnityMod
         private static int _tabSelected = 0;
         private static GUIStyle _errorSwapingMessageStyle = new GUIStyle();
         private static Rect _toolTipRect = Rect.zero;
-        private static int _selectedCustomBros = -1;
-        private static string[] _brosNames;
+        private static int _selectedCustomBrosIndex = -1;
         private static StoredCharacter _selectedBro;
         private static CustomHero _selectedHero;
         private static GameObject heroHolder;
         private static bool heroCreated = false;
+
+        private static Vector2 _spawnerScrollView;
+        private static int _broPerLines = 6;
 
         public static void Initialize()
         {
@@ -52,8 +64,6 @@ namespace BroMakerLib.UnityMod
                 fontSize = 15,
             };
             _toolTipStyle.normal.textColor = Color.white;
-
-            _brosNames = MakerObjectStorage.Bros.Select((sc) => sc.ToString()).ToArray();
 
             BSett.instance.checkForDeletedBros();
             BSett.instance.countEnabledBros();
@@ -103,36 +113,104 @@ namespace BroMakerLib.UnityMod
                 PresetManager.Initialize();
             GUILayout.EndHorizontal();
 
-            StoredCharacter[] bros = MakerObjectStorage.Bros;
-            if (bros.Length != 0)
+            // New UI
+            GUILayout.BeginVertical();
+            _spawnerScrollView = GUILayout.BeginScrollView(_spawnerScrollView, GUILayout.Height(400));
+            if (Mods.Count <= 0)
             {
-                if (_selectedCustomBros >= 0 && _selectedCustomBros < bros.Length)
-                {
-
-                    SelectedBroUI(_selectedBro);
-                }
-
-                GUILayout.Label("Select bros from JSON :");
-                GUILayout.BeginHorizontal();
-                if (_selectedCustomBros != (_selectedCustomBros = GUILayout.SelectionGrid(_selectedCustomBros, _brosNames, 5, GUILayout.Height(20 * bros.Length % 5))))
-                {
-                    _selectedBro = bros[_selectedCustomBros];
-                    _objectToEdit = bros[_selectedCustomBros].GetInfo<CustomBroInfo>();
-                    CreateSelectedBro();
-                    FieldsEditor.editHasError = false;
-                }
-
-                GUILayout.EndHorizontal();
+                GUILayout.Label("No mod intalled.");
+                return;
             }
-            else
+
+            GUILayout.BeginHorizontal("box");
+            GUILayout.Label("Name", GUILayout.Width(200));
+            GUILayout.Label("Author", GUILayout.Width(100));
+            GUILayout.Label("Version", GUILayout.Width(50));
+            GUILayout.Label("BroMaker Version", GUILayout.Width(100));
+            GUILayout.EndHorizontal();
+            GUILayout.Space(30);
+
+            int broIndex = 0;
+            try
             {
-                GUILayout.Label("No Bros File Found");
+                foreach (BroMakerMod mod in Mods)
+                {
+                    var name = mod.Name;
+                    if (name.IsNullOrEmpty())
+                        name = mod.Id;
+
+                    // show mod informations
+                    GUILayout.BeginHorizontal("box");
+                    GUILayout.Label(name, GUILayout.Width(200));
+                    GUILayout.Label(mod.Author, GUILayout.Width(100));
+                    GUILayout.Label(mod.Version, GUILayout.Width(50));
+                    GUILayout.Label(mod.BroMakerVersion, GUILayout.Width(100));
+                    GUILayout.EndHorizontal();
+
+                    // Show bros
+                    GUILayout.BeginVertical("box");
+                    bool isHorizontalOpen = false;
+                    int horizontalIndex = 0;
+                    bool willShowOptions = false;
+                    int modIndex = 0;
+                    foreach (string bro in mod.CustomBros)
+                    {
+                        if (horizontalIndex == 0)
+                        {
+                            GUILayout.BeginHorizontal();
+                            isHorizontalOpen = true;
+                        }
+
+                        if (GUILayout.Button(mod.BrosNames[modIndex], GUILayout.Width(100)))
+                        {
+                            _selectedCustomBrosIndex = broIndex;
+                            _selectedBro = new StoredCharacter(Path.Combine(mod.Path, mod.CustomBros[modIndex]));
+                        }
+
+                        if (_selectedCustomBrosIndex == broIndex)
+                        {
+                            willShowOptions = true;
+                        }
+
+                        if (horizontalIndex == _broPerLines)
+                        {
+                            horizontalIndex = 0;
+                            isHorizontalOpen = false;
+                            GUILayout.EndHorizontal();
+
+                            if (willShowOptions)
+                            {
+                                SelectedBroUI(_selectedBro);
+                            }
+                        }
+                        broIndex++;
+                        horizontalIndex++;
+                        modIndex++;
+                    }
+                    // prevent any horizontal open and not closed inside the loop
+                    if (isHorizontalOpen)
+                    {
+                        GUILayout.EndHorizontal();
+                    }
+                    GUILayout.EndVertical();
+
+                    GUILayout.Space(30);
+                }
+
+                GUILayout.EndVertical();
+                GUILayout.EndScrollView();
+            }
+            catch (Exception e)
+            {
+                BMLogger.ExceptionLog(e);
             }
         }
 
-        private static void Mods()
+        private static void ModsUI()
         {
             GUILayout.Label("Mods :");
+            if (GUILayout.Button("ReloadMods"))
+                ModManager.ModLoader.Initialize();
             foreach (BroMakerMod mod in ModLoader.mods)
             {
                 var name = mod.Name;
@@ -190,15 +268,17 @@ namespace BroMakerLib.UnityMod
             }
         }
 
+
         private static void SelectedBroUI(StoredCharacter bro)
         {
-            if (bro.Equals(null)) return;
+            if (bro.Equals(null))
+                return;
 
             Main.selectedPlayerNum = RGUI.HorizontalSliderInt("Player Num: ", Main.selectedPlayerNum, 0, 3, 200);
 
             GUILayout.BeginVertical("box");
             //_objectToEdit = bro.GetInfo<CustomBroInfo>();
-            FileEditor.makerObjectType = MakerObjectType.Bros;
+            //FileEditor.makerObjectType = MakerObjectType.Bros;
 
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
 
@@ -213,12 +293,14 @@ namespace BroMakerLib.UnityMod
                     BSett.instance.automaticSpawnProbabilty = BSett.instance.calculateSpawnProbability();
                 }
             }
-            if (GUILayout.Button("Edit File"))
+            /*if (GUILayout.Button("Edit File"))
             {
                 _tabSelected = 2;
-            }
+            }*/
             if (GUILayout.Button("Duplicate File"))
+            {
                 CreateFileEditor.DuplicateFile(bro.path);
+            }
             if (GUILayout.Button("Load Cutscene"))
             {
                 Cutscenes.CustomCutsceneController.LoadHeroCutscene(bro.GetInfo<CustomCharacterInfo>().cutscene);
@@ -307,8 +389,7 @@ namespace BroMakerLib.UnityMod
         private static void ReloadFiles()
         {
             BroMaker.ReloadFiles();
-            _brosNames = MakerObjectStorage.Bros.Select((sc) => sc.ToString()).ToArray();
-            _selectedCustomBros = -1;
+            _selectedCustomBrosIndex = -1;
         }
     }
 }

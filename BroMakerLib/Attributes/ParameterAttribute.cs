@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace BroMakerLib.Attributes
 {
@@ -10,6 +7,9 @@ namespace BroMakerLib.Attributes
     public class ParameterAttribute : Attribute
     {
         public Type valueType;
+        public ParameterAttribute()
+        { }
+        [Obsolete("Useless")]
         public ParameterAttribute(Type type)
         {
             valueType = type;

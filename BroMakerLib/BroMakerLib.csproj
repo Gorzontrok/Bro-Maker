@@ -122,7 +122,7 @@
     <Compile Include="BroMaker.cs" />
     <Compile Include="Attributes\CustomObjectPresetAttribute.cs" />
     <Compile Include="ModManager\BroMakerMod.cs" />
-    <Compile Include="Constants.cs" />
+    <Compile Include="Info.cs" />
     <Compile Include="CustomObjects\Bros\SwordHero.cs" />
     <Compile Include="CustomObjects\Halo\BroHaloM.cs" />
     <Compile Include="CustomObjects\Halo\HaloAlwaysShown.cs" />
