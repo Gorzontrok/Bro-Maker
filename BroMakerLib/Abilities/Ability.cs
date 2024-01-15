@@ -26,13 +26,9 @@ namespace BroMakerLib.Abilities
         {
             this.info = info;
             info.ReadParameters(this);
-            info.BeforeAwake(this);
-            info.AfterAwake(this);
-            info.BeforeStart(this);
-            info.AfterStart(this);
         }
 
-        public virtual void All()
+        public virtual void All(string calledFromMethod, params object[] objects)
         { }
 
 

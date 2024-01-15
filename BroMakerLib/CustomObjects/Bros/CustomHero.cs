@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections;
 using BroMakerLib.Infos;
 using BroMakerLib.Loggers;
 using BroMakerLib.Loaders;
-using BroMakerLib.Stats;
 using UnityEngine;
-using System.Collections.Generic;
 using BroMakerLib.CustomObjects.Components;
-using BroMakerLib.Abilities.Weapons;
 using BroMakerLib.Abilities;
 using HarmonyLib;
 
@@ -96,10 +92,7 @@ namespace BroMakerLib.CustomObjects.Bros
         {
             if(primaryAbility != null)
             {
-                if (primaryAbility as Weapon != null)
-                    primaryAbility.Fire(x, y, xSpeed, ySpeed);
-                else
-                    primaryAbility.All();
+                characterExtended.InvokeAbility(nameof(FireWeapon), x, y, xSpeed, ySpeed);
             }
             else
             {
@@ -142,8 +135,14 @@ namespace BroMakerLib.CustomObjects.Bros
             characterExtended.InvokeAbility(nameof(ActivateGun));
         }
 
-		// This function is overridden to remove the RPC calls, since they don't work currently
-		protected override void CheckForTraps(ref float yIT)
+        protected override void Jump(bool wallJump)
+        {
+            base.Jump(wallJump);
+            characterExtended.InvokeAbility(nameof(Jump), wallJump);
+        }
+
+        // This function is overridden to remove the RPC calls, since they don't work currently
+        protected override void CheckForTraps(ref float yIT)
 		{
 			float num = base.Y + yIT;
 			if (num <= this.groundHeight + 1f)

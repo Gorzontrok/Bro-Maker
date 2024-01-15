@@ -4,6 +4,7 @@ using UnityEngine;
 using BroMakerLib.Loggers;
 using BroMakerLib.Storages;
 using System;
+using System.Linq;
 
 namespace BroMakerLib.CustomObjects.Components
 {
@@ -41,7 +42,14 @@ namespace BroMakerLib.CustomObjects.Components
             {
                 foreach (CharacterAbility ability in _characterAbilitiesAlone)
                 {
-                    ability.info.BeforeAwake(ability);
+                    try
+                    {
+                        ability.info.BeforeAwake(ability);
+                    }
+                    catch(Exception ex)
+                    {
+                        BMLogger.ExceptionLog($"{ability} failed Before Awake\n" + ex);
+                    }
                 }
             }
             catch(Exception ex)
@@ -53,21 +61,42 @@ namespace BroMakerLib.CustomObjects.Components
         {
             foreach(CharacterAbility ability in _characterAbilitiesAlone)
             {
-                ability.info.AfterAwake(ability);
+                try
+                {
+                    ability.info.AfterAwake(ability);
+                }
+                catch (Exception ex)
+                {
+                    BMLogger.ExceptionLog($"{ability} failed After Awake\n" + ex);
+                }
             }
         }
         public virtual void BeforeStart()
         {
             foreach(CharacterAbility ability in _characterAbilitiesAlone)
             {
-                ability.info.BeforeStart(ability);
+                try
+                {
+                    ability.info.BeforeStart(ability);
+                }
+                catch (Exception ex)
+                {
+                    BMLogger.ExceptionLog($"{ability} failed Before Start\n" + ex);
+                }
             }
         }
         public virtual void AfterStart()
         {
             foreach(CharacterAbility ability in _characterAbilitiesAlone)
             {
-                ability.info.AfterStart(ability);
+                try
+                {
+                    ability.info.AfterStart(ability);
+                }
+                catch (Exception ex)
+                {
+                    BMLogger.ExceptionLog($"{ability} failed After Start\n" + ex);
+                }
             }
         }
         #endregion
@@ -90,6 +119,10 @@ namespace BroMakerLib.CustomObjects.Components
                 {
                     StoreAbility(ability, pair.Value);
                 }
+                else
+                {
+                    BMLogger.Error($"Ability or Preset {abilityName} not founded");
+                }
             }
 
         }
@@ -99,7 +132,6 @@ namespace BroMakerLib.CustomObjects.Components
             var storedAbility = MakerObjectStorage.GetAbilityByName(abilityName);
             if (storedAbility.IsEmpty)
             {
-                BMLogger.Warning($"Ability {abilityName} not founded");
                 return null;
             }
 
@@ -122,7 +154,7 @@ namespace BroMakerLib.CustomObjects.Components
                 BMLogger.Warning($"{abilityName} was not made for character");
                 return null;
             }
-            info.BeforeAwake(ability);
+            ability.Init(info);
             return ability as CharacterAbility;
         }
 
@@ -131,7 +163,6 @@ namespace BroMakerLib.CustomObjects.Components
             var type = PresetManager.GetAbilityPreset(abilityName);
             if (type == null)
             {
-                BMLogger.Error($"Preset {abilityName} not founded");
                 return null;
             }
             if (type != typeof(CharacterAbility) && !type.IsSubclassOf(typeof(CharacterAbility)))
@@ -139,7 +170,13 @@ namespace BroMakerLib.CustomObjects.Components
                 BMLogger.Warning($"Ability {type} is not type or subclass of {typeof(CharacterAbility)}");
                 return null;
             }
-            return (CharacterAbility)Activator.CreateInstance(type);
+            CharacterAbility ability = (CharacterAbility)Activator.CreateInstance(type);
+            if (ability == null)
+            {
+                BMLogger.Error("Can't create instance of type " + type);
+            }
+            ability.Init(new Infos.AbilityInfo());
+            return ability;
         }
 
         protected virtual void StoreAbility(CharacterAbility ability, string[] methods)
@@ -163,7 +200,11 @@ namespace BroMakerLib.CustomObjects.Components
                         if (!characterAbilities.ContainsKey(method))
                             characterAbilities.Add(method, new CharacterAbility[] { ability });
                         else
-                            characterAbilities[method].Append(ability);
+                        {
+                            var temp = characterAbilities[method].ToList();
+                            temp.Add(ability);
+                            characterAbilities[method] = temp.ToArray();
+                        }
                         _characterAbilitiesAlone.Add(ability);
                     }
                 }
@@ -181,7 +222,7 @@ namespace BroMakerLib.CustomObjects.Components
             var abilities = characterAbilities[method];
             foreach (var ability in abilities)
             {
-                ability.All();
+                ability.All(method, parameters);
                 ability.CallMethod(method, parameters);
             }
         }

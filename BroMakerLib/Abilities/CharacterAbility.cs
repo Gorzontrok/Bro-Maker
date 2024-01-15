@@ -10,7 +10,7 @@ namespace BroMakerLib.Abilities
     {
         public virtual void ActivateGun()
         { }
-        public virtual void Fire(float x, float y, float xSpeed, float ySpeed)
+        public virtual void FireWeapon(float x, float y, float xSpeed, float ySpeed)
         { }
         public virtual void UseSpecial()
         { }

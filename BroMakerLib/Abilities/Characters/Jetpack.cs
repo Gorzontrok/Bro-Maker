@@ -1,9 +1,5 @@
 ﻿using BroMakerLib.Attributes;
 using RocketLib;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using Net = Networking.Networking;
 
@@ -20,11 +16,6 @@ namespace BroMakerLib.Abilities
 
         protected Countdown jetpackTime;
         protected float flameCounter;
-
-        public override void All()
-        {
-            UseJetpack();
-        }
 
         public override void UseSpecial()
         {

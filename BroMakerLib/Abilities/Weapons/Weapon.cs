@@ -64,9 +64,10 @@ namespace BroMakerLib.Abilities.Weapons
             return true;
         }
 
-        public override void Fire(float x, float y, float xSpeed, float ySpeed)
+        public override void FireWeapon(float x, float y, float xSpeed, float ySpeed)
         {
-            if (!CanFire()) return;
+            if (!CanFire())
+                return;
 
             PrepareWeapon(x, y, xSpeed, ySpeed);
             SpawnProjectile(Projectile, x, y, xSpeed, ySpeed);
