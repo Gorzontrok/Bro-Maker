@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using UnityEngine;
 
 namespace BroMakerLib
 {
@@ -87,10 +88,20 @@ namespace BroMakerLib
 
         public static void CheckAssembly(Assembly assembly)
         {
+            if (assembly == null)
+                throw new NullReferenceException(nameof(assembly));
+
             try
             {
-                RetrieveParameters(assembly);
-                Type[] presets = FindPresets(assembly);
+                Type[] types = assembly.GetTypes();
+                if (types.Length == 0)
+                {
+                    BMLogger.Warning($"Assembly '{assembly.GetName().Name}' is somehow empty ( ͠° ͟ʖ ͡°)");
+                    return;
+                }
+
+                RetrieveParameters(types);
+                Type[] presets = FindPresets(types);
                 AddPresets(presets);
             }
             catch (Exception ex)
@@ -99,14 +110,8 @@ namespace BroMakerLib
             }
         }
 
-        private static void RetrieveParameters(Assembly assembly)
+        private static void RetrieveParameters(Type[] types)
         {
-            Type[] types = assembly.GetTypes();
-            if (types.Length == 0)
-            {
-                BMLogger.Warning($"Assembly '{assembly.GetName().Name}' is somehow empty ( ͠° ͟ʖ ͡°)");
-                return;
-            }
             Type paramerterType = types.FirstOrDefault((t) => t.Name == "Parameters");
             if (paramerterType == null || paramerterType.Name != "Parameters")
                 return;
@@ -131,13 +136,9 @@ namespace BroMakerLib
             }
         }
 
-        private static Type[] FindPresets(Assembly assembly)
+        private static Type[] FindPresets(Type[] types)
         {
-            if (assembly == null)
-                throw new NullReferenceException(nameof(assembly));
-
             var result = new List<Type>();
-            var types = assembly.GetTypes();
 
             foreach (Type type in types)
             {
