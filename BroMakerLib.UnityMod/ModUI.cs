@@ -26,7 +26,7 @@ namespace BroMakerLib.UnityMod
 
         private static Dictionary<string, Action> _tabs = new Dictionary<string, Action>()
         {
-            { "Spawner", Spawner },
+            { "Custom Bros", Spawner },
             { "Create New Object", CreateFileEditor.UnityUI },
             //{ "Edit file", EditCurrentFile},
             { "Settings", Settings }
@@ -42,6 +42,7 @@ namespace BroMakerLib.UnityMod
         private static GUIStyle _errorSwapingMessageStyle = new GUIStyle();
         private static Rect _toolTipRect = Rect.zero;
         private static int _selectedCustomBrosIndex = -1;
+        private static int _selectedModIndex = -1;
         private static StoredCharacter _selectedBro;
         private static CustomHero _selectedHero;
         private static GameObject heroHolder;
@@ -91,9 +92,9 @@ namespace BroMakerLib.UnityMod
         public static void Spawner()
         {
             GUILayout.Label(BMLogger.errorSwapingMessage, _errorSwapingMessageStyle);
-            GUILayout.Space(15);
+            //GUILayout.Space(15);
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("ReloadMods", GUILayout.ExpandWidth(false)))
+            if (GUILayout.Button("Reload Mods", GUILayout.ExpandWidth(false)))
             {
                 ModManager.ModLoader.Initialize();
             }
@@ -113,6 +114,7 @@ namespace BroMakerLib.UnityMod
             if (GUILayout.Button("Reload Preset", GUILayout.ExpandWidth(false)))
                 PresetManager.Initialize();
             GUILayout.EndHorizontal();
+            GUILayout.Space(15);
 
             // New UI
             GUILayout.BeginVertical();
@@ -124,14 +126,18 @@ namespace BroMakerLib.UnityMod
             }
 
             GUILayout.BeginHorizontal("box");
-            GUILayout.Label("Name", GUILayout.Width(200));
-            GUILayout.Label("Author", GUILayout.Width(100));
-            GUILayout.Label("Version", GUILayout.Width(50));
-            GUILayout.Label("BroMaker Version", GUILayout.Width(150));
+            GUILayout.Label("Name", GUILayout.Width(150));
+            GUILayout.Space(50);
+            GUILayout.Label("Author", GUILayout.Width(200));
+            GUILayout.Label("Version", GUILayout.Width(200));
+            GUILayout.Label("BroMaker Version", GUILayout.Width(200));
             GUILayout.EndHorizontal();
-            GUILayout.Space(20);
+            GUILayout.Space(15);
+
+            GUIStyle buttonStyle = new GUIStyle(GUI.skin.button);
 
             int broIndex = 0;
+            int modCount = 0;
             try
             {
                 foreach (BroMakerMod mod in Mods)
@@ -142,68 +148,142 @@ namespace BroMakerLib.UnityMod
                     }
 
                     var name = mod.Name;
-                    // show mod informations
-                    GUILayout.BeginHorizontal("box");
-                    GUILayout.Label(name, GUILayout.Width(200));
-                    GUILayout.Label(mod.Author, GUILayout.Width(100));
-                    GUILayout.Label(mod.Version, GUILayout.Width(50));
-                    GUILayout.Label(mod.BroMakerVersion, GUILayout.Width(150));
-                    GUILayout.EndHorizontal();
-
-                    // Show bros
-                    GUILayout.BeginVertical("box");
-                    bool isHorizontalOpen = false;
-                    int horizontalIndex = 0;
-                    bool willShowOptions = false;
-                    int modIndex = 0;
-                    foreach (string bro in mod.CustomBros)
+                    // If only one custom bro is in the mod, we can just display them where the mod name would be
+                    if ( mod.CustomBros.Length == 1 )
                     {
-                        if (horizontalIndex == 0)
+                        // show mod information
+                        GUILayout.BeginHorizontal("box");
+                        if ( (_selectedCustomBrosIndex == broIndex) != GUILayout.Toggle(_selectedCustomBrosIndex == broIndex, mod.BrosNames[0], buttonStyle, GUILayout.Width(150)) )
                         {
-                            GUILayout.BeginHorizontal();
-                            isHorizontalOpen = true;
-                        }
-
-                        if (GUILayout.Button(mod.BrosNames[modIndex], GUILayout.Width(100)))
-                        {
-                            _selectedCustomBrosIndex = broIndex;
-                            _selectedBro = new StoredCharacter(Path.Combine(mod.Path, mod.CustomBros[modIndex]));
-                            _objectToEdit = _selectedBro.GetInfo<CustomBroInfo>();
-                            CreateSelectedBro();
-                        }
-
-                        if (_selectedCustomBrosIndex == broIndex)
-                        {
-                            willShowOptions = true;
-                        }
-
-                        if (horizontalIndex == _broPerLines)
-                        {
-                            horizontalIndex = 0;
-                            isHorizontalOpen = false;
-                            GUILayout.EndHorizontal();
-
-                            if (willShowOptions)
+                            if (_selectedCustomBrosIndex == broIndex)
                             {
-                                SelectedBroUI(_selectedBro);
+                                _selectedCustomBrosIndex = -1;
+                            }
+                            else
+                            {
+                                _selectedCustomBrosIndex = broIndex;
+                                _selectedBro = new StoredCharacter(Path.Combine(mod.Path, mod.CustomBros[0]));
+                                _objectToEdit = _selectedBro.GetInfo<CustomBroInfo>();
+                                CreateSelectedBro();
                             }
                         }
-                        broIndex++;
-                        horizontalIndex++;
-                        modIndex++;
-                    }
-                    // prevent any horizontal open and not closed inside the loop
-                    if (isHorizontalOpen)
-                    {
+                        GUILayout.Space(50);
+                        GUILayout.Label(mod.Author, GUILayout.Width(200));
+                        GUILayout.Label(mod.Version, GUILayout.Width(200));
+                        GUILayout.Label(mod.BroMakerVersion, GUILayout.Width(200));
                         GUILayout.EndHorizontal();
-                        if (willShowOptions)
+
+                        // Show bros
+                        if (_selectedCustomBrosIndex == broIndex)
                         {
                             SelectedBroUI(_selectedBro);
+                            GUILayout.Space(25);
                         }
-                    }
-                    GUILayout.EndVertical();
+                        else
+                        {
+                            GUILayout.Space(13);
+                        }
 
-                    GUILayout.Space(30);
+                        broIndex++;
+                    }
+                    // If more than one custom bros are in the mod, allow user to toggle to see them
+                    else
+                    {
+                        // show mod information
+                        GUILayout.BeginHorizontal("box");
+                        if ((_selectedModIndex == modCount) != GUILayout.Toggle(_selectedModIndex == modCount, name, buttonStyle, GUILayout.Width(150)) )
+                        {
+                            // Deselect
+                            if ( _selectedModIndex == modCount )
+                            {
+                                _selectedModIndex = -1;
+                            }
+                            else
+                            {
+                                _selectedModIndex = modCount;
+                            }
+                        }
+                        GUILayout.Space(50);
+                        GUILayout.Label(mod.Author, GUILayout.Width(200));
+                        GUILayout.Label(mod.Version, GUILayout.Width(200));
+                        GUILayout.Label(mod.BroMakerVersion, GUILayout.Width(200));
+                        GUILayout.EndHorizontal();
+
+                        // Only show custom bros of this mod if this mod is selected
+                        if ( _selectedModIndex == modCount )
+                        {
+                            // Show bros
+                            GUILayout.BeginVertical("box");
+                            bool isHorizontalOpen = false;
+                            int horizontalIndex = 0;
+                            bool willShowOptions = false;
+                            int modIndex = 0;
+                            foreach (string bro in mod.CustomBros)
+                            {
+                                if (horizontalIndex == 0)
+                                {
+                                    GUILayout.BeginHorizontal();
+                                    isHorizontalOpen = true;
+                                }
+
+                                if ( (_selectedCustomBrosIndex == broIndex) != GUILayout.Toggle(_selectedCustomBrosIndex == broIndex, mod.BrosNames[modIndex], buttonStyle, GUILayout.Width(150)) )
+                                {
+                                    if (_selectedCustomBrosIndex == broIndex)
+                                    {
+                                        _selectedCustomBrosIndex = -1;
+                                    }
+                                    else
+                                    {
+                                        _selectedCustomBrosIndex = broIndex;
+                                        _selectedBro = new StoredCharacter(Path.Combine(mod.Path, mod.CustomBros[0]));
+                                        _objectToEdit = _selectedBro.GetInfo<CustomBroInfo>();
+                                        CreateSelectedBro();
+                                    }
+                                }
+
+                                if (_selectedCustomBrosIndex == broIndex)
+                                {
+                                    willShowOptions = true;
+                                }
+
+                                if (horizontalIndex == _broPerLines)
+                                {
+                                    horizontalIndex = 0;
+                                    isHorizontalOpen = false;
+                                    GUILayout.EndHorizontal();
+
+                                    if (willShowOptions)
+                                    {
+                                        SelectedBroUI(_selectedBro);
+                                    }
+                                }
+                                broIndex++;
+                                horizontalIndex++;
+                                modIndex++;
+                            }
+                            // prevent any horizontal open and not closed inside the loop
+                            if (isHorizontalOpen)
+                            {
+                                GUILayout.EndHorizontal();
+                                if (willShowOptions)
+                                {
+                                    SelectedBroUI(_selectedBro);
+                                }
+                            }
+                            GUILayout.EndVertical();
+                        }
+                        // Just count up how many bros are in the mod if not displaying the custom bros
+                        else
+                        {
+                            foreach (string bro in mod.CustomBros)
+                            {
+                                broIndex++;
+                            }
+                        }
+
+                        GUILayout.Space(13);
+                    }
+                    ++modCount;
                 }
 
                 GUILayout.EndVertical();
