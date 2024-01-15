@@ -56,7 +56,7 @@ namespace BroMakerLib
                 Directory.CreateDirectory(_storageDirectory);
 
             // Legacy
-            if (!Directory.Exists(BrosDirectory))
+            /*if (!Directory.Exists(BrosDirectory))
                 Directory.CreateDirectory(BrosDirectory);
 
             if (!Directory.Exists(WeaponsDirectory))
@@ -72,7 +72,7 @@ namespace BroMakerLib
                 Directory.CreateDirectory(ProjectilesDirectory);
 
             if (!Directory.Exists(CutscenesDirectory))
-                Directory.CreateDirectory(CutscenesDirectory);
+                Directory.CreateDirectory(CutscenesDirectory);*/
         }
 
         [Obsolete("Assemblies are loaded from Mods now")]
