@@ -70,7 +70,7 @@ namespace BroMakerLib.Storages
         {
             try
             {
-                BMLogger.Log("Spawning Hero " + name);
+                BMLogger.Debug("Spawning Hero " + name);
                 var info = GetInfo<CustomBroInfo>();
                 Loaders.LoadHero.WithCustomBroInfo(playerNum, info, PresetManager.GetHeroPreset(info.characterPreset));
             }
