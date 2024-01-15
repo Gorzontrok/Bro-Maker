@@ -12,7 +12,7 @@ namespace BroMakerLib.Editor
 {
     public static class FileEditor
     {
-        public static MakerObjectType makerObjectType = MakerObjectType.Bros;
+        public static MakerObjectFileType makerObjectType = MakerObjectFileType.Bros;
         private static string _fileName = string.Empty;
 
         public static void UnityUI(object obj)
@@ -55,11 +55,11 @@ namespace BroMakerLib.Editor
         {
             switch(makerObjectType)
             {
-                case MakerObjectType.Bros:
+                case MakerObjectFileType.Bros:
                     return DirectoriesManager.BrosDirectory;
-                case MakerObjectType.Grenade:
+                case MakerObjectFileType.Grenade:
                     return DirectoriesManager.GrenadesDirectory;
-                case MakerObjectType.Weapon:
+                case MakerObjectFileType.Weapon:
                     return DirectoriesManager.WeaponsDirectory;
                 default:
                     return null;

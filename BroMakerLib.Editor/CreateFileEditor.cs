@@ -12,9 +12,9 @@ namespace BroMakerLib.Editor
 {
     public static class CreateFileEditor
     {
-        private static readonly string[] _objectNames = new string[] { "Bros"/*, "Grenade", "Weapon", "Cutscene", "Projectile", "Ability"*/ };
+        private static readonly string[] _objectNames = new string[] { "Bro", "Mod", "Ability" };
         private static string _fileName = string.Empty;
-        private static readonly MakerObjectType[] _makerObjectTypes = new MakerObjectType[] { MakerObjectType.Bros/*, MakerObjectType.Grenade, MakerObjectType.Weapon, MakerObjectType.Cutscene, MakerObjectType.Projectile, MakerObjectType.Ability*/ };
+        private static readonly MakerObjectFileType[] _makerObjectTypes = new MakerObjectFileType[] { MakerObjectFileType.Bros, MakerObjectFileType.Mods, MakerObjectFileType.Ability };
         private static int _objectTypeSelected = 0;
 
         static CreateFileEditor()
@@ -41,33 +41,37 @@ namespace BroMakerLib.Editor
             {
                 switch (_makerObjectTypes[_objectTypeSelected])
                 {
-                    case MakerObjectType.Bros:
+                    case MakerObjectFileType.Bros:
                         CustomBroInfo bInfo = new CustomBroInfo(fileName);
                         bInfo.Initialize();
                         bInfo.SerializeJSON(DirectoriesManager.BrosDirectory);
                         return;
-                    case MakerObjectType.Grenade:
+                    case MakerObjectFileType.Grenade:
                         CustomGrenadeInfo gInfo = new CustomGrenadeInfo(fileName);
                         gInfo.Initialize();
                         gInfo.SerializeJSON(DirectoriesManager.GrenadesDirectory);
                         return;
-                    case MakerObjectType.Weapon:
+                    case MakerObjectFileType.Weapon:
                         CustomWeaponInfo wInfo = new CustomWeaponInfo(fileName);
                         wInfo.Initialize();
                         wInfo.SerializeJSON(DirectoriesManager.WeaponsDirectory);
                         return;
-                    case MakerObjectType.Cutscene:
+                    case MakerObjectFileType.Cutscene:
                         CustomIntroCutscene c = new CustomIntroCutscene();
                         c.SerializeJSON(DirectoriesManager.CutscenesDirectory, _fileName);
                         return;
-                    case MakerObjectType.Projectile:
+                    case MakerObjectFileType.Projectile:
                         /*CustomIntroCutscene c = new CustomIntroCutscene();
                         c.SerializeJSON(DirectoriesManager.CutscenesDirectory, _fileName);*/
                         return;
-                    case MakerObjectType.Ability:
+                    case MakerObjectFileType.Ability:
                         var a = new AbilityInfo(fileName);
                         a.Initialize();
                         a.SerializeJSON(DirectoriesManager.AbilitiesDirectory);
+                        return;
+                    case MakerObjectFileType.Mods:
+                        BroMakerMod mod = new BroMakerMod();
+                        mod.SerializeJSON(Path.Combine(DirectoriesManager.StorageDirectory, fileName), fileName);
                         return;
                 }
             }
@@ -98,7 +102,7 @@ namespace BroMakerLib.Editor
         }
     }
 
-    public enum MakerObjectType
+    public enum MakerObjectFileType
     {
         Bros,
         Grenade,
@@ -106,5 +110,6 @@ namespace BroMakerLib.Editor
         Cutscene,
         Projectile,
         Ability,
+        Mods,
     }
 }
