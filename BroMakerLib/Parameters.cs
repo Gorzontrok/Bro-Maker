@@ -117,6 +117,9 @@ namespace BroMakerLib
             if (hero.specialMaterials == null)
                 hero.specialMaterials = new System.Collections.Generic.List<Material>();
 
+            if (hero.specialMaterials.Count > 0)
+                return;
+
             if (value is string)
             {
                 string iconFile = value as string;
