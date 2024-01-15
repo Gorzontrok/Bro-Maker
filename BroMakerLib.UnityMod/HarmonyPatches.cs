@@ -631,9 +631,20 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 if ( mat != null )
                 {
                     sprite.GetComponent<Renderer>().material = mat;
+                    // Move custom bro avatar down one pixel
+                    HeroController.players[LoadHero.playerNum].hud.avatar.SetOffset(new Vector3(0, 15, 10));
 
                     __result = false;
                     return false;
+                }
+            }
+            
+            for ( int i = 0; i < 4; ++i )
+            {
+                // Ensure all non custom bros have normal offset
+                if (HeroController.players[i] && !(HeroController.players[i].character is CustomHero) )
+                {
+                    HeroController.players[i].hud.avatar.SetOffset(new Vector3(0, 16, 10));
                 }
             }
 
