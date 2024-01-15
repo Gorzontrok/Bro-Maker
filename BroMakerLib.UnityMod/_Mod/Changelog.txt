@@ -1,5 +1,5 @@
 v2.3.0:
-Added Abilities.
+Added Abilities support.
 Change the location of the Storage Folder -> \Broforce\BroMaker_Storage\
 Fixed all of the warnings when presets are reloaded
 Added mods to loads custom objects
