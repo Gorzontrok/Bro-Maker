@@ -118,7 +118,7 @@ namespace BroMakerLib.UnityMod
 
             // New UI
             GUILayout.BeginVertical();
-            _spawnerScrollView = GUILayout.BeginScrollView(_spawnerScrollView, GUILayout.Height(400));
+            _spawnerScrollView = GUILayout.BeginScrollView(_spawnerScrollView, GUILayout.Height(50 * Mathf.Min(Mods.Count + 3, 10)));
             if (Mods.Count <= 0)
             {
                 GUILayout.Label("No mod installed.");
