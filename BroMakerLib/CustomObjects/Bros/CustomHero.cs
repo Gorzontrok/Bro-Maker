@@ -55,7 +55,10 @@ namespace BroMakerLib.CustomObjects.Bros
                 base.Awake();
                 info.AfterAwake(this);
 
-				characterExtended.BeforeAwake();
+				// Somehow it becomes 0, 0 if it's in the parameters
+                info.gunSpriteOffset = gunSpriteOffset;
+
+                characterExtended.BeforeAwake();
                 characterExtended.InvokeAbility(nameof(Awake));
 				characterExtended.AfterAwake();
             }
