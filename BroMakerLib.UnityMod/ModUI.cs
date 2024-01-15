@@ -11,7 +11,6 @@ using BSett = BroMakerLib.Settings;
 using BroMakerLib.CustomObjects.Bros;
 using BroMakerLib.ModManager;
 using System.IO;
-using static HarmonyLib.Code;
 
 namespace BroMakerLib.UnityMod
 {
