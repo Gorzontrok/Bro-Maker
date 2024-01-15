@@ -11,8 +11,6 @@ namespace BroMakerLib.Infos
         public CustomBroInfo() : base() { }
         public CustomBroInfo(string name) : base(name) { }
 
-        public List<Material> specialMaterials = new List<Material>();
-
         public string spritePath;
         public string gunSpritePath;
         [JsonIgnore]

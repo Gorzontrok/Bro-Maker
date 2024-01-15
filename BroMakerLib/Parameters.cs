@@ -115,7 +115,7 @@ namespace BroMakerLib
                 return;
             }
             if (hero.specialMaterials == null)
-                hero.specialMaterials = new System.Collections.Generic.List<Material>();
+                hero.specialMaterials = new List<Material>();
 
             if (value is string)
             {
@@ -181,7 +181,7 @@ namespace BroMakerLib
                     float x = Convert.ToSingle(xToken.ToObject<object>());
                     float y = Convert.ToSingle(yToken.ToObject<object>());
                     hero.gunSpriteOffset = new Vector2(x, y);
-                    hero.info.gunSpriteOffset = new Vector2(x, y);
+                    hero.info.gunSpriteOffset = hero.gunSpriteOffset;
                 }
                 else
                 {

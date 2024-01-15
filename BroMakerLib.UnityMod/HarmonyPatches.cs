@@ -711,6 +711,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                     victoryMookDeath.Setup(deathObject, 0.2f, parent, shakeObject);
                     victoryMookDeath.GetComponent<MeshRenderer>().material.mainTexture = ResourcesController.GetTexture(bro.spritePath);
                     victoryMookDeath.gunSprite.GetComponent<MeshRenderer>().material.mainTexture = ResourcesController.GetTexture(bro.gunSpritePath);
+                    Main.Log(bro.gunSpriteOffset);
                     victoryMookDeath.gunSprite.SetOffset(bro.gunSpriteOffset.x, bro.gunSpriteOffset.y, 0);
                 }
                 return false;
