@@ -707,8 +707,8 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                     VictoryMookDeath victoryMookDeath = UnityEngine.Object.Instantiate<VictoryMookDeath>(__instance.broDeathGenericPrefab, position, Quaternion.identity);
                     CustomBroInfo bro = LoadHero.customBroDeaths[deathNum];
                     victoryMookDeath.Setup(deathObject, 0.2f, parent, shakeObject);
-                    victoryMookDeath.GetComponent<MeshRenderer>().material.mainTexture = ResourcesController.CreateTexture(bro.spritePath);
-                    victoryMookDeath.gunSprite.GetComponent<MeshRenderer>().material.mainTexture = ResourcesController.CreateTexture(bro.gunSpritePath);
+                    victoryMookDeath.GetComponent<MeshRenderer>().material.mainTexture = ResourcesController.GetTexture(bro.spritePath);
+                    victoryMookDeath.gunSprite.GetComponent<MeshRenderer>().material.mainTexture = ResourcesController.GetTexture(bro.gunSpritePath);
                     bro.LoadOffset();
                     victoryMookDeath.gunSprite.SetOffset(bro.deathGunspriteOffsetX, bro.deathGunspriteOffsetY, 0);
                 }

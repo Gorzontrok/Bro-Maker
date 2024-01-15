@@ -217,7 +217,7 @@ namespace BroMakerLib.Infos
                         throw new InvalidCastException("can't cast value to string on 'SpriteSM' field");
 
                     SpriteSM sprite = field.GetValue<SpriteSM>();
-                    sprite.SetTexture(ResourcesController.CreateTexture(path, (string)value));
+                    sprite.SetTexture(ResourcesController.GetTexture(path, (string)value));
                     field.SetValue(sprite);
                 }
                 else if (fieldType == typeof(Material))
@@ -225,20 +225,20 @@ namespace BroMakerLib.Infos
                     if (!(value is string))
                         throw new InvalidCastException("can't cast value to string on 'Material' field");
                     Material material = field.GetValue<Material>();
-                    material.mainTexture = ResourcesController.CreateTexture(path, (string)value);
+                    material.mainTexture = ResourcesController.GetTexture(path, (string)value);
                     field.SetValue(material);
                 }
                 else if (fieldType == typeof(Texture))
                 {
                     if (!(value is string))
                         throw new InvalidCastException("can't cast value to string on 'Texture' field");
-                    field.SetValue(ResourcesController.CreateTexture(path, (string)value));
+                    field.SetValue(ResourcesController.GetTexture(path, (string)value));
                 }
                 else if (fieldType == typeof(Texture2D))
                 {
                     if (!(value is string))
                         throw new InvalidCastException("can't cast value to string on 'Texture2D' field");
-                    field.SetValue((Texture2D)ResourcesController.CreateTexture(path, (string)value));
+                    field.SetValue((Texture2D)ResourcesController.GetTexture(path, (string)value));
                 }
                 else if (fieldType == typeof(Enum))
                 {

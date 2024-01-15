@@ -116,6 +116,122 @@
             Particle/Additive
             </summary>
         </member>
+        <member name="M:BroMakerLib.ResourcesController.GetMaterial(System.String,System.String)">
+            <summary>
+            Creates a Material using the shader Unlit_DepthCutout.
+            Loads Material from cache if created previously.
+            </summary>
+            <param name="path">Path to an image or asset</param>
+            /// <param name="fileName">Name of an image or asset file</param>
+            <returns></returns>
+        </member>
+        <member name="M:BroMakerLib.ResourcesController.GetMaterial(System.String)">
+            <summary>
+            Creates a Material using the shader Unlit_DepthCutout.
+            Loads Material from cache if created previously.
+            </summary>
+            <param name="filePath">Path to an image or asset file</param>
+            <returns></returns>
+        </member>
+        <member name="M:BroMakerLib.ResourcesController.CreateMaterial(System.Byte[])">
+            <summary>
+            Creates a Material from an array of bytes using the shader Unlit_DepthCutout.
+            The Material is not cached, use GetMaterial if caching is desired.
+            </summary>
+            <param name="imageBytes">Byte array to load image from</param>
+            <returns></returns>
+        </member>
+        <member name="M:BroMakerLib.ResourcesController.CreateMaterial(System.String,UnityEngine.Shader)">
+            <summary>
+            Creates a Material using the specified image and shader.
+            The Material is not cached, use GetMaterial if caching is desired.
+            </summary>
+            <param name="filePath">Path to an image file</param>
+            <param name="shader">Shader to use</param>
+            <returns></returns>
+        </member>
+        <member name="M:BroMakerLib.ResourcesController.CreateMaterial(System.String,UnityEngine.Material)">
+            <summary>
+            Creates a Material using the specified image and Material as a source.
+            The Material is not cached, use GetMaterial if caching is desired.
+            </summary>
+            <param name="filePath">Path to an image file</param>
+            <param name="source">Source Material to copy</param>
+            <returns></returns>
+        </member>
+        <member name="M:BroMakerLib.ResourcesController.GetTexture(System.String,System.String)">
+            <summary>
+            Creates a Texture2D from an image or asset file.
+            Loads Texture2D from cache if created previously.
+            </summary>
+            <param name="path">Path to an image or asset</param>
+            /// <param name="fileName">Name of an image or asset file</param>
+            <returns></returns>
+        </member>
+        <member name="M:BroMakerLib.ResourcesController.GetTexture(System.String)">
+            <summary>
+            Creates a Texture2D from an image or asset file.
+            Loads Texture2D from cache if created previously.
+            </summary>
+            <param name="filePath">Path to an image or asset file</param>
+            <returns></returns>
+        </member>
+        <member name="M:BroMakerLib.ResourcesController.CreateTexture(System.String)">
+            <summary>
+            Creates a Texture2D from an image or asset file.
+            The Texture2D is not cached, use GetTexture if caching is desired.
+            </summary>
+            <param name="filePath">Path to an image file</param>
+            <returns></returns>
+        </member>
+        <member name="M:BroMakerLib.ResourcesController.CreateTexture(System.Byte[])">
+            <summary>
+            Creates a Texture2D from a byte array.
+            The Texture2D is not cached, use GetTexture if caching is desired.
+            </summary>
+            <param name="imageBytes">Byte array to load image from</param>
+            <returns></returns>
+        </member>
+        <member name="M:BroMakerLib.ResourcesController.GetAudioClip(System.String,System.String)">
+            <summary>
+            Creates an AudioClip from an audio file.
+            Loads AudioClip from cache if created previously.
+            </summary>
+            <param name="path">Path to an audio file</param>
+            <param name="fileName">Name of an audio file</param>
+            <returns></returns>
+        </member>
+        <member name="M:BroMakerLib.ResourcesController.GetAudioClip(System.String)">
+            <summary>
+            Creates an AudioClip from an audio file.
+            Loads AudioClip from cache if created previously.
+            </summary>
+            <param name="filePath">Path to an audio file</param>
+            <returns></returns>
+        </member>
+        <member name="M:BroMakerLib.ResourcesController.CreateAudioClip(System.String)">
+            <summary>
+            Creates an AudioClip from an audio file.
+            The AudioClip is not cached, use GetAudioClip is caching is desired.
+            </summary>
+            <param name="filePath">Path to an audio file</param>
+            <returns></returns>
+        </member>
+        <member name="M:BroMakerLib.ResourcesController.ExtractResource(System.String)">
+            <summary>
+            Creates a byte array from a file.
+            </summary>
+            <param name="filename">Name of a file</param>
+            <returns></returns>
+        </member>
+        <member name="M:BroMakerLib.ResourcesController.LoadAssetSync``1(System.String)">
+            <summary>
+            Loads an object from an asset file.
+            </summary>
+            <typeparam name="T">Type of the object</typeparam>
+            <param name="name">Name of the asset file</param>
+            <returns></returns>
+        </member>
         <member name="T:BroMakerLib.NewBroInfo2`1">
             <summary>
             Class to add a new character

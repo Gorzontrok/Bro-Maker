@@ -82,7 +82,7 @@ namespace BroMakerLib.Cutscenes
             {
                 try
                 {
-                    data.spriteTexture = ResourcesController.CreateTexture(path, spritePath);
+                    data.spriteTexture = ResourcesController.GetTexture(path, spritePath);
                 }
                 catch (Exception ex)
                 {
@@ -112,7 +112,7 @@ namespace BroMakerLib.Cutscenes
             {
                 try
                 {
-                    AudioClip bark = ResourcesController.CreateAudioClip(path, barkPath);
+                    AudioClip bark = ResourcesController.GetAudioClip(path, barkPath);
                     data.bark = bark;
                 }
                 catch ( Exception ex )
@@ -130,7 +130,7 @@ namespace BroMakerLib.Cutscenes
             {
                 try
                 {
-                    AudioClip fanfare = ResourcesController.CreateAudioClip(path, fanfarePath);
+                    AudioClip fanfare = ResourcesController.GetAudioClip(path, fanfarePath);
                     data.introFanfare = fanfare;
                 }
                 catch ( Exception ex )

@@ -79,25 +79,24 @@ namespace BroMakerLib
             return result;
         }
 
+        /// <summary>
+        /// Creates a Material using the shader Unlit_DepthCutout.
+        /// Loads Material from cache if created previously.
+        /// </summary>
+        /// <param name="path">Path to an image or asset</param>
+        /// /// <param name="fileName">Name of an image or asset file</param>
+        /// <returns></returns>
         public static Material GetMaterial(string path, string fileName)
         {
-            string filePath = Path.Combine(path, fileName);
-
-            Material result = null;
-            if (materials.ContainsKey(filePath))
-            {
-                return materials[filePath];
-            }
-
-            result = CreateMaterial(filePath, Unlit_DepthCutout);
-
-            if (result != null)
-            {
-                materials.Add(filePath, result);
-            }
-            return result;
+            return GetMaterial(Path.Combine(path, fileName));
         }
 
+        /// <summary>
+        /// Creates a Material using the shader Unlit_DepthCutout.
+        /// Loads Material from cache if created previously.
+        /// </summary>
+        /// <param name="filePath">Path to an image or asset file</param>
+        /// <returns></returns>
         public static Material GetMaterial(string filePath)
         {
             Material result = null;
@@ -106,7 +105,11 @@ namespace BroMakerLib
                 return materials[filePath];
             }
 
-            if (filePath.Contains(":"))
+            if ( File.Exists(filePath) )
+            {
+                result = CreateMaterial(filePath, Unlit_DepthCutout);
+            }
+            else if (filePath.Contains(":"))
             {
                 result = LoadAssetSync<Material>(filePath);
             }
@@ -122,7 +125,13 @@ namespace BroMakerLib
             return result;
         }
 
-        public static Material GetMaterial(byte[] imageBytes)
+        /// <summary>
+        /// Creates a Material from an array of bytes using the shader Unlit_DepthCutout.
+        /// The Material is not cached, use GetMaterial if caching is desired.
+        /// </summary>
+        /// <param name="imageBytes">Byte array to load image from</param>
+        /// <returns></returns>
+        public static Material CreateMaterial(byte[] imageBytes)
         {
             Material result = null;
 
@@ -137,6 +146,13 @@ namespace BroMakerLib
             return result;
         }
 
+        /// <summary>
+        /// Creates a Material using the specified image and shader.
+        /// The Material is not cached, use GetMaterial if caching is desired.
+        /// </summary>
+        /// <param name="filePath">Path to an image file</param>
+        /// <param name="shader">Shader to use</param>
+        /// <returns></returns>
         public static Material CreateMaterial(string filePath, Shader shader)
         {
             var tex = CreateTexture(filePath);
@@ -148,6 +164,14 @@ namespace BroMakerLib
             }
             return null;
         }
+
+        /// <summary>
+        /// Creates a Material using the specified image and Material as a source.
+        /// The Material is not cached, use GetMaterial if caching is desired.
+        /// </summary>
+        /// <param name="filePath">Path to an image file</param>
+        /// <param name="source">Source Material to copy</param>
+        /// <returns></returns>
         public static Material CreateMaterial(string filePath, Material source)
         {
             var tex = CreateTexture(filePath);
@@ -160,27 +184,40 @@ namespace BroMakerLib
             return null;
         }
 
+        /// <summary>
+        /// Creates a Texture2D from an image or asset file.
+        /// Loads Texture2D from cache if created previously.
+        /// </summary>
+        /// <param name="path">Path to an image or asset</param>
+        /// /// <param name="fileName">Name of an image or asset file</param>
+        /// <returns></returns>
         public static Texture2D GetTexture(string path, string fileName)
         {
+            return GetTexture(Path.Combine(path, fileName));
+        }
+
+        /// <summary>
+        /// Creates a Texture2D from an image or asset file.
+        /// Loads Texture2D from cache if created previously.
+        /// </summary>
+        /// <param name="filePath">Path to an image or asset file</param>
+        /// <returns></returns>
+        public static Texture2D GetTexture(string filePath)
+        {
             Texture2D tex = null;
-            textures.TryGetValue(fileName, out tex);
+            textures.TryGetValue(filePath, out tex);
             if (tex != null)
                 return tex;
 
-            var filePath = Path.Combine(path, fileName);
             if (File.Exists(filePath))
             {
-                tex = new Texture2D(2, 2, TextureFormat.ARGB32, false);
-                tex.LoadImage(File.ReadAllBytes(filePath));
-                tex.filterMode = FilterMode.Point;
-                textures.Add(fileName, tex);
+                tex = CreateTexture(filePath);
             }
-
-            if (fileName.Contains(":"))
+            else if (filePath.Contains(":"))
             {
                 try
                 {
-                    tex = LoadAssetSync<Texture2D>(fileName);
+                    tex = LoadAssetSync<Texture2D>(filePath);
                 }
                 catch (Exception ex)
                 {
@@ -188,13 +225,19 @@ namespace BroMakerLib
                 }
             }
             else
-                tex = CreateTexture(path, fileName);
+                tex = CreateTexture(filePath);
 
             if (tex != null)
-                textures.Add(fileName, tex);
+                textures.Add(filePath, tex);
             return tex;
         }
 
+        /// <summary>
+        /// Creates a Texture2D from an image or asset file.
+        /// The Texture2D is not cached, use GetTexture if caching is desired.
+        /// </summary>
+        /// <param name="filePath">Path to an image file</param>
+        /// <returns></returns>
         public static Texture2D CreateTexture(string filePath)
         {
             if (!File.Exists(filePath))
@@ -203,16 +246,12 @@ namespace BroMakerLib
             return CreateTexture(File.ReadAllBytes(filePath));
         }
 
-        public static Texture2D CreateTexture(string path, string fileName)
-        {
-            if (fileName.Contains(":"))
-            {
-                BMLogger.Warning($"The argument '{nameof(fileName)}' contains ':' which means it's a asset path. Use 'ResourcesController.GetTexture' method instead.");
-                return LoadAssetSync<Texture2D>(fileName);
-            }
-            return CreateTexture(Path.Combine(path, fileName));
-        }
-
+        /// <summary>
+        /// Creates a Texture2D from a byte array.
+        /// The Texture2D is not cached, use GetTexture if caching is desired.
+        /// </summary>
+        /// <param name="imageBytes">Byte array to load image from</param>
+        /// <returns></returns>
         public static Texture2D CreateTexture(byte[] imageBytes)
         {
             if (imageBytes.IsNullOrEmpty())
@@ -227,6 +266,25 @@ namespace BroMakerLib
             return tex;
         }
 
+        /// <summary>
+        /// Creates an AudioClip from an audio file.
+        /// Loads AudioClip from cache if created previously.
+        /// </summary>
+        /// <param name="path">Path to an audio file</param>
+        /// <param name="fileName">Name of an audio file</param>
+        /// <returns></returns>
+        public static AudioClip GetAudioClip(string path, string fileName)
+        {
+            // Get full path converts / to \ which is needed because WWW doesn't like /
+            return GetAudioClip(Path.GetFullPath(Path.Combine(path, fileName)));
+        }
+
+        /// <summary>
+        /// Creates an AudioClip from an audio file.
+        /// Loads AudioClip from cache if created previously.
+        /// </summary>
+        /// <param name="filePath">Path to an audio file</param>
+        /// <returns></returns>
         public static AudioClip GetAudioClip(string filePath)
         {
             AudioClip result = null;
@@ -235,7 +293,11 @@ namespace BroMakerLib
                 return audioClips[filePath];
             }
 
-            if (filePath.Contains(":"))
+            if (File.Exists(filePath))
+            {
+                result = CreateAudioClip(filePath);
+            }
+            else if (filePath.Contains(":"))
             {
                 result = LoadAssetSync<AudioClip>(filePath);
             }
@@ -251,12 +313,12 @@ namespace BroMakerLib
             return result;
         }
 
-        public static AudioClip CreateAudioClip(string path, string fileName)
-        {
-            // Get full path converts / to \ which is needed because WWW doesn't like /
-            return CreateAudioClip(Path.GetFullPath(Path.Combine(path, fileName)));
-        }
-
+        /// <summary>
+        /// Creates an AudioClip from an audio file.
+        /// The AudioClip is not cached, use GetAudioClip is caching is desired.
+        /// </summary>
+        /// <param name="filePath">Path to an audio file</param>
+        /// <returns></returns>
         public static AudioClip CreateAudioClip(string filePath)
         {
             WWW getClip = new WWW("file:////" + filePath);
@@ -267,10 +329,16 @@ namespace BroMakerLib
 
 
             AudioClip result = getClip.GetAudioClip(false, true);
+            result.name = Path.GetFileNameWithoutExtension(filePath);
 
             return result;
         }
 
+        /// <summary>
+        /// Creates a byte array from a file.
+        /// </summary>
+        /// <param name="filename">Name of a file</param>
+        /// <returns></returns>
         public static byte[] ExtractResource(string filename)
         {
             Assembly a = Assembly.GetExecutingAssembly();
@@ -283,6 +351,12 @@ namespace BroMakerLib
             }
         }
 
+        /// <summary>
+        /// Loads an object from an asset file.
+        /// </summary>
+        /// <typeparam name="T">Type of the object</typeparam>
+        /// <param name="name">Name of the asset file</param>
+        /// <returns></returns>
         public static T LoadAssetSync<T>(string name) where T : UnityEngine.Object
         {
             return GameSystems.ResourceManager.LoadAssetSync<T>(name);
