@@ -6,6 +6,7 @@ using UnityEngine;
 using BroMakerLib.CustomObjects.Components;
 using BroMakerLib.Abilities;
 using HarmonyLib;
+using System.Collections.Generic;
 
 namespace BroMakerLib.CustomObjects.Bros
 {
@@ -18,8 +19,11 @@ namespace BroMakerLib.CustomObjects.Bros
         public BroBase character { get; set; }
         public CharacterExtended characterExtended { get; set; }
 
+        public List<Material> specialMaterials = new List<Material>();
+		public Material firstAvatar = null;
+		public Vector2 gunSpriteOffset = Vector2.zero;
+
         public CharacterAbility primaryAbility;
-        public CharacterAbility specialAbility;
         public CharacterAbility meleeAbility;
 		public MuscleTempleFlexEffect flexEffect;
 
@@ -310,15 +314,20 @@ namespace BroMakerLib.CustomObjects.Bros
 			{
 				this.flexEffect.PlaySoundEffect();
 			}
-		}
-		#endregion
+        }
 
-		#region Custom Methods
-		/// <summary>
-		/// Throw grenade and handle direction if characters crouching
-		/// </summary>
-		/// <param name="grenade"></param>
-		protected virtual void SpawnGrenade(Grenade grenade)
+        protected override void SetGunPosition(float xOffset, float yOffset)
+        {
+            this.gunSprite.transform.localPosition = new Vector3(xOffset + gunSpriteOffset.x, yOffset + gunSpriteOffset.y, -1f);
+        }
+        #endregion
+
+        #region Custom Methods
+        /// <summary>
+        /// Throw grenade and handle direction if characters crouching
+        /// </summary>
+        /// <param name="grenade"></param>
+        protected virtual void SpawnGrenade(Grenade grenade)
         {
             if (down && IsOnGround() && ducking)
             {

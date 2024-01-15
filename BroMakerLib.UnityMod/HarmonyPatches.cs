@@ -265,23 +265,26 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 }
 
                 CustomHero customHero = (currentCharacter as CustomHero);
-                customHero.info.LoadSpecialIcons();
-                List<Material> specialIcons = customHero.info.specialMaterials;
-                if ( specialIcons.Count() > 1 )
+
+                if (customHero.specialMaterials != null)
                 {
-                    for ( int i = 0; i < specialIcons.Count(); ++i )
+                    List<Material> specialIcons = customHero.specialMaterials;
+                    if (specialIcons.Count() > 1)
                     {
-                        __instance.grenadeIcons[i].GetComponent<Renderer>().material = specialIcons[i];
+                        for (int i = 0; i < specialIcons.Count(); ++i)
+                        {
+                            __instance.grenadeIcons[i].GetComponent<Renderer>().material = specialIcons[i];
+                        }
+                        return false;
                     }
-                    return false;
-                }
-                else if ( specialIcons.Count() > 0 )
-                {
-                    for ( int i = 0; i < __instance.grenadeIcons.Count(); ++i )
+                    else if (specialIcons.Count() > 0)
                     {
-                        __instance.grenadeIcons[i].GetComponent<Renderer>().material = specialIcons[0];
+                        for (int i = 0; i < __instance.grenadeIcons.Count(); ++i)
+                        {
+                            __instance.grenadeIcons[i].GetComponent<Renderer>().material = specialIcons[0];
+                        }
+                        return false;
                     }
-                    return false;
                 }
             }
             return true;
@@ -624,8 +627,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 LoadHero.tryReplaceAvatar = false;
 
                 CustomHero customHero = (HeroController.players[LoadHero.playerNum].character as CustomHero);
-                Material mat = customHero.info.LoadAvatar();
-
+                Material mat = customHero.firstAvatar;
                 if ( mat != null )
                 {
                     sprite.GetComponent<Renderer>().material = mat;
@@ -709,8 +711,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                     victoryMookDeath.Setup(deathObject, 0.2f, parent, shakeObject);
                     victoryMookDeath.GetComponent<MeshRenderer>().material.mainTexture = ResourcesController.GetTexture(bro.spritePath);
                     victoryMookDeath.gunSprite.GetComponent<MeshRenderer>().material.mainTexture = ResourcesController.GetTexture(bro.gunSpritePath);
-                    bro.LoadOffset();
-                    victoryMookDeath.gunSprite.SetOffset(bro.deathGunspriteOffsetX, bro.deathGunspriteOffsetY, 0);
+                    victoryMookDeath.gunSprite.SetOffset(bro.gunSpriteOffset.x, bro.gunSpriteOffset.y, 0);
                 }
                 return false;
             }

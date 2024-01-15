@@ -1,6 +1,9 @@
 using BroMakerLib.Attributes;
+using BroMakerLib.CustomObjects.Bros;
 using BroMakerLib.Loggers;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BroMakerLib
@@ -100,6 +103,95 @@ namespace BroMakerLib
             var jetPackSprite = HeroController.GetHeroPrefab(HeroType.Rambro).As<BroBase>().jetPackSprite;
             broBase.jetPackSprite = UnityEngine.Object.Instantiate(jetPackSprite, jetPackSprite.transform.localPosition, Quaternion.identity);
             broBase.jetPackSprite.transform.parent = broBase.transform;
+        }
+
+        [Parameter]
+        public static void SpecialIcons(object obj, object value)
+        {
+            CustomHero hero = obj as CustomHero;
+            if (hero == null)
+            {
+                BMLogger.Warning($"{nameof(SpecialIcons)} parameter works only with Bros.");
+                return;
+            }
+            if (hero.specialMaterials == null)
+                hero.specialMaterials = new System.Collections.Generic.List<Material>();
+
+            if (value is string)
+            {
+                string iconFile = value as string;
+                Material specialMat = ResourcesController.GetMaterial(hero.info.path, iconFile);
+                hero.specialMaterials.Add(specialMat);
+            }
+            else if (value is JArray)
+            {
+                JArray iconFiles = value as JArray;
+                for (int i = 0; i < iconFiles.Count; ++i)
+                {
+                    Material specialMat = ResourcesController.GetMaterial(hero.info.path, iconFiles[i].ToObject<string>());
+                    hero.specialMaterials.Add(specialMat);
+                }
+            }
+            else if (value is string[])
+            {
+                string[] iconFiles = value as string[];
+                for (int i = 0; i < iconFiles.Length; ++i)
+                {
+                    Material specialMat = ResourcesController.GetMaterial(hero.info.path, iconFiles[i]);
+                    hero.specialMaterials.Add(specialMat);
+                }
+            }
+            else
+            {
+                BMLogger.Warning($"SpecialIcons value is type of {value.GetType()} it must be a String or a String Array");
+            }
+        }
+
+        [Parameter]
+        public static void Avatar(object obj, string value)
+        {
+            CustomHero hero = obj as CustomHero;
+            if (hero == null)
+            {
+                BMLogger.Warning($"{nameof(Avatar)} parameter works only with Bros.");
+                return;
+            }
+
+            hero.firstAvatar = ResourcesController.GetMaterial(hero.info.path, value as string);
+        }
+
+        [Parameter]
+        public static void GunSpriteOffset(object obj, object value)
+        {
+            CustomHero hero = obj as CustomHero;
+            if (hero == null)
+            {
+                BMLogger.Warning($"{nameof(GunSpriteOffset)} parameter works only with Bros.");
+                return;
+            }
+
+            try
+            {
+                if (value is JObject)
+                {
+                    JToken xToken = value.As<JObject>().GetValue("x");
+                    JToken yToken = value.As<JObject>().GetValue("y");
+
+
+                    float x = Convert.ToSingle(xToken.ToObject<object>());
+                    float y = Convert.ToSingle(yToken.ToObject<object>());
+                    hero.gunSpriteOffset = new Vector2(x, y);
+                    hero.info.gunSpriteOffset = new Vector2(x, y);
+                }
+                else
+                {
+                    BMLogger.Error("Can't load GunSpriteOffset value. It should be { \"x\": 0, \"y\": 0 } (0 is replacable)");
+                }
+            }
+            catch (Exception ex)
+            {
+                BMLogger.ExceptionLog(ex);
+            }
         }
     }
 }
