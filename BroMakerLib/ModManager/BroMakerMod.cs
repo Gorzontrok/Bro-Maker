@@ -18,15 +18,12 @@ namespace BroMakerLib
         public string BroMakerVersion;
         public string Name;
         public string Author;
-        public string Repository;
         // The custom objects
         public string[] Assemblies;
         public string[] CustomBros;
         public string[] Abilities;
 
         // Not in JSON file
-        public bool CanBeUpdated { get; protected set; }
-        public UnityModManager.Repository.Release Release {  get; protected set; }
         public string Path { get; protected set; }
         public string[] BrosNames { get; protected set; }
 
