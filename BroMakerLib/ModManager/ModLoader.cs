@@ -38,7 +38,7 @@ namespace BroMakerLib.ModManager
                         }
                         else
                         {
-                            BMLogger.Error($"{mod.Id} require version of BroMaker >={mod.BroMakerVersion}. Current BroMaker version is {Info.VERSION}");
+                            BMLogger.Error($"{mod.Name} require version of BroMaker >={mod.BroMakerVersion}. Current BroMaker version is {Info.VERSION}");
                         }
                     }
                 }

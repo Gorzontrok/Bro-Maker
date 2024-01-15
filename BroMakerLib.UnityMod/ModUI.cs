@@ -138,9 +138,6 @@ namespace BroMakerLib.UnityMod
                 foreach (BroMakerMod mod in Mods)
                 {
                     var name = mod.Name;
-                    if (name.IsNullOrEmpty())
-                        name = mod.Id;
-
                     // show mod informations
                     GUILayout.BeginHorizontal("box");
                     GUILayout.Label(name, GUILayout.Width(200));

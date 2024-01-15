@@ -14,8 +14,6 @@ namespace BroMakerLib
     public class BroMakerMod
     {
         [JsonProperty(Required = Required.Always)]
-        public string Id;
-        [JsonProperty(Required = Required.Always)]
         public string Version;
         public string BroMakerVersion;
         public string Name;
@@ -75,7 +73,7 @@ namespace BroMakerLib
 
         private void Log(string message)
         {
-            BMLogger.Log($"[{Name ?? Id}] {message}");
+            BMLogger.Log($"[{Name}] {message}");
         }
     }
 }
