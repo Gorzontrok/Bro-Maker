@@ -363,7 +363,18 @@ namespace BroMakerLib.UnityMod
             }
             if (GUILayout.Button("Load Cutscene"))
             {
-                Cutscenes.CustomCutsceneController.LoadHeroCutscene(bro.GetInfo<CustomCharacterInfo>().cutscene);
+                try
+                {
+                    Cutscenes.CustomCutsceneController.LoadHeroCutscene(bro.GetInfo<CustomCharacterInfo>().cutscene);
+                }
+                catch (ArgumentNullException ex)
+                {
+                    BMLogger.ExceptionLog("The bro as no cutscene");
+                }
+                catch (Exception ex)
+                {
+                    BMLogger.ExceptionLog(ex);
+                }
             }
             GUILayout.EndHorizontal();
 

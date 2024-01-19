@@ -12,6 +12,10 @@ namespace BroMakerLib.Cutscenes
 
         public static void LoadHeroCutscene(CustomIntroCutscene cutscene, float delay = 0.2f)
         {
+            if (cutscene == null)
+            {
+                throw new ArgumentNullException(nameof(cutscene));
+            }
             cutsceneToLoad = cutscene;
             willLoadCustomCutscene = true;
             CutsceneController.LoadCutScene(CutsceneName.Rambro, delay);
