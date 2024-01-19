@@ -121,7 +121,7 @@ namespace BroMakerLib.Cutscenes
                     data.bark = null;
                 }
             }
-            
+
             if ( fanfarePath.IsNullOrEmpty() )
             {
                 data.introFanfare = null;
