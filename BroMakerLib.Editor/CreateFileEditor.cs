@@ -12,9 +12,10 @@ namespace BroMakerLib.Editor
 {
     public static class CreateFileEditor
     {
-        private static readonly string[] _objectNames = new string[] { "Bro", "Mod", "Ability" };
+        private static readonly string[] _objectNames = new string[] { "Bro", "Ability" };
         private static string _fileName = string.Empty;
-        private static readonly MakerObjectFileType[] _makerObjectTypes = new MakerObjectFileType[] { MakerObjectFileType.Bros, MakerObjectFileType.Mods, MakerObjectFileType.Ability };
+        private static string _modName = string.Empty;
+        private static readonly MakerObjectFileType[] _makerObjectTypes = new MakerObjectFileType[] { MakerObjectFileType.Bros, MakerObjectFileType.Ability };
         private static int _objectTypeSelected = 0;
 
         static CreateFileEditor()
@@ -24,13 +25,23 @@ namespace BroMakerLib.Editor
 
         public static void UnityUI()
         {
-            _objectTypeSelected = RGUI.ArrowList(_objectNames, _objectTypeSelected, 200);
-            GUILayout.Label("Object Name");
+            GUILayout.Label("Mod Name: (it is also where the object is going to be placed", GUILayout.ExpandWidth(false));
             GUILayout.BeginHorizontal();
-            _fileName = GUILayout.TextField(_fileName, GUILayout.Width(200));
-            if (GUILayout.Button("Create New JSON " + _objectNames[_objectTypeSelected]))
+            _modName = GUILayout.TextField(_modName, GUILayout.Width(400));
+            if (GUILayout.Button("Create New Mod", GUILayout.ExpandWidth(false)))
             {
-                CreateJsonFile(_fileName);
+                CreateJsonFile(_modName, _modName, MakerObjectFileType.Mods);
+            }
+            GUILayout.EndHorizontal();
+            GUILayout.Space(30);
+
+            _objectTypeSelected = RGUI.ArrowList(_objectNames, _objectTypeSelected, 200);
+            GUILayout.Label("Object Name:");
+            GUILayout.BeginHorizontal();
+            _fileName = GUILayout.TextField(_fileName, GUILayout.Width(400));
+            if (GUILayout.Button("Create New JSON " + _objectNames[_objectTypeSelected], GUILayout.ExpandWidth(false)))
+            {
+                CreateJsonFile(_fileName, _modName, _makerObjectTypes[_objectTypeSelected]);
             }
             GUILayout.EndHorizontal();
         }
@@ -81,6 +92,30 @@ namespace BroMakerLib.Editor
             }
         }
 
+        public static void CreateJsonFile(string fileName, string folder, MakerObjectFileType fileType)
+        {
+            string path = Path.Combine(DirectoriesManager.StorageDirectory, folder.IsNullOrEmpty() ? fileName : folder);
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            switch (fileType)
+            {
+                case MakerObjectFileType.Mods:
+                    BroMakerMod mod = new BroMakerMod();
+                    mod.SerializeJSON(Path.Combine(DirectoriesManager.StorageDirectory, fileName), fileName);
+                    break;
+                default:
+                    CustomBroforceObjectInfo info = GetInfo(fileName);
+                    if (info != null)
+                    {
+                        info.SerializeJSON(path);
+                    }
+                    break;
+            }
+        }
+
         public static void DuplicateFile(string filePath)
         {
             string secondFileName = GetCloneFileName(filePath);
@@ -99,6 +134,38 @@ namespace BroMakerLib.Editor
                 result = Path.GetFileNameWithoutExtension(filePath) + " - Clone_" + i + ".json";
             }
             return result;
+        }
+
+        public static CustomBroforceObjectInfo GetInfo(string fileName)
+        {
+            switch (_makerObjectTypes[_objectTypeSelected])
+            {
+                case MakerObjectFileType.Bros:
+                    CustomBroInfo bro = new CustomBroInfo(fileName);
+                    bro.Initialize();
+                    return bro;
+                case MakerObjectFileType.Grenade:
+                    CustomGrenadeInfo grenade = new CustomGrenadeInfo(fileName);
+                    grenade.Initialize();
+                    return grenade;
+                case MakerObjectFileType.Weapon:
+                    CustomWeaponInfo weapon = new CustomWeaponInfo(fileName);
+                    weapon.Initialize();
+                    return weapon;
+                case MakerObjectFileType.Cutscene:
+                    CustomIntroCutscene c = new CustomIntroCutscene();
+                    return null;
+                case MakerObjectFileType.Projectile:
+                    /*CustomIntroCutscene c = new CustomIntroCutscene();
+                    c.SerializeJSON(DirectoriesManager.CutscenesDirectory, _fileName);*/
+                    return null;
+                case MakerObjectFileType.Ability:
+                    var ability = new AbilityInfo(fileName);
+                    ability.Initialize();
+                    return ability;
+                default:
+                    return null;
+            }
         }
     }
 
