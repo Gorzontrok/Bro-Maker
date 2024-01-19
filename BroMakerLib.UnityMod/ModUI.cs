@@ -126,6 +126,8 @@ namespace BroMakerLib.UnityMod
             if (Mods.Count <= 0)
             {
                 GUILayout.Label("No mod installed.");
+                GUILayout.EndScrollView();
+                GUILayout.EndVertical();
                 return;
             }
 
