@@ -4,6 +4,31 @@
         <name>BroMakerLib</name>
     </assembly>
     <members>
+        <member name="P:BroMakerLib.Abilities.Ability`1.PositionOffset">
+            <summary>
+            Offset position from <see cref="F:BroMakerLib.Abilities.Ability`1.owner"/>
+            </summary>
+        </member>
+        <member name="T:BroMakerLib.Abilities.CharacterAbility">
+            <summary>
+            Base class for Ability made for Characters (<see cref="T:TestVanDammeAnim"/>)
+            </summary>
+        </member>
+        <member name="T:BroMakerLib.Abilities.Characters.SpawnDrone">
+            <summary>
+            Spawn a drone. DON'T USE, drones are bugged and crashes could happen
+            </summary>
+        </member>
+        <member name="T:BroMakerLib.Abilities.Characters.ThrowGrenade">
+            <summary>
+            Throw a grenade like Rambro special
+            </summary>
+        </member>
+        <member name="T:BroMakerLib.Abilities.Characters.Jetpack">
+            <summary>
+            Use a Jetpack. Not fully functionnal for some reason
+            </summary>
+        </member>
         <member name="M:BroMakerLib.BroMaker.CreateMaterialFromFile(System.String)">
             <summary>
             Create a material from a file with a specific shader

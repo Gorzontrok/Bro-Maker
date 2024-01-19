@@ -7,6 +7,9 @@ using UnityEngine;
 
 namespace BroMakerLib.Abilities.Characters
 {
+    /// <summary>
+    /// Throw a grenade like Rambro special
+    /// </summary>
     [AbilityPreset("GrenadeThrow")]
     public class ThrowGrenade : CharacterAbility
     {

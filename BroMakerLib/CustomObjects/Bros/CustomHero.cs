@@ -22,9 +22,6 @@ namespace BroMakerLib.CustomObjects.Bros
         public List<Material> specialMaterials = new List<Material>();
 		public Material firstAvatar = null;
 		public Vector2 gunSpriteOffset = Vector2.zero;
-
-        public CharacterAbility primaryAbility;
-        public CharacterAbility meleeAbility;
 		public MuscleTempleFlexEffect flexEffect;
 
         #region Private Variable Becomes
@@ -59,7 +56,7 @@ namespace BroMakerLib.CustomObjects.Bros
                 info.gunSpriteOffset = gunSpriteOffset;
 
                 characterExtended.BeforeAwake();
-                characterExtended.InvokeAbility(nameof(Awake));
+                characterExtended.InvokeAbilityToAll(nameof(Awake));
 				characterExtended.AfterAwake();
             }
             catch (Exception ex)
@@ -79,7 +76,7 @@ namespace BroMakerLib.CustomObjects.Bros
                 info.AfterStart(this);
 
 				characterExtended.BeforeStart();
-                characterExtended.InvokeAbility(nameof(Start));
+                characterExtended.InvokeAbilityToAll(nameof(Start));
                 characterExtended.AfterStart();
             }
             catch (Exception ex)
@@ -92,16 +89,15 @@ namespace BroMakerLib.CustomObjects.Bros
         protected override void Update()
         {
             base.Update();
-            characterExtended.InvokeAbility(nameof(Update));
+            characterExtended.InvokeAbilityToAll(nameof(Update));
         }
 
         protected override void FireWeapon(float x, float y, float xSpeed, float ySpeed)
         {
-            if(primaryAbility != null)
-            {
-                characterExtended.InvokeAbility(nameof(FireWeapon), x, y, xSpeed, ySpeed);
-            }
-            else
+            this.gunFrame = 3;
+            this.gunSprite.SetLowerLeftPixel((float)(this.gunSpritePixelWidth * this.gunFrame), 32f);
+            EffectsController.CreateMuzzleFlashEffect(x, y, -25f, xSpeed * 0.01f, ySpeed * 0.01f, base.transform);
+            if (!characterExtended.InvokeAbility(nameof(FireWeapon), x, y, xSpeed, ySpeed))
             {
                 base.FireWeapon(x, y, xSpeed, ySpeed);
             }
@@ -146,6 +142,21 @@ namespace BroMakerLib.CustomObjects.Bros
         {
             base.Jump(wallJump);
             characterExtended.InvokeAbility(nameof(Jump), wallJump);
+        }
+        protected override void StartFiring()
+        {
+            base.StartFiring();
+            characterExtended.InvokeAbility(nameof(StartFiring));
+        }
+        protected override void StopFiring()
+        {
+            base.StopFiring();
+            characterExtended.InvokeAbility(nameof(StopFiring));
+        }
+        protected override void UseFire()
+        {
+            base.UseFire();
+            characterExtended.InvokeAbility(nameof(UseFire));
         }
 
         // This function is overridden to remove the RPC calls, since they don't work currently
@@ -323,6 +334,7 @@ namespace BroMakerLib.CustomObjects.Bros
         {
             this.gunSprite.transform.localPosition = new Vector3(xOffset + gunSpriteOffset.x, yOffset + gunSpriteOffset.y, -1f);
         }
+
         #endregion
 
         #region Custom Methods

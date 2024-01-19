@@ -112,7 +112,9 @@
     <Compile Include="Abilities\Ability.cs" />
     <Compile Include="Abilities\CharacterAbility.cs" />
     <Compile Include="Abilities\Characters\FlameThrower.cs" />
+    <Compile Include="Abilities\Characters\ProjectileSpray.cs" />
     <Compile Include="Abilities\Characters\SpawnDrone.cs" />
+    <Compile Include="Abilities\Characters\Teleportation.cs" />
     <Compile Include="Abilities\Characters\ThrowGrenade.cs" />
     <Compile Include="Abilities\Characters\Jetpack.cs" />
     <Compile Include="Attributes\AbilityPresetAttribute.cs" />

@@ -154,7 +154,7 @@ namespace BroMakerLib.CustomObjects.Components
                 BMLogger.Warning($"{abilityName} was not made for character");
                 return null;
             }
-            ability.Init(info);
+            ability.Initialize(info);
             return ability as CharacterAbility;
         }
 
@@ -175,7 +175,7 @@ namespace BroMakerLib.CustomObjects.Components
             {
                 BMLogger.Error("Can't create instance of type " + type);
             }
-            ability.Init(new Infos.AbilityInfo());
+            ability.Initialize(new Infos.AbilityInfo());
             return ability;
         }
 
@@ -205,9 +205,10 @@ namespace BroMakerLib.CustomObjects.Components
                             temp.Add(ability);
                             characterAbilities[method] = temp.ToArray();
                         }
-                        _characterAbilitiesAlone.Add(ability);
                     }
                 }
+                if (!_characterAbilitiesAlone.Contains(ability))
+                    _characterAbilitiesAlone.Add(ability);
             }
             catch(Exception e)
             {
@@ -215,15 +216,41 @@ namespace BroMakerLib.CustomObjects.Components
             }
         }
 
-        public virtual void InvokeAbility(string method, params object[] parameters)
+        public virtual bool InvokeAbility(string method, params object[] parameters)
         {
             if ( characterAbilities == null || !characterAbilities.ContainsKey(method))
-                return;
+                return false;
+
+            bool anAbilityHasBeenCalled = false;
             var abilities = characterAbilities[method];
             foreach (var ability in abilities)
             {
-                ability.All(method, parameters);
-                ability.CallMethod(method, parameters);
+                try
+                {
+                    ability.All(method, parameters);
+                    ability.CallMethod(method, parameters);
+                    anAbilityHasBeenCalled = true;
+                }
+                catch (Exception e)
+                {
+                    BMLogger.ExceptionLog(e);
+                }
+            }
+            return anAbilityHasBeenCalled;
+        }
+
+        public virtual void InvokeAbilityToAll(string method, params object[] parameters)
+        {
+            foreach (var ability in _characterAbilitiesAlone)
+            {
+                try
+                {
+                    ability.CallMethod(method, parameters);
+                }
+                catch (Exception e)
+                {
+                    BMLogger.ExceptionLog(e);
+                }
             }
         }
     }

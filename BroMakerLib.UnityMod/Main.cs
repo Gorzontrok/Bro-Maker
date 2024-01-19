@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using BroMakerLib.Loggers;
 using HarmonyLib;
 using UnityModManagerNet;
 
@@ -38,6 +39,8 @@ namespace BroMakerLib.UnityMod
             {
                 // Set BroMaker Path
                 DirectoriesManager.StorageDirectory = Path.Combine(Directory.GetCurrentDirectory(), "BroMaker_Storage\\");
+                // Check if data file exist
+                CheckModFile();
                 // Initialize BroMaker
                 BroMaker.Initialize();
             }
@@ -89,6 +92,20 @@ namespace BroMakerLib.UnityMod
         {
             BroMakerLib.Settings.instance.Save();
             settings.Save(modEntry);
+        }
+
+        private static void CheckModFile()
+        {
+            var path = Path.Combine(mod.Path, "BroMakerData.mod.json");
+            var pathDestination = Path.Combine(DirectoriesManager.StorageDirectory, "BroMakerData.mod.json");
+            if (File.Exists(path) && !File.Exists(pathDestination))
+            {
+                File.Copy(path, pathDestination);
+            }
+            else if (!File.Exists(path) && !File.Exists(pathDestination))
+            {
+                BMLogger.Error("BroMaker didn't found 'BroMakerData.mod.json', try reinstalling BroMaker or some mods may not work.");
+            }
         }
     }
 

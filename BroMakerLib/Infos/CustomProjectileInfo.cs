@@ -73,6 +73,9 @@ namespace BroMakerLib.Infos
             { "WarlockPortalGuided", "networkobjects:WarlockPortalProjectileGuided" },
             { "ShellMedium", "networkobjects:Shell Medium" },
             { "ShellHeavyEvil", "networkobjects:Shell Heavy" },
+            { "FlameThrower1", "sharedassets:FlameThrower Bullet 1" },
+            { "FlameThrower2", "sharedassets:FlameThrower Bullet 2" },
+            { "FlameThrower3", "sharedassets:FlameThrower Bullet 3" },
         };
 
 
