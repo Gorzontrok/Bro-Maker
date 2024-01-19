@@ -4,6 +4,7 @@ Change the location of the Storage Folder -> \Broforce\BroMaker_Storage\
 Fixed all of the warnings when presets are reloaded
 Added mods to loads custom objects
 Reworked UI
+Fixed Avatar being one pixel too high
 
 
 v2.2.2:
