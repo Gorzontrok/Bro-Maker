@@ -1,3 +1,7 @@
+v2.4.0:
+Possibility to read abilities directly from mod "Abilities"
+Possibility to read bros directly from mod "CustomBros"
+
 v2.3.0:
 Added Abilities support.
 Change the location of the Storage Folder -> \Broforce\BroMaker_Storage\
