@@ -7,7 +7,7 @@ using BSett = BroMakerLib.Settings;
 
 namespace BroMakerLib.Storages
 {
-    public struct StoredCharacter : IStoredObject
+    public struct StoredHero : IStoredObject
     {
         public const string JSON_EXTENSION = ".json";
 
@@ -22,25 +22,38 @@ namespace BroMakerLib.Storages
         public string path { get; set; }
         public string name { get; set; }
 
-        public Type type;
+        public CustomBroInfo info;
+        public BroMakerMod mod;
 
-        public StoredCharacter(string path, Type type = null)
+        public StoredHero(string path, BroMakerMod mod)
         {
             this.path = path;
             name = Path.GetFileNameWithoutExtension(this.path);
-            this.type = type ?? typeof(CustomHero);
             BSett.instance.addBroEnabled(this.name, true);
+            info = null;
+            this.mod = mod;
+        }
+        public StoredHero(CustomBroInfo bInfo, BroMakerMod mod)
+        {
+            info = bInfo;
+            path = bInfo.path;
+            name = bInfo.name;
+            BSett.instance.addBroEnabled(this.name, true);
+            this.mod = mod;
         }
 
-        public TInfo GetInfo<TInfo>() where TInfo : CustomCharacterInfo
+        public CustomBroInfo GetInfo()
         {
-            TInfo info = null;
+            if (this.info != null)
+                return this.info;
+
+            CustomBroInfo info = null;
 
             BMLogger.Debug($"Start Deserialization of '{path}'");
             string extension = Path.GetExtension(path).ToLower();
             if (extension == JSON_EXTENSION)
             {
-                info = CustomBroInfo.DeserializeJSON<TInfo>(path);
+                info = CustomBroInfo.DeserializeJSON<CustomBroInfo>(path);
                 info.path = Path.GetDirectoryName(path);
                 info.cutscene.path = info.path;
             }
@@ -48,30 +61,12 @@ namespace BroMakerLib.Storages
             return info;
         }
 
-        public void LoadCharacter(int playernum)
-        {
-            LoadCharacter<CustomCharacterInfo>(playernum);
-        }
-        public void LoadCharacter<TInfo>(int playerNum) where TInfo : CustomCharacterInfo
-        {
-            try
-            {
-                BMLogger.Log("Spawning Character " + name);
-                TInfo info = GetInfo<TInfo>();
-                //Loaders.LoadCharacter.WithCustomBroInfo(playerNum, info, PresetManager.GetPreset(info.characterPreset));
-            }
-            catch(Exception e)
-            {
-                BMLogger.ExceptionLog(e);
-            }
-        }
-
         public void LoadBro(int playerNum)
         {
             try
             {
                 BMLogger.Debug("Spawning Hero " + name);
-                var info = GetInfo<CustomBroInfo>();
+                var info = GetInfo();
                 Loaders.LoadHero.WithCustomBroInfo(playerNum, info, PresetManager.GetHeroPreset(info.characterPreset));
             }
             catch (Exception e)

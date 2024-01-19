@@ -10,7 +10,6 @@ using RocketLib;
 using BSett = BroMakerLib.Settings;
 using BroMakerLib.CustomObjects.Bros;
 using BroMakerLib.ModManager;
-using System.IO;
 
 namespace BroMakerLib.UnityMod
 {
@@ -43,13 +42,15 @@ namespace BroMakerLib.UnityMod
         private static Rect _toolTipRect = Rect.zero;
         private static int _selectedCustomBrosIndex = -1;
         private static int _selectedModIndex = -1;
-        private static StoredCharacter _selectedBro;
+        private static StoredHero _selectedBro;
         private static CustomHero _selectedHero;
         private static GameObject heroHolder;
         private static bool heroCreated = false;
 
         private static Vector2 _spawnerScrollView;
         private static int _broPerLines = 6;
+
+        private static GUIStyle _buttonStyle = null;
 
         public static void Initialize()
         {
@@ -75,6 +76,9 @@ namespace BroMakerLib.UnityMod
 
         public static void UI()
         {
+            if (_buttonStyle == null)
+                _buttonStyle = new GUIStyle(GUI.skin.button);
+
             string[] tabsNames = _tabs.Keys.ToArray();
             _tabSelected = GUILayout.SelectionGrid(_tabSelected, tabsNames, 4);
             GUILayout.Space(15);
@@ -134,64 +138,32 @@ namespace BroMakerLib.UnityMod
             GUILayout.EndHorizontal();
             GUILayout.Space(15);
 
-            GUIStyle buttonStyle = new GUIStyle(GUI.skin.button);
-
             int broIndex = 0;
             int modCount = 0;
             try
             {
                 foreach (BroMakerMod mod in Mods)
                 {
-                    if (mod.CustomBros.IsNullOrEmpty())
+                    if (mod.StoredHeroes.IsNullOrEmpty())
                     {
                         continue;
                     }
 
                     var name = mod.Name;
                     // If only one custom bro is in the mod, we can just display them where the mod name would be
-                    if ( mod.CustomBros.Length == 1 )
+                    if ( mod.StoredHeroes.Length == 1 )
                     {
-                        // show mod information
-                        GUILayout.BeginHorizontal("box");
-                        if ( (_selectedCustomBrosIndex == broIndex) != GUILayout.Toggle(_selectedCustomBrosIndex == broIndex, mod.BrosNames[0], buttonStyle, GUILayout.Width(150)) )
-                        {
-                            if (_selectedCustomBrosIndex == broIndex)
-                            {
-                                _selectedCustomBrosIndex = -1;
-                            }
-                            else
-                            {
-                                _selectedCustomBrosIndex = broIndex;
-                                _selectedBro = new StoredCharacter(Path.Combine(mod.Path, mod.CustomBros[0]));
-                                _objectToEdit = _selectedBro.GetInfo<CustomBroInfo>();
-                                CreateSelectedBro();
-                            }
-                        }
-                        GUILayout.Space(50);
-                        GUILayout.Label(mod.Author, GUILayout.Width(200));
-                        GUILayout.Label(mod.Version, GUILayout.Width(200));
-                        GUILayout.Label(mod.BroMakerVersion, GUILayout.Width(200));
-                        GUILayout.EndHorizontal();
-
-                        // Show bros
-                        if (_selectedCustomBrosIndex == broIndex)
-                        {
-                            SelectedBroUI(_selectedBro);
-                            GUILayout.Space(25);
-                        }
-                        else
-                        {
-                            GUILayout.Space(13);
-                        }
+                        SpawnerUIOneHero(mod, broIndex);
 
                         broIndex++;
                     }
+
                     // If more than one custom bros are in the mod, allow user to toggle to see them
                     else
                     {
                         // show mod information
                         GUILayout.BeginHorizontal("box");
-                        if ((_selectedModIndex == modCount) != GUILayout.Toggle(_selectedModIndex == modCount, name, buttonStyle, GUILayout.Width(150)) )
+                        if ((_selectedModIndex == modCount) != GUILayout.Toggle(_selectedModIndex == modCount, name, _buttonStyle, GUILayout.Width(150)) )
                         {
                             // Deselect
                             if ( _selectedModIndex == modCount )
@@ -218,7 +190,7 @@ namespace BroMakerLib.UnityMod
                             int horizontalIndex = 0;
                             bool willShowOptions = false;
                             int modIndex = 0;
-                            foreach (string bro in mod.CustomBros)
+                            foreach (StoredHero hero in mod.StoredHeroes)
                             {
                                 if (horizontalIndex == 0)
                                 {
@@ -226,7 +198,7 @@ namespace BroMakerLib.UnityMod
                                     isHorizontalOpen = true;
                                 }
 
-                                if ( (_selectedCustomBrosIndex == broIndex) != GUILayout.Toggle(_selectedCustomBrosIndex == broIndex, mod.BrosNames[modIndex], buttonStyle, GUILayout.Width(150)) )
+                                if ( (_selectedCustomBrosIndex == broIndex) != GUILayout.Toggle(_selectedCustomBrosIndex == broIndex, mod.StoredHeroes[modIndex].name, _buttonStyle, GUILayout.Width(150)) )
                                 {
                                     if (_selectedCustomBrosIndex == broIndex)
                                     {
@@ -235,8 +207,8 @@ namespace BroMakerLib.UnityMod
                                     else
                                     {
                                         _selectedCustomBrosIndex = broIndex;
-                                        _selectedBro = new StoredCharacter(Path.Combine(mod.Path, mod.CustomBros[0]));
-                                        _objectToEdit = _selectedBro.GetInfo<CustomBroInfo>();
+                                        _selectedBro = hero;
+                                        _objectToEdit = _selectedBro.GetInfo();
                                         CreateSelectedBro();
                                     }
                                 }
@@ -275,10 +247,7 @@ namespace BroMakerLib.UnityMod
                         // Just count up how many bros are in the mod if not displaying the custom bros
                         else
                         {
-                            foreach (string bro in mod.CustomBros)
-                            {
-                                broIndex++;
-                            }
+                            broIndex += mod.StoredHeroes.Length;
                         }
 
                         GUILayout.Space(13);
@@ -329,7 +298,7 @@ namespace BroMakerLib.UnityMod
         }
 
 
-        private static void SelectedBroUI(StoredCharacter bro)
+        private static void SelectedBroUI(StoredHero bro)
         {
             if (bro.Equals(null))
                 return;
@@ -365,7 +334,7 @@ namespace BroMakerLib.UnityMod
             {
                 try
                 {
-                    Cutscenes.CustomCutsceneController.LoadHeroCutscene(bro.GetInfo<CustomCharacterInfo>().cutscene);
+                    Cutscenes.CustomCutsceneController.LoadHeroCutscene(bro.GetInfo().cutscene);
                 }
                 catch (ArgumentNullException ex)
                 {
@@ -461,6 +430,42 @@ namespace BroMakerLib.UnityMod
         {
             BroMaker.ReloadFiles();
             _selectedCustomBrosIndex = -1;
+        }
+
+        private static void SpawnerUIOneHero(BroMakerMod mod, int broIndex)
+        {
+            // show mod information
+            GUILayout.BeginHorizontal("box");
+            if ((_selectedCustomBrosIndex == broIndex) != GUILayout.Toggle(_selectedCustomBrosIndex == broIndex, mod.StoredHeroes[0].name, _buttonStyle, GUILayout.Width(150)))
+            {
+                if (_selectedCustomBrosIndex == broIndex)
+                {
+                    _selectedCustomBrosIndex = -1;
+                }
+                else
+                {
+                    _selectedCustomBrosIndex = broIndex;
+                    _selectedBro = mod.StoredHeroes[0];
+                    _objectToEdit = _selectedBro.GetInfo();
+                    CreateSelectedBro();
+                }
+            }
+            GUILayout.Space(50);
+            GUILayout.Label(mod.Author, GUILayout.Width(200));
+            GUILayout.Label(mod.Version, GUILayout.Width(200));
+            GUILayout.Label(mod.BroMakerVersion, GUILayout.Width(200));
+            GUILayout.EndHorizontal();
+
+            // Show bros
+            if (_selectedCustomBrosIndex == broIndex)
+            {
+                SelectedBroUI(_selectedBro);
+                GUILayout.Space(25);
+            }
+            else
+            {
+                GUILayout.Space(13);
+            }
         }
     }
 }

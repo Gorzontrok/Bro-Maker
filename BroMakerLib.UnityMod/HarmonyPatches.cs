@@ -126,7 +126,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                     LoadHero.willReplaceBro[__instance.playerNum] = false;
                     LoadHero.spawningCustomBro[__instance.playerNum] = true;
                     LoadHero.anyCustomSpawning = true;
-                    Storages.StoredCharacter choice;
+                    Storages.StoredHero choice;
                     if ( GameModeController.IsHardcoreMode )
                     {
                         choice = BSett.instance.getRandomHardcoreBro(LoadHero.playCutscene);
@@ -134,7 +134,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                     else
                     {
                         choice = BSett.instance.getRandomEnabledBro();
-                        if ( LoadHero.playCutscene = !BSett.instance.seenBros.Contains(choice.name) && choice.GetInfo<CustomCharacterInfo>().cutscene.playCutsceneOnFirstSpawn )
+                        if ( LoadHero.playCutscene = !BSett.instance.seenBros.Contains(choice.name) && choice.GetInfo().cutscene.playCutsceneOnFirstSpawn )
                         {
                             BSett.instance.seenBros.Add(choice.name);
                         }
@@ -143,7 +143,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
 
                     if (LoadHero.playCutscene)
                     {
-                        Cutscenes.CustomCutsceneController.LoadHeroCutscene(choice.GetInfo<CustomCharacterInfo>().cutscene);
+                        Cutscenes.CustomCutsceneController.LoadHeroCutscene(choice.GetInfo().cutscene);
                         LoadHero.playCutscene = false;
                     }
 
@@ -638,7 +638,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                     return false;
                 }
             }
-            
+
             for ( int i = 0; i < 4; ++i )
             {
                 // Ensure all non custom bros have normal offset

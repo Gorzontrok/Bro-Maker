@@ -4,6 +4,7 @@ using System.Linq;
 using System.IO;
 using BroMakerLib.Loggers;
 using BroMakerLib.ModManager;
+using BroMakerLib.Infos;
 
 namespace BroMakerLib.Storages
 {
@@ -13,7 +14,7 @@ namespace BroMakerLib.Storages
         {
             get { return _abilities.ToArray(); }
         }
-        public static StoredCharacter[] Bros
+        public static StoredHero[] Bros
         {
             get { return _bros.ToArray(); }
         }
@@ -42,7 +43,7 @@ namespace BroMakerLib.Storages
         }
 
         private static List<StoredAbility> _abilities = new List<StoredAbility>();
-        private static List<StoredCharacter> _bros = new List<StoredCharacter>();
+        private static List<StoredHero> _bros = new List<StoredHero>();
         private static string[] _brosNames = null;
         private static List<StoredGrenade> _grenades = new List<StoredGrenade>();
         private static List<StoredProjectile> _projectiles = new List<StoredProjectile>();
@@ -50,7 +51,7 @@ namespace BroMakerLib.Storages
 
         public static void Initialize()
         {
-            _bros = new List<StoredCharacter>();
+            _bros = new List<StoredHero>();
             _weapons = new List<StoredWeapon>();
             _grenades = new List<StoredGrenade>();
             _abilities = new List<StoredAbility>();
@@ -73,23 +74,73 @@ namespace BroMakerLib.Storages
             return _abilities.FirstOrDefault(s => s.name == name);
         }
 
+        public static StoredHero GetHeroByObject(object obj, BroMakerMod mod)
+        {
+            if (obj == null)
+            {
+                throw new ArgumentNullException(nameof(obj));
+            }
+
+            if (_bros.IsNullOrEmpty())
+                return new StoredHero();
+
+            string name = null;
+            if (obj is string)
+            {
+
+            }
+
+            foreach (StoredHero storedHero in _bros)
+            {
+                if (storedHero.mod == mod && storedHero.name == name)
+                    return storedHero;
+            }
+
+            return new StoredHero();
+        }
+
+        public static StoredHero GetHeroByName(string name, BroMakerMod mod)
+        {
+            if (_bros.IsNullOrEmpty() || name.IsNullOrEmpty())
+                return new StoredHero();
+
+            foreach (StoredHero storedHero in _bros)
+            {
+                if (storedHero.mod == mod && storedHero.name == name)
+                    return storedHero;
+            }
+
+            return new StoredHero();
+        }
+
         public static void StoreCharactersFromMod(BroMakerMod mod)
         {
             if (mod == null || mod.CustomBros == null || mod.CustomBros.Length == 0)
                 return;
 
-            foreach (var broFile in mod.CustomBros)
+            var temp = new List<StoredHero>();
+            foreach (var broObject in mod.CustomBros)
             {
-                if (broFile.IsNotNullOrEmpty())
+                if (broObject as string != null && broObject.As<string>().IsNotNullOrEmpty())
                 {
-                    var path = Path.Combine(mod.Path, broFile);
+                    var path = Path.Combine(mod.Path, broObject as string);
                     if (File.Exists(path))
                     {
-                        _bros.Add(new StoredCharacter(path));
+                        var hero = new StoredHero(path, mod);
+                        temp.Add(hero);
+                        _bros.Add(hero);
                         BMLogger.Debug($"Found file: '{path}'");
                     }
                 }
+                else if (broObject as CustomBroInfo != null)
+                {
+                    CustomBroInfo info = broObject as CustomBroInfo;
+                    var hero = new StoredHero(info, mod);
+                    temp.Add(hero);
+                    _bros.Add(hero);
+                }
             }
+            mod.StoredHeroes = temp.ToArray();
         }
 
         public static void StoreAbilitiesFromMod(BroMakerMod mod)
@@ -97,18 +148,32 @@ namespace BroMakerLib.Storages
             if (mod == null || mod.Abilities == null || mod.Abilities.Length == 0)
                 return;
 
-            foreach (var broFile in mod.Abilities)
+            var temp = new List<StoredAbility>();
+            foreach (var abilityObject in mod.Abilities)
             {
-                if (broFile.IsNotNullOrEmpty())
+                if (abilityObject == null)
+                    continue;
+
+                if (abilityObject as string != null && abilityObject.As<string>().IsNotNullOrEmpty())
                 {
-                    var path = Path.Combine(mod.Path, broFile);
+                    var path = Path.Combine(mod.Path, abilityObject as string);
                     if (File.Exists(path))
                     {
-                        _abilities.Add(new StoredAbility(path));
+                        var ability = new StoredAbility(path);
+                        temp.Add(ability);
+                        _abilities.Add(ability);
                         BMLogger.Debug($"Found file: '{path}'");
                     }
                 }
+                else if (abilityObject as AbilityInfo != null)
+                {
+                    AbilityInfo info = abilityObject as AbilityInfo;
+                    var ability = new StoredAbility(info);
+                    temp.Add(ability);
+                    _abilities.Add(ability);
+                }
             }
+            mod.StoredAbilities = temp.ToArray();
         }
     }
 }

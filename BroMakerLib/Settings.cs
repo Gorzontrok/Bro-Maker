@@ -171,7 +171,7 @@ namespace BroMakerLib
             }
         }
 
-        public StoredCharacter getStoredCharacter( string name )
+        public StoredHero getStoredCharacter( string name )
         {
             for (int i = 0; i < MakerObjectStorage.Bros.Length; ++i)
             {
@@ -184,7 +184,7 @@ namespace BroMakerLib
             return MakerObjectStorage.Bros[0];
         }
 
-        public StoredCharacter getRandomEnabledBro()
+        public StoredHero getRandomEnabledBro()
         {
             if ( this.overrideNextBroSpawn )
             {
@@ -210,7 +210,7 @@ namespace BroMakerLib
             return getStoredCharacter(chosenName);
         }
 
-        public StoredCharacter getRandomHardcoreBro(bool isRescue)
+        public StoredHero getRandomHardcoreBro(bool isRescue)
         {
             if (this.overrideNextBroSpawn)
             {

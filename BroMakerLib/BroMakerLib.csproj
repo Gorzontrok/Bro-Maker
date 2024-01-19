@@ -111,6 +111,8 @@
   <ItemGroup>
     <Compile Include="Abilities\Ability.cs" />
     <Compile Include="Abilities\CharacterAbility.cs" />
+    <Compile Include="Abilities\Characters\FlameThrower.cs" />
+    <Compile Include="Abilities\Characters\SpawnDrone.cs" />
     <Compile Include="Abilities\Characters\ThrowGrenade.cs" />
     <Compile Include="Abilities\Characters\Jetpack.cs" />
     <Compile Include="Attributes\AbilityPresetAttribute.cs" />
@@ -210,7 +212,7 @@
     <Compile Include="Loaders\NewBroInfo.cs" />
     <Compile Include="CustomObjects\Bros\SwordBroMaker.cs" />
     <Compile Include="Storages\IStoredObject.cs" />
-    <Compile Include="Storages\StoredCharacter.cs" />
+    <Compile Include="Storages\StoredHero.cs" />
     <Compile Include="Storages\StoredAbility.cs" />
     <Compile Include="Storages\StoredProjectile.cs" />
     <Compile Include="Storages\StoredGrenade.cs" />

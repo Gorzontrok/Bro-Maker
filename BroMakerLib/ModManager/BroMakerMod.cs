@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.IO;
 using System.Linq;
+using Newtonsoft.Json.Linq;
+using BroMakerLib.Infos;
+using BroMakerLib.Storages;
 
 namespace BroMakerLib
 {
@@ -15,14 +18,18 @@ namespace BroMakerLib
         // The custom objects
 
         public string[] Assemblies = new string[0];
-        public string[] CustomBros = new string[0];
-        public string[] Abilities = new string[0];
+        public object[] CustomBros = new object[0];
+        public object[] Abilities = new object[0];
 
         // Not in JSON file
         [JsonIgnore]
         public string Path { get; protected set; }
         [JsonIgnore]
         public string[] BrosNames { get; protected set; }
+        [JsonIgnore]
+        public StoredHero[] StoredHeroes {  get; set; }
+        [JsonIgnore]
+        public StoredAbility[] StoredAbilities {  get; set; }
 
         public static BroMakerMod TryLoad(string path)
         {
@@ -42,9 +49,10 @@ namespace BroMakerLib
             {
                 Name = Path.Substring(Directory.GetCurrentDirectory().Length - 1, Path.Length);
             }
-            CustomBros = CheckFiles(CustomBros);
-            Abilities = CheckFiles(Abilities);
-            BrosNames = CustomBros.Select(str => System.IO.Path.GetFileNameWithoutExtension(str)).ToArray();
+            CustomBros = CheckFiles<CustomBroInfo>(CustomBros);
+            Abilities = CheckFiles<AbilityInfo>(Abilities);
+
+            BrosNames = GetNames<CustomBroforceObjectInfo>(CustomBros);
         }
 
 
@@ -63,31 +71,74 @@ namespace BroMakerLib
             return json;
         }
 
-        private string[] CheckFiles(string[] files)
+        private object[] CheckFiles<T>(object[] objects)
+            where T : CustomBroforceObjectInfo
         {
-            if (files.IsNullOrEmpty())
-                return new string[0];
+            if (objects.IsNullOrEmpty())
+                return new object[0];
 
-            List<string> temp = files.ToList();
-            foreach (var file in files)
+            List<object> temp = new List<object>();
+            foreach (var obj in objects)
             {
-                if (file.IsNotNullOrEmpty())
+                if (obj == null)
+                    continue;
+
+                if (obj is string && obj.As<string>().IsNotNullOrEmpty())
                 {
-                    var path = System.IO.Path.Combine(Path, file);
-                    if (!File.Exists(path))
+                    var path = System.IO.Path.Combine(Path, obj.As<string>());
+                    if (File.Exists(path))
                     {
-                        temp.Remove(file);
-                        Log($"Can't find '{file}' at '{path}'");
+                        temp.Add(obj);
+                    }
+                    else
+                    {
+                        BMLogger.Warning($"Can't find '{obj}' at '{path}'");
+                    }
+                }
+                else if (obj is JObject && obj.As<JObject>().Count > 0)
+                {
+                    T info = obj.As<JObject>().ToObject<T>();
+                    if (info != null)
+                    {
+                        temp.Add(info);
+                        continue;
                     }
                 }
             }
             return temp.ToArray();
         }
 
-
-        private void Log(string message)
+        private string[] GetNames<T>(object[] objects)
+            where T : CustomBroforceObjectInfo
         {
-            BMLogger.Log($"[{Name}] {message}");
+            if (objects.IsNullOrEmpty())
+                return new string[0];
+
+            List<string> temp = new List<string>();
+            foreach (var obj in objects)
+            {
+                if (obj == null)
+                    continue;
+
+                if (obj is string && obj.As<string>().IsNotNullOrEmpty())
+                {
+                    var path = System.IO.Path.Combine(Path, obj.As<string>());
+                    if (File.Exists(path))
+                    {
+                        T info = CustomBroforceObjectInfo.DeserializeJSON<T>(path);
+                        temp.Add(info.name);
+                    }
+                    else
+                    {
+                        BMLogger.Warning($"Can't find '{obj}' at '{path}'");
+                    }
+                }
+                else if (obj is T)
+                {
+                    temp.Add(obj.As<T>().name);
+                }
+            }
+            return temp.ToArray();
         }
     }
 }

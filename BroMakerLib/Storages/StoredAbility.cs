@@ -1,10 +1,12 @@
 ﻿using BroMakerLib.CustomObjects.Bros;
 using BroMakerLib.Infos;
 using BroMakerLib.Loggers;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using UnityEngine;
 
@@ -24,11 +26,22 @@ namespace BroMakerLib.Storages
         public string name { get; set; }
         public string path { get; set; }
 
+        public AbilityInfo info;
+
         public StoredAbility(string path)
         {
             this.path = path;
             name = GetInfo(path).name;
+            info = null;
         }
+
+        public StoredAbility(AbilityInfo aInfo)
+        {
+            info = aInfo;
+            name = aInfo.name;
+            this.path = aInfo.path;
+        }
+
         public static AbilityInfo GetInfo(string path)
         {
             AbilityInfo info = null;
@@ -46,6 +59,8 @@ namespace BroMakerLib.Storages
 
         public AbilityInfo GetInfo()
         {
+            if (info != null)
+                return info;
             return GetInfo(this.path);
         }
 
