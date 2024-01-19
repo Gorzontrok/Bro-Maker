@@ -1,4 +1,4 @@
-# Bro Maker [WIP]
+# Bro Maker \[WIP\]
 
  This mod allows you to make custom Bros for Broforce.
 
@@ -11,9 +11,9 @@
 * All of my mods require [Unity Mod Manager](https://www.nexusmods.com/site/mods/21).
 * Also requires [RocketLib](https://www.nexusmods.com/broforce/mods/9)
 * The installation guide can be found [here](https://steamcommunity.com/sharedfiles/filedetails/?id=2434812447).  
-* The latest Release is in the `/Release` folder.
+* The latest Release is in the `/Release/` folder.
 
-* To install custom bros, unzip the archive in `Broforce\Mods\BroMaker\Storage\Bros`
+* To install custom bros, unzip the archive in `Broforce/BroMaker_Storage/`
 
 ## Known Issues
 
@@ -32,6 +32,6 @@ You can also set the mod to have a chance for you to automatically spawn as a cu
 
 ## Guide to Developer
 
-[Wiki](https://github.com/Gorzon38/Bro-Maker/wiki)
+[Wiki](https://github.com/Gorzontrok/Bro-Maker/wiki)
 
 [Steam Guide](https://steamcommunity.com/sharedfiles/filedetails/?id=2738232988)
