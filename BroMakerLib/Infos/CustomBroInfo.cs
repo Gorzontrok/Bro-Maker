@@ -11,7 +11,9 @@ namespace BroMakerLib.Infos
         public CustomBroInfo() : base() { }
         public CustomBroInfo(string name) : base(name) { }
 
+        [JsonIgnore]
         public string spritePath;
+        [JsonIgnore]
         public string gunSpritePath;
         [JsonIgnore]
         public Vector2 gunSpriteOffset = Vector2.zero;
