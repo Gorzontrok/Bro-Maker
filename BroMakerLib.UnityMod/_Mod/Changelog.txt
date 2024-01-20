@@ -1,6 +1,7 @@
 v2.4.0:
 Possibility to read abilities directly from mod "Abilities"
 Possibility to read bros directly from mod "CustomBros"
+Fixed the UI disappearing if not mod is installed
 
 v2.3.0:
 Added Abilities support.
