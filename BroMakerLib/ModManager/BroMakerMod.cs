@@ -20,6 +20,7 @@ namespace BroMakerLib
         public string[] Assemblies = new string[0];
         public object[] CustomBros = new object[0];
         public object[] Abilities = new object[0];
+        public object[] Grenades = new object[0];
 
         // Not in JSON file
         [JsonIgnore]
@@ -30,6 +31,8 @@ namespace BroMakerLib
         public StoredHero[] StoredHeroes {  get; set; }
         [JsonIgnore]
         public StoredAbility[] StoredAbilities {  get; set; }
+        [JsonIgnore]
+        public StoredGrenade[] StoredGrenades{  get; set; }
 
         public static BroMakerMod TryLoad(string path)
         {

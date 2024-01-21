@@ -1,10 +1,6 @@
-﻿using BroMakerLib.CustomObjects.Bros;
-using System;
-using System.Collections.Generic;
+﻿using BroMakerLib.Infos;
+using BroMakerLib.Loggers;
 using System.IO;
-using System.Linq;
-using System.Text;
-using UnityEngine;
 
 namespace BroMakerLib.Storages
 {
@@ -14,16 +10,40 @@ namespace BroMakerLib.Storages
         public string name { get; set; }
         public string path { get; set; }
 
-        public StoredGrenade(string path)
+        public CustomGrenadeInfo info;
+        public BroMakerMod mod;
+
+        public StoredGrenade(string path, BroMakerMod mod)
         {
             this.path = path;
             name = Path.GetFileNameWithoutExtension(this.path);
+            this.mod = mod;
+            info = null;
+        }
+        public StoredGrenade(CustomGrenadeInfo gInfo, BroMakerMod mod)
+        {
+            this.mod = mod;
+            info = gInfo;
+            this.path = info.path;
+            name = info.name;
         }
 
-        [Obsolete("Unimplemented")]
-        public void Load(CustomHero bro)
+        public CustomGrenadeInfo GetInfo()
         {
-            // TODO
+            if (this.info != null)
+                return this.info;
+
+            CustomGrenadeInfo info = null;
+
+            BMLogger.Debug($"Start Deserialization of '{path}'");
+            string extension = Path.GetExtension(path).ToLower();
+            if (extension == ".json")
+            {
+                info = CustomGrenadeInfo.DeserializeJSON<CustomGrenadeInfo>(path);
+                info.path = Path.GetDirectoryName(path);
+            }
+            BMLogger.Debug("End Deserialization");
+            return info;
         }
 
         public override bool Equals(object obj)
@@ -35,7 +55,5 @@ namespace BroMakerLib.Storages
         {
             return name;
         }
-
-
     }
 }

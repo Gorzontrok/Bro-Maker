@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using UnityEngine;
 
 namespace BroMakerLib
 {
@@ -17,6 +16,7 @@ namespace BroMakerLib
         public static Dictionary<string, Type> heroesPreset = new Dictionary<string, Type>();
         public static Dictionary<string, Type> customObjectsPreset = new Dictionary<string, Type>();
         public static Dictionary<string, Type> abilities = new Dictionary<string, Type>();
+        public static Dictionary<string, Type> grenades = new Dictionary<string, Type>();
 
         public static bool disableWarnings = false;
 
@@ -79,6 +79,14 @@ namespace BroMakerLib
                 return null;
             return abilities[name];
         }
+
+        public static Type GetGrenadePreset(string name)
+        {
+            if (!grenades.ContainsKey(name))
+                return null;
+            return grenades[name];
+        }
+
         public static MethodInfo GetParameterMethod(string name)
         {
             if (!parameters.ContainsKey(name))
@@ -185,6 +193,8 @@ namespace BroMakerLib
                 return heroesPreset;
             if (attribute is AbilityPresetAttribute)
                 return abilities;
+            if (attribute is GrenadePresetAttribute)
+                return grenades;
 
             return customObjectsPreset;
         }
@@ -215,6 +225,8 @@ namespace BroMakerLib
                 return "Hero";
             if (attribute is AbilityPresetAttribute)
                 return "Ability";
+            if (attribute is GrenadePresetAttribute)
+                return "Grenade";
             return string.Empty;
         }
     }

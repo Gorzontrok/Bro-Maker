@@ -18,21 +18,12 @@ namespace BroMakerLib.Storages
         {
             get { return _bros.ToArray(); }
         }
-        public static string[] BrosNames
-        {
-            get
-            {
-                if (_brosNames == null || _brosNames.Length != _bros.Count)
-                {
-                    _brosNames = _bros.Select((sc) => sc.ToString()).ToArray();
-                }
-                return _brosNames;
-            }
-        }
+
         public static StoredGrenade[] Grenades
         {
             get { return _grenades.ToArray(); }
         }
+
         public static StoredProjectile[] Projectiles
         {
             get { return _projectiles.ToArray(); }
@@ -44,7 +35,6 @@ namespace BroMakerLib.Storages
 
         private static List<StoredAbility> _abilities = new List<StoredAbility>();
         private static List<StoredHero> _bros = new List<StoredHero>();
-        private static string[] _brosNames = null;
         private static List<StoredGrenade> _grenades = new List<StoredGrenade>();
         private static List<StoredProjectile> _projectiles = new List<StoredProjectile>();
         private static List<StoredWeapon> _weapons = new List<StoredWeapon>();
@@ -174,6 +164,39 @@ namespace BroMakerLib.Storages
                 }
             }
             mod.StoredAbilities = temp.ToArray();
+        }
+
+        public static void StoreGrenadesFromMod(BroMakerMod mod)
+        {
+            if (mod == null || mod.Grenades == null || mod.Grenades.Length == 0)
+                return;
+
+            var temp = new List<StoredGrenade>();
+            foreach (var grenadeObject in mod.Grenades)
+            {
+                if (grenadeObject == null)
+                    continue;
+
+                if (grenadeObject as string != null && grenadeObject.As<string>().IsNotNullOrEmpty())
+                {
+                    var path = Path.Combine(mod.Path, grenadeObject as string);
+                    if (File.Exists(path))
+                    {
+                        var grenade = new StoredGrenade(path);
+                        temp.Add(grenade);
+                        _grenades.Add(grenade);
+                        BMLogger.Debug($"Found file: '{path}'");
+                    }
+                }
+                else if (grenadeObject as AbilityInfo != null)
+                {
+                    CustomGrenadeInfo info = grenadeObject as CustomGrenadeInfo;
+                    var grenade = new StoredGrenade(info);
+                    temp.Add(grenade);
+                    _grenades.Add(grenade);
+                }
+            }
+            mod.StoredGrenades = temp.ToArray();
         }
     }
 }
