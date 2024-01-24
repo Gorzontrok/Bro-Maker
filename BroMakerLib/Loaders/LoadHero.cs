@@ -54,20 +54,19 @@ namespace BroMakerLib.Loaders
             try
             {
                 if (!typeof(ICustomHero).IsAssignableFrom(type))
-                    throw new ArgumentException($"Type {type.Name} should inherit from 'ICustomHero'", "type");
+                    throw new ArgumentException($"Type '{type.Name}' should inherit from 'ICustomHero'", "type");
 
-                // Assign static variables
                 if (selectedPlayerNum < 0)
-                    throw new ArgumentException("Player Num must be greater than or equal to 0");
+                    throw new IndexOutOfRangeException("Player Num must be greater than or equal to 0");
                 else if (selectedPlayerNum > 3)
-                    throw new ArgumentException("Player Num must be smaller than or equal to 3");
-                else
-                    playerNum = selectedPlayerNum;
+                    throw new IndexOutOfRangeException("Player Num must be smaller than or equal to 3");
+
+                playerNum = selectedPlayerNum;
 
                 if (customBroInfo == null)
                     throw new NullReferenceException("Info is null");
-                else
-                    currentInfo = customBroInfo;
+
+                currentInfo = customBroInfo;
 
                 // Start Spawning Process
                 BMLogger.Debug("Spawner: Start Spawning Process.");
@@ -76,6 +75,8 @@ namespace BroMakerLib.Loaders
                 Player player = HeroController.players[playerNum];
                 if(player == null)
                     throw new NullReferenceException($"Player number {playerNum} doesn't exist.");
+
+
                 Vector3 previousPosition = Vector3.zero;
                 ReactionBubble previousCharacterBubble = null;
                 Traverse previousCharacterTraverse = null;
