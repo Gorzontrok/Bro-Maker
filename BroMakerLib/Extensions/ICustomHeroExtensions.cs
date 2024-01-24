@@ -42,7 +42,7 @@ namespace BroMakerLib
             heroCharacter.heroTrailPrefab = character.heroTrailPrefab;
             heroCharacter.high5Bubble = character.high5Bubble;
             heroCharacter.projectile = character.projectile;
-            heroCharacter.specialGrenade = LoadGrenade.GetGrenade(string.Empty);
+            heroCharacter.specialGrenade = LoadGrenade.FromName(string.Empty);
             heroCharacter.specialGrenade.playerNum = heroCharacter.playerNum;
             heroCharacter.heroType = character.heroType;
             heroCharacter.SetFieldValue("wallDragAudio", character.GetFieldValue<AudioSource>("wallDragAudio"));

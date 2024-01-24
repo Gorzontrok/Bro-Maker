@@ -63,7 +63,7 @@ namespace BroMakerLib
             grenade.wavesOfClusters = stats.wavesOfClusters;
             grenade.waveDelay = stats.waveDelay;
             grenade.SetFieldValue("forceM", stats.forceM);
-            grenade.smallGrenadePrefab = LoadGrenade.GetGrenade(stats.smallGrenadeName);
+            grenade.smallGrenadePrefab = LoadGrenade.FromName(stats.smallGrenadeName);
         }
 
         public static void LoadStats(this GrenadeSticky grenade, StickyGrenadeStats stats)

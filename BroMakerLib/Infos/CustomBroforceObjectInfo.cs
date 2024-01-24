@@ -8,6 +8,7 @@ using System.IO;
 using System.Text;
 using UnityEngine;
 using System.Reflection;
+using BroMakerLib.Loaders;
 
 namespace BroMakerLib.Infos
 {
@@ -271,7 +272,7 @@ namespace BroMakerLib.Infos
                 else if (fieldType == typeof(Grenade) || fieldType.IsAssignableFrom(typeof(Grenade)))
                 {
                     var name = (string)value;
-                    var grenade = CustomGrenadeInfo.GetGrenadeFromName(name);
+                    var grenade = LoadGrenade.FromName(name);
                     if (grenade != null)
                         field.SetValue(grenade);
                 }

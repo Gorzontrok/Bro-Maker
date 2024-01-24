@@ -182,7 +182,7 @@ namespace BroMakerLib.Storages
                     var path = Path.Combine(mod.Path, grenadeObject as string);
                     if (File.Exists(path))
                     {
-                        var grenade = new StoredGrenade(path);
+                        var grenade = new StoredGrenade(path, mod);
                         temp.Add(grenade);
                         _grenades.Add(grenade);
                         BMLogger.Debug($"Found file: '{path}'");
@@ -191,7 +191,7 @@ namespace BroMakerLib.Storages
                 else if (grenadeObject as AbilityInfo != null)
                 {
                     CustomGrenadeInfo info = grenadeObject as CustomGrenadeInfo;
-                    var grenade = new StoredGrenade(info);
+                    var grenade = new StoredGrenade(info, mod);
                     temp.Add(grenade);
                     _grenades.Add(grenade);
                 }

@@ -30,7 +30,7 @@ namespace BroMakerLib.Infos
 
         public static Grenade TryGetGrenadeFromFile(StoredGrenade storedGrenade)
         {
-            CustomGrenadeInfo info = storedgren;
+            return null;
         }
 
 
