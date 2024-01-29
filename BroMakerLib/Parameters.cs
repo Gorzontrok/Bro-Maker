@@ -151,6 +151,59 @@ namespace BroMakerLib
         }
 
         [Parameter]
+        public static void SpecialIconOffset(object obj, object value)
+        {
+            CustomHero hero = obj as CustomHero;
+            if (hero == null)
+            {
+                BMLogger.Warning($"{nameof(SpecialIconOffset)} parameter works only with Bros.");
+                return;
+            }
+
+            try
+            {
+                if (value is JObject)
+                {
+                    JToken xToken = value.As<JObject>().GetValue("x");
+                    JToken yToken = value.As<JObject>().GetValue("y");
+
+
+                    float x = Convert.ToSingle(xToken.ToObject<object>());
+                    float y = Convert.ToSingle(yToken.ToObject<object>());
+                    hero.specialMaterialOffset = new Vector2(x, y);
+                }
+                else
+                {
+                    BMLogger.Error("Can't load SpecialIconOffset value. It should be { \"x\": 0, \"y\": 0 } (0 is replacable)");
+                }
+            }
+            catch (Exception ex)
+            {
+                BMLogger.ExceptionLog(ex);
+            }
+        }
+
+        [Parameter]
+        public static void SpecialIconSpacing(object obj, object value)
+        {
+            CustomHero hero = obj as CustomHero;
+            if (hero == null)
+            {
+                BMLogger.Warning($"{nameof(SpecialIconSpacing)} parameter works only with Bros.");
+                return;
+            }
+
+            try
+            {
+                hero.specialMaterialSpacing = Convert.ToSingle(value);
+            }
+            catch (Exception ex)
+            {
+                BMLogger.ExceptionLog(ex);
+            }
+        }
+
+        [Parameter]
         public static void Avatar(object obj, string value)
         {
             CustomHero hero = obj as CustomHero;

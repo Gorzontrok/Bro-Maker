@@ -252,19 +252,19 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
             TestVanDammeAnim currentCharacter = HeroController.players[playerNum].character;
             if ( currentCharacter is CustomHero )
             {
+                CustomHero customHero = (currentCharacter as CustomHero);
+
                 for (int i = 0; i < __instance.grenadeIcons.Length; i++)
                 {
                     if (playerNum % 2 == 0)
                     {
-                        __instance.grenadeIcons[i].SetOffset(new Vector3(0, 0f, 0f));
+                        __instance.grenadeIcons[i].SetOffset(new Vector3(customHero.specialMaterialOffset.x + i * customHero.specialMaterialSpacing, customHero.specialMaterialOffset.y, 0f));
                     }
                     else
                     {
-                        __instance.grenadeIcons[i].SetOffset(new Vector3(0, 0f, 0f));
+                        __instance.grenadeIcons[i].SetOffset(new Vector3(-1 * (customHero.specialMaterialOffset.x + i * customHero.specialMaterialSpacing), customHero.specialMaterialOffset.y, 0f));
                     }
                 }
-
-                CustomHero customHero = (currentCharacter as CustomHero);
 
                 if (customHero.specialMaterials != null)
                 {

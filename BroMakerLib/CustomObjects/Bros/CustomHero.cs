@@ -20,6 +20,8 @@ namespace BroMakerLib.CustomObjects.Bros
         public CharacterExtended characterExtended { get; set; }
 
         public List<Material> specialMaterials = new List<Material>();
+		public Vector2 specialMaterialOffset = Vector2.zero;
+		public float specialMaterialSpacing = 0f;
 		public Material firstAvatar = null;
 		public Vector2 gunSpriteOffset = Vector2.zero;
 		public MuscleTempleFlexEffect flexEffect;
