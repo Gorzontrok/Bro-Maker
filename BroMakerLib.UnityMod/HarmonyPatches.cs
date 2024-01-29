@@ -287,6 +287,13 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                     }
                 }
             }
+            else
+            {
+                for (int i = 0; i < __instance.grenadeIcons.Length; i++)
+                {
+                    __instance.grenadeIcons[i].SetOffset(new Vector3(0f, 0f, 0f));
+                }
+            }
             return true;
         }
     }
