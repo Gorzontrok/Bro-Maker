@@ -220,7 +220,7 @@
         <member name="M:BroMakerLib.ResourcesController.GetAudioClip(System.String,System.String)">
             <summary>
             Creates an AudioClip from an audio file.
-            Loads AudioClip from cache if created previously.
+            Loads AudioClip from cache if created previously. Note that the same cached AudioClip can't be played several times simultaneously.
             </summary>
             <param name="path">Path to an audio file</param>
             <param name="fileName">Name of an audio file</param>
@@ -229,9 +229,18 @@
         <member name="M:BroMakerLib.ResourcesController.GetAudioClip(System.String)">
             <summary>
             Creates an AudioClip from an audio file.
-            Loads AudioClip from cache if created previously.
+            Loads AudioClip from cache if created previously. Note that the same cached AudioClip can't be played several times simultaneously.
             </summary>
             <param name="filePath">Path to an audio file</param>
+            <returns></returns>
+        </member>
+        <member name="M:BroMakerLib.ResourcesController.CreateAudioClip(System.String,System.String)">
+            <summary>
+            Creates an AudioClip from an audio file.
+            The AudioClip is not cached, use GetAudioClip is caching is desired.
+            </summary>
+            <param name="path">Path to an audio file</param>
+            <param name="fileName">Name of an audio file</param>
             <returns></returns>
         </member>
         <member name="M:BroMakerLib.ResourcesController.CreateAudioClip(System.String)">

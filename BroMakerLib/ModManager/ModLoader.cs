@@ -10,6 +10,7 @@ namespace BroMakerLib.ModManager
     internal static class ModLoader
     {
         public static List<BroMakerMod> mods =  new List<BroMakerMod>();
+        public static List<BroMakerMod> incompatibleMods = new List<BroMakerMod>();
 
         public static void Initialize()
         {
@@ -38,6 +39,7 @@ namespace BroMakerLib.ModManager
                         }
                         else
                         {
+                            incompatibleMods.Add(mod);
                             BMLogger.Error($"{mod.Name} require version of BroMaker >={mod.BroMakerVersion}. Current BroMaker version is {Info.VERSION}");
                         }
                     }

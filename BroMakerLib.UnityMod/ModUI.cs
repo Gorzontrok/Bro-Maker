@@ -22,6 +22,13 @@ namespace BroMakerLib.UnityMod
                 return ModLoader.mods;
             }
         }
+        public static List<BroMakerMod> IncompatibleMods
+        {
+            get
+            {
+                return ModLoader.incompatibleMods;
+            }
+        }
 
         private static Dictionary<string, Action> _tabs = new Dictionary<string, Action>()
         {
@@ -51,6 +58,7 @@ namespace BroMakerLib.UnityMod
         private static int _broPerLines = 6;
 
         private static GUIStyle _buttonStyle = null;
+        private static GUIStyle _incompatibleStyle = null;
 
         public static void Initialize()
         {
@@ -78,6 +86,12 @@ namespace BroMakerLib.UnityMod
         {
             if (_buttonStyle == null)
                 _buttonStyle = new GUIStyle(GUI.skin.button);
+
+            if (_incompatibleStyle == null)
+            {
+                _incompatibleStyle = new GUIStyle(GUI.skin.label);
+                _incompatibleStyle.normal.textColor = Color.red;
+            }
 
             string[] tabsNames = _tabs.Keys.ToArray();
             _tabSelected = GUILayout.SelectionGrid(_tabSelected, tabsNames, 4);
@@ -254,6 +268,44 @@ namespace BroMakerLib.UnityMod
 
                         GUILayout.Space(13);
                     }
+                    ++modCount;
+                }
+
+                // List mods that require a higher BroMaker version to make it clearer to the user what the issue is
+                foreach (BroMakerMod mod in IncompatibleMods)
+                {
+                    // show mod information
+                    GUILayout.BeginHorizontal("box");
+                    if ((_selectedModIndex == modCount) != GUILayout.Toggle(_selectedModIndex == modCount, mod.Name, _buttonStyle, GUILayout.Width(150)))
+                    {
+                        // Deselect
+                        if (_selectedModIndex == modCount)
+                        {
+                            _selectedModIndex = -1;
+                        }
+                        else
+                        {
+                            _selectedModIndex = modCount;
+                        }
+                    }
+                    GUILayout.Space(50);
+                    
+                    GUILayout.Label(mod.Author, GUILayout.Width(200));
+                    GUILayout.Label(mod.Version, GUILayout.Width(200));
+                    GUILayout.Label(mod.BroMakerVersion, _incompatibleStyle, GUILayout.Width(200));
+                    GUILayout.EndHorizontal();
+
+                    if (_selectedModIndex == modCount)
+                    {
+                        // Show bros
+                        GUILayout.BeginVertical("box");
+
+                        GUILayout.Label("This mod is incompatible with this version of BroMaker, it requires version: " + mod.BroMakerVersion, _incompatibleStyle);
+
+                        GUILayout.EndVertical();
+                    }
+                        
+
                     ++modCount;
                 }
 

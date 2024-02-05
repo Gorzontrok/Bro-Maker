@@ -268,7 +268,7 @@ namespace BroMakerLib
 
         /// <summary>
         /// Creates an AudioClip from an audio file.
-        /// Loads AudioClip from cache if created previously.
+        /// Loads AudioClip from cache if created previously. Note that the same cached AudioClip can't be played several times simultaneously.
         /// </summary>
         /// <param name="path">Path to an audio file</param>
         /// <param name="fileName">Name of an audio file</param>
@@ -281,7 +281,7 @@ namespace BroMakerLib
 
         /// <summary>
         /// Creates an AudioClip from an audio file.
-        /// Loads AudioClip from cache if created previously.
+        /// Loads AudioClip from cache if created previously. Note that the same cached AudioClip can't be played several times simultaneously.
         /// </summary>
         /// <param name="filePath">Path to an audio file</param>
         /// <returns></returns>
@@ -311,6 +311,19 @@ namespace BroMakerLib
                 audioClips.Add(filePath, result);
             }
             return result;
+        }
+
+        /// <summary>
+        /// Creates an AudioClip from an audio file.
+        /// The AudioClip is not cached, use GetAudioClip is caching is desired.
+        /// </summary>
+        /// <param name="path">Path to an audio file</param>
+        /// <param name="fileName">Name of an audio file</param>
+        /// <returns></returns>
+        public static AudioClip CreateAudioClip(string path, string fileName)
+        {
+            string filePath = Path.GetFullPath(Path.Combine(path, fileName));
+            return CreateAudioClip(filePath);
         }
 
         /// <summary>
