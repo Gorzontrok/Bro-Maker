@@ -6,7 +6,7 @@ namespace BroMakerLib
     {
         public const string NAME = nameof(BroMakerLib);
         public const string AUTHOR = "Gorzontrok";
-        public const string VERSION = "2.3.0";
+        public const string VERSION = "2.3.1";
 
         public static System.Version ParsedVersion
         {
