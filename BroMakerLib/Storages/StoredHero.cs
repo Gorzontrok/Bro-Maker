@@ -28,10 +28,20 @@ namespace BroMakerLib.Storages
         public StoredHero(string path, BroMakerMod mod)
         {
             this.path = path;
-            name = Path.GetFileNameWithoutExtension(this.path);
-            BSett.instance.addBroEnabled(this.name, true);
-            info = null;
+            this.info = null;
             this.mod = mod;
+            this.name = "";
+            try
+            {
+                this.info = GetInfo();
+                this.name = this.info.name;
+            }
+            catch (Exception e)
+            {
+                BMLogger.ExceptionLog(e);
+                this.name = Path.GetFileNameWithoutExtension(this.path);
+            }
+            BSett.instance.addBroEnabled(this.name, true);
         }
         public StoredHero(CustomBroInfo bInfo, BroMakerMod mod)
         {

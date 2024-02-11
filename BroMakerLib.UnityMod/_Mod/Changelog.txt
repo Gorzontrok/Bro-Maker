@@ -1,7 +1,12 @@
-v2.4.0:
+v2.3.2:
+Load custom bro name from Json rather than using the filename.
+
+v2.3.1
+Fixed mod options not displaying when 0 bros installed.
+Added parameters for changing special icon offset and spacing.
+Added list of incompatible mods for mods which require a newer BroMaker version.
 Possibility to read abilities directly from mod "Abilities"
 Possibility to read bros directly from mod "CustomBros"
-Fixed the UI disappearing if not mod is installed
 
 v2.3.0:
 Added Abilities support.
@@ -10,7 +15,6 @@ Fixed all of the warnings when presets are reloaded
 Added mods to loads custom objects
 Reworked UI
 Fixed Avatar being one pixel too high
-
 
 v2.2.2:
 Fixed boondock bro being left behind when spawning a custom bro.
