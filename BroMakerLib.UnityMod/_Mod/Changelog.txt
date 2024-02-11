@@ -1,3 +1,6 @@
+v2.3.3:
+Fixed path not set when an ability or a hero is loaded through the mod file
+
 v2.3.2:
 Load custom bro name from Json rather than using the filename.
 

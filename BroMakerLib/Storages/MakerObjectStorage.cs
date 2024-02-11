@@ -125,6 +125,8 @@ namespace BroMakerLib.Storages
                 else if (broObject as CustomBroInfo != null)
                 {
                     CustomBroInfo info = broObject as CustomBroInfo;
+                    info.path = mod.Path;
+                    info.cutscene.path = mod.Path;
                     var hero = new StoredHero(info, mod);
                     temp.Add(hero);
                     _bros.Add(hero);
@@ -158,6 +160,7 @@ namespace BroMakerLib.Storages
                 else if (abilityObject as AbilityInfo != null)
                 {
                     AbilityInfo info = abilityObject as AbilityInfo;
+                    info.path = mod.Path;
                     var ability = new StoredAbility(info);
                     temp.Add(ability);
                     _abilities.Add(ability);
