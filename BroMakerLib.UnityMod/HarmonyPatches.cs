@@ -250,42 +250,12 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
 
             int playerNum = Convert.ToInt32(Traverse.Create(__instance).Field("playerNum").GetValue());
             TestVanDammeAnim currentCharacter = HeroController.players[playerNum].character;
-            if ( currentCharacter is CustomHero )
+            if ( currentCharacter is CustomHero && (currentCharacter as CustomHero).specialMaterials != null )
             {
                 CustomHero customHero = (currentCharacter as CustomHero);
 
-                for (int i = 0; i < __instance.grenadeIcons.Length; i++)
-                {
-                    if (playerNum % 2 == 0)
-                    {
-                        __instance.grenadeIcons[i].SetOffset(new Vector3(customHero.specialMaterialOffset.x + i * customHero.specialMaterialSpacing, customHero.specialMaterialOffset.y, 0f));
-                    }
-                    else
-                    {
-                        __instance.grenadeIcons[i].SetOffset(new Vector3(-1 * (customHero.specialMaterialOffset.x + i * customHero.specialMaterialSpacing), customHero.specialMaterialOffset.y, 0f));
-                    }
-                }
-
-                if (customHero.specialMaterials != null)
-                {
-                    List<Material> specialIcons = customHero.specialMaterials;
-                    if (specialIcons.Count() > 1)
-                    {
-                        for (int i = 0; i < specialIcons.Count(); ++i)
-                        {
-                            __instance.grenadeIcons[i].GetComponent<Renderer>().material = specialIcons[i];
-                        }
-                        return false;
-                    }
-                    else if (specialIcons.Count() > 0)
-                    {
-                        for (int i = 0; i < __instance.grenadeIcons.Count(); ++i)
-                        {
-                            __instance.grenadeIcons[i].GetComponent<Renderer>().material = specialIcons[0];
-                        }
-                        return false;
-                    }
-                }
+                BroMakerUtilities.SetSpecialMaterials(playerNum, customHero.specialMaterials, customHero.specialMaterialOffset, customHero.specialMaterialSpacing);
+                return false;
             }
             else
             {
