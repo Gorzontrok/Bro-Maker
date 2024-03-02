@@ -392,7 +392,7 @@ namespace BroMakerLib.UnityMod
                 }
                 catch (ArgumentNullException ex)
                 {
-                    BMLogger.ExceptionLog("The bro as no cutscene");
+                    BMLogger.ExceptionLog("The bro has no cutscene");
                 }
                 catch (Exception ex)
                 {

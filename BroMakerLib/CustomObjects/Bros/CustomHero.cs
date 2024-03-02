@@ -19,12 +19,12 @@ namespace BroMakerLib.CustomObjects.Bros
         public BroBase character { get; set; }
         public CharacterExtended characterExtended { get; set; }
 
-        public List<Material> specialMaterials = new List<Material>();
-		public Vector2 specialMaterialOffset = Vector2.zero;
-		public float specialMaterialSpacing = 0f;
-		public Material firstAvatar = null;
-		public Vector2 gunSpriteOffset = Vector2.zero;
-		public MuscleTempleFlexEffect flexEffect;
+		public List<Material> specialMaterials { get; set; } = new List<Material>();
+		public Vector2 specialMaterialOffset { get; set; } = Vector2.zero;
+		public float specialMaterialSpacing { get; set; } = 0f;
+		public Material firstAvatar { get; set; } = null;
+		public Vector2 gunSpriteOffset { get; set; } = Vector2.zero;
+		public MuscleTempleFlexEffect flexEffect { get; set; }
 
         #region Private Variable Becomes
         #region Publics
