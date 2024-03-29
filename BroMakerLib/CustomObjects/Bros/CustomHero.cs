@@ -73,7 +73,23 @@ namespace BroMakerLib.CustomObjects.Bros
             try
             {
                 info.BeforeStart(this);
-				character.gameObject.AddComponent<InvulnerabilityFlash>().SetCharacter(character);
+				if ( character.gameObject.GetComponent<InvulnerabilityFlash>() == null )
+				{
+                    character.gameObject.AddComponent<InvulnerabilityFlash>().SetCharacter(character);
+                }
+				else
+				{
+					character.gameObject.GetComponent<InvulnerabilityFlash>().enabled = true;
+                }
+				WavyGrassEffector[] wavyGrassEffectors = character.gameObject.GetComponents<WavyGrassEffector>();
+				if ( wavyGrassEffectors.Length > 1 )
+				{
+					wavyGrassEffectors[0].SetUnit(character);
+					for ( int i = 1; i < wavyGrassEffectors.Length; ++i )
+					{
+						UnityEngine.Object.Destroy(wavyGrassEffectors[i]);
+					}
+				}
 				base.Start();
                 info.AfterStart(this);
 
