@@ -6,6 +6,8 @@ using System.IO;
 using BroMakerLib.Loggers;
 using BroMakerLib.Storages;
 using BroMakerLib.ModManager;
+using BroMakerLib.CustomObjects.Bros;
+using System.Collections.Generic;
 
 namespace BroMakerLib
 {
@@ -44,6 +46,21 @@ namespace BroMakerLib
 
                 _hasInit = true;
                 BMLogger.Log("Finish Initialization");
+            }
+        }
+
+        public static void ApplyBroPatches( Harmony harmony )
+        {
+            GameObject heroHolder = new GameObject();
+            heroHolder.SetActive(false);
+
+            foreach (KeyValuePair<string, Type> kvp in PresetManager.heroesPreset)
+            {
+                if (typeof(CustomHero).IsAssignableFrom(kvp.Value))
+                {
+                    CustomHero bro = heroHolder.AddComponent(kvp.Value) as CustomHero;
+                    bro.HarmonyPatches(harmony);
+                }
             }
         }
 

@@ -23,12 +23,14 @@ namespace BroMakerLib.UnityMod
             modEntry.OnToggle = OnToggle;
             modEntry.OnSaveGUI = OnSaveGUI;
             settings = Settings.Load<Settings>(modEntry);
+            Harmony harmony = null;
+            Assembly assembly = null;
 
             // Initialize Harmony Instance
             try
             {
-                var harmony = new Harmony(modEntry.Info.Id);
-                var assembly = Assembly.GetExecutingAssembly();
+                harmony = new Harmony(modEntry.Info.Id);
+                assembly = Assembly.GetExecutingAssembly();
                 harmony.PatchAll(assembly);
             }
             catch (Exception ex)
@@ -43,6 +45,11 @@ namespace BroMakerLib.UnityMod
                 CheckModFile();
                 // Initialize BroMaker
                 BroMaker.Initialize();
+                // Apply all harmony patches if any bros have overridden the method
+                if ( harmony != null )
+                {
+                    BroMaker.ApplyBroPatches(harmony);
+                }
             }
             catch(Exception ex)
             {

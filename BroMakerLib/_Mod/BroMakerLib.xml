@@ -66,6 +66,17 @@
             </summary>
             <param name="grenade"></param>
         </member>
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.UIOptions">
+            <summary>
+            Override this method to have UI options displayed for your custom hero underneath their name in the Custom Bros tab
+            </summary>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.HarmonyPatches(HarmonyLib.Harmony)">
+            <summary>
+            Override this method to add custom harmony patches to your custom hero
+            </summary>
+            <param name="harmony"></param>
+        </member>
         <member name="M:BroMakerLib.ICustomHeroExtensions.AssignNullVariables(BroMakerLib.CustomObjects.ICustomHero,BroBase)">
             <summary>
             Before base.Awake()

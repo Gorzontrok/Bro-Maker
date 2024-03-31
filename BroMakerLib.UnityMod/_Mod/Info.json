@@ -2,7 +2,7 @@
   "Id": "BroMaker",
   "DisplayName": "<color=\"#d68c16\">BroMaker Unity</color>",
   "Author": "Gorzontrok",
-  "Version": "2.3.0",
+  "Version": "2.3.2",
   "Requirements": [ "RocketLib" ],
   "LoadAfter": [ "RocketLib" ],
   "AssemblyName": "BroMakerLib.UnityMod.dll",

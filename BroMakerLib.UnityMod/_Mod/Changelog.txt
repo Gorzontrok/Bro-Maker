@@ -1,15 +1,14 @@
-v2.3.3:
-Fixed path not set when an ability or a hero is loaded through the mod file
-
-v2.3.2:
+v2.3.2
+Added option for bro developers to add custom Harmony Patches.
+Added option for bro developers to change special Icon material and spacing.
+Fixed custom bros having multiple InvulnerabilityFlash and WavyGrassEffector components.
 Load custom bro name from Json rather than using the filename.
+Fixed path not set when an ability or a hero is loaded through the mod file.
 
 v2.3.1
 Fixed mod options not displaying when 0 bros installed.
 Added parameters for changing special icon offset and spacing.
 Added list of incompatible mods for mods which require a newer BroMaker version.
-Possibility to read abilities directly from mod "Abilities"
-Possibility to read bros directly from mod "CustomBros"
 
 v2.3.0:
 Added Abilities support.
@@ -18,6 +17,7 @@ Fixed all of the warnings when presets are reloaded
 Added mods to loads custom objects
 Reworked UI
 Fixed Avatar being one pixel too high
+
 
 v2.2.2:
 Fixed boondock bro being left behind when spawning a custom bro.

@@ -7,6 +7,7 @@ using BroMakerLib.CustomObjects.Components;
 using BroMakerLib.Abilities;
 using HarmonyLib;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace BroMakerLib.CustomObjects.Bros
 {
@@ -372,10 +373,21 @@ namespace BroMakerLib.CustomObjects.Bros
             }
         }
 
+		/// <summary>
+		/// Override this method to have UI options displayed for your custom hero underneath their name in the Custom Bros tab
+		/// </summary>
 		public virtual void UIOptions()
         {
 
         }
+
+		/// <summary>
+		/// Override this method to add custom harmony patches to your custom hero
+		/// </summary>
+		/// <param name="harmony"></param>
+		public virtual void HarmonyPatches(Harmony harmony)
+		{
+		}
         #endregion
     }
 }
