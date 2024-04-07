@@ -339,6 +339,7 @@ namespace BroMakerLib.UnityMod
                 {
                     heroHolder = new GameObject();
                     heroHolder.SetActive(false);
+                    UnityEngine.Object.DontDestroyOnLoad(heroHolder);
                 }
                 _selectedHero = heroHolder.AddComponent(PresetManager.heroesPreset[preset]) as CustomHero;
                 _selectedHero.enabled = false;
