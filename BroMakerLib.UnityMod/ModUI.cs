@@ -393,7 +393,7 @@ namespace BroMakerLib.UnityMod
                 }
                 catch (ArgumentNullException ex)
                 {
-                    BMLogger.ExceptionLog("The bro as no cutscene");
+                    BMLogger.ExceptionLog("The bro has no cutscene: " + ex.ToString());
                 }
                 catch (Exception ex)
                 {
@@ -409,7 +409,7 @@ namespace BroMakerLib.UnityMod
                 {
                     _selectedHero.UIOptions();
                 }
-                catch (Exception ex)
+                catch
                 {
                 }
             }
@@ -427,7 +427,7 @@ namespace BroMakerLib.UnityMod
             GUILayout.Label("Under Construction");
             return;
 
-            try
+            /*try
             {
                 if (_objectToEdit == null)
                     GUILayout.Label("Select an object first", _errorSwapingMessageStyle);
@@ -440,7 +440,7 @@ namespace BroMakerLib.UnityMod
             {
                 FieldsEditor.editHasError = true;
                 Main.Log(e.ToString());
-            }
+            }*/
         }
         public static void Settings()
         {
@@ -477,6 +477,8 @@ namespace BroMakerLib.UnityMod
             }
             GUILayout.Space(15);
             BSett.instance.maxHealthAtOne = GUILayout.Toggle(BSett.instance.maxHealthAtOne, "Max health always at 1");
+            GUILayout.Space(15);
+            BSett.instance.disableCustomAvatarFlash = GUILayout.Toggle(BSett.instance.disableCustomAvatarFlash, "Disable avatar flashing for custom bros");
             GUILayout.Space(15);
             _Settings.debugLogs = GUILayout.Toggle(_Settings.debugLogs, "Debug Logs");
         }

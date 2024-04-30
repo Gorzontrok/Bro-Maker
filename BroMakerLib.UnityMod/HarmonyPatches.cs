@@ -707,4 +707,20 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
             return true;
         }
     }
+
+    // Fix avatars flashing for custom bros, for some reason vanilla bros don't have flashing avatars, other than the boondock bros
+    [HarmonyPatch(typeof(HeroController), "FlashAvatar")]
+    static class HeroController_FlashAvatar_Patch
+    {
+        public static bool Prefix(ref int playerNum)
+        {
+            if (!Main.enabled || !BSett.instance.disableCustomAvatarFlash)
+            {
+                return true;
+            }
+
+            return !(HeroController.players[playerNum].character is CustomHero);
+        }
+    }
+
 }

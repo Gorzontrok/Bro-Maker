@@ -37,6 +37,7 @@ namespace BroMakerLib
         public float automaticSpawnProbabilty = 25;
         public bool maxHealthAtOne = true;
         public bool onlyCustomInHardcore = false;
+        public bool disableCustomAvatarFlash = true;
 
         public Dictionary<string, bool> enabledBros = new Dictionary<string, bool>();
         public int enabledBroCount = 0;
