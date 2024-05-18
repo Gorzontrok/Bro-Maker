@@ -38,7 +38,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
 
     // Automatic spawn
     [HarmonyPatch(typeof(Player), "SpawnHero")]
-    static class Player_InstantiateHero_Patch
+    static class Player_SpawnHero_Patch
     {
         static void Prefix(Player __instance, ref HeroType nextHeroType)
         {
@@ -158,6 +158,22 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
             {
                 BMLogger.ExceptionLog(e);
             }
+        }
+    }
+
+    // Fix vanilla bro being visible for 1 frame in certain spawning situations
+    [HarmonyPatch(typeof(Player), "InstantiateHero")]
+    static class Player_InstantiateHero_Patch
+    {
+        static void Postfix(Player __instance, ref TestVanDammeAnim __result)
+        {
+            // If mod is disabled or if we aren't loading a custom character don't disable
+            if (!Main.enabled || !LoadHero.willReplaceBro[__instance.playerNum])
+            {
+                return;
+            }
+
+            __result.gameObject.SetActive(false);
         }
     }
 
