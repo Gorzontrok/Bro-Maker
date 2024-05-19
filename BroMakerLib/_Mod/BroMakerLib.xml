@@ -60,6 +60,15 @@
             <param name="offset">Offset to move all special icons horizontally or vertically</param>
             <param name="spacing">Spacing between special icons</param>
         </member>
+        <member name="M:BroMakerLib.BroMakerUtilities.SetSpecialMaterials(System.Int32,UnityEngine.Material,UnityEngine.Vector2,System.Single)">
+            <summary>
+            Changes the specified players special materials
+            </summary>
+            <param name="playerNum"></param>
+            <param name="specialMaterial">Material to set special to, all icons will be set to it</param>
+            <param name="offset">Offset to move all special icons horizontally or vertically</param>
+            <param name="spacing">Spacing between special icons</param>
+        </member>
         <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.SpawnGrenade(Grenade)">
             <summary>
             Throw grenade and handle direction if characters crouching

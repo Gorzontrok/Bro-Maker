@@ -61,5 +61,36 @@ namespace BroMakerLib
                 }
             }
         }
+
+        /// <summary>
+        /// Changes the specified players special materials
+        /// </summary>
+        /// <param name="playerNum"></param>
+        /// <param name="specialMaterial">Material to set special to, all icons will be set to it</param>
+        /// <param name="offset">Offset to move all special icons horizontally or vertically</param>
+        /// <param name="spacing">Spacing between special icons</param>
+        public static void SetSpecialMaterials(int playerNum, Material specialMaterial, Vector2 offset, float spacing)
+        {
+            PlayerHUD hud = HeroController.players[playerNum].hud;
+            for (int i = 0; i < hud.grenadeIcons.Length; i++)
+            {
+                if (playerNum % 2 == 0)
+                {
+                    hud.grenadeIcons[i].SetOffset(new Vector3(offset.x + i * spacing, offset.y, 0f));
+                }
+                else
+                {
+                    hud.grenadeIcons[i].SetOffset(new Vector3(-1 * (offset.x + i * spacing), offset.y, 0f));
+                }
+            }
+
+            if (specialMaterial != null)
+            {
+                for (int i = 0; i < hud.grenadeIcons.Count(); ++i)
+                {
+                    hud.grenadeIcons[i].GetComponent<Renderer>().material = specialMaterial;
+                }
+            }
+        }
     }
 }
