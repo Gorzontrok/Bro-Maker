@@ -69,6 +69,43 @@
             <param name="offset">Offset to move all special icons horizontally or vertically</param>
             <param name="spacing">Spacing between special icons</param>
         </member>
+        <member name="M:BroMakerLib.BroMakerUtilities.CreateGibPrefab(System.String,UnityEngine.Vector2,UnityEngine.Vector2,System.Single,System.Single,UnityEngine.Vector3,UnityEngine.Vector3,System.Boolean,DoodadGibsType,System.Single,System.Boolean,BloodColor,System.Single,System.Boolean,System.Int32,System.Boolean,System.Boolean,System.Int32,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Boolean,System.Single,UnityEngine.AudioClip[],System.Boolean)">
+            <summary>
+            Creates a Gib prefab. Be sure the Gib Holder is set to inactive or else your gibs will be destroyed.
+            </summary>
+            <param name="name">Name of GameObject</param>
+            <param name="lowerLeftPixel">Lower left pixel of gib</param>
+            <param name="pixelDimensions">Width and Height of gib</param>
+            <param name="spriteWidth"></param>
+            <param name="spriteHeight"></param>
+            <param name="spriteOffset"></param>
+            <param name="localPositionOffset">Sets the local position of the object which is applied as an offset to the spawn position</param>
+            <param name="doesRotate"></param>
+            <param name="gibType"></param>
+            <param name="size"></param>
+            <param name="hasBloodTrail"></param>
+            <param name="color"></param>
+            <param name="bloodyM"></param>
+            <param name="shrink"></param>
+            <param name="rotateFrames"></param>
+            <param name="rotateAtRightAngles"></param>
+            <param name="hasSmokeTrail"></param>
+            <param name="smokeTrailBounces"></param>
+            <param name="forceMultiplier"></param>
+            <param name="startLife"></param>
+            <param name="lifeM"></param>
+            <param name="randomLifeM"></param>
+            <param name="r"></param>
+            <param name="rotationSpeedMultiplier"></param>
+            <param name="bounceM"></param>
+            <param name="frictionM"></param>
+            <param name="drag"></param>
+            <param name="randomiseGravityM"></param>
+            <param name="gravityMrandomRange"></param>
+            <param name="fallHitSound"></param>
+            <param name="isOnFire"></param>
+            <returns></returns>
+        </member>
         <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.SpawnGrenade(Grenade)">
             <summary>
             Throw grenade and handle direction if characters crouching
