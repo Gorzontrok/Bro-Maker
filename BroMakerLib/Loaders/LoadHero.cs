@@ -123,6 +123,12 @@ namespace BroMakerLib.Loaders
                 hero.playerBubble.RestartBubble();
                 bubbleTrav.Field("yStart").SetValue(hero.playerBubble.transform.localPosition.y + 5);
 
+                // This ensures the high5Bubble is 5 pixels higher than the player bubble, which is apparently the correct place based off of how the vanilla bros work
+                hero.high5Bubble.SetPosition(hero.high5Bubble.transform.localPosition);
+                Traverse high5BubbleTrav = Traverse.Create(hero.high5Bubble);
+                hero.high5Bubble.gameObject.SetActive(true);
+                high5BubbleTrav.Field("yStart").SetValue(hero.high5Bubble.transform.localPosition.y);
+
                 BMLogger.Debug("Spawner: Finished AfterInstantiation.");
 
                 BMLogger.Debug("Spawner: Spawning Process has ended.");
