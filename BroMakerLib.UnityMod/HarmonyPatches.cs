@@ -473,7 +473,8 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 return true;
             }
 
-            if ( pilotUnit is CustomHero )
+            // Check CanPilotUnit to ensure custom bros can't pilot things they're not supposed to be able to
+            if ( pilotUnit is CustomHero && __instance.CanPilotUnit(pilotUnit.playerNum) )
             {
                 __instance.PilotUnitRPC(pilotUnit);
                 return false;
