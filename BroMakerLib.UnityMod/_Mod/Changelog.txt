@@ -1,3 +1,11 @@
+v2.3.3
+Fixed bro UI disappearing when changing scenes.
+Added option for disabling avatar flashing for custom bros.
+Fixed vanilla bros being visible for one frame when spawning as a custom bro.
+Added a function for bro developers to change special icons.
+Added a function for bro developers to create gibs.
+Fixed highfive bubble position for custom bros.
+
 v2.3.2
 Added option for bro developers to add custom Harmony Patches.
 Added option for bro developers to change special Icon material and spacing.
