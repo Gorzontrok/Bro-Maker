@@ -27,6 +27,7 @@ namespace BroMakerLib.Loaders
         public static bool playCutscene = false;
         public static bool tryReplaceAvatar = false;
         public static Player.SpawnType[] previousSpawnInfo = new Player.SpawnType[] { Player.SpawnType.Unknown, Player.SpawnType.Unknown, Player.SpawnType.Unknown, Player.SpawnType.Unknown };
+        public static bool[] wasFirstDeployment = new bool[] { false, false, false, false };
         public static Dictionary<int, CustomBroInfo> customBroDeaths;
         public static void WithCustomBroInfo<T>(int selectedPlayerNum, CustomBroInfo customBroInfo) where T : CustomHero
         {
@@ -118,10 +119,18 @@ namespace BroMakerLib.Loaders
                         previousCharacterBubble.GoAway();
                     }
                 }
-                hero.playerBubble.SetPosition(hero.playerBubble.transform.localPosition);
+                // For some reason the change made to the WorkOutSpawn Position function changed how this stuff works
+                if (previousSpawnInfo[playerNum] != Player.SpawnType.AddBroToTransport)
+                {
+                    hero.playerBubble.SetPosition(hero.playerBubble.transform.localPosition + new Vector3(0f, 25f));
+                }
+                else
+                {
+                    hero.playerBubble.SetPosition(hero.playerBubble.transform.localPosition);
+                }
                 Traverse bubbleTrav = Traverse.Create(hero.playerBubble);
                 hero.playerBubble.RestartBubble();
-                bubbleTrav.Field("yStart").SetValue(hero.playerBubble.transform.localPosition.y + 5);
+                bubbleTrav.Field("yStart").SetValue(hero.playerBubble.transform.localPosition.y + 5f);
 
                 // This ensures the high5Bubble is 5 pixels higher than the player bubble, which is apparently the correct place based off of how the vanilla bros work
                 hero.high5Bubble.SetPosition(hero.high5Bubble.transform.localPosition);
@@ -182,7 +191,93 @@ namespace BroMakerLib.Loaders
                 player.changingBroFromTrigger = true;
             }
 
-            player.WorkOutSpawnPosition(hero);
+            WorkOutSpawnPosition(player, hero);
+        }
+
+        // Rewritten to remove RPC calls
+        private static void WorkOutSpawnPosition(Player player, TestVanDammeAnim bro)
+        {
+            player.firstDeployment = wasFirstDeployment[player.playerNum];
+            Vector3 arg = new Vector3(100f, 100f);
+            Player.SpawnType arg2 = LoadHero.previousSpawnInfo[player.playerNum];
+            bool flag = false;
+            bool flag2 = false;
+            switch (arg2)
+            {
+                case Player.SpawnType.Unknown:
+                    flag = true;
+                    goto IL_1E7;
+                case Player.SpawnType.AddBroToTransport:
+                    {
+                        Map.AddBroToHeroTransport(bro);
+                        arg = bro.transform.position;
+                        goto IL_1E7;
+                    }
+                case Player.SpawnType.CheckpointRespawn:
+                    flag2 = Map.IsCheckPointAnAirdrop(HeroController.GetCurrentCheckPointID());
+                    arg = HeroController.GetCheckPointPosition(player.playerNum, flag2);
+                    goto IL_1E7;
+                case Player.SpawnType.RespawnAtRescueBro:
+                    if (player.rescuingThisBro == null)
+                    {
+                        flag = true;
+                    }
+                    else
+                    {
+                        arg = player.rescuingThisBro.transform.position;
+                    }
+                    goto IL_1E7;
+                case Player.SpawnType.DropInDuringGame:
+                    flag = true;
+                    goto IL_1E7;
+                case Player.SpawnType.SpawnInCage:
+                    {
+                        SpawnPoint spawnPoint = Map.GetSpawnPoint(player.playerNum);
+                        if (spawnPoint == null)
+                        {
+                            flag = true;
+                        }
+                        else
+                        {
+                            arg = spawnPoint.transform.position;
+                            if (spawnPoint.cage != null)
+                            {
+                                spawnPoint.cage.SetPlayerColor(player.playerNum);
+                                arg.x -= 8f;
+                            }
+                        }
+                        goto IL_1E7;
+                    }
+                case Player.SpawnType.LevelEditorReload:
+                    arg = LevelEditorGUI.lastPayerPos;
+                    LevelEditorGUI.lastPayerPos = -Vector3.one;
+                    Map.CallInHeroTransportAnyway();
+                    goto IL_1E7;
+                case Player.SpawnType.TriggerSwapBro:
+                    arg = player.playerFollowPos;
+                    goto IL_1E7;
+                case Player.SpawnType.CustomSpawnPoint:
+                    {
+                        SpawnPoint spawnPoint2 = Map.GetSpawnPoint(player.playerNum);
+                        arg = spawnPoint2.transform.position;
+                        if (spawnPoint2 != null && spawnPoint2.cage != null)
+                        {
+                            arg.x -= 8f;
+                        }
+                        goto IL_1E7;
+                    }
+                case Player.SpawnType.AirDropRespawn:
+                    arg = HeroController.GetCheckPointPosition(player.playerNum, true);
+                    flag2 = true;
+                    goto IL_1E7;
+            }
+            flag = true;
+            IL_1E7:
+            if (flag)
+            {
+                arg = HeroController.GetFirstPlayerPosition(player.playerNum);
+            }
+            player.SetSpawnPositon(bro, arg2, flag2, arg);
         }
 
         private static void AssignFlexPower(TestVanDammeAnim testVanDammeAnim)

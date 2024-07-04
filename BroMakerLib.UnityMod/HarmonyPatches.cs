@@ -212,6 +212,10 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
         {
             if (!Main.enabled || !LoadHero.spawningCustomBro[__instance.playerNum] )
             {
+                if ( LoadHero.willReplaceBro[__instance.playerNum] )
+                {
+                    LoadHero.wasFirstDeployment[__instance.playerNum] = __instance.firstDeployment;
+                }
                 return true;
             }
             else if ( LoadHero.previousSpawnInfo[__instance.playerNum] == Player.SpawnType.AddBroToTransport )
@@ -219,9 +223,8 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 var hero = bro as CustomHero;
                 if (hero != null)
                 {
+                    // Ensure character has the right sprite when spawning attached to a vehicle
                     hero.info.BeforeStart(hero);
-                    // Need to manually call AddBroToHeroTransport, because WorkoutSpawnPosition won't do it for custom characters for some reason
-                    Map.AddBroToHeroTransport(bro);
                 }
 
                 return false;
@@ -250,6 +253,24 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
             else if ( LoadHero.spawningCustomBro[__instance.playerNum] )
             {
                 __result = LoadHero.previousSpawnInfo[__instance.playerNum];
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(Player), "SetSpawnPositon")]
+    static class Player_SetSpawnPositon_Patch
+    {
+        public static void Prefix(Player __instance, ref TestVanDammeAnim bro)
+        {
+            if (!Main.enabled || !LoadHero.willReplaceBro[__instance.playerNum] || LoadHero.spawningCustomBro[__instance.playerNum] )
+            {
+                return;
+            }
+
+            // Prevent yeah sound from playing for replaced bro
+            if ( bro != null )
+            {
+                __instance.firstDeployment = true;
             }
         }
     }

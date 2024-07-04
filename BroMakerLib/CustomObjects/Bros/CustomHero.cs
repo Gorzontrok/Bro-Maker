@@ -61,6 +61,20 @@ namespace BroMakerLib.CustomObjects.Bros
                 characterExtended.BeforeAwake();
                 characterExtended.InvokeAbilityToAll(nameof(Awake));
 				characterExtended.AfterAwake();
+
+				// Make sure parachute isn't null, for some reason the game's default way of handling this doesn't work
+				if ( this.parachute == null )
+				{
+					Parachute parachute = null;
+                    for (int i = 0; i < this.transform.childCount; ++i)
+                    {
+                        if ((parachute = this.transform.GetChild(i).GetComponent<Parachute>()) != null)
+                        {
+							this.parachute = parachute;
+                            break;
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {
