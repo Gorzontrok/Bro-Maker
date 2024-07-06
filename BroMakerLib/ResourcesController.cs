@@ -60,25 +60,6 @@ namespace BroMakerLib
         private static Dictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
         private static Dictionary<string, AudioClip> audioClips = new Dictionary<string, AudioClip>();
 
-        [Obsolete("Use 'ResourcesController.GetMaterial' instead.")]
-        public static Material GetMaterialResource(string resourceName, Shader shader)
-        {
-            Material result;
-            if (materials.ContainsKey(resourceName))
-            {
-                return materials[resourceName];
-            }
-            else
-            {
-                result = CreateMaterial(resourceName, shader);
-                if (result != null)
-                {
-                    materials.Add(resourceName, result);
-                }
-            }
-            return result;
-        }
-
         /// <summary>
         /// Creates a Material using the shader Unlit_DepthCutout.
         /// Loads Material from cache if created previously.

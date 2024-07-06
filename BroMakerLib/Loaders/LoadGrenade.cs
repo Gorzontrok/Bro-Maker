@@ -77,7 +77,6 @@ namespace BroMakerLib.Loaders
             BMLogger.Debug("LoadGrenade.WithInfo: Start Creation Process.");
 
             currentInfo = info;
-            Grenade result = null;
 
             string basedOn = GetBaseGrenadeNameOfPreset(preset);
             if (!GrenadesVanilla.ContainsKey(basedOn))

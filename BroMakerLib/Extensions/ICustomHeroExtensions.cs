@@ -161,6 +161,12 @@ namespace BroMakerLib
                 info.gunSpritePath = Path.Combine(info.path, info.afterStart["gunSprite"] as string);
             }
 
+            // Set canCeilingHang to true by default 
+            if ( !info.beforeAwake.ContainsKey("canCeilingHang") )
+            {
+                info.beforeAwake.Add("canCeilingHang", true);
+            }
+
             hero.character.specialGrenade.playerNum = LoadHero.playerNum;
         }
 

@@ -1,5 +1,4 @@
-﻿using BroMakerLib.Stats;
-using BroMakerLib;
+﻿using BroMakerLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
