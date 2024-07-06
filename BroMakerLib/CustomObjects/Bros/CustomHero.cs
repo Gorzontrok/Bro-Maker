@@ -20,12 +20,19 @@ namespace BroMakerLib.CustomObjects.Bros
         public BroBase character { get; set; }
         public CharacterExtended characterExtended { get; set; }
 
-		public List<Material> specialMaterials { get; set; } = new List<Material>();
-		public Vector2 specialMaterialOffset { get; set; } = Vector2.zero;
-		public float specialMaterialSpacing { get; set; } = 0f;
-		public Material firstAvatar { get; set; } = null;
-		public Vector2 gunSpriteOffset { get; set; } = Vector2.zero;
-		public MuscleTempleFlexEffect flexEffect { get; set; }
+		// This is needed to ensure Unity Serializes the Getter / Setter field
+        [field: SerializeField]
+        public List<Material> specialMaterials { get; set; } = new List<Material>();
+        [field: SerializeField]
+        public Vector2 specialMaterialOffset { get; set; } = Vector2.zero;
+        [field: SerializeField]
+        public float specialMaterialSpacing { get; set; } = 0f;
+        [field: SerializeField]
+        public Material firstAvatar { get; set; } = null;
+        [field: SerializeField]
+        public Vector2 gunSpriteOffset { get; set; } = Vector2.zero;
+        [field: SerializeField]
+        public MuscleTempleFlexEffect flexEffect { get; set; }
 
         #region Private Variable Becomes
         #region Publics
@@ -97,13 +104,9 @@ namespace BroMakerLib.CustomObjects.Bros
 					character.gameObject.GetComponent<InvulnerabilityFlash>().enabled = true;
                 }
 				WavyGrassEffector[] wavyGrassEffectors = character.gameObject.GetComponents<WavyGrassEffector>();
-				if ( wavyGrassEffectors.Length > 1 )
+				if ( wavyGrassEffectors.Length == 0 )
 				{
-					wavyGrassEffectors[0].SetUnit(character);
-					for ( int i = 1; i < wavyGrassEffectors.Length; ++i )
-					{
-						UnityEngine.Object.Destroy(wavyGrassEffectors[i]);
-					}
+					character.gameObject.AddComponent<WavyGrassEffector>();
 				}
 				base.Start();
                 info.AfterStart(this);

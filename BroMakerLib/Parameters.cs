@@ -1,5 +1,5 @@
 using BroMakerLib.Attributes;
-using BroMakerLib.CustomObjects.Bros;
+using BroMakerLib.CustomObjects;
 using BroMakerLib.Loggers;
 using Newtonsoft.Json.Linq;
 using System;
@@ -108,7 +108,7 @@ namespace BroMakerLib
         [Parameter]
         public static void SpecialIcons(object obj, object value)
         {
-            CustomHero hero = obj as CustomHero;
+            ICustomHero hero = obj as ICustomHero;
             if (hero == null)
             {
                 BMLogger.Warning($"{nameof(SpecialIcons)} parameter works only with Bros.");
@@ -153,7 +153,7 @@ namespace BroMakerLib
         [Parameter]
         public static void SpecialIconOffset(object obj, object value)
         {
-            CustomHero hero = obj as CustomHero;
+            ICustomHero hero = obj as ICustomHero;
             if (hero == null)
             {
                 BMLogger.Warning($"{nameof(SpecialIconOffset)} parameter works only with Bros.");
@@ -186,7 +186,7 @@ namespace BroMakerLib
         [Parameter]
         public static void SpecialIconSpacing(object obj, object value)
         {
-            CustomHero hero = obj as CustomHero;
+            ICustomHero hero = obj as ICustomHero;
             if (hero == null)
             {
                 BMLogger.Warning($"{nameof(SpecialIconSpacing)} parameter works only with Bros.");
@@ -206,7 +206,7 @@ namespace BroMakerLib
         [Parameter]
         public static void Avatar(object obj, string value)
         {
-            CustomHero hero = obj as CustomHero;
+            ICustomHero hero = obj as ICustomHero;
             if (hero == null)
             {
                 BMLogger.Warning($"{nameof(Avatar)} parameter works only with Bros.");
@@ -219,7 +219,7 @@ namespace BroMakerLib
         [Parameter]
         public static void GunSpriteOffset(object obj, object value)
         {
-            CustomHero hero = obj as CustomHero;
+            ICustomHero hero = obj as ICustomHero;
             if (hero == null)
             {
                 BMLogger.Warning($"{nameof(GunSpriteOffset)} parameter works only with Bros.");

@@ -8,7 +8,7 @@ using BroMakerLib.Infos;
 using UnityEngine;
 using BroMakerLib.Loaders;
 using BSett = BroMakerLib.Settings;
-using BroMakerLib.CustomObjects.Bros;
+using BroMakerLib.CustomObjects;
 
 namespace BroMakerLib.UnityMod.HarmonyPatches
 {
@@ -220,7 +220,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
             }
             else if ( LoadHero.previousSpawnInfo[__instance.playerNum] == Player.SpawnType.AddBroToTransport )
             {
-                var hero = bro as CustomHero;
+                var hero = bro as ICustomHero;
                 if (hero != null)
                 {
                     // Ensure character has the right sprite when spawning attached to a vehicle
@@ -287,9 +287,9 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
 
             int playerNum = Convert.ToInt32(Traverse.Create(__instance).Field("playerNum").GetValue());
             TestVanDammeAnim currentCharacter = HeroController.players[playerNum].character;
-            if ( currentCharacter is CustomHero && (currentCharacter as CustomHero).specialMaterials != null )
+            if ( currentCharacter is ICustomHero && (currentCharacter as ICustomHero).specialMaterials != null )
             {
-                CustomHero customHero = (currentCharacter as CustomHero);
+                ICustomHero customHero = (currentCharacter as ICustomHero);
 
                 BroMakerUtilities.SetSpecialMaterials(playerNum, customHero.specialMaterials, customHero.specialMaterialOffset, customHero.specialMaterialSpacing);
                 return false;
@@ -449,9 +449,9 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 return true;
             }
 
-            if ( GameModeController.IsHardcoreMode && __instance.character is CustomHero )
+            if ( GameModeController.IsHardcoreMode && __instance.character is ICustomHero )
             {
-                CustomHero customHero = (__instance.character as CustomHero);
+                ICustomHero customHero = (__instance.character as ICustomHero);
                 string broName = customHero.info.name;
                 BSett.instance.availableBros.Remove(broName);
                 __instance.Lives--;
@@ -495,7 +495,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
             }
 
             // Check CanPilotUnit to ensure custom bros can't pilot things they're not supposed to be able to
-            if ( pilotUnit is CustomHero && __instance.CanPilotUnit(pilotUnit.playerNum) )
+            if ( pilotUnit is ICustomHero && __instance.CanPilotUnit(pilotUnit.playerNum) )
             {
                 __instance.PilotUnitRPC(pilotUnit);
                 return false;
@@ -517,7 +517,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 return;
             }
 
-            if ( __result && obj is CustomHero )
+            if ( __result && obj is ICustomHero )
             {
                 ++customBroIsConsumed;
                 Traverse assTraverse = Traverse.Create(__instance);
@@ -551,7 +551,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
             if ( AssMouthOrifice_TryConsumeObject_Patch.customBroIsConsumed > 0 )
             {
                 Traverse assTraverse = Traverse.Create(__instance);
-                if ( assTraverse.GetFieldValue("CurrentAssMouthBlock") == null && assTraverse.GetFieldValue("transportedObject") is CustomHero )
+                if ( assTraverse.GetFieldValue("CurrentAssMouthBlock") == null && assTraverse.GetFieldValue("transportedObject") is ICustomHero )
                 {
                     __instance.ExitAssMouth((assTraverse.GetFieldValue("PrevAssMouthBlock") as AssMouthBlock).orificeInstance);
                     --AssMouthOrifice_TryConsumeObject_Patch.customBroIsConsumed;
@@ -571,7 +571,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 return true;
             }
 
-            if ( unit.impaledByTransform == null && unit is CustomHero )
+            if ( unit.impaledByTransform == null && unit is ICustomHero )
             {
                 __instance.ImpaleUnitRPC(unit);
                 return false;
@@ -592,7 +592,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 return true;
             }
 
-            if ( self is CustomHero )
+            if ( self is ICustomHero )
             {
                 List<Pickupable> pickupables = Traverse.Create(typeof(PickupableController)).GetFieldValue("pickupables") as List<Pickupable>;
                 for (int i = pickupables.Count - 1; i >= 0; i--)
@@ -637,11 +637,11 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 return true;
             }
 
-            if ( LoadHero.tryReplaceAvatar && HeroController.players[LoadHero.playerNum].character is CustomHero )
+            if ( LoadHero.tryReplaceAvatar && HeroController.players[LoadHero.playerNum].character is ICustomHero )
             {
                 LoadHero.tryReplaceAvatar = false;
 
-                CustomHero customHero = (HeroController.players[LoadHero.playerNum].character as CustomHero);
+                ICustomHero customHero = (HeroController.players[LoadHero.playerNum].character as ICustomHero);
                 Material mat = customHero.firstAvatar;
                 if ( mat != null )
                 {
@@ -657,7 +657,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
             for ( int i = 0; i < 4; ++i )
             {
                 // Ensure all non custom bros have normal offset
-                if (HeroController.players[i] && !(HeroController.players[i].character is CustomHero) )
+                if (HeroController.players[i] && !(HeroController.players[i].character is ICustomHero) )
                 {
                     HeroController.players[i].hud.avatar.SetOffset(new Vector3(0, 16, 10));
                 }
@@ -695,9 +695,9 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 return;
             }
 
-            if (vanDamme is CustomHero && deathType != DeathType.None )
+            if (vanDamme is ICustomHero && deathType != DeathType.None )
             {
-                LoadHero.customBroDeaths.Add(SingletonNetObj<StatisticsController>.Instance.currentStats.deathList.Count, (vanDamme as CustomHero).info);
+                LoadHero.customBroDeaths.Add(SingletonNetObj<StatisticsController>.Instance.currentStats.deathList.Count, (vanDamme as ICustomHero).info);
             }
         }
     }
@@ -757,7 +757,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 return true;
             }
 
-            return !(HeroController.players[playerNum].character is CustomHero);
+            return !(HeroController.players[playerNum].character is ICustomHero);
         }
     }
 

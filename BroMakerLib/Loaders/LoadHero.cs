@@ -107,6 +107,7 @@ namespace BroMakerLib.Loaders
 
 
                 TestVanDammeAnim hero = Net.InstantiateBuffered<GameObject>(original, previousPosition, Quaternion.identity, new object[0], false).GetComponent(type) as TestVanDammeAnim;
+                hero.gameObject.SetActive(true);
                 BMLogger.Debug($"AfterInstantiation: InstantiateBuffered.");
 
                 var bro = AfterInstantiation(hero, heroType, playerNum, type, previousPosition);
@@ -122,7 +123,7 @@ namespace BroMakerLib.Loaders
                 // For some reason the change made to the WorkOutSpawn Position function changed how this stuff works
                 if (previousSpawnInfo[playerNum] != Player.SpawnType.AddBroToTransport)
                 {
-                    hero.playerBubble.SetPosition(hero.playerBubble.transform.localPosition + new Vector3(0f, 25f));
+                    hero.playerBubble.SetPosition(hero.playerBubble.transform.localPosition + new Vector3(0f, 5f));
                 }
                 else
                 {
@@ -373,7 +374,9 @@ namespace BroMakerLib.Loaders
         {
             //GameObject prefab = GetPrefab("networkobjects:Rambo");
             GameObject prefab = GetHeroPrefab(heroType).gameObject;
+            prefab.SetActive(false);
             GameObject inst  = UnityEngine.Object.Instantiate(prefab, Vector3.zero, Quaternion.identity);
+            prefab.SetActive(true);
 
             inst.AddComponent(type);
             inst.name = GAMEOBJECT_PREFIX + currentInfo.name;
