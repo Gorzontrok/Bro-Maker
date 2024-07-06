@@ -1,3 +1,8 @@
+v2.3.4
+Fixed custom bros being unable to climb vines in custom levels.
+Fixed custom bros not being able to respawn via parachute in certain levels.
+Fixed json only custom bros not having certain bug fixes applied to them.
+
 v2.3.3
 Fixed bro UI disappearing when changing scenes.
 Added option for disabling avatar flashing for custom bros.

@@ -10,6 +10,7 @@ using RocketLib;
 using BSett = BroMakerLib.Settings;
 using BroMakerLib.CustomObjects.Bros;
 using BroMakerLib.ModManager;
+using BroMakerLib.Loaders;
 
 namespace BroMakerLib.UnityMod
 {
@@ -366,6 +367,8 @@ namespace BroMakerLib.UnityMod
 
             if (GUILayout.Button(new GUIContent("Load Bro")))
             {
+                LoadHero.previousSpawnInfo[Main.selectedPlayerNum] = Player.SpawnType.TriggerSwapBro;
+                LoadHero.wasFirstDeployment[Main.selectedPlayerNum] = false;
                 bro.LoadBro(Main.selectedPlayerNum);
             }
             bool broEnabled = BSett.instance.getBroEnabled(bro.name);
