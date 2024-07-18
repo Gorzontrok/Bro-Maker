@@ -1,3 +1,7 @@
+v2.3.5
+Improved custom bros load time.
+Fixed custom bros spawning with incorrect textures on helicopters.
+
 v2.3.4
 Fixed custom bros being unable to climb vines in custom levels.
 Fixed custom bros not being able to respawn via parachute in certain levels.
