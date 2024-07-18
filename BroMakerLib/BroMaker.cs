@@ -8,6 +8,7 @@ using BroMakerLib.Storages;
 using BroMakerLib.ModManager;
 using BroMakerLib.CustomObjects.Bros;
 using System.Collections.Generic;
+using BroMakerLib.Infos;
 
 namespace BroMakerLib
 {
@@ -21,8 +22,6 @@ namespace BroMakerLib
                 return HeroController.GetAvatarMaterial(HeroType.Rambro).shader;
             }
         }
-
-        public static bool areCheatsActive = false;
 
         internal static Harmony harmony;
 
@@ -60,6 +59,75 @@ namespace BroMakerLib
                 {
                     CustomHero bro = heroHolder.AddComponent(kvp.Value) as CustomHero;
                     bro.HarmonyPatches(harmony);
+                }
+            }
+        }
+
+        public static void PreloadBroAssets()
+        {
+            // Preload all assets listed in the Json file
+            for ( int i = 0; i < MakerObjectStorage.Bros.Length; ++i )
+            {
+                CustomBroInfo info = MakerObjectStorage.Bros[i].GetInfo();
+                List<string> spritePaths = new List<string>();
+                List<string> soundPaths = new List<string>();
+
+                if (info.beforeStart.ContainsKey("sprite"))
+                {
+                    spritePaths.Add(info.beforeStart["sprite"] as string);
+                    spritePaths.Add(info.beforeStart["gunSprite"] as string);
+                }
+                else if (info.afterStart.ContainsKey("sprite"))
+                {
+                    spritePaths.Add(info.afterStart["sprite"] as string);
+                    spritePaths.Add(info.afterStart["gunSprite"] as string);
+                }
+                else if (info.beforeAwake.ContainsKey("sprite"))
+                {
+                    spritePaths.Add(info.beforeAwake["sprite"] as string);
+                    spritePaths.Add(info.beforeAwake["gunSprite"] as string);
+                }
+                else if (info.afterAwake.ContainsKey("sprite"))
+                {
+                    spritePaths.Add(info.afterAwake["sprite"] as string);
+                    spritePaths.Add(info.afterAwake["gunSprite"] as string);
+                }
+
+                if ( info.parameters.ContainsKey("SpecialIcons") )
+                {
+                    spritePaths.Add(info.parameters["SpecialIcons"] as string);
+                }
+                if ( info.parameters.ContainsKey("Avatar") )
+                {
+                    spritePaths.Add(info.parameters["Avatar"] as string);
+                }
+
+                if ( info.cutscene.spritePath != string.Empty )
+                {
+                    spritePaths.Add(info.cutscene.spritePath);
+                }
+                if ( info.cutscene.barkPath != string.Empty )
+                {
+                    soundPaths.Add(info.cutscene.barkPath);
+                }
+                if ( info.cutscene.fanfarePath != string.Empty )
+                {
+                    soundPaths.Add(info.cutscene.fanfarePath);
+                }
+                
+                CustomHero.PreloadSprites(info.path, spritePaths);
+                CustomHero.PreloadSounds(info.path, soundPaths);
+            }
+
+            // Allow bro developers to preload assets
+            GameObject heroHolder = new GameObject();
+            heroHolder.SetActive(false);
+            foreach (KeyValuePair<string, Type> kvp in PresetManager.heroesPreset)
+            {
+                if (typeof(CustomHero).IsAssignableFrom(kvp.Value))
+                {
+                    CustomHero bro = heroHolder.AddComponent(kvp.Value) as CustomHero;
+                    bro.PreloadAssets();
                 }
             }
         }

@@ -208,7 +208,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
     [HarmonyPatch(typeof(Player), "WorkOutSpawnPosition")]
     static class Player_WorkOutSpawnPosition_Patch
     {
-        static bool Prefix(Player __instance, ref TestVanDammeAnim bro)
+        static void Prefix(Player __instance, ref TestVanDammeAnim bro)
         {
             if (!Main.enabled || !LoadHero.spawningCustomBro[__instance.playerNum] )
             {
@@ -216,21 +216,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 {
                     LoadHero.wasFirstDeployment[__instance.playerNum] = __instance.firstDeployment;
                 }
-                return true;
             }
-            else if ( LoadHero.previousSpawnInfo[__instance.playerNum] == Player.SpawnType.AddBroToTransport )
-            {
-                var hero = bro as ICustomHero;
-                if (hero != null)
-                {
-                    // Ensure character has the right sprite when spawning attached to a vehicle
-                    hero.info.BeforeStart(hero);
-                }
-
-                return false;
-            }
-
-            return true;
         }
     }
 

@@ -50,6 +50,8 @@ namespace BroMakerLib.UnityMod
                 {
                     BroMaker.ApplyBroPatches(harmony);
                 }
+                // Preload all bro assets
+                BroMaker.PreloadBroAssets();
             }
             catch(Exception ex)
             {

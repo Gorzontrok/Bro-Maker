@@ -8,6 +8,7 @@ using BroMakerLib.Abilities;
 using HarmonyLib;
 using System.Collections.Generic;
 using System.Reflection;
+using UnityModManagerNet;
 
 namespace BroMakerLib.CustomObjects.Bros
 {
@@ -404,6 +405,39 @@ namespace BroMakerLib.CustomObjects.Bros
 		/// <param name="harmony"></param>
 		public virtual void HarmonyPatches(Harmony harmony)
 		{
+		}
+
+		/// <summary>
+		/// Override this method to add your own assets to be preloaded when the game starts, to avoid lag when spawning as custom characters.
+		/// </summary>
+        public virtual void PreloadAssets()
+		{
+		}
+
+        /// <summary>
+        /// Preloads each sprite in the spritePaths list.
+        /// </summary>
+		/// <param name="directoryPath">Path to the directory containing the sprites</param>
+        /// <param name="spritePaths">Sprites to load</param>
+        public static void PreloadSprites(string directoryPath, List<string> spritePaths)
+        {
+			for ( int i = 0; i < spritePaths.Count; ++i )
+			{
+				ResourcesController.GetMaterial(directoryPath, spritePaths[i]);
+			}
+        }
+
+        /// <summary>
+        /// Preloads each sound in the soundPaths list.
+        /// </summary>
+		/// <param name="directoryPath">Path to the directory containing the sound files</param>
+        /// <param name="soundPaths">Sounds to load</param>
+        public static void PreloadSounds( string directoryPath, List<string> soundPaths )
+		{
+			for ( int i = 0; i <  soundPaths.Count; ++i )
+			{
+				ResourcesController.GetAudioClip(directoryPath, soundPaths[i]);
+			}
 		}
         #endregion
     }

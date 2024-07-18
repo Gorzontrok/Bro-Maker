@@ -160,6 +160,16 @@ namespace BroMakerLib
                 info.spritePath = Path.Combine(info.path, info.afterStart["sprite"] as string );
                 info.gunSpritePath = Path.Combine(info.path, info.afterStart["gunSprite"] as string);
             }
+            else if (info.beforeAwake.ContainsKey("sprite"))
+            {
+                info.spritePath = Path.Combine(info.path, info.beforeAwake["sprite"] as string);
+                info.gunSpritePath = Path.Combine(info.path, info.beforeAwake["gunSprite"] as string);
+            }
+            else if (info.afterAwake.ContainsKey("sprite"))
+            {
+                info.spritePath = Path.Combine(info.path, info.afterAwake["sprite"] as string);
+                info.gunSpritePath = Path.Combine(info.path, info.afterAwake["gunSprite"] as string);
+            }
 
             // Set canCeilingHang to true by default 
             if ( !info.beforeAwake.ContainsKey("canCeilingHang") )
