@@ -210,12 +210,14 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
     {
         static void Prefix(Player __instance, ref TestVanDammeAnim bro)
         {
-            if (!Main.enabled || !LoadHero.spawningCustomBro[__instance.playerNum] )
+            if ( !Main.enabled )
             {
-                if ( LoadHero.willReplaceBro[__instance.playerNum] )
-                {
-                    LoadHero.wasFirstDeployment[__instance.playerNum] = __instance.firstDeployment;
-                }
+                return;
+            }
+
+            if ( !LoadHero.spawningCustomBro[__instance.playerNum] && LoadHero.willReplaceBro[__instance.playerNum])
+            {
+                LoadHero.wasFirstDeployment[__instance.playerNum] = __instance.firstDeployment;
             }
         }
     }
