@@ -98,7 +98,7 @@
   <PropertyGroup>
     <PostBuildEvent>start XCOPY /Y /R "$(TargetPath)" "$(ProjectDir)\_Mod\$(ProjectName).dll*"
 start XCOPY /Y /I /E "$(ProjectDir)_Mod\*.*" "E:\SteamLibrary\steamapps\common\Broforce\Mods\BroMaker\"
-del "D:\Steam\steamapps\common\Broforce\Mods\Development - BroMaker\*.cache"</PostBuildEvent>
+del "D:\Steam\steamapps\common\Broforce\Mods\Development - BroMaker\*.cache" 2&gt; 0 || set errorlevel=0</PostBuildEvent>
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
 </Project>
