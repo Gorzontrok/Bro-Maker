@@ -124,6 +124,8 @@
     <Compile Include="BroMaker.cs" />
     <Compile Include="Attributes\CustomObjectPresetAttribute.cs" />
     <Compile Include="BroMakerUtilities.cs" />
+    <Compile Include="CutsceneSpriteAnimatedJsonConverter.cs" />
+    <Compile Include="Cutscenes\CutsceneIntroExtra.cs" />
     <Compile Include="ModManager\BroMakerMod.cs" />
     <Compile Include="Info.cs" />
     <Compile Include="CustomObjects\Bros\SwordHero.cs" />
