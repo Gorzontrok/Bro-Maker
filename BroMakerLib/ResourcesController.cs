@@ -243,14 +243,14 @@ namespace BroMakerLib
             tex.filterMode = FilterMode.Point;
             tex.anisoLevel = 1;
             tex.mipMapBias = 0;
-            tex.wrapMode = TextureWrapMode.Repeat;
+            tex.wrapMode = TextureWrapMode.Clamp;
 
             // Textures always load as ARGB32 when loading from a png, so this is necessary to convert it to RGBA32
             Texture2D convertedTexture = new Texture2D(tex.width, tex.height, TextureFormat.RGBA32, false);
             convertedTexture.filterMode = FilterMode.Point;
             convertedTexture.anisoLevel = 1;
             convertedTexture.mipMapBias = 0;
-            convertedTexture.wrapMode = TextureWrapMode.Repeat;
+            convertedTexture.wrapMode = TextureWrapMode.Clamp;
             Graphics.ConvertTexture(tex, convertedTexture);
             return convertedTexture;
         }

@@ -301,7 +301,7 @@ namespace BroMakerLib.UnityMod
                         // Show bros
                         GUILayout.BeginVertical("box");
 
-                        GUILayout.Label("This mod is incompatible with this version of BroMaker, it requires version: " + mod.BroMakerVersion, _incompatibleStyle);
+                        GUILayout.Label(mod.ErrorMessage, _incompatibleStyle);
 
                         GUILayout.EndVertical();
                     }

@@ -32,15 +32,26 @@ namespace BroMakerLib.ModManager
                     mod = BroMakerMod.TryLoad(jsonFile);
                     if (mod != null)
                     {
-                        if (Info.ParsedVersion >= UnityModManager.ParseVersion(mod.BroMakerVersion))
-                        {
-                            mod.Initialize();
-                            mods.Add(mod);
-                        }
-                        else
+                        Version modVersion = UnityModManager.ParseVersion(mod.BroMakerVersion);
+                        // Mod requires a newer version of BroMaker
+                        if ( Info.ParsedVersion < modVersion )
                         {
                             incompatibleMods.Add(mod);
                             BMLogger.Error($"{mod.Name} require version of BroMaker >={mod.BroMakerVersion}. Current BroMaker version is {Info.VERSION}");
+                            mod.ErrorMessage = "This mod requires a newer version of BroMaker: " + mod.BroMakerVersion;
+                        }
+                        // Mod is too old for this version of BroMaker
+                        else if (Info.ParsedMinimumVersion > modVersion)
+                        {
+                            incompatibleMods.Add(mod);
+                            BMLogger.Error($"{mod.Name} will not work with this version of BroMaker. You must update {mod.Name} or downgrade BroMaker.");
+                            mod.ErrorMessage = "This mod uses an outdated version of BroMaker (" + mod.BroMakerVersion + ") you must update this mod to a version that supports BroMaker " + Info.ParsedMinimumVersion + " or downgrade BroMaker.";
+                        }
+                        // Versions are compatible
+                        else
+                        {
+                            mod.Initialize();
+                            mods.Add(mod);
                         }
                     }
                 }

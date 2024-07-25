@@ -1,3 +1,10 @@
+v2.4.0 (unreleased)
+Added options for:
+    Changing text color in cutscenes.
+    Adding animated sprites in cutscenes.
+Fixed textures loading with wrong TextureClampMode.
+Added check for if bros are too outdated for the current BroMaker version.
+
 v2.3.5
 Improved custom bros load time.
 Fixed custom bros spawning with incorrect textures on helicopters.

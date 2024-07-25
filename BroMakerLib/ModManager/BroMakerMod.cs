@@ -15,6 +15,7 @@ namespace BroMakerLib
         public string Version = "0.0.0";
         public string BroMakerVersion = "0.0.0";
         public string Author = string.Empty;
+        public string ErrorMessage = string.Empty;
         // The custom objects
 
         public string[] Assemblies = new string[0];
