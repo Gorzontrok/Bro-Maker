@@ -13,5 +13,6 @@ namespace BroMakerLib.Cutscenes
         public bool animationPingPong = false;
         public bool animationLoop = false;
         public Texture2D backgroundTexture = null;
+        public float subtitle2Scale = 1f;
     }
 }

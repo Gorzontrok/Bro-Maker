@@ -34,13 +34,13 @@ namespace BroMakerLib.Cutscenes
         public string subtitle1 = Subtitle1DefaultText;
         [JsonConverter(typeof(ColorJsonConverter))]
         public Color subtitle1Color = SubtitleDefaultColor;
+        public float subtitleScale = 0.10f;
 
         // Subtitle 2
-        public bool hasSecondSubtitle = false;
         public string subtitle2 = string.Empty; // This won't be shown unless we use a cutscene with an existing mesh for this or create our own mesh
         [JsonConverter(typeof(ColorJsonConverter))]
         public Color subtitle2Color = SubtitleDefaultColor;
-        public float subtitleScale = 0.10f;
+        public float subtitle2Scale = 1f;
 
         // Sprite
         public string spritePath = string.Empty;
@@ -96,7 +96,7 @@ namespace BroMakerLib.Cutscenes
             var data = new CutsceneIntroDataExtra();
             data.heading = heading;
             data.subtitle1 = subtitle1;
-            data.subtitle2 = hasSecondSubtitle ? subtitle2 : string.Empty;
+            data.subtitle2 = subtitle2;
             data.headingScale = headingScale;
             data.subtitleScale = subtitleScale;
 
@@ -175,6 +175,7 @@ namespace BroMakerLib.Cutscenes
             data.animationStartDelay = animationStartDelay;
             data.animationPingPong = animationPingPong;
             data.animationLoop = animationLoop;
+            data.subtitle2Scale = subtitle2Scale;
 
             if (!string.IsNullOrEmpty(backgroundPath))
             {

@@ -42,21 +42,33 @@ namespace BroMakerLib.Cutscenes
                     hasExtraData ? dataExtra.subtitle1Color : CustomIntroCutscene.SubtitleDefaultColor
                 );
 
-                // Subtitle 2
-                if (__instance.subtitle2Mesh != null)
+                // Create Subtitle 2
+                if (__instance.subtitle2Mesh == null)
                 {
-                    if (_curIntroData.subtitle2.IsNullOrEmpty())
-                    {
-                        __instance.subtitle2Mesh.gameObject.SetActive(false);
-                    }
-                    else
-                    {
-                        __instance.subtitle2Mesh.gameObject.SetActive(true);
-                        UpdateText3D(__instance.subtitle2Mesh,
-                            _curIntroData.subtitle2, _curIntroData.subtitleScale,
-                            hasExtraData ? dataExtra.subtitle2Color : CustomIntroCutscene.SubtitleDefaultColor
-                        );
-                    }
+                    const float SUBTITLE2_Y_POSITION = -0.12f;
+
+                    __instance.subtitle2Mesh = UnityEngine.Object.Instantiate<Text3D>(__instance.subtitle1Mesh, __instance.subtitle1Mesh.transform);
+                    Vector3 subtitle2Position = __instance.subtitle1Mesh.transform.position;
+                    subtitle2Position.y = SUBTITLE2_Y_POSITION;
+                    __instance.subtitle2Mesh.transform.position = subtitle2Position;
+                    __instance.subtitle2Mesh.transform.rotation = __instance.subtitle1Mesh.transform.rotation;
+                    __instance.subtitle2Mesh.gameObject.SetActive(false);
+                    Renderer renderer = __instance.subtitle2Mesh.GetComponent<Renderer>();
+                    renderer.material = new Material(renderer.sharedMaterial);
+                }
+                // Subtitle 2
+                if (_curIntroData.subtitle2.IsNullOrEmpty())
+                {
+                    __instance.subtitle2Mesh.gameObject.SetActive(false);
+                }
+                else
+                {
+                    __instance.subtitle2Mesh.gameObject.SetActive(true);
+                    UpdateText3D(__instance.subtitle2Mesh,
+                        _curIntroData.subtitle2,
+                        hasExtraData ? dataExtra.subtitle2Scale : _curIntroData.subtitleScale,
+                        hasExtraData ? dataExtra.subtitle2Color : CustomIntroCutscene.SubtitleDefaultColor
+                    );
                 }
 
                 // Sprite
@@ -101,9 +113,9 @@ namespace BroMakerLib.Cutscenes
             Renderer renderer = text3D.GetComponent<Renderer>();
             if (renderer == null)
                 return;
-            if (renderer.sharedMaterial == null)
+            if (renderer.material == null)
                 return;
-            renderer.sharedMaterial.color = color;
+            renderer.material.color = color;
         }
 
         private static void UpdateSpriteSM(SpriteSM spriteSM, CutsceneIntroData introData)
