@@ -9,7 +9,8 @@ namespace BroMakerLib.Cutscenes
      [HarmonyPatch(typeof(CutsceneIntroRoot), "OnLoadComplete", typeof(string), typeof(object))]
      static class CutsceneIntroRoot_StartCutscene_Patch
      {
-         static bool Prefix(CutsceneIntroRoot __instance, ref string resourceName, ref object asset)
+
+        static bool Prefix(CutsceneIntroRoot __instance, ref string resourceName, ref object asset)
          {
             try
             {
@@ -127,18 +128,18 @@ namespace BroMakerLib.Cutscenes
 
         private static void UpdateSpriteSM(SpriteSM spriteSM, CutsceneIntroData introData)
         {
-            int spriteOffsetX = 0;
-            int spriteOffsetY = introData.spriteTexture.height;
+            int lowerLeftPixelX = 0;
+            int lowerLeftPixelY = introData.spriteTexture.height;
             int spriteWidth = introData.spriteTexture.width;
             int spriteHeight = introData.spriteTexture.height;
             if (introData.spriteRect.height > 0f)
             {
-                spriteOffsetX = (int)introData.spriteRect.x;
-                spriteOffsetY = (int)introData.spriteRect.y;
+                lowerLeftPixelX = (int)introData.spriteRect.x;
+                lowerLeftPixelY = (int)introData.spriteRect.y;
                 spriteWidth = (int)introData.spriteRect.width;
                 spriteHeight = (int)introData.spriteRect.height;
             }
-            spriteSM.SetLowerLeftPixel((float)spriteOffsetX, (float)spriteOffsetY);
+            spriteSM.SetLowerLeftPixel((float)lowerLeftPixelX, (float)lowerLeftPixelY);
             spriteSM.SetPixelDimensions(spriteWidth, spriteHeight);
             if (introData.spriteSize.x > 0f)
             {
@@ -172,10 +173,14 @@ namespace BroMakerLib.Cutscenes
                 animatedTexture.frameSpacingWidth = (int)introData.spriteAnimRateFramesWidth.z;
                 animatedTexture.enabled = true;
                 animatedTexture.Recalc();
+                animatedTexture.Restart(); // Make sure that the animation replay each time
+                animatedTexture.SetFrame();// Make sure the Sprite appears
 
                 if (hasExtraData)
                 {
                     animatedTexture.startDelay = dataExtra.animationStartDelay;
+                    animatedTexture.loop = dataExtra.animationLoop;
+                    animatedTexture.pingPong = dataExtra.animationPingPong;
                 }
             }
             else
