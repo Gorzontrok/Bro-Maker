@@ -50,6 +50,11 @@ namespace BroMakerLib.ModManager
                         // Versions are compatible
                         else
                         {
+                            // Let user know the bro may have compatibility issues with this version
+                            if ( Info.ParsedSuggestedMinimumVersion > modVersion )
+                            {
+                                mod.ErrorMessage = "This mod uses an outdated version of BroMaker (" + mod.BroMakerVersion + ") you may experience bugs using it on this version of BroMaker. It's recommended that you update this mod to a newer version.";
+                            }
                             mod.Initialize();
                             mods.Add(mod);
                         }

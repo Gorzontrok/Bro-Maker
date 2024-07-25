@@ -59,6 +59,7 @@ namespace BroMakerLib.UnityMod
         private static int _broPerLines = 6;
 
         private static GUIStyle _buttonStyle = null;
+        private static GUIStyle _warningStyle = null;
         private static GUIStyle _incompatibleStyle = null;
 
         public static void Initialize()
@@ -87,6 +88,12 @@ namespace BroMakerLib.UnityMod
         {
             if (_buttonStyle == null)
                 _buttonStyle = new GUIStyle(GUI.skin.button);
+
+            if (_warningStyle == null)
+            {
+                _warningStyle = new GUIStyle(GUI.skin.label);
+                _warningStyle.normal.textColor = Color.yellow;
+            }
 
             if (_incompatibleStyle == null)
             {
@@ -195,7 +202,14 @@ namespace BroMakerLib.UnityMod
                         GUILayout.Space(50);
                         GUILayout.Label(mod.Author, GUILayout.Width(200));
                         GUILayout.Label(mod.Version, GUILayout.Width(200));
-                        GUILayout.Label(mod.BroMakerVersion, GUILayout.Width(200));
+                        if ( mod.ErrorMessage == string.Empty )
+                        {
+                            GUILayout.Label(mod.BroMakerVersion, GUILayout.Width(200));
+                        }
+                        else
+                        {
+                            GUILayout.Label(mod.BroMakerVersion, _warningStyle, GUILayout.Width(200));
+                        }
                         GUILayout.EndHorizontal();
 
                         // Only show custom bros of this mod if this mod is selected
@@ -243,7 +257,7 @@ namespace BroMakerLib.UnityMod
 
                                     if (willShowOptions)
                                     {
-                                        SelectedBroUI(_selectedBro);
+                                        SelectedBroUI(_selectedBro, mod);
                                     }
                                 }
                                 broIndex++;
@@ -256,7 +270,7 @@ namespace BroMakerLib.UnityMod
                                 GUILayout.EndHorizontal();
                                 if (willShowOptions)
                                 {
-                                    SelectedBroUI(_selectedBro);
+                                    SelectedBroUI(_selectedBro, mod);
                                 }
                             }
                             GUILayout.EndVertical();
@@ -354,12 +368,18 @@ namespace BroMakerLib.UnityMod
         }
 
 
-        private static void SelectedBroUI(StoredHero bro)
+        private static void SelectedBroUI(StoredHero bro, BroMakerMod mod)
         {
             if (bro.Equals(null))
                 return;
 
             GUILayout.BeginVertical("box");
+            // Show warning for potentially incompatible version
+            if (mod.ErrorMessage != string.Empty)
+            {
+                GUILayout.Label(mod.ErrorMessage, _warningStyle);
+            }
+
             Main.selectedPlayerNum = RGUI.HorizontalSliderInt("Player Num: ", Main.selectedPlayerNum, 0, 3, 200);
 
 
@@ -513,13 +533,20 @@ namespace BroMakerLib.UnityMod
             GUILayout.Space(50);
             GUILayout.Label(mod.Author, GUILayout.Width(200));
             GUILayout.Label(mod.Version, GUILayout.Width(200));
-            GUILayout.Label(mod.BroMakerVersion, GUILayout.Width(200));
+            if ( mod.ErrorMessage == string.Empty )
+            {
+                GUILayout.Label(mod.BroMakerVersion, GUILayout.Width(200));
+            }
+            else
+            {
+                GUILayout.Label(mod.BroMakerVersion, _warningStyle, GUILayout.Width(200));
+            }
             GUILayout.EndHorizontal();
 
             // Show bros
             if (_selectedCustomBrosIndex == broIndex)
             {
-                SelectedBroUI(_selectedBro);
+                SelectedBroUI(_selectedBro, mod);
                 GUILayout.Space(25);
             }
             else
