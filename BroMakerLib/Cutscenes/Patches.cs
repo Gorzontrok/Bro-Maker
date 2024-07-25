@@ -45,14 +45,21 @@ namespace BroMakerLib.Cutscenes
                 // Create Subtitle 2
                 if (__instance.subtitle2Mesh == null)
                 {
-                    const float SUBTITLE2_Y_POSITION = -0.12f;
+                    const float SUBTITLE2_LOCALPOSITION_Y = -0.48f;
 
                     __instance.subtitle2Mesh = UnityEngine.Object.Instantiate<Text3D>(__instance.subtitle1Mesh, __instance.subtitle1Mesh.transform);
-                    Vector3 subtitle2Position = __instance.subtitle1Mesh.transform.position;
-                    subtitle2Position.y = SUBTITLE2_Y_POSITION;
-                    __instance.subtitle2Mesh.transform.position = subtitle2Position;
-                    __instance.subtitle2Mesh.transform.rotation = __instance.subtitle1Mesh.transform.rotation;
                     __instance.subtitle2Mesh.gameObject.SetActive(false);
+
+                    __instance.subtitle2Mesh.Anchor = Text3D.AnchorPoint.TopMiddle;
+
+                    Vector3 subtitle2LocalPosition = Vector2.zero;
+                    // To make sure the 2 subtitles touch, we should multiply the Y position with the scale.
+                    // So apparently to be aligned the position is -8 + 1/4 of the scale
+                    subtitle2LocalPosition.y = SUBTITLE2_LOCALPOSITION_Y * (hasExtraData ? dataExtra.subtitle2Scale : 1);
+
+                    __instance.subtitle2Mesh.transform.localPosition = subtitle2LocalPosition;
+                    __instance.subtitle2Mesh.transform.localRotation = Quaternion.identity;
+
                     Renderer renderer = __instance.subtitle2Mesh.GetComponent<Renderer>();
                     renderer.material = new Material(renderer.sharedMaterial);
                 }
