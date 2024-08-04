@@ -1,4 +1,4 @@
-v2.4.0 (unreleased)
+v2.4.0
 Added options for:
     Changing text color in cutscenes.
     Adding animated sprites in cutscenes.
