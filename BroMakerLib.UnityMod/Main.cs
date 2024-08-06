@@ -22,6 +22,7 @@ namespace BroMakerLib.UnityMod
             modEntry.OnGUI = OnGUI;
             modEntry.OnToggle = OnToggle;
             modEntry.OnSaveGUI = OnSaveGUI;
+            modEntry.Info.DisplayName = "<color=\"#d68c16\">BroMaker Unity</color>";
             settings = Settings.Load<Settings>(modEntry);
             Harmony harmony = null;
             Assembly assembly = null;
