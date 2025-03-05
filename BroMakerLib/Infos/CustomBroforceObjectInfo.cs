@@ -241,13 +241,16 @@ namespace BroMakerLib.Infos
                         throw new InvalidCastException("can't cast value to string on 'Texture2D' field");
                     field.SetValue((Texture2D)ResourcesController.GetTexture(path, (string)value));
                 }
-                else if (fieldType == typeof(Enum))
+                else if (fieldType.IsEnum)
                 {
                     if (value is string)
                     {
                         field.SetValue(Enum.Parse(fieldType, (string)value));
                     }
-                    field.SetValue((int)value);
+                    else
+                    {
+                        field.SetValue((int)value);
+                    }
                 }
                 else if (fieldType == typeof(float))
                 {
