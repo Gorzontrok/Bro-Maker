@@ -124,6 +124,7 @@
     <Compile Include="BroMaker.cs" />
     <Compile Include="Attributes\CustomObjectPresetAttribute.cs" />
     <Compile Include="BroMakerUtilities.cs" />
+    <Compile Include="CustomObjects\Bros\CustomHeroExtended.cs" />
     <Compile Include="CutsceneSpriteAnimatedJsonConverter.cs" />
     <Compile Include="Cutscenes\CutsceneIntroExtra.cs" />
     <Compile Include="ModManager\BroMakerMod.cs" />
@@ -216,6 +217,7 @@
     <Compile Include="Vanilla\Bros\NorrisBroM.cs" />
     <Compile Include="Vanilla\Bros\PistolWhipBroM.cs" />
     <Compile Include="Vanilla\Bros\PredabroM.cs" />
+    <Compile Include="Vanilla\Bros\RambroExtendedM.cs" />
     <Compile Include="Vanilla\Bros\RambroM.cs" />
     <Compile Include="Vanilla\Bros\ScorpionBroM.cs" />
     <Compile Include="Vanilla\Bros\SnakeBroskinM.cs" />

@@ -19,7 +19,6 @@ namespace BroMakerLib.CustomObjects.Bros
         public CustomBroInfo info { get; set; }
         [Syncronize]
         public BroBase character { get; set; }
-        public CharacterExtended characterExtended { get; set; }
 
 		// This is needed to ensure Unity Serializes the Getter / Setter field
         [field: SerializeField]
@@ -35,16 +34,6 @@ namespace BroMakerLib.CustomObjects.Bros
         [field: SerializeField]
         public MuscleTempleFlexEffect flexEffect { get; set; }
 
-        #region Private Variable Becomes
-        #region Publics
-        #endregion
-        #region Protected
-        #endregion
-        #endregion
-
-        #region New variables
-        #endregion
-
         #region BroBase Methods
         protected override void Awake()
         {
@@ -54,10 +43,6 @@ namespace BroMakerLib.CustomObjects.Bros
             {
                 EnableSyncing(true, true);
                 this.SetupCustomHero();
-				characterExtended = GetComponent<CharacterExtended>();
-				if (characterExtended == null)
-					characterExtended = gameObject.AddComponent<CharacterExtended>();
-                characterExtended.Initialize(info.abilities, this);
 
                 info.BeforeAwake(this);
                 base.Awake();
@@ -65,10 +50,6 @@ namespace BroMakerLib.CustomObjects.Bros
 
 				// Somehow it becomes 0, 0 if it's in the parameters
                 info.gunSpriteOffset = gunSpriteOffset;
-
-                characterExtended.BeforeAwake();
-                characterExtended.InvokeAbilityToAll(nameof(Awake));
-				characterExtended.AfterAwake();
 
 				// Make sure parachute isn't null, for some reason the game's default way of handling this doesn't work
 				if ( this.parachute == null )
@@ -111,89 +92,12 @@ namespace BroMakerLib.CustomObjects.Bros
 				}
 				base.Start();
                 info.AfterStart(this);
-
-				characterExtended.BeforeStart();
-                characterExtended.InvokeAbilityToAll(nameof(Start));
-                characterExtended.AfterStart();
             }
             catch (Exception ex)
             {
                 BMLogger.ExceptionLog(ex);
                 enabled = false;
             }
-        }
-
-        protected override void Update()
-        {
-            base.Update();
-            characterExtended.InvokeAbilityToAll(nameof(Update));
-        }
-
-        protected override void FireWeapon(float x, float y, float xSpeed, float ySpeed)
-        {
-            this.gunFrame = 3;
-            this.gunSprite.SetLowerLeftPixel((float)(this.gunSpritePixelWidth * this.gunFrame), 32f);
-            EffectsController.CreateMuzzleFlashEffect(x, y, -25f, xSpeed * 0.01f, ySpeed * 0.01f, base.transform);
-            if (!characterExtended.InvokeAbility(nameof(FireWeapon), x, y, xSpeed, ySpeed))
-            {
-                base.FireWeapon(x, y, xSpeed, ySpeed);
-            }
-        }
-
-        protected override void Land()
-        {
-            base.Land();
-            characterExtended.InvokeAbility(nameof(Land));
-        }
-
-        protected override void UseSpecial()
-        {
-            if(SpecialAmmo > 0)
-            {
-                this.PlayThrowLightSound(0.4f);
-                this.SpecialAmmo--;
-                this.TriggerBroSpecialEvent();
-				if (base.IsMine)
-                {
-                    characterExtended.InvokeAbility(nameof(UseSpecial));
-                }
-            }
-            else
-            {
-                HeroController.FlashSpecialAmmo(base.playerNum);
-                this.ActivateGun();
-            }
-        }
-        public override void RecallBro()
-        {
-            base.RecallBro();
-            characterExtended.InvokeAbility(nameof(RecallBro));
-        }
-        protected override void ActivateGun()
-        {
-            base.ActivateGun();
-            characterExtended.InvokeAbility(nameof(ActivateGun));
-        }
-
-        protected override void Jump(bool wallJump)
-        {
-            base.Jump(wallJump);
-            characterExtended.InvokeAbility(nameof(Jump), wallJump);
-        }
-        protected override void StartFiring()
-        {
-            base.StartFiring();
-            characterExtended.InvokeAbility(nameof(StartFiring));
-        }
-        protected override void StopFiring()
-        {
-            base.StopFiring();
-            characterExtended.InvokeAbility(nameof(StopFiring));
-        }
-        protected override void UseFire()
-        {
-            base.UseFire();
-            characterExtended.InvokeAbility(nameof(UseFire));
         }
 
         // This function is overridden to remove the RPC calls, since they don't work currently
@@ -334,6 +238,7 @@ namespace BroMakerLib.CustomObjects.Bros
 				}
 			}
 		}
+
 		protected override void TriggerFlexEvent()
         {
 			if (this.player.HasFlexPower(PickupType.FlexAlluring))

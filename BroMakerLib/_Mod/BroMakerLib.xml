@@ -106,6 +106,42 @@
             <param name="isOnFire"></param>
             <returns></returns>
         </member>
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHeroExtended.SpawnGrenade(Grenade)">
+            <summary>
+            Throw grenade and handle direction if characters crouching
+            </summary>
+            <param name="grenade"></param>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHeroExtended.UIOptions">
+            <summary>
+            Override this method to have UI options displayed for your custom hero underneath their name in the Custom Bros tab
+            </summary>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHeroExtended.HarmonyPatches(HarmonyLib.Harmony)">
+            <summary>
+            Override this method to add custom harmony patches to your custom hero
+            </summary>
+            <param name="harmony"></param>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHeroExtended.PreloadAssets">
+            <summary>
+            Override this method to add your own assets to be preloaded when the game starts, to avoid lag when spawning as custom characters.
+            </summary>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHeroExtended.PreloadSprites(System.String,System.Collections.Generic.List{System.String})">
+            <summary>
+            Preloads each sprite in the spritePaths list.
+            </summary>
+            <param name="directoryPath">Path to the directory containing the sprites</param>
+            <param name="spritePaths">Sprites to load</param>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHeroExtended.PreloadSounds(System.String,System.Collections.Generic.List{System.String})">
+            <summary>
+            Preloads each sound in the soundPaths list.
+            </summary>
+            <param name="directoryPath">Path to the directory containing the sound files</param>
+            <param name="soundPaths">Sounds to load</param>
+        </member>
         <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.SpawnGrenade(Grenade)">
             <summary>
             Throw grenade and handle direction if characters crouching
