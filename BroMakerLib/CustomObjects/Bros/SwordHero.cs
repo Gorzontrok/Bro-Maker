@@ -16,6 +16,7 @@ namespace BroMakerLib.CustomObjects.Bros
         protected bool hasHitWithWall;
         protected FlickerFader hitPuff;
         protected Shrapnel shrapnelSpark;
+        protected bool hasPlayedAttackHitSound;
 
         protected override void Awake()
         {
@@ -40,6 +41,7 @@ namespace BroMakerLib.CustomObjects.Bros
         {
             if (Map.DeflectProjectiles(this, base.playerNum, 16f, base.X + Mathf.Sign(base.transform.localScale.x) * 6f, base.Y + 6f, Mathf.Sign(base.transform.localScale.x) * 200f, true))
             {
+                PlaySpecial4Sound(1f);
                 this.hasHitWithWall = true;
             }
         }
@@ -93,7 +95,7 @@ namespace BroMakerLib.CustomObjects.Bros
                         this.gunFrame = 0;
                     }
                     this.SetGunSprite(this.gunFrame, 0);
-                    /*if (!this.hasPlayedAttackHitSound)
+                  /*  if (!this.hasPlayedAttackHitSound)
 					{
 						if (this.hasHitWithSlice)
 						{
@@ -126,6 +128,10 @@ namespace BroMakerLib.CustomObjects.Bros
                     SortOfFollow.Shake(0.15f);
                 }
                 this.hasHitWithSlice = true;
+                if (ground)
+                    this.PlayWallSound();
+                else
+                    this.PlaySliceSound();
             }
             else
             {
@@ -160,10 +166,29 @@ namespace BroMakerLib.CustomObjects.Bros
             this.alreadyHit.Clear();
             this.hasHitWithWall = false;
             this.hasHitWithSlice = false;
+            this.hasPlayedAttackHitSound = false;
             this.gunFrame = 6;
             this.FireWeapon(base.X + base.transform.localScale.x * 10f, base.Y + 6.5f, base.transform.localScale.x * 400f, (float)(UnityEngine.Random.Range(0, 40) - 20));
             this.PlayAttackSound();
             Map.DisturbWildLife(base.X, base.Y, 60f, base.playerNum);
+        }
+
+        public virtual void PlaySliceSound()
+        {
+            PlaySpecial2Sound(0.7f);
+        }
+
+        public virtual void PlayWallSound()
+        {
+
+            if (this.sound == null)
+            {
+                this.sound = Sound.GetInstance();
+            }
+            if (this.sound != null)
+            {
+                this.sound.PlaySoundEffectAt(this.soundHolder.defendSounds, 0.7f, base.transform.position, 1f, true, false, false, 0f);
+            }
         }
     }
 }
