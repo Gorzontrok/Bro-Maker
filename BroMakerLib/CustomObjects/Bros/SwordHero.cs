@@ -36,7 +36,7 @@ namespace BroMakerLib.CustomObjects.Bros
             }
             this.hasHitWithWall = true;
         }
-        protected void DeflectProjectiles()
+        protected virtual void DeflectProjectiles()
         {
             if (Map.DeflectProjectiles(this, base.playerNum, 16f, base.X + Mathf.Sign(base.transform.localScale.x) * 6f, base.Y + 6f, Mathf.Sign(base.transform.localScale.x) * 200f, true))
             {
