@@ -310,6 +310,7 @@
             <summary>
             Creates an AudioClip from an audio file.
             Loads AudioClip from cache if created previously. Note that the same cached AudioClip can't be played several times simultaneously.
+            IMPORTANT: MP3 files will not load.
             </summary>
             <param name="path">Path to an audio file</param>
             <param name="fileName">Name of an audio file</param>
@@ -319,6 +320,7 @@
             <summary>
             Creates an AudioClip from an audio file.
             Loads AudioClip from cache if created previously. Note that the same cached AudioClip can't be played several times simultaneously.
+            IMPORTANT: MP3 files will not load.
             </summary>
             <param name="filePath">Path to an audio file</param>
             <returns></returns>
@@ -327,6 +329,7 @@
             <summary>
             Creates an AudioClip from an audio file.
             The AudioClip is not cached, use GetAudioClip is caching is desired.
+            IMPORTANT: MP3 files will not load.
             </summary>
             <param name="path">Path to an audio file</param>
             <param name="fileName">Name of an audio file</param>
@@ -336,6 +339,7 @@
             <summary>
             Creates an AudioClip from an audio file.
             The AudioClip is not cached, use GetAudioClip is caching is desired.
+            IMPORTANT: MP3 files will not load.
             </summary>
             <param name="filePath">Path to an audio file</param>
             <returns></returns>

@@ -90,7 +90,7 @@ namespace BroMakerLib
             {
                 result = CreateMaterial(filePath, Unlit_DepthCutout);
             }
-            else if (filePath.Contains(":"))
+            else if (filePath.Contains(":") && filePath[1] != ':') // Second condition is here to make sure it is not a disk path
             {
                 result = LoadAssetSync<Material>(filePath);
             }
@@ -194,7 +194,7 @@ namespace BroMakerLib
             {
                 tex = CreateTexture(filePath);
             }
-            else if (filePath.Contains(":"))
+            else if (filePath.Contains(":") && filePath[1] != ':') // Second condition is here to make sure it is not a disk path
             {
                 try
                 {
@@ -258,6 +258,7 @@ namespace BroMakerLib
         /// <summary>
         /// Creates an AudioClip from an audio file.
         /// Loads AudioClip from cache if created previously. Note that the same cached AudioClip can't be played several times simultaneously.
+        /// IMPORTANT: MP3 files will not load.
         /// </summary>
         /// <param name="path">Path to an audio file</param>
         /// <param name="fileName">Name of an audio file</param>
@@ -271,6 +272,7 @@ namespace BroMakerLib
         /// <summary>
         /// Creates an AudioClip from an audio file.
         /// Loads AudioClip from cache if created previously. Note that the same cached AudioClip can't be played several times simultaneously.
+        /// IMPORTANT: MP3 files will not load.
         /// </summary>
         /// <param name="filePath">Path to an audio file</param>
         /// <returns></returns>
@@ -286,7 +288,7 @@ namespace BroMakerLib
             {
                 result = CreateAudioClip(filePath);
             }
-            else if (filePath.Contains(":"))
+            else if (filePath.Contains(":") && filePath[1] != ':') // Second condition is here to make sure it is not a disk path
             {
                 result = LoadAssetSync<AudioClip>(filePath);
             }
@@ -305,6 +307,7 @@ namespace BroMakerLib
         /// <summary>
         /// Creates an AudioClip from an audio file.
         /// The AudioClip is not cached, use GetAudioClip is caching is desired.
+        /// IMPORTANT: MP3 files will not load.
         /// </summary>
         /// <param name="path">Path to an audio file</param>
         /// <param name="fileName">Name of an audio file</param>
@@ -318,20 +321,29 @@ namespace BroMakerLib
         /// <summary>
         /// Creates an AudioClip from an audio file.
         /// The AudioClip is not cached, use GetAudioClip is caching is desired.
+        /// IMPORTANT: MP3 files will not load.
         /// </summary>
         /// <param name="filePath">Path to an audio file</param>
         /// <returns></returns>
         public static AudioClip CreateAudioClip(string filePath)
         {
+            if (!File.Exists(filePath))
+                throw new FileNotFoundException("File not found", filePath);
             WWW getClip = new WWW("file:////" + filePath);
 
             while ( !getClip.isDone )
             {
             };
 
+            if (getClip.error != null)
+                BMLogger.ExceptionLog(getClip.error);
+
 
             AudioClip result = getClip.GetAudioClip(false, true);
-            result.name = Path.GetFileNameWithoutExtension(filePath);
+            if (result != null)
+                result.name = Path.GetFileNameWithoutExtension(filePath);
+            else
+                BMLogger.ExceptionLog("Failed to load AudioClip from: " + filePath);
 
             return result;
         }
