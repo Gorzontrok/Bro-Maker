@@ -14,6 +14,7 @@
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
   </PropertyGroup>
+  <Import Project="LocalBroforcePath.props" Condition="Exists('LocalBroforcePath.props')" />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -97,7 +98,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>start XCOPY /Y /R "$(TargetPath)" "$(ProjectDir)\_Mod\$(ProjectName).dll*"
-start XCOPY /Y /I /E "$(ProjectDir)_Mod\*.*" "E:\SteamLibrary\steamapps\common\Broforce\Mods\BroMaker\"
+start XCOPY /Y /I /E "$(ProjectDir)_Mod\*.*" "$(BroforcePath)\Mods\BroMaker\"
 del "D:\Steam\steamapps\common\Broforce\Mods\Development - BroMaker\*.cache" 2&gt; nul || set errorlevel=0</PostBuildEvent>
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
