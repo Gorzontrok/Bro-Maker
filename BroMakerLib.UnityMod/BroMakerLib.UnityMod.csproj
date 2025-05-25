@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="LocalBroforcePath.props" Condition="Exists('LocalBroforcePath.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -14,7 +15,6 @@
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
   </PropertyGroup>
-  <Import Project="LocalBroforcePath.props" Condition="Exists('LocalBroforcePath.props')" />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -99,7 +99,12 @@
   <PropertyGroup>
     <PostBuildEvent>start XCOPY /Y /R "$(TargetPath)" "$(ProjectDir)\_Mod\$(ProjectName).dll*"
 start XCOPY /Y /I /E "$(ProjectDir)_Mod\*.*" "$(BroforcePath)\Mods\BroMaker\"
-del "D:\Steam\steamapps\common\Broforce\Mods\Development - BroMaker\*.cache" 2&gt; nul || set errorlevel=0</PostBuildEvent>
+del "$(BroforcePath)\Mods\BroMaker\*.cache" 2&gt; nul || set errorlevel=0</PostBuildEvent>
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>if "$(CloseBroforceOnBuild)" == "true" (
+    taskkill /f /t /im Broforce_beta.exe 2&gt;nul || exit /b 0
+)</PreBuildEvent>
   </PropertyGroup>
 </Project>

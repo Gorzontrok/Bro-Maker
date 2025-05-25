@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\BroMakerLib.UnityMod\LocalBroforcePath.props" Condition="Exists('..\BroMakerLib.UnityMod\LocalBroforcePath.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -240,7 +241,12 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>start XCOPY /Y /R "$(TargetPath)" "$(SolutionDir)\BroMakerLib.UnityMod\_Mod\$(ProjectName).dll*"
-del "D:\Steam\steamapps\common\Broforce\Mods\Development - BroMaker\*.cache" 2&gt; nul || set errorlevel=0</PostBuildEvent>
+del "$(BroforcePath)\Mods\BroMaker\*.cache" 2&gt; nul || set errorlevel=0</PostBuildEvent>
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>if "$(CloseBroforceOnBuild)" == "true" (
+    taskkill /f /t /im Broforce_beta.exe 2&gt;nul || exit /b 0
+)</PreBuildEvent>
   </PropertyGroup>
 </Project>
