@@ -738,4 +738,44 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
         }
     }
 
+    // Fix grenades thrown by custom bros not having trails setup correctly
+    [HarmonyPatch( typeof( ProjectileController ), "SpawnGrenadeOverNetwork" )]
+    static class ProjectileController_SpawnGrenadeOverNetwork_Patch
+    {
+        public static bool Prefix( ref Grenade grenadePrefab, ref MonoBehaviour firedBy, ref float x, ref float y, ref float radius, ref float force, ref float xI, ref float yI, ref int playerNum, ref float lifeM, ref Grenade __result )
+        {
+            if ( !Main.enabled || !( firedBy is ICustomHero ) )
+            {
+                return true;
+            }
+
+            __result = ProjectileController.SpawnGrenadeLocally( grenadePrefab, firedBy, x, y, radius, force, xI, yI, playerNum, UnityEngine.Random.Range( 0, 10000 ) );
+            if ( lifeM < 1f )
+            {
+                __result.ReduceLife( lifeM );
+            }
+            return false;
+        }
+    }
+
+    // Fix airstrike projectiles not working when airstrike grenade is spawned locally
+    [HarmonyPatch( typeof( ProjectileController ), "SpawnProjectileOverNetwork" )]
+    static class ProjectileController_SpawnProjectileOverNetwork_Patch
+    {
+        public static bool Prefix( ref Projectile prefab, ref MonoBehaviour FiredBy, ref float x, ref float y, ref float xI, ref float yI, ref bool synced, ref int playerNum, ref bool AddTemporaryPlayerTarget, ref bool executeImmediately, ref float _zOffset, ref Projectile __result )
+        {
+            if ( !Main.enabled || !( FiredBy is ICustomHero ) )
+            {
+                return true;
+            }
+
+            __result = ProjectileController.SpawnProjectileLocally( prefab, FiredBy, x, y, xI, yI, playerNum, AddTemporaryPlayerTarget, _zOffset );
+            __result.SetSeed( UnityEngine.Random.Range( -10000, 10000 ) );
+            if ( AddTemporaryPlayerTarget )
+            {
+                HeroController.AddTemporaryPlayerTarget( playerNum, __result.transform );
+            }
+            return false;
+        }
+    }
 }

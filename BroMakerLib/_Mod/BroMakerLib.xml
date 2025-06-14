@@ -142,12 +142,6 @@
             <param name="directoryPath">Path to the directory containing the sound files</param>
             <param name="soundPaths">Sounds to load</param>
         </member>
-        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.SpawnGrenade(Grenade)">
-            <summary>
-            Throw grenade and handle direction if characters crouching
-            </summary>
-            <param name="grenade"></param>
-        </member>
         <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.UIOptions">
             <summary>
             Override this method to have UI options displayed for your custom hero underneath their name in the Custom Bros tab

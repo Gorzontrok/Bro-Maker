@@ -1,3 +1,7 @@
+v2.4.1
+Fix exception when preloading SpecialIcon sprites that are specified as an array.
+Fix black trails when custom bros throw grenades.
+
 v2.4.0
 Added options for:
     Changing text color in cutscenes.

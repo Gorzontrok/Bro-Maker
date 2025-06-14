@@ -1,14 +1,10 @@
-﻿using System;
-using BroMakerLib.Infos;
-using BroMakerLib.Loggers;
+﻿using BroMakerLib.Infos;
 using BroMakerLib.Loaders;
-using UnityEngine;
-using BroMakerLib.CustomObjects.Components;
-using BroMakerLib.Abilities;
+using BroMakerLib.Loggers;
 using HarmonyLib;
+using System;
 using System.Collections.Generic;
-using System.Reflection;
-using UnityModManagerNet;
+using UnityEngine;
 
 namespace BroMakerLib.CustomObjects.Bros
 {
@@ -276,26 +272,9 @@ namespace BroMakerLib.CustomObjects.Bros
         {
             this.gunSprite.transform.localPosition = new Vector3(xOffset + gunSpriteOffset.x, yOffset + gunSpriteOffset.y, -1f);
         }
-
         #endregion
 
         #region Custom Methods
-        /// <summary>
-        /// Throw grenade and handle direction if characters crouching
-        /// </summary>
-        /// <param name="grenade"></param>
-        protected virtual void SpawnGrenade(Grenade grenade)
-        {
-            if (down && IsOnGround() && ducking)
-            {
-                ProjectileController.SpawnGrenadeOverNetwork(grenade, this, X + Mathf.Sign(transform.localScale.x) * 6f, Y + 3f, 0.001f, 0.011f, Mathf.Sign(transform.localScale.x) * 30f, 70f, base.playerNum);
-            }
-            else
-            {
-                ProjectileController.SpawnGrenadeOverNetwork(grenade, this, X + Mathf.Sign(transform.localScale.x) * 8f, Y + 8f, 0.001f, 0.011f, Mathf.Sign(transform.localScale.x) * 200f, 150f, base.playerNum);
-            }
-        }
-
 		/// <summary>
 		/// Override this method to have UI options displayed for your custom hero underneath their name in the Custom Bros tab
 		/// </summary>
