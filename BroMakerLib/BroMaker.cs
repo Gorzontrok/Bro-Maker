@@ -1,14 +1,15 @@
-﻿using System;
-using System.Reflection;
-using HarmonyLib;
-using UnityEngine;
-using System.IO;
-using BroMakerLib.Loggers;
-using BroMakerLib.Storages;
-using BroMakerLib.ModManager;
-using BroMakerLib.CustomObjects.Bros;
-using System.Collections.Generic;
+﻿using BroMakerLib.CustomObjects.Bros;
 using BroMakerLib.Infos;
+using BroMakerLib.Loggers;
+using BroMakerLib.ModManager;
+using BroMakerLib.Storages;
+using HarmonyLib;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using UnityEngine;
 
 namespace BroMakerLib
 {
@@ -93,9 +94,19 @@ namespace BroMakerLib
                     spritePaths.Add(info.afterAwake["gunSprite"] as string);
                 }
 
-                if ( info.parameters.ContainsKey("SpecialIcons") )
+                if ( info.parameters.ContainsKey( "SpecialIcons" ) )
                 {
-                    spritePaths.Add(info.parameters["SpecialIcons"] as string);
+                    if ( info.parameters["SpecialIcons"] is string path )
+                    {   
+                        spritePaths.Add( path );
+                    }
+                    else if ( info.parameters["SpecialIcons"] is JArray paths )
+                    {
+                        for ( int j = 0; j < paths.Count; ++j )
+                        {
+                            spritePaths.Add( paths[j].ToObject<string>() );
+                        }
+                    }
                 }
                 if ( info.parameters.ContainsKey("Avatar") )
                 {
