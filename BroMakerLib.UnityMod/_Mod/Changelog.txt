@@ -1,8 +1,8 @@
 v2.5.0
 Added sounds method for SwordHero
-Added virtual tag to 'SwordHero.DeflectProjectiles'
+Added the 'virtual' tag to 'SwordHero.DeflectProjectiles'
 Removed the color tag in the mod name
-Fixed some errors insode 'ResourcesController'
+Fixed some errors inside 'ResourcesController'
 Fixed exception when preloading SpecialIcon sprites that are specified as an array.
 Fixed black trails when custom bros throw grenades.
 Improved error messages.
