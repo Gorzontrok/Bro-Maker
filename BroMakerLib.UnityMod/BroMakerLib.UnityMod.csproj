@@ -98,7 +98,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>start XCOPY /Y /R "$(TargetPath)" "$(ProjectDir)\_Mod\$(ProjectName).dll*"
-start XCOPY /Y /I /E "$(ProjectDir)_Mod\*.*" "$(BroforcePath)\Mods\BroMaker\"
+start XCOPY /Y /I /E "$(ProjectDir)\_Mod\*.*" "$(BroforcePath)\Mods\BroMaker\"
 del "$(BroforcePath)\Mods\BroMaker\*.cache" 2&gt; nul || set errorlevel=0</PostBuildEvent>
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
