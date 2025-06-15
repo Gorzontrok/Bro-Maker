@@ -2,11 +2,11 @@
   "Id": "BroMaker",
   "DisplayName": "BroMaker",
   "Author": "Gorzontrok",
-  "Version": "2.4.0",
+  "Version": "2.5.0",
   "Requirements": [ "RocketLib" ],
   "LoadAfter": [ "RocketLib" ],
   "AssemblyName": "BroMakerLib.UnityMod.dll",
   "EntryMethod": "BroMakerLib.UnityMod.Main.Load",
-  "Repository": "https://raw.githubusercontent.com/Gorzon38/Bro-Maker/main/Repository.json"
+  "Repository": "https://raw.githubusercontent.com/Gorzontrok/Bro-Maker/main/Repository.json"
 
 }

@@ -1,3 +1,9 @@
+v2.5.0
+Added sounds method for SwordHero
+Added virtual tag to 'SwordHero.DeflectProjectiles'
+Removed the color tag in the mod name
+Fixed some errors insode 'ResourcesController'
+
 v2.4.0
 Added options for:
     Changing text color in cutscenes.
