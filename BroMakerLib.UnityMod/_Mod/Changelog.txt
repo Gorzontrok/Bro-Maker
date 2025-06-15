@@ -3,6 +3,9 @@ Added sounds method for SwordHero
 Added virtual tag to 'SwordHero.DeflectProjectiles'
 Removed the color tag in the mod name
 Fixed some errors insode 'ResourcesController'
+Fixed exception when preloading SpecialIcon sprites that are specified as an array.
+Fixed black trails when custom bros throw grenades.
+Improved error messages.
 
 v2.4.0
 Added options for:
@@ -47,7 +50,6 @@ Fixed all of the warnings when presets are reloaded
 Added mods to loads custom objects
 Reworked UI
 Fixed Avatar being one pixel too high
-
 
 v2.2.2:
 Fixed boondock bro being left behind when spawning a custom bro.
