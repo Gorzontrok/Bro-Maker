@@ -149,6 +149,11 @@ namespace BroMakerLib.CustomObjects.Projectiles
             }
         }
 
+        /// <summary>
+        /// Creates a prefab with the default required components for a Projectile.
+        /// </summary>
+        /// <typeparam name="T">Type of your custom projectile class.</typeparam>
+        /// <returns>The prefab of your custom projectile.</returns>
         public static T CreatePrefab<T>() where T : CustomProjectile
         {
             T prefab = new GameObject( typeof( T ).Name, new Type[] { typeof( Transform ), typeof( MeshFilter ), typeof( MeshRenderer ), typeof( SpriteSM ), typeof( T ) } ).GetComponent<T>();
@@ -166,7 +171,7 @@ namespace BroMakerLib.CustomObjects.Projectiles
         /// <param name="yI">The initial Y velocity of the projectile.</param>
         /// <param name="playerNum">The player number who owns this projectile.</param>
         /// <param name="_zOffset">The Z-axis offset for the projectile spawn position.</param>
-        /// <returns></returns>
+        /// <returns>The spawned Projectile instance.</returns>
         public virtual Projectile SpawnProjectileLocally( MonoBehaviour FiredBy, float x, float y, float xI, float yI, int playerNum, float _zOffset = 0f )
         {
             Projectile projectile = ProjectileController.SpawnProjectileLocally( this, FiredBy, x, y, xI, yI, playerNum, false, _zOffset );

@@ -139,6 +139,11 @@ namespace BroMakerLib.CustomObjects.Projectiles
             }
         }
 
+        /// <summary>
+        /// Creates a prefab with the default required components for a Grenade.
+        /// </summary>
+        /// <typeparam name="T">Type of your custom grenade class.</typeparam>
+        /// <returns>The prefab of your custom grenade.</returns>
         public static T CreatePrefab<T>() where T : CustomGrenade
         {
             T prefab = new GameObject( typeof( T ).Name, new Type[] { typeof( Transform ), typeof( MeshFilter ), typeof( MeshRenderer ), typeof( SpriteSM ), typeof( T ) } ).GetComponent<T>();
@@ -159,7 +164,6 @@ namespace BroMakerLib.CustomObjects.Projectiles
         /// <param name="playerNum">The player number who owns this grenade.</param>
         /// <param name="seed">Random seed for deterministic grenade behavior. Defaults to UnityEngine.Random.Range( 0, 10000 )</param>
         /// <returns>The spawned Grenade instance.</returns>
-        /// <returns></returns>
         public virtual Grenade SpawnGrenadeLocally( MonoBehaviour firedBy, float x, float y, float radius, float force, float xI, float yI, int playerNum, int seed = -1 )
         {
             if ( seed == -1 )

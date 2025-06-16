@@ -242,6 +242,13 @@
             If you don't put any code in your Awake() function besides base.Awake(), the sprite loading will attempt to use the defaults to load your sprite.
             </summary>
         </member>
+        <member name="M:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.CreatePrefab``1">
+            <summary>
+            Creates a prefab with the default required components for a Grenade.
+            </summary>
+            <typeparam name="T">Type of your custom grenade class.</typeparam>
+            <returns>The prefab of your custom grenade.</returns>
+        </member>
         <member name="M:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.SpawnGrenadeLocally(UnityEngine.MonoBehaviour,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Int32,System.Int32)">
             <summary>
             Spawns a grenade locally and enables it after spawning.
@@ -256,7 +263,6 @@
             <param name="playerNum">The player number who owns this grenade.</param>
             <param name="seed">Random seed for deterministic grenade behavior. Defaults to UnityEngine.Random.Range( 0, 10000 )</param>
             <returns>The spawned Grenade instance.</returns>
-            <returns></returns>
         </member>
         <member name="T:BroMakerLib.CustomObjects.Projectiles.CustomProjectile">
             <summary>
@@ -340,6 +346,13 @@
             If you don't put any code in your Awake() function besides base.Awake(), the sprite loading will attempt to use the defaults to load your sprite.
             </summary>
         </member>
+        <member name="M:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.CreatePrefab``1">
+            <summary>
+            Creates a prefab with the default required components for a Projectile.
+            </summary>
+            <typeparam name="T">Type of your custom projectile class.</typeparam>
+            <returns>The prefab of your custom projectile.</returns>
+        </member>
         <member name="M:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.SpawnProjectileLocally(UnityEngine.MonoBehaviour,System.Single,System.Single,System.Single,System.Single,System.Int32,System.Single)">
             <summary>
             Spawns a projectile locally and enables it after spawning.
@@ -351,7 +364,7 @@
             <param name="yI">The initial Y velocity of the projectile.</param>
             <param name="playerNum">The player number who owns this projectile.</param>
             <param name="_zOffset">The Z-axis offset for the projectile spawn position.</param>
-            <returns></returns>
+            <returns>The spawned Projectile instance.</returns>
         </member>
         <member name="M:BroMakerLib.ICustomHeroExtensions.AssignNullVariables(BroMakerLib.CustomObjects.ICustomHero,BroBase)">
             <summary>
