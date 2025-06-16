@@ -144,11 +144,9 @@ namespace BroMakerLib.UnityMod
 
             // New UI
             GUILayout.BeginVertical();
-            _spawnerScrollView = GUILayout.BeginScrollView(_spawnerScrollView, GUILayout.Height(50 * Mathf.Min(Mods.Count + 3, 10)));
             if (Mods.Count <= 0 && IncompatibleMods.Count <= 0)
             {
                 GUILayout.Label("No mod installed.");
-                GUILayout.EndScrollView();
                 GUILayout.EndVertical();
                 return;
             }
@@ -161,6 +159,8 @@ namespace BroMakerLib.UnityMod
             GUILayout.Label("BroMaker Version", GUILayout.Width(200));
             GUILayout.EndHorizontal();
             GUILayout.Space(15);
+            if (Mods.Count > 8)
+                _spawnerScrollView = GUILayout.BeginScrollView(_spawnerScrollView, GUILayout.Height(320));
 
             int broIndex = 0;
             int modCount = 0;
@@ -304,7 +304,7 @@ namespace BroMakerLib.UnityMod
                         }
                     }
                     GUILayout.Space(50);
-                    
+
                     GUILayout.Label(mod.Author, GUILayout.Width(200));
                     GUILayout.Label(mod.Version, GUILayout.Width(200));
                     GUILayout.Label(mod.BroMakerVersion, _incompatibleStyle, GUILayout.Width(200));
@@ -319,13 +319,14 @@ namespace BroMakerLib.UnityMod
 
                         GUILayout.EndVertical();
                     }
-                        
+
 
                     ++modCount;
                 }
 
                 GUILayout.EndVertical();
-                GUILayout.EndScrollView();
+                if (Mods.Count > 8)
+                    GUILayout.EndScrollView();
             }
             catch (Exception e)
             {
