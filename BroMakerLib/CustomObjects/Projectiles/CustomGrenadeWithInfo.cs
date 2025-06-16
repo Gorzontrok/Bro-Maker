@@ -7,10 +7,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace BroMakerLib.CustomObjects.Grenades
+namespace BroMakerLib.CustomObjects.Projectiles
 {
-    [HeroPreset(nameof(CustomGrenade))]
-    public class CustomGrenade : Grenade
+    [HeroPreset(nameof(CustomGrenadeWithInfo))]
+    public class CustomGrenadeWithInfo : Grenade
     {
         public CustomGrenadeInfo info { get; set; }
 

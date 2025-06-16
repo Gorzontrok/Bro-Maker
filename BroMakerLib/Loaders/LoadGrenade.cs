@@ -1,6 +1,6 @@
 ﻿using BroMakerLib.Attributes;
 using BroMakerLib.CustomObjects;
-using BroMakerLib.CustomObjects.Grenades;
+using BroMakerLib.CustomObjects.Projectiles;
 using BroMakerLib.Infos;
 using BroMakerLib.Loggers;
 using System;
@@ -71,7 +71,7 @@ namespace BroMakerLib.Loaders
             Type preset = PresetManager.GetGrenadePreset(info.Preset);
             if (preset == null)
                 throw new Exception($"Preset {info.Preset} not founded");
-            if (!typeof(CustomGrenade).IsAssignableFrom(preset))
+            if (!typeof(CustomGrenadeWithInfo).IsAssignableFrom(preset))
                 throw new Exception($"Preset {info.Preset} don't inherted from 'CustomGrenade' class.");
 
             BMLogger.Debug("LoadGrenade.WithInfo: Start Creation Process.");

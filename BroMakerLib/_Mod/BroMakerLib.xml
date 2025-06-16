@@ -172,6 +172,187 @@
             <param name="directoryPath">Path to the directory containing the sound files</param>
             <param name="soundPaths">Sounds to load</param>
         </member>
+        <member name="T:BroMakerLib.CustomObjects.Projectiles.CustomGrenade">
+            <summary>
+            CustomGrenade has all the default functionality of the Grenade class, with extra methods to make creating custom grenades easier
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.spriteAutoLoad">
+            <summary>
+            Override Awake() and set this value to false to prevent the sprite from being loaded automatically
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.storedSprite">
+            <summary>
+            Stores the sprite that was loaded if automatic loading is enabled
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.spriteFolder">
+            <summary>
+            Folder that contains your sprite image file. 
+            Defaults to "projectiles". 
+            Set this to "" if your grenades are in the same folder as your .dll
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.spriteFileName">
+            <summary>
+            Name of your image file that will be automatically loaded.
+            Defaults to "nameofyourclass.png".
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.spriteAssemblyPath">
+            <summary>
+            Automatically gets set to the path to the folder your grenade's assembly is in.
+            Don't set this manually.
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.spriteDirectoryPath">
+            <summary>
+            Automatically gets set to the path to the folder your sprite is in.
+            Don't set this manually.
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.spritePixelDimensions">
+            <summary>
+            Size of one frame of your grenade. 
+            By default this will be the whole image, but if your grenade has multiple frames, you will want to change this.
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.spriteLowerLeftPixel">
+            <summary>
+            Sets the lower left corner of your sprite.
+            Defaults to (0, heightofyourimage), which will include the whole image.
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.spriteOffset">
+            <summary>
+            Sets the offset of your sprite from the game object.
+            Defaults to (0, 0, 0).
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.defaultSoundHolder">
+            <summary>
+            Sets the SoundHolder of the grenade.
+            Defaults to Rambro's Grenade's SoundHolder.
+            </summary>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.Awake">
+            <summary>
+            You must override this function for automatic sprite loading to work.
+            If you don't put any code in your Awake() function besides base.Awake(), the sprite loading will attempt to use the defaults to load your sprite.
+            </summary>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.SpawnGrenadeLocally(UnityEngine.MonoBehaviour,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Int32,System.Int32)">
+            <summary>
+            Spawns a grenade locally and enables it after spawning.
+            </summary>
+            <param name="firedBy">The MonoBehaviour that threw this grenade.</param>
+            <param name="x">The X position to spawn the grenade.</param>
+            <param name="y">The Y position to spawn the grenade.</param>
+            <param name="radius">The explosion radius of the grenade (passed to SetupGrenade but actual usage depends on grenade type).</param>
+            <param name="force">The explosion force of the grenade (passed to SetupGrenade but actual usage depends on grenade type).</param>
+            <param name="xI">The initial X velocity of the grenade.</param>
+            <param name="yI">The initial Y velocity of the grenade.</param>
+            <param name="playerNum">The player number who owns this grenade.</param>
+            <param name="seed">Random seed for deterministic grenade behavior. Defaults to UnityEngine.Random.Range( 0, 10000 )</param>
+            <returns>The spawned Grenade instance.</returns>
+            <returns></returns>
+        </member>
+        <member name="T:BroMakerLib.CustomObjects.Projectiles.CustomProjectile">
+            <summary>
+            CustomProjectile has all the default functionality of the Projectile class, with extra methods to make creating custom projectiles easier
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.spriteAutoLoad">
+            <summary>
+            Override Awake() and set this value to false to prevent the sprite from being loaded automatically
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.sprite">
+            <summary>
+            Stores the sprite that was loaded if automatic loading is enabled
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.spriteFolder">
+            <summary>
+            Folder that contains your sprite image file. 
+            Defaults to "projectiles". 
+            Set this to "" if your projectiles are in the same folder as your .dll
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.spriteFileName">
+            <summary>
+            Name of your image file that will be automatically loaded.
+            Defaults to "nameofyourclass.png".
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.spriteAssemblyPath">
+            <summary>
+            Automatically gets set to the path to the folder your projectile's assembly is in.
+            Don't set this manually.
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.spriteDirectoryPath">
+            <summary>
+            Automatically gets set to the path to the folder your sprite is in.
+            Don't set this manually.
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.spritePixelDimensions">
+            <summary>
+            Size of one frame of your projectile. 
+            By default this will be the whole image, but if your projectile has multiple frames, you will want to change this.
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.spriteLowerLeftPixel">
+            <summary>
+            Sets the lower left corner of your sprite.
+            Defaults to (0, heightofyourimage), which will include the whole image.
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.spriteWidth">
+            <summary>
+            Controls how wide your sprite appears in-game. This can be set to anything, regardless of the actual image size.
+            Defaults to the same width as your image file.
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.spriteHeight">
+            <summary>
+            Controls how tall your sprite appears in-game. This can be set to anything, regardless of the actual image size.
+            Defaults to the same height as your image file.
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.spriteOffset">
+            <summary>
+            Sets the offset of your sprite from the game object.
+            Defaults to (0, 0, 0).
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.defaultSoundHolder">
+            <summary>
+            Sets the SoundHolder of the projectile.
+            Defaults to Rambro's Bullet's SoundHolder.
+            </summary>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.Awake">
+            <summary>
+            You must override this function for automatic sprite loading to work.
+            If you don't put any code in your Awake() function besides base.Awake(), the sprite loading will attempt to use the defaults to load your sprite.
+            </summary>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.SpawnProjectileLocally(UnityEngine.MonoBehaviour,System.Single,System.Single,System.Single,System.Single,System.Int32,System.Single)">
+            <summary>
+            Spawns a projectile locally and enables it after spawning.
+            </summary>
+            <param name="FiredBy">The MonoBehaviour that fired this projectile.</param>
+            <param name="x">The X position to spawn the projectile.</param>
+            <param name="y">The Y position to spawn the projectile.</param>
+            <param name="xI">The initial X velocity of the projectile.</param>
+            <param name="yI">The initial Y velocity of the projectile.</param>
+            <param name="playerNum">The player number who owns this projectile.</param>
+            <param name="_zOffset">The Z-axis offset for the projectile spawn position.</param>
+            <returns></returns>
+        </member>
         <member name="M:BroMakerLib.ICustomHeroExtensions.AssignNullVariables(BroMakerLib.CustomObjects.ICustomHero,BroBase)">
             <summary>
             Before base.Awake()

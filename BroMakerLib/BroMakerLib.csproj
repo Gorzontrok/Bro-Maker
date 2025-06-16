@@ -126,6 +126,8 @@
     <Compile Include="Attributes\CustomObjectPresetAttribute.cs" />
     <Compile Include="BroMakerUtilities.cs" />
     <Compile Include="CustomObjects\Bros\CustomHeroExtended.cs" />
+    <Compile Include="CustomObjects\Projectiles\CustomGrenade.cs" />
+    <Compile Include="CustomObjects\Projectiles\CustomProjectile.cs" />
     <Compile Include="CutsceneSpriteAnimatedJsonConverter.cs" />
     <Compile Include="Cutscenes\CutsceneIntroExtra.cs" />
     <Compile Include="ModManager\BroMakerMod.cs" />
@@ -133,7 +135,7 @@
     <Compile Include="CustomObjects\Bros\SwordHero.cs" />
     <Compile Include="Cutscenes\CustomCutsceneController.cs" />
     <Compile Include="CustomObjects\Components\CharacterExtended.cs" />
-    <Compile Include="CustomObjects\Grenades\CustomGrenade.cs" />
+    <Compile Include="CustomObjects\Projectiles\CustomGrenadeWithInfo.cs" />
     <Compile Include="CustomObjects\ICustomObjectFromFile.cs" />
     <Compile Include="Cutscenes\CustomIntroCutscene.cs" />
     <Compile Include="Cutscenes\Patches.cs" />
