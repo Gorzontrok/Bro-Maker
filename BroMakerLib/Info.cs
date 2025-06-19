@@ -6,7 +6,7 @@ namespace BroMakerLib
     {
         public const string NAME = nameof(BroMakerLib);
         public const string AUTHOR = "Gorzontrok";
-        public const string VERSION = "2.5.0";
+        public const string VERSION = "2.6.0";
         // Used to show a warning that if bros are below this version they may experience bugs
         public const string SUGGESTEDMINIMUMVERSION = "2.4.0";
         // Used for when BroMaker makes breaking changes that will require Bro mods to be updated

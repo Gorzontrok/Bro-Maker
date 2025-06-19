@@ -89,7 +89,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="_Mod\BroMakerData.mod.json" />
     <None Include="_Mod\Changelog.txt" />
   </ItemGroup>
   <ItemGroup>
