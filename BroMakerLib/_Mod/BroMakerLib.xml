@@ -497,7 +497,7 @@
         <member name="M:BroMakerLib.ResourcesController.GetAudioClip(System.String,System.String)">
             <summary>
             Creates an AudioClip from an audio file.
-            Loads AudioClip from cache if created previously. Note that the same cached AudioClip can't be played several times simultaneously.
+            Loads AudioClip from cache if created previously.
             IMPORTANT: MP3 files will not load.
             </summary>
             <param name="path">Path to an audio file</param>
@@ -507,7 +507,7 @@
         <member name="M:BroMakerLib.ResourcesController.GetAudioClip(System.String)">
             <summary>
             Creates an AudioClip from an audio file.
-            Loads AudioClip from cache if created previously. Note that the same cached AudioClip can't be played several times simultaneously.
+            Loads AudioClip from cache if created previously.
             IMPORTANT: MP3 files will not load.
             </summary>
             <param name="filePath">Path to an audio file</param>

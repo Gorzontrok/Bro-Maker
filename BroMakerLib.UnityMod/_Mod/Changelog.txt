@@ -1,5 +1,6 @@
 v2.6.0
 Remove BroMakerData.mod.json file.
+Fixed issue where audio clips couldn't be played multiple times simultaneously.
 
 v2.5.0
 Added sounds method for SwordHero
