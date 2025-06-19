@@ -93,7 +93,6 @@ namespace BroMakerLib.Loaders
 
                 GameObject original = null;
 
-                var originalGO = GameObject.Find(GAMEOBJECT_PREFIX + customBroInfo.name);
                 if (prefabIndex.ContainsKey(customBroInfo.name))
                 {
                     int index = prefabIndex[customBroInfo.name];
@@ -384,6 +383,9 @@ namespace BroMakerLib.Loaders
             GameObject inst  = UnityEngine.Object.Instantiate(prefab, Vector3.zero, Quaternion.identity);
             prefab.SetActive(true);
 
+            // Ensure prefab is only created once
+            UnityEngine.Object.DontDestroyOnLoad( inst );
+
             inst.AddComponent(type);
             inst.name = GAMEOBJECT_PREFIX + currentInfo.name;
             if (inst == null)
@@ -407,11 +409,6 @@ namespace BroMakerLib.Loaders
                 prefabIndex[currentInfo.name] = InstantiationController.GetPrefabIndex(gameObject);
             else
                 prefabIndex.Add(currentInfo.name, InstantiationController.GetPrefabIndex(gameObject));
-        }
-
-        private static GameObject GetPrefab(string resourceName)
-        {
-            return InstantiationController.GetPrefabFromResourceName(resourceName);
         }
     }
 }
