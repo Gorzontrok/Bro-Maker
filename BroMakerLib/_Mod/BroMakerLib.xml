@@ -192,6 +192,11 @@
             Stores all custom projectile prefabs that have been created to avoid having to recreate them.
             </summary>
         </member>
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.RanSetup">
+            <summary>
+            Tracks whether the prefab setup has been run or not.
+            </summary>
+        </member>
         <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.spriteFolder">
             <summary>
             Folder that contains your sprite image file. 
@@ -260,6 +265,12 @@
             If you don't put any code in your Awake() function besides base.Awake(), the sprite loading will attempt to use the defaults to load your sprite.
             </summary>
         </member>
+        <member name="M:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.PrefabSetup">
+            <summary>
+            Runs one time after Awake() is called when the prefab is being created.
+            Allows you to setup and store variables in the prefab to be reused by copies of this projectile.
+            </summary>
+        </member>
         <member name="M:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.CreatePrefab``1">
             <summary>
             Creates a prefab with the default required components for a Grenade.
@@ -300,6 +311,11 @@
         <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.CustomProjectilePrefabs">
             <summary>
             Stores all custom projectile prefabs that have been created to avoid having to recreate them.
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.RanSetup">
+            <summary>
+            Tracks whether the prefab setup has been run or not.
             </summary>
         </member>
         <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.spriteFolder">
@@ -380,6 +396,12 @@
             <summary>
             You must override this function for automatic sprite loading to work.
             If you don't put any code in your Awake() function besides base.Awake(), the sprite loading will attempt to use the defaults to load your sprite.
+            </summary>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.PrefabSetup">
+            <summary>
+            Runs one time after Awake() is called when the prefab is being created.
+            Allows you to setup and store variables in the prefab to be reused by copies of this projectile.
             </summary>
         </member>
         <member name="M:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.CreatePrefab``1">

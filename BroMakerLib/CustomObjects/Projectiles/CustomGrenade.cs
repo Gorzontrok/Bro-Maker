@@ -30,6 +30,11 @@ namespace BroMakerLib.CustomObjects.Projectiles
         public static Dictionary<Type, CustomGrenade> CustomGrenadePrefabs = new Dictionary<Type, CustomGrenade>();
 
         /// <summary>
+        /// Tracks whether the prefab setup has been run or not.
+        /// </summary>
+        public bool RanSetup = false;
+
+        /// <summary>
         /// Folder that contains your sprite image file. 
         /// Defaults to "projectiles". 
         /// Set this to "" if your grenades are in the same folder as your .dll
@@ -147,7 +152,10 @@ namespace BroMakerLib.CustomObjects.Projectiles
 
                 if ( this.soundHolder == null )
                 {
-                    this.soundHolder = this.defaultSoundHolder ?? HeroController.GetHeroPrefab( HeroType.Rambro ).specialGrenade.soundHolder;
+                    this.soundHolder = UnityEngine.Object.Instantiate( this.defaultSoundHolder ?? HeroController.GetHeroPrefab( HeroType.Rambro ).specialGrenade.soundHolder );
+                    this.soundHolder.gameObject.SetActive( false );
+                    this.soundHolder.gameObject.name = "SoundHolder " + className;
+                    UnityEngine.Object.DontDestroyOnLoad( this.soundHolder );
                 }
 
                 base.Awake();
@@ -156,6 +164,14 @@ namespace BroMakerLib.CustomObjects.Projectiles
             {
                 BMLogger.Log( className + " threw an exception in awake: " + exception.ToString() );
             }
+        }
+
+        /// <summary>
+        /// Runs one time after Awake() is called when the prefab is being created.
+        /// Allows you to setup and store variables in the prefab to be reused by copies of this projectile.
+        /// </summary>
+        public virtual void PrefabSetup()
+        {
         }
 
         /// <summary>
@@ -172,6 +188,8 @@ namespace BroMakerLib.CustomObjects.Projectiles
             else
             {
                 T prefab = new GameObject( typeof( T ).Name, new Type[] { typeof( Transform ), typeof( MeshFilter ), typeof( MeshRenderer ), typeof( SpriteSM ), typeof( T ) } ).GetComponent<T>();
+                prefab.PrefabSetup();
+                prefab.RanSetup = true;
                 prefab.enabled = false;
                 UnityEngine.Object.DontDestroyOnLoad( prefab.gameObject );
                 CustomGrenadePrefabs.Add( typeof( T ), prefab );
