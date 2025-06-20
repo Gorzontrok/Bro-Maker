@@ -103,6 +103,12 @@ namespace BroMakerLib.CustomObjects.Projectiles
         public Vector3 spriteOffset = Vector3.zero;
 
         /// <summary>
+        /// Sets the sprite color.
+        /// Defaults to white.
+        /// </summary>
+        public Color spriteColor = Color.white;
+
+        /// <summary>
         /// Sets the SoundHolder of the projectile.
         /// Defaults to Rambro's Bullet's SoundHolder.
         /// </summary>
@@ -158,6 +164,7 @@ namespace BroMakerLib.CustomObjects.Projectiles
                     this.sprite.height = this.spriteHeight;
                     this.sprite.offset = this.spriteOffset;
                     this.sprite.plane = SpriteBase.SPRITE_PLANE.XY;
+                    this.sprite.color = Color.white;
                 }
 
                 if ( this.soundHolder == null )

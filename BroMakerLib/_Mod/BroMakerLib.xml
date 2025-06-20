@@ -253,6 +253,12 @@
             Defaults to (0, 0, 0).
             </summary>
         </member>
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.spriteColor">
+            <summary>
+            Sets the sprite color.
+            Defaults to white.
+            </summary>
+        </member>
         <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.defaultSoundHolder">
             <summary>
             Sets the SoundHolder of the grenade.
@@ -384,6 +390,12 @@
             <summary>
             Sets the offset of your sprite from the game object.
             Defaults to (0, 0, 0).
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.spriteColor">
+            <summary>
+            Sets the sprite color.
+            Defaults to white.
             </summary>
         </member>
         <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.defaultSoundHolder">
