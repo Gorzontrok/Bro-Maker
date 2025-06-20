@@ -200,7 +200,7 @@ namespace BroMakerLib.CustomObjects.Projectiles
         /// <returns>The prefab of your custom projectile.</returns>
         public static T CreatePrefab<T>() where T : CustomProjectile
         {
-            if ( CustomProjectilePrefabs.TryGetValue(typeof(T), out CustomProjectile customProjectile ) )
+            if ( CustomProjectilePrefabs.TryGetValue(typeof(T), out CustomProjectile customProjectile ) && customProjectile != null )
             {
                 return customProjectile as T;
             }

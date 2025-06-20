@@ -188,7 +188,7 @@ namespace BroMakerLib.CustomObjects.Projectiles
         /// <returns>The prefab of your custom grenade.</returns>
         public static T CreatePrefab<T>() where T : CustomGrenade
         {
-            if ( CustomGrenadePrefabs.TryGetValue( typeof( T ), out CustomGrenade customGrenade ) )
+            if ( CustomGrenadePrefabs.TryGetValue( typeof( T ), out CustomGrenade customGrenade ) && customGrenade != null )
             {
                 return customGrenade as T;
             }
