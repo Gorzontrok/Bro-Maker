@@ -79,6 +79,7 @@ namespace BroMakerLib.Loaders
 
 
                 Vector3 previousPosition = Vector3.zero;
+                TestVanDammeAnim previousCharacter = player.character;
                 ReactionBubble previousCharacterBubble = null;
                 Traverse previousCharacterTraverse = null;
                 if (player.character != null && player.character.IsAlive())
@@ -137,6 +138,12 @@ namespace BroMakerLib.Loaders
                 Traverse high5BubbleTrav = Traverse.Create(hero.high5Bubble);
                 hero.high5Bubble.gameObject.SetActive(true);
                 high5BubbleTrav.Field("yStart").SetValue(hero.high5Bubble.transform.localPosition.y);
+
+                // Destroy character we replaced
+                if ( previousCharacter != null )
+                {
+                    UnityEngine.Object.Destroy( previousCharacter.gameObject );
+                }
 
                 BMLogger.Debug("Spawner: Finished AfterInstantiation.");
 
