@@ -172,6 +172,11 @@
             <param name="directoryPath">Path to the directory containing the sound files</param>
             <param name="soundPaths">Sounds to load</param>
         </member>
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.PrefabSetup">
+            <summary>
+            This method is called once after the prefab is created.
+            </summary>
+        </member>
         <member name="T:BroMakerLib.CustomObjects.Projectiles.CustomGrenade">
             <summary>
             CustomGrenade has all the default functionality of the Grenade class, with extra methods to make creating custom grenades easier

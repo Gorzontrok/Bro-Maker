@@ -29,9 +29,9 @@ namespace BroMakerLib
             // Global
             heroCharacter.SetFieldValue("sprite", heroCharacter.Sprite());
             heroCharacter.gunSprite = character.gunSprite;
-            heroCharacter.soundHolder = character.soundHolder;
-            heroCharacter.soundHolderFootSteps = character.soundHolderFootSteps;
-            heroCharacter.soundHolderVoice = character.soundHolderVoice;
+            heroCharacter.soundHolder = heroCharacter.soundHolder ?? character.soundHolder;
+            heroCharacter.soundHolderFootSteps = heroCharacter.soundHolderFootSteps ?? character.soundHolderFootSteps;
+            heroCharacter.soundHolderVoice = heroCharacter.soundHolderVoice ??character.soundHolderVoice;
             heroCharacter.parachute = character.parachute;
             heroCharacter.gibs = character.gibs;
             heroCharacter.player1Bubble = character.player1Bubble;

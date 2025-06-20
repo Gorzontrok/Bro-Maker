@@ -372,7 +372,7 @@ namespace BroMakerLib.Loaders
         }
         private static TestVanDammeAnim GetHeroPrefab(HeroType heroType) => HeroController.GetHeroPrefab(heroType);
 
-        private static HeroType GetBaseHeroTypeOfPreset(Type type)
+        public static HeroType GetBaseHeroTypeOfPreset(Type type)
         {
             var attributes = type.GetCustomAttributes(typeof(HeroPresetAttribute), true);
             if (attributes.IsNotNullOrEmpty())
@@ -399,6 +399,8 @@ namespace BroMakerLib.Loaders
                 throw new Exception("CreateOriginal: Instantiate has failed is null");
             BMLogger.Debug("CreateOriginal: Has Instantiate Hero.");
             inst.SetActive(false);
+
+            inst.GetComponent<CustomHero>().PrefabSetup();
 
             AddObjectToPrefabList(inst);
             BMLogger.Debug("CreateOriginal: inst added to list");

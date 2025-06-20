@@ -323,6 +323,28 @@ namespace BroMakerLib.CustomObjects.Bros
 				ResourcesController.GetAudioClip(directoryPath, soundPaths[i]);
 			}
 		}
+
+		/// <summary>
+		/// This method is called once after the prefab is created.
+		/// </summary>
+		public virtual void PrefabSetup()
+		{
+			HeroType baseHeroType = LoadHero.GetBaseHeroTypeOfPreset( this.GetType() );
+            this.soundHolder = UnityEngine.Object.Instantiate( HeroController.GetHeroPrefab( baseHeroType ).soundHolder );
+            this.soundHolder.gameObject.SetActive( false );
+            this.soundHolder.gameObject.name = "SoundHolder " + this.name;
+            UnityEngine.Object.DontDestroyOnLoad( this.soundHolder );
+
+            this.soundHolderVoice = UnityEngine.Object.Instantiate( (HeroController.GetHeroPrefab( baseHeroType ) as BroBase).soundHolderVoice );
+            this.soundHolderVoice.gameObject.SetActive( false );
+            this.soundHolderVoice.gameObject.name = "SoundHolderVoice " + this.name;
+            UnityEngine.Object.DontDestroyOnLoad( this.soundHolderVoice );
+
+            this.soundHolderFootSteps = UnityEngine.Object.Instantiate( HeroController.GetHeroPrefab( baseHeroType ).soundHolderFootSteps );
+            this.soundHolderFootSteps.gameObject.SetActive( false );
+            this.soundHolderFootSteps.gameObject.name = "SoundHolderFootSteps " + this.name;
+            UnityEngine.Object.DontDestroyOnLoad( this.soundHolderFootSteps );
+        }
         #endregion
     }
 }
