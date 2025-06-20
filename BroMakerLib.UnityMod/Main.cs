@@ -66,6 +66,12 @@ namespace BroMakerLib.UnityMod
                 Main.Log("Error while intializing the GUI.\n" + ex);
             }
 
+            // Log missed messages
+            for ( int i = 0; i < BMLogger.logs.Count; ++i )
+            {
+                Main.Log( BMLogger.logs[i], BroMakerLib.Loggers.Log.PREFIX );
+            }
+
             return true;
         }
 
