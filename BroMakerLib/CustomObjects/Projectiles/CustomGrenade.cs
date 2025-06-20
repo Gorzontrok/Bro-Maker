@@ -25,6 +25,11 @@ namespace BroMakerLib.CustomObjects.Projectiles
         public SpriteSM storedSprite = null;
 
         /// <summary>
+        /// Stores all custom projectile prefabs that have been created to avoid having to recreate them.
+        /// </summary>
+        public static Dictionary<Type, CustomGrenade> CustomGrenadePrefabs = new Dictionary<Type, CustomGrenade>();
+
+        /// <summary>
         /// Folder that contains your sprite image file. 
         /// Defaults to "projectiles". 
         /// Set this to "" if your grenades are in the same folder as your .dll
@@ -38,16 +43,29 @@ namespace BroMakerLib.CustomObjects.Projectiles
         public string spriteFileName = string.Empty;
 
         /// <summary>
-        /// Automatically gets set to the path to the folder your grenade's assembly is in.
-        /// Don't set this manually.
-        /// </summary>
-        public string spriteAssemblyPath = string.Empty;
-
-        /// <summary>
         /// Automatically gets set to the path to the folder your sprite is in.
         /// Don't set this manually.
         /// </summary>
         public string spriteDirectoryPath = string.Empty;
+
+        /// <summary>
+        /// Automatically gets set to the path to the folder your grenade's assembly is in.
+        /// Don't set this manually.
+        /// </summary>
+        public string assemblyPath = string.Empty;
+
+        /// <summary>
+        /// Folder that contains your grenade's sounds.
+        /// Defaults to "sounds". 
+        /// Set this to "" if your sounds are in the same folder as your .dll
+        /// </summary>
+        public string soundFolder = "sounds";
+
+        /// <summary>
+        /// Automatically gets set to the path to the folder your grenade's sounds are in.
+        /// Assumes they're in a folder called sounds
+        /// </summary>
+        public string soundPath = string.Empty;
 
         /// <summary>
         /// Size of one frame of your grenade. 
@@ -85,8 +103,9 @@ namespace BroMakerLib.CustomObjects.Projectiles
                 // Only load sprite if we're creating a prefab and it hasn't been created yet.
                 if ( this.storedSprite == null && this.spriteAutoLoad )
                 {
-                    this.spriteAssemblyPath = Path.GetDirectoryName( Assembly.GetCallingAssembly().Location );
-                    this.spriteDirectoryPath = Path.Combine( spriteAssemblyPath, spriteFolder );
+                    this.assemblyPath = Path.GetDirectoryName( Assembly.GetCallingAssembly().Location );
+                    this.spriteDirectoryPath = Path.Combine( assemblyPath, spriteFolder );
+                    this.soundPath = Path.Combine( assemblyPath, soundFolder );
 
                     if ( spriteFileName == string.Empty )
                     {
@@ -146,9 +165,18 @@ namespace BroMakerLib.CustomObjects.Projectiles
         /// <returns>The prefab of your custom grenade.</returns>
         public static T CreatePrefab<T>() where T : CustomGrenade
         {
-            T prefab = new GameObject( typeof( T ).Name, new Type[] { typeof( Transform ), typeof( MeshFilter ), typeof( MeshRenderer ), typeof( SpriteSM ), typeof( T ) } ).GetComponent<T>();
-            prefab.enabled = false;
-            return prefab;
+            if ( CustomGrenadePrefabs.TryGetValue( typeof( T ), out CustomGrenade customGrenade ) )
+            {
+                return customGrenade as T;
+            }
+            else
+            {
+                T prefab = new GameObject( typeof( T ).Name, new Type[] { typeof( Transform ), typeof( MeshFilter ), typeof( MeshRenderer ), typeof( SpriteSM ), typeof( T ) } ).GetComponent<T>();
+                prefab.enabled = false;
+                UnityEngine.Object.DontDestroyOnLoad( prefab.gameObject );
+                CustomGrenadePrefabs.Add( typeof( T ), prefab );
+                return prefab;
+            }
         }
 
         /// <summary>

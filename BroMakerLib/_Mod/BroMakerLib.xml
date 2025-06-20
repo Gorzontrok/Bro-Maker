@@ -187,6 +187,11 @@
             Stores the sprite that was loaded if automatic loading is enabled
             </summary>
         </member>
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.CustomGrenadePrefabs">
+            <summary>
+            Stores all custom projectile prefabs that have been created to avoid having to recreate them.
+            </summary>
+        </member>
         <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.spriteFolder">
             <summary>
             Folder that contains your sprite image file. 
@@ -200,16 +205,29 @@
             Defaults to "nameofyourclass.png".
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.spriteAssemblyPath">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.spriteDirectoryPath">
+            <summary>
+            Automatically gets set to the path to the folder your sprite is in.
+            Don't set this manually.
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.assemblyPath">
             <summary>
             Automatically gets set to the path to the folder your grenade's assembly is in.
             Don't set this manually.
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.spriteDirectoryPath">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.soundFolder">
             <summary>
-            Automatically gets set to the path to the folder your sprite is in.
-            Don't set this manually.
+            Folder that contains your grenade's sounds.
+            Defaults to "sounds". 
+            Set this to "" if your sounds are in the same folder as your .dll
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.soundPath">
+            <summary>
+            Automatically gets set to the path to the folder your grenade's sounds are in.
+            Assumes they're in a folder called sounds
             </summary>
         </member>
         <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.spritePixelDimensions">
@@ -279,11 +297,16 @@
             Stores the sprite that was loaded if automatic loading is enabled
             </summary>
         </member>
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.CustomProjectilePrefabs">
+            <summary>
+            Stores all custom projectile prefabs that have been created to avoid having to recreate them.
+            </summary>
+        </member>
         <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.spriteFolder">
             <summary>
             Folder that contains your sprite image file. 
             Defaults to "projectiles". 
-            Set this to "" if your projectiles are in the same folder as your .dll
+            Set this to "" if your sprite is in the same folder as your .dll
             </summary>
         </member>
         <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.spriteFileName">
@@ -292,16 +315,29 @@
             Defaults to "nameofyourclass.png".
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.spriteAssemblyPath">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.spriteDirectoryPath">
+            <summary>
+            Automatically gets set to the path to the folder your sprite is in.
+            Don't set this manually.
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.assemblyPath">
             <summary>
             Automatically gets set to the path to the folder your projectile's assembly is in.
             Don't set this manually.
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.spriteDirectoryPath">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.soundFolder">
             <summary>
-            Automatically gets set to the path to the folder your sprite is in.
-            Don't set this manually.
+            Folder that contains your projectile's sounds.
+            Defaults to "sounds". 
+            Set this to "" if your sounds are in the same folder as your .dll
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.soundPath">
+            <summary>
+            Automatically gets set to the path to the folder your projectile's sounds are in.
+            Assumes they're in a folder called sounds
             </summary>
         </member>
         <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.spritePixelDimensions">

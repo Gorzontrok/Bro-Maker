@@ -1,7 +1,8 @@
 v2.6.0
-Removed BroMakerData.mod.json file.
+Added CustomGrenade and CustomProjectile classes to make creating custom projectiles easier.
 Fixed issue where audio clips couldn't be played multiple times simultaneously.
 Fixed custom hero prefabs being destroyed on level reload
+Removed BroMakerData.mod.json file.
 
 v2.5.0
 Added sounds method for SwordHero
