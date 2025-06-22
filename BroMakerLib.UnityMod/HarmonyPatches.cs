@@ -506,7 +506,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 return;
             }
 
-            if ( __result && ( obj is ICustomHero || obj is CustomProjectile || obj is CustomGrenade ) )
+            if ( __result && ( obj is ICustomHero || obj is CustomProjectile || obj is CustomGrenade || obj is CustomSachelPack ) )
             {
                 ++customObjectIsConsumed;
                 Traverse assTraverse = Traverse.Create(__instance);
@@ -541,7 +541,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
             {
                 Traverse assTraverse = Traverse.Create(__instance);
                 object obj = assTraverse.GetFieldValue( "transportedObject" );
-                if ( assTraverse.GetFieldValue("CurrentAssMouthBlock") == null && ( obj is ICustomHero || obj is CustomProjectile || obj is CustomGrenade ) )
+                if ( assTraverse.GetFieldValue("CurrentAssMouthBlock") == null && ( obj is ICustomHero || obj is CustomProjectile || obj is CustomGrenade || obj is CustomSachelPack ) )
                 {
                     __instance.ExitAssMouth((assTraverse.GetFieldValue("PrevAssMouthBlock") as AssMouthBlock).orificeInstance);
                     --AssMouthOrifice_TryConsumeObject_Patch.customObjectIsConsumed;

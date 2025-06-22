@@ -128,6 +128,7 @@
     <Compile Include="CustomObjects\Bros\CustomHeroExtended.cs" />
     <Compile Include="CustomObjects\Projectiles\CustomGrenade.cs" />
     <Compile Include="CustomObjects\Projectiles\CustomProjectile.cs" />
+    <Compile Include="CustomObjects\Projectiles\CustomSachelPack.cs" />
     <Compile Include="CutsceneSpriteAnimatedJsonConverter.cs" />
     <Compile Include="Cutscenes\CutsceneIntroExtra.cs" />
     <Compile Include="ModManager\BroMakerMod.cs" />
