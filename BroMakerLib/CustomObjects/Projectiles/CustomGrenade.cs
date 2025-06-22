@@ -205,6 +205,31 @@ namespace BroMakerLib.CustomObjects.Projectiles
         }
 
         /// <summary>
+        /// Creates a prefab with the default required components for a Grenade along with the additional specified components.
+        /// </summary>
+        /// <param name="additionalComponents">Additional components to add to the prefab.</param>
+        /// <typeparam name="T">Type of your custom grenade class.</typeparam>
+        /// <returns>The prefab of your custom grenade.</returns>
+        public static T CreatePrefab<T>( List<Type> additionalComponents ) where T : CustomGrenade
+        {
+            if ( CustomGrenadePrefabs.TryGetValue( typeof( T ), out CustomGrenade customGrenade ) && customGrenade != null )
+            {
+                return customGrenade as T;
+            }
+            else
+            {
+                Type[] components = ( new List<Type> { typeof( Transform ), typeof( MeshFilter ), typeof( MeshRenderer ), typeof( SpriteSM ), typeof( T ) } ).Concat( additionalComponents ).ToArray();
+                T prefab = new GameObject( typeof( T ).Name, components ).GetComponent<T>();
+                prefab.PrefabSetup();
+                prefab.RanSetup = true;
+                prefab.enabled = false;
+                UnityEngine.Object.DontDestroyOnLoad( prefab.gameObject );
+                CustomGrenadePrefabs.Add( typeof( T ), prefab );
+                return prefab;
+            }
+        }
+
+        /// <summary>
         /// Spawns a grenade locally and enables it after spawning.
         /// </summary>
         /// <param name="firedBy">The MonoBehaviour that threw this grenade.</param>

@@ -217,6 +217,31 @@ namespace BroMakerLib.CustomObjects.Projectiles
         }
 
         /// <summary>
+        /// Creates a prefab with the default required components for a Projectile along with the additional specified components.
+        /// </summary>
+        /// <param name="additionalComponents">Additional components to add to the prefab.</param>
+        /// <typeparam name="T">Type of your custom projectile class.</typeparam>
+        /// <returns>The prefab of your custom projectile.</returns>
+        public static T CreatePrefab<T>( List<Type> additionalComponents ) where T : CustomProjectile
+        {
+            if ( CustomProjectilePrefabs.TryGetValue( typeof( T ), out CustomProjectile customProjectile ) && customProjectile != null )
+            {
+                return customProjectile as T;
+            }
+            else
+            {
+                Type[] components = ( new List<Type> { typeof( Transform ), typeof( MeshFilter ), typeof( MeshRenderer ), typeof( SpriteSM ), typeof( T ) } ).Concat( additionalComponents ).ToArray();
+                T prefab = new GameObject( typeof( T ).Name, components ).GetComponent<T>();
+                prefab.PrefabSetup();
+                prefab.RanSetup = true;
+                prefab.enabled = false;
+                UnityEngine.Object.DontDestroyOnLoad( prefab.gameObject );
+                CustomProjectilePrefabs.Add( typeof( T ), prefab );
+                return prefab;
+            }
+        }
+
+        /// <summary>
         /// Spawns a projectile locally and enables it after spawning.
         /// </summary>
         /// <param name="FiredBy">The MonoBehaviour that fired this projectile.</param>

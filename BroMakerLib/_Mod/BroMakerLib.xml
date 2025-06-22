@@ -289,6 +289,14 @@
             <typeparam name="T">Type of your custom grenade class.</typeparam>
             <returns>The prefab of your custom grenade.</returns>
         </member>
+        <member name="M:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.CreatePrefab``1(System.Collections.Generic.List{System.Type})">
+            <summary>
+            Creates a prefab with the default required components for a Grenade along with the additional specified components.
+            </summary>
+            <param name="additionalComponents">Additional components to add to the prefab.</param>
+            <typeparam name="T">Type of your custom grenade class.</typeparam>
+            <returns>The prefab of your custom grenade.</returns>
+        </member>
         <member name="M:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.SpawnGrenadeLocally(UnityEngine.MonoBehaviour,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Int32,System.Int32)">
             <summary>
             Spawns a grenade locally and enables it after spawning.
@@ -425,6 +433,14 @@
             <summary>
             Creates a prefab with the default required components for a Projectile.
             </summary>
+            <typeparam name="T">Type of your custom projectile class.</typeparam>
+            <returns>The prefab of your custom projectile.</returns>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.CreatePrefab``1(System.Collections.Generic.List{System.Type})">
+            <summary>
+            Creates a prefab with the default required components for a Projectile along with the additional specified components.
+            </summary>
+            <param name="additionalComponents">Additional components to add to the prefab.</param>
             <typeparam name="T">Type of your custom projectile class.</typeparam>
             <returns>The prefab of your custom projectile.</returns>
         </member>
