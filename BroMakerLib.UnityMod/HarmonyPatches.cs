@@ -9,6 +9,7 @@ using UnityEngine;
 using BroMakerLib.Loaders;
 using BSett = BroMakerLib.Settings;
 using BroMakerLib.CustomObjects;
+using BroMakerLib.CustomObjects.Projectiles;
 
 namespace BroMakerLib.UnityMod.HarmonyPatches
 {
@@ -497,7 +498,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
     [HarmonyPatch(typeof(AssMouthOrifice), "TryConsumeObject")]
     static class AssMouthOrifice_TryConsumeObject_Patch
     {
-        public static int customBroIsConsumed = 0;
+        public static int customObjectIsConsumed = 0;
         public static void Postfix(AssMouthOrifice __instance, ref BroforceObject obj, ref bool __result )
         {
             if (!Main.enabled)
@@ -505,9 +506,9 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 return;
             }
 
-            if ( __result && obj is ICustomHero )
+            if ( __result && ( obj is ICustomHero || obj is CustomProjectile || obj is CustomGrenade ) )
             {
-                ++customBroIsConsumed;
+                ++customObjectIsConsumed;
                 Traverse assTraverse = Traverse.Create(__instance);
                 assTraverse.SetFieldValue("playSwallowAnim", true);
                 assTraverse.SetFieldValue("swallowFrameTimer", 0f);
@@ -521,7 +522,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                     Sound.GetInstance().PlaySoundEffect(__instance.enterSound, 0.7f);
                 }
             }
-
+            
         }
     }
 
@@ -536,13 +537,14 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 return;
             }
 
-            if ( AssMouthOrifice_TryConsumeObject_Patch.customBroIsConsumed > 0 )
+            if ( AssMouthOrifice_TryConsumeObject_Patch.customObjectIsConsumed > 0 )
             {
                 Traverse assTraverse = Traverse.Create(__instance);
-                if ( assTraverse.GetFieldValue("CurrentAssMouthBlock") == null && assTraverse.GetFieldValue("transportedObject") is ICustomHero )
+                object obj = assTraverse.GetFieldValue( "transportedObject" );
+                if ( assTraverse.GetFieldValue("CurrentAssMouthBlock") == null && ( obj is ICustomHero || obj is CustomProjectile || obj is CustomGrenade ) )
                 {
                     __instance.ExitAssMouth((assTraverse.GetFieldValue("PrevAssMouthBlock") as AssMouthBlock).orificeInstance);
-                    --AssMouthOrifice_TryConsumeObject_Patch.customBroIsConsumed;
+                    --AssMouthOrifice_TryConsumeObject_Patch.customObjectIsConsumed;
                 }
             }
         }
