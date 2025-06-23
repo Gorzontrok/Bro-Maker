@@ -358,6 +358,8 @@ namespace BroMakerLib.UnityMod
                     UnityEngine.Object.DontDestroyOnLoad(heroHolder);
                 }
                 _selectedHero = heroHolder.AddComponent(PresetManager.heroesPreset[preset]) as CustomHero;
+                _selectedHero.directoryPath = _selectedBro.info.path;
+                _selectedHero.LoadSettings();
                 _selectedHero.enabled = false;
                 heroCreated = true;
             }

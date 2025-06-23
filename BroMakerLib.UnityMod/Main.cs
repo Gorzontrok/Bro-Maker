@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using BroMakerLib.CustomObjects.Bros;
 using BroMakerLib.Loggers;
 using HarmonyLib;
 using UnityModManagerNet;
@@ -104,6 +105,7 @@ namespace BroMakerLib.UnityMod
 
         static void OnSaveGUI(UnityModManager.ModEntry modEntry)
         {
+            CustomHero.SaveAll();
             BroMakerLib.Settings.instance.Save();
             settings.Save(modEntry);
         }

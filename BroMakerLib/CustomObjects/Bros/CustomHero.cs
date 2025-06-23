@@ -2,8 +2,13 @@
 using BroMakerLib.Loaders;
 using BroMakerLib.Loggers;
 using HarmonyLib;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 namespace BroMakerLib.CustomObjects.Bros
@@ -29,6 +34,11 @@ namespace BroMakerLib.CustomObjects.Bros
         public Vector2 gunSpriteOffset { get; set; } = Vector2.zero;
         [field: SerializeField]
         public MuscleTempleFlexEffect flexEffect { get; set; }
+
+		/// <summary>
+		/// Contains the path to the directory that contains your custom bro's dll
+		/// </summary>
+		public string directoryPath;
 
         #region BroBase Methods
         protected override void Awake()
@@ -344,6 +354,328 @@ namespace BroMakerLib.CustomObjects.Bros
             this.soundHolderFootSteps.gameObject.SetActive( false );
             this.soundHolderFootSteps.gameObject.name = "SoundHolderFootSteps " + this.name;
             UnityEngine.Object.DontDestroyOnLoad( this.soundHolderFootSteps );
+
+            this.directoryPath = LoadHero.currentInfo.path;
+            try
+            {
+                this.LoadSettings();
+            }
+            catch ( Exception ex )
+            {
+                BMLogger.ExceptionLog( "Failed to load settings in SetupPrefab: ", ex );
+            }
+        }
+        #endregion
+
+        #region Save / Load Settings
+        /// <summary>
+        /// Marks a static field or property to be saved/loaded as a persistent setting.
+        /// Only static members marked with this attribute will be included in settings serialization.
+        /// </summary>
+        [AttributeUsage( AttributeTargets.Field | AttributeTargets.Property )]
+        public class SaveableSettingAttribute : Attribute
+        {
+            /// <summary>
+            /// Gets or sets the custom name to use as the JSON key for this setting.
+            /// If not specified, the member name will be used.
+            /// </summary>
+            public string Name { get; set; }
+
+            /// <summary>
+            /// Initializes a new instance of the SaveableSettingAttribute class.
+            /// </summary>
+            /// <param name="name">Optional custom name to use as the JSON key. If null, the member name will be used.</param>
+            public SaveableSettingAttribute( string name = null )
+            {
+                Name = name;
+            }
+        }
+
+        private static readonly Dictionary<Type, bool> _hasSaveableFieldsCache = new Dictionary<Type, bool>();
+        private static readonly Dictionary<Type, List<MemberInfo>> _saveableMembersCache = new Dictionary<Type, List<MemberInfo>>();
+        private static readonly Dictionary<Type, string> _typeDirectoryCache = new Dictionary<Type, string>();
+
+        /// <summary>
+        /// Saves all static fields and properties marked with [SaveableSetting] to a JSON file.
+        /// The file will be saved to the instance's directoryPath with the name format: {BroName}settings.json
+        /// </summary>
+        /// <remarks>
+        /// - Only saves non-null values
+        /// - Automatically caches the custom bro information for better performance on subsequent calls
+        /// - Caches the directory path for use with SaveAll()
+        /// - If no saveable fields exist, no file will be created
+        /// </remarks>
+        public virtual void SaveSettings()
+        {
+            var type = GetType();
+
+            // Cache the directory path for this type
+            _typeDirectoryCache[type] = this.directoryPath;
+
+            if ( !HasSaveableFields( type ) )
+                return;
+
+            var saveableMembers = GetSaveableMembers( type );
+            var data = new Dictionary<string, object>();
+
+            foreach ( var member in saveableMembers )
+            {
+                string key = null;
+                object value = null;
+
+                SaveableSettingAttribute attr;
+                if ( member is FieldInfo field )
+                {
+                    attr = (SaveableSettingAttribute)field.GetCustomAttributes( typeof( SaveableSettingAttribute ), false ).FirstOrDefault();
+                    key = attr?.Name ?? field.Name;
+                    value = field.GetValue( null );
+                }
+                else if ( member is PropertyInfo property )
+                {
+                    attr = (SaveableSettingAttribute)property.GetCustomAttributes( typeof( SaveableSettingAttribute ), false ).FirstOrDefault();
+                    key = attr?.Name ?? property.Name;
+                    value = property.GetValue( null, null );
+                }
+
+                if ( value != null && key != null )
+                    data[key] = value;
+            }
+
+            if ( data.Count > 0 )
+            {
+                var fileName = $"{type.Name}settings.json";
+                string json = JsonConvert.SerializeObject( data, Formatting.Indented );
+                File.WriteAllText( Path.Combine( directoryPath, fileName ), json );
+            }
+        }
+
+        /// <summary>
+        /// Loads all static fields and properties marked with [SaveableSetting] from a JSON file.
+        /// The file is expected to be in the instance's directoryPath with the name format: {BroName}settings.json
+        /// </summary>
+        /// <remarks>
+        /// - Silently returns if the settings file doesn't exist
+        /// - Automatically handles type conversion including enums and complex types
+        /// - Logs errors for individual fields that fail to load but continues with other fields
+        /// - Caches the directory path for use with SaveAll()
+        /// - Uses cached custom bro information for better performance on subsequent calls
+        /// </remarks>
+        public virtual void LoadSettings()
+        {
+            var type = GetType();
+
+            // Cache the directory path for this type
+            _typeDirectoryCache[type] = this.directoryPath;
+
+            if ( !HasSaveableFields( type ) )
+                return;
+
+            var fileName = Path.Combine( this.directoryPath, $"{type.Name}settings.json" );
+            if ( !File.Exists( fileName ) )
+                return;
+
+            try
+            {
+                string json = File.ReadAllText( fileName );
+                var data = JsonConvert.DeserializeObject<Dictionary<string, object>>( json );
+
+                if ( data == null )
+                    return;
+
+                var saveableMembers = GetSaveableMembers( type );
+
+                foreach ( var member in saveableMembers )
+                {
+                    SaveableSettingAttribute attr = null;
+                    string key = null;
+
+                    if ( member is FieldInfo )
+                    {
+                        FieldInfo field = (FieldInfo)member;
+                        attr = (SaveableSettingAttribute)field.GetCustomAttributes( typeof( SaveableSettingAttribute ), false ).FirstOrDefault();
+                        key = attr?.Name ?? field.Name;
+
+                        if ( data.ContainsKey( key ) )
+                        {
+                            try
+                            {
+                                var value = data[key];
+                                var convertedValue = ConvertValue( value, field.FieldType );
+                                field.SetValue( null, convertedValue );
+                            }
+                            catch ( Exception ex )
+                            {
+                                Console.WriteLine( $"Error loading {key}: {ex.Message}" );
+                            }
+                        }
+                    }
+                    else if ( member is PropertyInfo )
+                    {
+                        var property = (PropertyInfo)member;
+                        if ( property.CanWrite )
+                        {
+                            attr = (SaveableSettingAttribute)property.GetCustomAttributes( typeof( SaveableSettingAttribute ), false ).FirstOrDefault();
+                            key = attr?.Name ?? property.Name;
+
+                            if ( data.ContainsKey( key ) )
+                            {
+                                try
+                                {
+                                    var value = data[key];
+                                    var convertedValue = ConvertValue( value, property.PropertyType );
+                                    property.SetValue( null, convertedValue, null );
+                                }
+                                catch ( Exception ex )
+                                {
+                                    Console.WriteLine( $"Error loading {key}: {ex.Message}" );
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch ( Exception ex )
+            {
+                Console.WriteLine( $"Error loading settings from {fileName}: {ex.Message}" );
+            }
+        }
+
+        /// <summary>
+        /// Saves settings for all custom bros that have been previously loaded or saved.
+        /// This static method uses cached custom bro and directory information to save all settings without requiring instances.
+        /// </summary>
+        /// <remarks>
+        /// - Only saves settings for custom bros that have been cached (i.e., SaveSettings or LoadSettings was called at least once)
+        /// - Skips custom bros that don't have a cached directory path
+        /// - Logs warnings for custom bros without cached directory paths
+        /// - Logs success/error messages for each custom bro
+        /// - Useful for application shutdown or periodic auto-saves
+        /// </remarks>
+        public static void SaveAll()
+        {
+            foreach ( var kvp in _saveableMembersCache )
+            {
+                var type = kvp.Key;
+                var saveableMembers = kvp.Value;
+
+                // Skip if we don't have a directory path cached for this custom bro
+                if ( !_typeDirectoryCache.TryGetValue( type, out string cachedDirectoryPath ) )
+                {
+                    Console.WriteLine( $"Warning: No directory path cached for custom bro {type.Name}, skipping..." );
+                    continue;
+                }
+
+                // Skip if no saveable members
+                if ( saveableMembers.Count == 0 )
+                    continue;
+
+                var data = new Dictionary<string, object>();
+
+                foreach ( var member in saveableMembers )
+                {
+                    string key = null;
+                    object value = null;
+
+                    SaveableSettingAttribute attr;
+                    if ( member is FieldInfo field )
+                    {
+                        attr = (SaveableSettingAttribute)field.GetCustomAttributes( typeof( SaveableSettingAttribute ), false ).FirstOrDefault();
+                        key = attr?.Name ?? field.Name;
+                        value = field.GetValue( null );
+                    }
+                    else if ( member is PropertyInfo property )
+                    {
+                        attr = (SaveableSettingAttribute)property.GetCustomAttributes( typeof( SaveableSettingAttribute ), false ).FirstOrDefault();
+                        key = attr?.Name ?? property.Name;
+                        value = property.GetValue( null, null );
+                    }
+
+                    if ( value != null && key != null )
+                        data[key] = value;
+                }
+
+                if ( data.Count > 0 )
+                {
+                    try
+                    {
+                        var fileName = $"{type.Name}settings.json";
+                        string json = JsonConvert.SerializeObject( data, Formatting.Indented );
+                        File.WriteAllText( Path.Combine( cachedDirectoryPath, fileName ), json );
+                        Console.WriteLine( $"Saved settings for custom bro {type.Name}" );
+                    }
+                    catch ( Exception ex )
+                    {
+                        Console.WriteLine( $"Error saving settings for custom bro {type.Name}: {ex.Message}" );
+                    }
+                }
+            }
+        }
+
+        private bool HasSaveableFields( Type type )
+        {
+            if ( _hasSaveableFieldsCache.TryGetValue( type, out bool hasSaveable ) )
+            {
+                return hasSaveable;
+            }
+
+            var members = GetSaveableMembers( type );
+            hasSaveable = members.Count > 0;
+
+            _hasSaveableFieldsCache[type] = hasSaveable;
+
+            return hasSaveable;
+        }
+
+        private List<MemberInfo> GetSaveableMembers( Type type )
+        {
+            if ( _saveableMembersCache.TryGetValue( type, out var cached ) )
+                return cached;
+
+            var members = new List<MemberInfo>();
+            var flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+
+            var fields = type.GetFields( flags )
+                .Where( f => f.GetCustomAttributes( typeof( SaveableSettingAttribute ), false ).Length > 0 );
+
+            foreach ( var field in fields )
+                members.Add( field );
+
+            var properties = type.GetProperties( flags )
+                .Where( p => p.GetCustomAttributes( typeof( SaveableSettingAttribute ), false ).Length > 0 );
+
+            foreach ( var property in properties )
+                members.Add( property );
+
+            _saveableMembersCache[type] = members;
+
+            return members;
+        }
+
+        private object ConvertValue( object value, Type targetType )
+        {
+            if ( value == null )
+                return null;
+
+            // Handle Newtonsoft.Json's JObject/JArray types
+            if ( value is JObject || value is JArray || value is JValue )
+            {
+                string jsonString = value.ToString();
+                return JsonConvert.DeserializeObject( jsonString, targetType );
+            }
+
+            // Handle simple type conversions
+            if ( targetType == value.GetType() )
+                return value;
+
+            if ( targetType.IsEnum )
+            {
+                if ( value is string )
+                    return Enum.Parse( targetType, (string)value );
+                else
+                    return Enum.ToObject( targetType, value );
+            }
+
+            return Convert.ChangeType( value, targetType );
         }
         #endregion
     }
