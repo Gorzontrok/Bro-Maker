@@ -24,11 +24,11 @@
 In order to spawn with a Custom Bro you need to install one.
 
 Once you are in a level, open the menu of BroMaker and click on the name of a bro, and click Load Bro.
-![GUI](https://github.com/Gorzontrok/Bro-Maker/blob/main/LoadBroGUI.png)
+![GUI](https://github.com/Gorzontrok/Bro-Maker/blob/main/images/LoadBroGUI.png)
 
 
 You can also set the mod to have a chance for you to automatically spawn as a custom bro.
-![GUI](https://github.com/Gorzontrok/Bro-Maker/blob/main/SettingsGUI.png)
+![GUI](https://github.com/Gorzontrok/Bro-Maker/blob/main/images/SettingsGUI.png)
 
 ## Guide to Developer
 

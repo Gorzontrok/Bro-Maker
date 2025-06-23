@@ -129,7 +129,7 @@
     <Compile Include="CustomObjects\Projectiles\CustomGrenade.cs" />
     <Compile Include="CustomObjects\Projectiles\CustomProjectile.cs" />
     <Compile Include="CustomObjects\Projectiles\CustomSachelPack.cs" />
-    <Compile Include="CutsceneSpriteAnimatedJsonConverter.cs" />
+    <Compile Include="Cutscenes\CutsceneSpriteAnimatedJsonConverter.cs" />
     <Compile Include="Cutscenes\CutsceneIntroExtra.cs" />
     <Compile Include="ModManager\BroMakerMod.cs" />
     <Compile Include="Info.cs" />
@@ -137,13 +137,10 @@
     <Compile Include="Cutscenes\CustomCutsceneController.cs" />
     <Compile Include="CustomObjects\Components\CharacterExtended.cs" />
     <Compile Include="CustomObjects\Projectiles\CustomGrenadeWithInfo.cs" />
-    <Compile Include="CustomObjects\ICustomObjectFromFile.cs" />
     <Compile Include="Cutscenes\CustomIntroCutscene.cs" />
     <Compile Include="Cutscenes\Patches.cs" />
-    <Compile Include="DamageObjectE.cs" />
-    <Compile Include="EditorIgnoreAttribute.cs" />
-    <Compile Include="Enumerators.cs" />
-    <Compile Include="Examples\AbilityExample.cs" />
+    <Compile Include="Extensions\DamageObjectE.cs" />
+    <Compile Include="Attributes\EditorIgnoreAttribute.cs" />
     <Compile Include="Extensions\CustomHeroExtensions.cs" />
     <Compile Include="Extensions\GameObjectExtensions.cs" />
     <Compile Include="Extensions\ICustomHeroExtensions.cs" />
@@ -170,7 +167,6 @@
     <Compile Include="Loggers\BMLogger.cs" />
     <Compile Include="ResourcesController.cs" />
     <Compile Include="CustomObjects\Bros\CustomHero.cs" />
-    <Compile Include="CustomObjects\Components\MeleeHolder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Storages\IStoredObject.cs" />
     <Compile Include="Storages\StoredHero.cs" />
