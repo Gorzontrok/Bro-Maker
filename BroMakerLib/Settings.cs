@@ -38,6 +38,7 @@ namespace BroMakerLib
         public bool maxHealthAtOne = true;
         public bool onlyCustomInHardcore = false;
         public bool disableCustomAvatarFlash = true;
+        public bool developerMode = false;
 
         public Dictionary<string, bool> enabledBros = new Dictionary<string, bool>();
         public int enabledBroCount = 0;
