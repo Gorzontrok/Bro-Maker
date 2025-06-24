@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime;
 using UnityEngine;
+using UnityModManagerNet;
 using static HarmonyLib.Code;
 using static UnityModManagerNet.UnityModManager;
 using BSett = BroMakerLib.Settings;
@@ -74,11 +75,16 @@ namespace BroMakerLib.UnityMod
         private static GUIStyle _incompatibleStyle = null;
         private static GUIStyle _enabledStyle = null;
         private static GUIStyle _disabledStyle = null;
+        private static GUIStyle _enabledStyleButton = null;
+        private static GUIStyle _disabledStyleButton = null;
 
         // Settings Menu
         private static GUIStyle _headerStyle;
+        private static bool _showGeneralSettings = true;
         private static bool _showSpawnSettings = true;
         private static bool _showDeveloperSettings = false;
+
+        private static float _windowWidth = -1f;
 
         public static void Initialize()
         {
@@ -104,6 +110,22 @@ namespace BroMakerLib.UnityMod
 
         public static void UI()
         {
+            if ( _windowWidth < 0 )
+            {
+                GUILayout.BeginHorizontal();
+                if ( Event.current.type == EventType.Repaint )
+                {
+                    Rect rect = GUILayoutUtility.GetRect( 0, 0, GUILayout.ExpandWidth( true ) );
+                    if ( rect.width > 1 )
+                    {
+                        _windowWidth = rect.width;
+                    }
+                }
+                GUILayout.Label( " " );
+                GUILayout.EndHorizontal();
+                return;
+            }
+
             if (_buttonStyle == null)
                 _buttonStyle = new GUIStyle(GUI.skin.button);
 
@@ -138,6 +160,30 @@ namespace BroMakerLib.UnityMod
                 _disabledStyle.normal.textColor = Color.red;
             }
 
+            if ( _enabledStyleButton == null )
+            {
+                _enabledStyleButton = new GUIStyle( GUI.skin.button );
+                //_enabledStyleButton.normal.textColor = Color.green;
+                _enabledStyleButton.normal.textColor = Color.black;
+                Texture2D texture = new Texture2D( 1, 1 );
+                texture.SetPixel( 0, 0, Color.green );
+                texture.Apply();
+                _enabledStyleButton.normal.background = texture;
+                _enabledStyleButton.hover.background = texture;
+            }
+
+            if ( _disabledStyleButton == null )
+            {
+                _disabledStyleButton = new GUIStyle( GUI.skin.button );
+                //_disabledStyleButton.normal.textColor = Color.red;
+                _disabledStyleButton.normal.textColor = Color.black;
+                Texture2D texture = new Texture2D( 1, 1 );
+                texture.SetPixel( 0, 0, Color.red );
+                texture.Apply();
+                _disabledStyleButton.normal.background = texture;
+                _disabledStyleButton.hover.background = texture;
+            }
+
             string[] tabsNames = _tabs.Keys.ToArray();
             _tabSelected = GUILayout.SelectionGrid(_tabSelected, tabsNames, 4);
             GUILayout.Space(15);
@@ -151,6 +197,15 @@ namespace BroMakerLib.UnityMod
             GUI.Label(_toolTipRect, GUI.tooltip, _toolTipStyle);
         }
 
+        private static GUILayoutOption ScaledWidth( float width )
+        {
+            if ( BSett.instance.scaleUIWithWindowWidth && _windowWidth > 0 )
+            {
+                float scaleFactor = _windowWidth / 1200f;
+                return GUILayout.Width( width * scaleFactor );
+            }
+            return GUILayout.Width( width );
+        }
 
         public static void Spawner()
         {
@@ -191,12 +246,12 @@ namespace BroMakerLib.UnityMod
             }
 
             GUILayout.BeginHorizontal("box");
-            GUILayout.Label("Name", GUILayout.Width(150));
+            GUILayout.Label("Name", ScaledWidth(150));
             GUILayout.Space(50);
-            GUILayout.Label("Author", GUILayout.Width(200));
-            GUILayout.Label("Version", GUILayout.Width(200));
-            GUILayout.Label("BroMaker Version", GUILayout.Width(200));
-            GUILayout.Label( "Autospawn Enabled", GUILayout.Width( 200 ) );
+            GUILayout.Label("Author", ScaledWidth(200));
+            GUILayout.Label("Version", ScaledWidth(200));
+            GUILayout.Label("BroMaker Version", ScaledWidth(200));
+            GUILayout.Label( "Autospawn Enabled", ScaledWidth( 200 ) );
             GUILayout.EndHorizontal();
             GUILayout.Space(15);
             if (Mods.Count > 8)
@@ -227,7 +282,7 @@ namespace BroMakerLib.UnityMod
                     {
                         // show mod information
                         GUILayout.BeginHorizontal("box");
-                        if ((_selectedModIndex == modCount) != GUILayout.Toggle(_selectedModIndex == modCount, name, _buttonStyle, GUILayout.Width(150)) )
+                        if ((_selectedModIndex == modCount) != GUILayout.Toggle(_selectedModIndex == modCount, name, _buttonStyle, ScaledWidth(150)) )
                         {
                             // Deselect
                             if ( _selectedModIndex == modCount )
@@ -240,15 +295,15 @@ namespace BroMakerLib.UnityMod
                             }
                         }
                         GUILayout.Space(50);
-                        GUILayout.Label(mod.Author, GUILayout.Width(200));
-                        GUILayout.Label(mod.Version, GUILayout.Width(200));
+                        GUILayout.Label(mod.Author, ScaledWidth(200));
+                        GUILayout.Label(mod.Version, ScaledWidth(200));
                         if ( mod.ErrorMessage == string.Empty )
                         {
-                            GUILayout.Label(mod.BroMakerVersion, GUILayout.Width(200));
+                            GUILayout.Label(mod.BroMakerVersion, ScaledWidth(200));
                         }
                         else
                         {
-                            GUILayout.Label(mod.BroMakerVersion, _warningStyle, GUILayout.Width(200));
+                            GUILayout.Label(mod.BroMakerVersion, _warningStyle, ScaledWidth(200));
                         }
                         GUILayout.EndHorizontal();
 
@@ -269,7 +324,7 @@ namespace BroMakerLib.UnityMod
                                     isHorizontalOpen = true;
                                 }
 
-                                if ( (_selectedCustomBrosIndex == broIndex) != GUILayout.Toggle(_selectedCustomBrosIndex == broIndex, mod.StoredHeroes[modIndex].name, _buttonStyle, GUILayout.Width(150)) )
+                                if ( (_selectedCustomBrosIndex == broIndex) != GUILayout.Toggle(_selectedCustomBrosIndex == broIndex, mod.StoredHeroes[modIndex].name, _buttonStyle, ScaledWidth(150)) )
                                 {
                                     if (_selectedCustomBrosIndex == broIndex)
                                     {
@@ -331,7 +386,7 @@ namespace BroMakerLib.UnityMod
                 {
                     // show mod information
                     GUILayout.BeginHorizontal("box");
-                    if ((_selectedModIndex == modCount) != GUILayout.Toggle(_selectedModIndex == modCount, mod.Name, _buttonStyle, GUILayout.Width(150)))
+                    if ((_selectedModIndex == modCount) != GUILayout.Toggle(_selectedModIndex == modCount, mod.Name, _buttonStyle, ScaledWidth(150)))
                     {
                         // Deselect
                         if (_selectedModIndex == modCount)
@@ -345,9 +400,9 @@ namespace BroMakerLib.UnityMod
                     }
                     GUILayout.Space(50);
 
-                    GUILayout.Label(mod.Author, GUILayout.Width(200));
-                    GUILayout.Label(mod.Version, GUILayout.Width(200));
-                    GUILayout.Label(mod.BroMakerVersion, _incompatibleStyle, GUILayout.Width(200));
+                    GUILayout.Label(mod.Author, ScaledWidth(200));
+                    GUILayout.Label(mod.Version, ScaledWidth(200));
+                    GUILayout.Label(mod.BroMakerVersion, _incompatibleStyle, ScaledWidth(200));
                     GUILayout.EndHorizontal();
 
                     if (_selectedModIndex == modCount)
@@ -366,7 +421,7 @@ namespace BroMakerLib.UnityMod
 
                 GUILayout.Space( 5 );
                 GUILayout.BeginHorizontal();
-                if ( GUILayout.Button( "Enable All", GUILayout.Width(100) ) )
+                if ( GUILayout.Button( "Enable All", ScaledWidth(100) ) )
                 {
                     foreach ( BroMakerMod mod in Mods )
                     {
@@ -377,7 +432,7 @@ namespace BroMakerLib.UnityMod
                     }
                 }
                 GUILayout.Space( 5 );
-                if ( GUILayout.Button( "Disable All", GUILayout.Width(100) ) )
+                if ( GUILayout.Button( "Disable All", ScaledWidth(100) ) )
                 {
                     foreach ( BroMakerMod mod in Mods )
                     {
@@ -449,7 +504,7 @@ namespace BroMakerLib.UnityMod
 
             // Player Selector
             //Main.selectedPlayerNum = RGUI.HorizontalSliderInt("Player Num: ", Main.selectedPlayerNum, 0, 3, 200);
-            GUILayout.BeginHorizontal( GUILayout.ExpandWidth( false ), GUILayout.Width(500) );
+            GUILayout.BeginHorizontal( GUILayout.ExpandWidth( false ), ScaledWidth(500) );
             for ( int i = 0; i < 4; ++i )
             {
                 if ( ( Main.selectedPlayerNum == i ) != GUILayout.Toggle( Main.selectedPlayerNum == i, "Player " + ( i + 1 ), _buttonStyle ) )
@@ -525,7 +580,7 @@ namespace BroMakerLib.UnityMod
         {
             // show mod information
             GUILayout.BeginHorizontal("box");
-            if ((_selectedCustomBrosIndex == broIndex) != GUILayout.Toggle(_selectedCustomBrosIndex == broIndex, mod.StoredHeroes[0].name, _buttonStyle, GUILayout.Width(150)))
+            if ((_selectedCustomBrosIndex == broIndex) != GUILayout.Toggle(_selectedCustomBrosIndex == broIndex, mod.StoredHeroes[0].name, _buttonStyle, ScaledWidth(150)))
             {
                 if (_selectedCustomBrosIndex == broIndex)
                 {
@@ -540,23 +595,29 @@ namespace BroMakerLib.UnityMod
                 }
             }
             GUILayout.Space(50);
-            GUILayout.Label(mod.Author, GUILayout.Width(200));
-            GUILayout.Label(mod.Version, GUILayout.Width(200));
+            GUILayout.Label(mod.Author, ScaledWidth(200));
+            GUILayout.Label(mod.Version, ScaledWidth(200));
             if ( mod.ErrorMessage == string.Empty )
             {
-                GUILayout.Label(mod.BroMakerVersion, GUILayout.Width(200));
+                GUILayout.Label(mod.BroMakerVersion, ScaledWidth(200));
             }
             else
             {
-                GUILayout.Label(mod.BroMakerVersion, _warningStyle, GUILayout.Width(200));
+                GUILayout.Label(mod.BroMakerVersion, _warningStyle, ScaledWidth(200));
             }
             if ( BSett.instance.getBroEnabled( mod.StoredHeroes[0].name ) )
             {
-                GUILayout.Label( "Enabled", _enabledStyle, GUILayout.Width( 200 ) );
+                if ( GUILayout.Button("Enabled", _enabledStyleButton, ScaledWidth( 110 ) ) )
+                {
+                    BSett.instance.setBroEnabled( mod.StoredHeroes[0].name, false );
+                }
             }
             else
             {
-                GUILayout.Label( "Disabled", _disabledStyle, GUILayout.Width( 200 ) );
+                if ( GUILayout.Button( "Disabled", _disabledStyleButton, ScaledWidth( 110 ) ) )
+                {
+                    BSett.instance.setBroEnabled( mod.StoredHeroes[0].name, true );
+                }
             }
             GUILayout.EndHorizontal();
 
@@ -574,6 +635,13 @@ namespace BroMakerLib.UnityMod
 
         public static void Settings()
         {
+            _showGeneralSettings = GUILayout.Toggle( _showGeneralSettings, "General Options", _headerStyle );
+
+            if ( _showGeneralSettings )
+            {
+                ShowGeneralSettings();
+            }
+
             _showSpawnSettings = GUILayout.Toggle( _showSpawnSettings, "Spawn Options", _headerStyle );
 
             if ( _showSpawnSettings )
@@ -588,6 +656,13 @@ namespace BroMakerLib.UnityMod
                 ShowDeveloperSettings();
             }
 
+        }
+
+        private static void ShowGeneralSettings()
+        {
+            GUILayout.Space( 15 );
+            BSett.instance.scaleUIWithWindowWidth = GUILayout.Toggle( BSett.instance.scaleUIWithWindowWidth, "Scale UI with window width" );
+            GUILayout.Space( 15 );
         }
 
         private static void ShowSpawnSettings()
@@ -645,6 +720,7 @@ namespace BroMakerLib.UnityMod
                     _tabSelected = _normalTabs.Count() - 1;
                 }
             }
+            GUILayout.Space( 10 );
         }
 
         private static void ReloadFiles()
