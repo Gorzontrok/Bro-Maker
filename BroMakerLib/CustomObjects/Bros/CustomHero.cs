@@ -541,6 +541,167 @@ namespace BroMakerLib.CustomObjects.Bros
         }
 
         /// <summary>
+        /// Saves settings for a specific custom bro type without requiring an instance.
+        /// </summary>
+        /// <typeparam name="T">The custom bro type whose settings should be saved</typeparam>
+        /// <remarks>
+        /// - If the directory path is not cached, retrieves it from BroMakerStorage
+        /// - Only saves non-null values
+        /// - Creates or overwrites the settings file in the appropriate directory
+        /// </remarks>
+        public static void SaveSettings<T>() where T : CustomHero
+        {
+            var type = typeof( T );
+
+            // Get or retrieve the directory path
+            string directoryPath;
+            if ( !_typeDirectoryCache.TryGetValue( type, out directoryPath ) )
+            {
+                directoryPath = Storages.BroMakerStorage.GetHeroByType<T>().GetInfo().path;
+                if ( string.IsNullOrEmpty( directoryPath ) )
+                {
+                    Console.WriteLine( $"Error: Could not determine directory path for custom bro {type.Name}" );
+                    return;
+                }
+                _typeDirectoryCache[type] = directoryPath;
+            }
+
+            // Get saveable members
+            var saveableMembers = GetSaveableMembers( type );
+            if ( saveableMembers.Count == 0 )
+                return;
+
+            var data = new Dictionary<string, object>();
+
+            foreach ( var member in saveableMembers )
+            {
+                string key = null;
+                object value = null;
+
+                SaveableSettingAttribute attr;
+                if ( member is FieldInfo field )
+                {
+                    attr = (SaveableSettingAttribute)field.GetCustomAttributes( typeof( SaveableSettingAttribute ), false ).FirstOrDefault();
+                    key = attr?.Name ?? field.Name;
+                    value = field.GetValue( null );
+                }
+                else if ( member is PropertyInfo property )
+                {
+                    attr = (SaveableSettingAttribute)property.GetCustomAttributes( typeof( SaveableSettingAttribute ), false ).FirstOrDefault();
+                    key = attr?.Name ?? property.Name;
+                    value = property.GetValue( null, null );
+                }
+
+                if ( value != null && key != null )
+                    data[key] = value;
+            }
+
+            if ( data.Count > 0 )
+            {
+                var fileName = $"{type.Name}settings.json";
+                string json = JsonConvert.SerializeObject( data, Formatting.Indented );
+                File.WriteAllText( Path.Combine( directoryPath, fileName ), json );
+            }
+        }
+
+        /// <summary>
+        /// Loads settings for a specific custom bro type without requiring an instance.
+        /// </summary>
+        /// <typeparam name="T">The custom bro type whose settings should be loaded</typeparam>
+        /// <remarks>
+        /// - If the directory path is not cached, retrieves it from BroMakerStorage
+        /// - Silently returns if the settings file doesn't exist
+        /// - Automatically handles type conversion including enums and complex types
+        /// - Logs errors for individual fields that fail to load but continues with other fields
+        /// </remarks>
+        public static void LoadSettings<T>() where T : CustomHero
+        {
+            var type = typeof( T );
+
+            // Get or retrieve the directory path
+            string directoryPath;
+            if ( !_typeDirectoryCache.TryGetValue( type, out directoryPath ) )
+            {
+                directoryPath = Storages.BroMakerStorage.GetHeroByType<T>().GetInfo().path;
+                if ( string.IsNullOrEmpty( directoryPath ) )
+                {
+                    Console.WriteLine( $"Error: Could not determine directory path for custom bro {type.Name}" );
+                    return;
+                }
+                _typeDirectoryCache[type] = directoryPath;
+            }
+
+            var fileName = Path.Combine( directoryPath, $"{type.Name}settings.json" );
+            if ( !File.Exists( fileName ) )
+                return;
+
+            try
+            {
+                string json = File.ReadAllText( fileName );
+                var data = JsonConvert.DeserializeObject<Dictionary<string, object>>( json );
+
+                if ( data == null )
+                    return;
+
+                var saveableMembers = GetSaveableMembers( type );
+
+                foreach ( var member in saveableMembers )
+                {
+                    SaveableSettingAttribute attr = null;
+                    string key = null;
+
+                    if ( member is FieldInfo )
+                    {
+                        FieldInfo field = (FieldInfo)member;
+                        attr = (SaveableSettingAttribute)field.GetCustomAttributes( typeof( SaveableSettingAttribute ), false ).FirstOrDefault();
+                        key = attr?.Name ?? field.Name;
+
+                        if ( data.ContainsKey( key ) )
+                        {
+                            try
+                            {
+                                var value = data[key];
+                                var convertedValue = ConvertValue( value, field.FieldType );
+                                field.SetValue( null, convertedValue );
+                            }
+                            catch ( Exception ex )
+                            {
+                                Console.WriteLine( $"Error loading {key}: {ex.Message}" );
+                            }
+                        }
+                    }
+                    else if ( member is PropertyInfo )
+                    {
+                        var property = (PropertyInfo)member;
+                        if ( property.CanWrite )
+                        {
+                            attr = (SaveableSettingAttribute)property.GetCustomAttributes( typeof( SaveableSettingAttribute ), false ).FirstOrDefault();
+                            key = attr?.Name ?? property.Name;
+
+                            if ( data.ContainsKey( key ) )
+                            {
+                                try
+                                {
+                                    var value = data[key];
+                                    var convertedValue = ConvertValue( value, property.PropertyType );
+                                    property.SetValue( null, convertedValue, null );
+                                }
+                                catch ( Exception ex )
+                                {
+                                    Console.WriteLine( $"Error loading {key}: {ex.Message}" );
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch ( Exception ex )
+            {
+                Console.WriteLine( $"Error loading settings from {fileName}: {ex.Message}" );
+            }
+        }
+
+        /// <summary>
         /// Saves settings for all custom bros that have been previously loaded or saved.
         /// This static method uses cached custom bro and directory information to save all settings without requiring instances.
         /// </summary>
@@ -626,7 +787,7 @@ namespace BroMakerLib.CustomObjects.Bros
             return hasSaveable;
         }
 
-        private List<MemberInfo> GetSaveableMembers( Type type )
+        private static List<MemberInfo> GetSaveableMembers( Type type )
         {
             if ( _saveableMembersCache.TryGetValue( type, out var cached ) )
                 return cached;
@@ -651,7 +812,7 @@ namespace BroMakerLib.CustomObjects.Bros
             return members;
         }
 
-        private object ConvertValue( object value, Type targetType )
+        private static object ConvertValue( object value, Type targetType )
         {
             if ( value == null )
                 return null;

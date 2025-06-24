@@ -599,6 +599,29 @@
             - Uses cached custom bro information for better performance on subsequent calls
             </remarks>
         </member>
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.SaveSettings``1">
+            <summary>
+            Saves settings for a specific custom bro type without requiring an instance.
+            </summary>
+            <typeparam name="T">The custom bro type whose settings should be saved</typeparam>
+            <remarks>
+            - If the directory path is not cached, retrieves it from BroMakerStorage
+            - Only saves non-null values
+            - Creates or overwrites the settings file in the appropriate directory
+            </remarks>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.LoadSettings``1">
+            <summary>
+            Loads settings for a specific custom bro type without requiring an instance.
+            </summary>
+            <typeparam name="T">The custom bro type whose settings should be loaded</typeparam>
+            <remarks>
+            - If the directory path is not cached, retrieves it from BroMakerStorage
+            - Silently returns if the settings file doesn't exist
+            - Automatically handles type conversion including enums and complex types
+            - Logs errors for individual fields that fail to load but continues with other fields
+            </remarks>
+        </member>
         <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.SaveAll">
             <summary>
             Saves settings for all custom bros that have been previously loaded or saved.
