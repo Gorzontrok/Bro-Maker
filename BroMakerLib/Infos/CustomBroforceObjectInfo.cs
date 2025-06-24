@@ -268,14 +268,14 @@ namespace BroMakerLib.Infos
                 else if (fieldType == typeof(Projectile) || fieldType.IsAssignableFrom(typeof(Projectile)))
                 {
                     var name = (string)value;
-                    var proj = CustomProjectileInfo.GetProjectileFromName(name);
+                    var proj = LoadBroforceObjects.GetProjectileFromName(name);
                     if (proj != null)
                         field.SetValue(proj);
                 }
                 else if (fieldType == typeof(Grenade) || fieldType.IsAssignableFrom(typeof(Grenade)))
                 {
                     var name = (string)value;
-                    var grenade = LoadGrenade.FromName(name);
+                    var grenade = LoadBroforceObjects.GetGrenadeFromName(name);
                     if (grenade != null)
                         field.SetValue(grenade);
                 }

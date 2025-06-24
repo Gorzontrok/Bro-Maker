@@ -91,138 +91,6 @@
             <param name="isOnFire"></param>
             <returns></returns>
         </member>
-        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHeroExtended.SpawnGrenade(Grenade)">
-            <summary>
-            Throw grenade and handle direction if characters crouching
-            </summary>
-            <param name="grenade"></param>
-        </member>
-        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHeroExtended.UIOptions">
-            <summary>
-            Override this method to have UI options displayed for your custom hero underneath their name in the Custom Bros tab
-            </summary>
-        </member>
-        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHeroExtended.HarmonyPatches(HarmonyLib.Harmony)">
-            <summary>
-            Override this method to add custom harmony patches to your custom hero
-            </summary>
-            <param name="harmony"></param>
-        </member>
-        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHeroExtended.PreloadAssets">
-            <summary>
-            Override this method to add your own assets to be preloaded when the game starts, to avoid lag when spawning as custom characters.
-            </summary>
-        </member>
-        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHeroExtended.PreloadSprites(System.String,System.Collections.Generic.List{System.String})">
-            <summary>
-            Preloads each sprite in the spritePaths list.
-            </summary>
-            <param name="directoryPath">Path to the directory containing the sprites</param>
-            <param name="spritePaths">Sprites to load</param>
-        </member>
-        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHeroExtended.PreloadSounds(System.String,System.Collections.Generic.List{System.String})">
-            <summary>
-            Preloads each sound in the soundPaths list.
-            </summary>
-            <param name="directoryPath">Path to the directory containing the sound files</param>
-            <param name="soundPaths">Sounds to load</param>
-        </member>
-        <member name="F:BroMakerLib.CustomObjects.Bros.CustomHero.directoryPath">
-            <summary>
-            Contains the path to the directory that contains your custom bro's dll
-            </summary>
-        </member>
-        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.UIOptions">
-            <summary>
-            Override this method to have UI options displayed for your custom hero underneath their name in the Custom Bros tab
-            </summary>
-        </member>
-        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.HarmonyPatches(HarmonyLib.Harmony)">
-            <summary>
-            Override this method to add custom harmony patches to your custom hero
-            </summary>
-            <param name="harmony"></param>
-        </member>
-        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.PreloadAssets">
-            <summary>
-            Override this method to add your own assets to be preloaded when the game starts, to avoid lag when spawning as custom characters.
-            </summary>
-        </member>
-        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.PreloadSprites(System.String,System.Collections.Generic.List{System.String})">
-            <summary>
-            Preloads each sprite in the spritePaths list.
-            </summary>
-            <param name="directoryPath">Path to the directory containing the sprites</param>
-            <param name="spritePaths">Sprites to load</param>
-        </member>
-        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.PreloadSounds(System.String,System.Collections.Generic.List{System.String})">
-            <summary>
-            Preloads each sound in the soundPaths list.
-            </summary>
-            <param name="directoryPath">Path to the directory containing the sound files</param>
-            <param name="soundPaths">Sounds to load</param>
-        </member>
-        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.PrefabSetup">
-            <summary>
-            This method is called once after the prefab is created.
-            </summary>
-        </member>
-        <member name="T:BroMakerLib.CustomObjects.Bros.CustomHero.SaveableSettingAttribute">
-            <summary>
-            Marks a static field or property to be saved/loaded as a persistent setting.
-            Only static members marked with this attribute will be included in settings serialization.
-            </summary>
-        </member>
-        <member name="P:BroMakerLib.CustomObjects.Bros.CustomHero.SaveableSettingAttribute.Name">
-            <summary>
-            Gets or sets the custom name to use as the JSON key for this setting.
-            If not specified, the member name will be used.
-            </summary>
-        </member>
-        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.SaveableSettingAttribute.#ctor(System.String)">
-            <summary>
-            Initializes a new instance of the SaveableSettingAttribute class.
-            </summary>
-            <param name="name">Optional custom name to use as the JSON key. If null, the member name will be used.</param>
-        </member>
-        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.SaveSettings">
-            <summary>
-            Saves all static fields and properties marked with [SaveableSetting] to a JSON file.
-            The file will be saved to the instance's directoryPath with the name format: {BroName}settings.json
-            </summary>
-            <remarks>
-            - Only saves non-null values
-            - Automatically caches the custom bro information for better performance on subsequent calls
-            - Caches the directory path for use with SaveAll()
-            - If no saveable fields exist, no file will be created
-            </remarks>
-        </member>
-        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.LoadSettings">
-            <summary>
-            Loads all static fields and properties marked with [SaveableSetting] from a JSON file.
-            The file is expected to be in the instance's directoryPath with the name format: {BroName}settings.json
-            </summary>
-            <remarks>
-            - Silently returns if the settings file doesn't exist
-            - Automatically handles type conversion including enums and complex types
-            - Logs errors for individual fields that fail to load but continues with other fields
-            - Caches the directory path for use with SaveAll()
-            - Uses cached custom bro information for better performance on subsequent calls
-            </remarks>
-        </member>
-        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.SaveAll">
-            <summary>
-            Saves settings for all custom bros that have been previously loaded or saved.
-            This static method uses cached custom bro and directory information to save all settings without requiring instances.
-            </summary>
-            <remarks>
-            - Only saves settings for custom bros that have been cached (i.e., SaveSettings or LoadSettings was called at least once)
-            - Skips custom bros that don't have a cached directory path
-            - Logs warnings for custom bros without cached directory paths
-            - Logs success/error messages for each custom bro
-            - Useful for application shutdown or periodic auto-saves
-            </remarks>
-        </member>
         <member name="T:BroMakerLib.CustomObjects.Projectiles.CustomGrenade">
             <summary>
             CustomGrenade has all the default functionality of the Grenade class, with extra methods to make creating custom grenades easier
@@ -647,6 +515,102 @@
             <param name="playerNum">The player number who owns this projectile.</param>
             <param name="_zOffset">The Z-axis offset for the projectile spawn position.</param>
             <returns>The spawned Projectile instance.</returns>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Bros.CustomHero.directoryPath">
+            <summary>
+            Contains the path to the directory that contains your custom bro's dll
+            </summary>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.UIOptions">
+            <summary>
+            Override this method to have UI options displayed for your custom hero underneath their name in the Custom Bros tab
+            </summary>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.HarmonyPatches(HarmonyLib.Harmony)">
+            <summary>
+            Override this method to add custom harmony patches to your custom hero
+            </summary>
+            <param name="harmony"></param>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.PreloadAssets">
+            <summary>
+            Override this method to add your own assets to be preloaded when the game starts, to avoid lag when spawning as custom characters.
+            </summary>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.PreloadSprites(System.String,System.Collections.Generic.List{System.String})">
+            <summary>
+            Preloads each sprite in the spritePaths list.
+            </summary>
+            <param name="directoryPath">Path to the directory containing the sprites</param>
+            <param name="spritePaths">Sprites to load</param>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.PreloadSounds(System.String,System.Collections.Generic.List{System.String})">
+            <summary>
+            Preloads each sound in the soundPaths list.
+            </summary>
+            <param name="directoryPath">Path to the directory containing the sound files</param>
+            <param name="soundPaths">Sounds to load</param>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.PrefabSetup">
+            <summary>
+            This method is called once after the prefab is created.
+            </summary>
+        </member>
+        <member name="T:BroMakerLib.CustomObjects.Bros.CustomHero.SaveableSettingAttribute">
+            <summary>
+            Marks a static field or property to be saved/loaded as a persistent setting.
+            Only static members marked with this attribute will be included in settings serialization.
+            </summary>
+        </member>
+        <member name="P:BroMakerLib.CustomObjects.Bros.CustomHero.SaveableSettingAttribute.Name">
+            <summary>
+            Gets or sets the custom name to use as the JSON key for this setting.
+            If not specified, the member name will be used.
+            </summary>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.SaveableSettingAttribute.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the SaveableSettingAttribute class.
+            </summary>
+            <param name="name">Optional custom name to use as the JSON key. If null, the member name will be used.</param>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.SaveSettings">
+            <summary>
+            Saves all static fields and properties marked with [SaveableSetting] to a JSON file.
+            The file will be saved to the instance's directoryPath with the name format: {BroName}settings.json
+            </summary>
+            <remarks>
+            - Only saves non-null values
+            - Automatically caches the custom bro information for better performance on subsequent calls
+            - Caches the directory path for use with SaveAll()
+            - If no saveable fields exist, no file will be created
+            </remarks>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.LoadSettings">
+            <summary>
+            Loads all static fields and properties marked with [SaveableSetting] from a JSON file.
+            The file is expected to be in the instance's directoryPath with the name format: {BroName}settings.json
+            </summary>
+            <remarks>
+            - Silently returns if the settings file doesn't exist
+            - Automatically handles type conversion including enums and complex types
+            - Logs errors for individual fields that fail to load but continues with other fields
+            - Caches the directory path for use with SaveAll()
+            - Uses cached custom bro information for better performance on subsequent calls
+            </remarks>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.SaveAll">
+            <summary>
+            Saves settings for all custom bros that have been previously loaded or saved.
+            This static method uses cached custom bro and directory information to save all settings without requiring instances.
+            </summary>
+            <remarks>
+            - Only saves settings for custom bros that have been cached (i.e., SaveSettings or LoadSettings was called at least once)
+            - Skips custom bros that don't have a cached directory path
+            - Logs warnings for custom bros without cached directory paths
+            - Logs success/error messages for each custom bro
+            - Useful for application shutdown or periodic auto-saves
+            </remarks>
         </member>
         <member name="M:BroMakerLib.ICustomHeroExtensions.AssignNullVariables(BroMakerLib.CustomObjects.ICustomHero,BroBase)">
             <summary>

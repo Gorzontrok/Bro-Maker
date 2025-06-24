@@ -1,5 +1,4 @@
-﻿using BroMakerLib.CustomObjects.Components;
-using BroMakerLib.Infos;
+﻿using BroMakerLib.Infos;
 using System.Collections.Generic;
 using UnityEngine;
 

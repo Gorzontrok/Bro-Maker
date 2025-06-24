@@ -32,8 +32,6 @@ namespace BroMakerLib
         public StoredHero[] StoredHeroes {  get; set; }
         [JsonIgnore]
         public StoredAbility[] StoredAbilities {  get; set; }
-        [JsonIgnore]
-        public StoredGrenade[] StoredGrenades{  get; set; }
 
         public static BroMakerMod TryLoad(string path)
         {

@@ -16,7 +16,6 @@ namespace BroMakerLib.ModManager
         {
             mods = new List<BroMakerMod>();
             LoadMods();
-            LoadModsContents();
         }
 
         private static void LoadMods()
@@ -68,16 +67,6 @@ namespace BroMakerLib.ModManager
                 }
             }
             BMLogger.Debug("Finish Loading Mods");
-        }
-
-        private static void LoadModsContents()
-        {
-            BMLogger.Debug("Loading Mods Content");
-            foreach (BroMakerMod mod in mods)
-            {
-                MakerObjectStorage.StoreCharactersFromMod(mod);
-            }
-            BMLogger.Debug("Finish Loading Mods Content");
         }
     }
 }

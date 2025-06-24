@@ -1,24 +1,35 @@
 ﻿using BroMakerLib.Loggers;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using UnityEngine;
 
-namespace BroMakerLib.Infos
+namespace BroMakerLib.Loaders
 {
-    public class CustomProjectileInfo : CustomBroforceObjectInfo
+    public class LoadBroforceObjects
     {
-        public static CustomProjectileInfo RambroProjectile
+        public static readonly Dictionary<string, string> GrenadesVanilla = new Dictionary<string, string>()
         {
-            get
-            {
-                return new CustomProjectileInfo("bf_Rambro", true);
-            }
-        }
-
-        public readonly bool isVanillaProjectile = false;
-
-        protected new string _defaultName = "PROJECTILE";
+            { "Grenade", "networkobjects:Grenade" },
+            { "Default", "networkobjects:Grenade" },
+            { "Martini", "networkobjects:Martini Grenade" },
+            { "TearGas", "networkobjects:GrenadeTearGas" },
+            { "FlameWave", "networkobjects:GrenadeFlameWave" },
+            { "AirStrike", "networkobjects:Grenade Airstrike" },
+            { "FlashBang", "networkobjects:FlashBang" },
+            { "Hologram", "networkobjects:GrenadeHologram" },
+            { "Cluster", "networkobjects:GrenadeCluster" },
+            { "Sticky", "networkobjects:Grenade Sticky" },
+            { "GrenadeTollBroad", "networkobjects:GrenadeTollBroad" },
+            { "SummonTank", "networkobjects:Grenade Summon Tank" },
+            { "Molotove", "networkobjects:Grenade Molotove" },
+            { "HolyWater", "networkobjects:GrenadeHolyWater" },
+            { "Freeze", "networkobjects:DemolitionBroFreezeBomb" },
+            { "MechDrop", "networkobjects:Grenade MechDrop" },
+            { "AlienPheromones", "networkobjects:Grenade Alien Pheromones" },
+            { "EvilSmall", "networkobjects:GrenadeEvilSmall Long fuse" },
+            { "EvilBig", "networkobjects:GrenadeEvilBig" },
+            { "EvilBigShortLife", "networkobjects:GrenadeEvilBig Short Life" },
+        };
 
         protected static readonly Dictionary<string, string> projectileVanilla = new Dictionary<string, string>()
         {
@@ -78,35 +89,48 @@ namespace BroMakerLib.Infos
             { "FlameThrower3", "sharedassets:FlameThrower Bullet 3" },
         };
 
-
-        public CustomProjectileInfo() : base() { }
-        public CustomProjectileInfo(string name) : base(name) { }
-
-        private CustomProjectileInfo(string name, bool isVanillaProjectile) : base(name)
+        public static Grenade GetGrenadeFromName( string name )
         {
-            this.isVanillaProjectile = isVanillaProjectile;
+            if ( string.IsNullOrEmpty( name ) )
+            {
+                return InstantiationController.GetPrefabFromResourceName( GrenadesVanilla["Default"] ).GetComponent<Grenade>();
+            }
+            try
+            {
+                string resourceName = string.Empty;
+                if ( name.Contains( ":" ) )
+                    resourceName = name;
+                else
+                    resourceName = GrenadesVanilla[name];
+                var go = InstantiationController.GetPrefabFromResourceName( resourceName );
+                if ( go != null )
+                    return go.GetComponent<Grenade>();
+            }
+            catch ( Exception e )
+            {
+                BMLogger.Log( $"Error with loading {name}\n{e}", LogType.Warning );
+            }
+            return InstantiationController.GetPrefabFromResourceName( GrenadesVanilla["Default"] ).GetComponent<Grenade>();
         }
 
-        //public ProjectileStats stats;
-
-        public static Projectile GetProjectileFromName(string name)
+        public static Projectile GetProjectileFromName( string name )
         {
             try
             {
                 string resourceName = string.Empty;
-                if (name.Contains(":"))
+                if ( name.Contains( ":" ) )
                     resourceName = name;
                 else
                     resourceName = projectileVanilla[name];
-                var go = InstantiationController.GetPrefabFromResourceName(resourceName);
-                if (go != null)
+                var go = InstantiationController.GetPrefabFromResourceName( resourceName );
+                if ( go != null )
                     return go.GetComponent<Projectile>();
             }
-            catch (Exception e)
+            catch ( Exception e )
             {
-                BMLogger.Log(e.ToString(), UnityEngine.LogType.Warning);
+                BMLogger.Log( e.ToString(), UnityEngine.LogType.Warning );
             }
-            return InstantiationController.GetPrefabFromResourceName(projectileVanilla["Default"]).GetComponent<Projectile>();
+            return InstantiationController.GetPrefabFromResourceName( projectileVanilla["Default"] ).GetComponent<Projectile>();
         }
     }
 }
