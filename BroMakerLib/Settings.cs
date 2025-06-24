@@ -40,6 +40,8 @@ namespace BroMakerLib
         public bool disableCustomAvatarFlash = true;
         public bool developerMode = false;
         public bool scaleUIWithWindowWidth = false;
+        public bool disableTooltips = false;
+        public bool scaleUIHeight = false;
 
         public Dictionary<string, bool> enabledBros = new Dictionary<string, bool>();
         public int enabledBroCount = 0;
@@ -129,6 +131,11 @@ namespace BroMakerLib
             else
             {
                 --enabledBroCount;
+            }
+            // Update spawn probability to account for additional enabled / disabled bro
+            if ( this.equalSpawnProbability )
+            {
+                this.automaticSpawnProbabilty = this.calculateSpawnProbability();
             }
         }
 

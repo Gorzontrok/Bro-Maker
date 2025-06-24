@@ -47,7 +47,7 @@ namespace BroMakerLib.ModManager
                         {
                             incompatibleMods.Add(mod);
                             BMLogger.Error($"{modName} will not work with this version of BroMaker. You must update {modName}.");
-                            mod.ErrorMessage = modName + " uses an outdated version of BroMaker (" + mod.BroMakerVersion + ") you must update " + modNameLowerCase + " to a version that supports BroMaker " + Info.ParsedMinimumVersion + ".";
+                            mod.ErrorMessage = modName + " was created using an outdated version of BroMaker (" + mod.BroMakerVersion + ") you must update " + modNameLowerCase + " to a version that supports BroMaker " + Info.ParsedMinimumVersion + ".";
                         }
                         // Versions are compatible
                         else
@@ -55,7 +55,7 @@ namespace BroMakerLib.ModManager
                             // Let user know the bro may have compatibility issues with this version
                             if ( Info.ParsedSuggestedMinimumVersion > modVersion )
                             {
-                                mod.ErrorMessage = modName + " uses an outdated version of BroMaker (" + mod.BroMakerVersion + ") you may experience bugs using it on this version of BroMaker. It's recommended that you update " + modNameLowerCase +  " to a newer version if possible.";
+                                mod.ErrorMessage = modName + " was created using an outdated version of BroMaker (" + mod.BroMakerVersion + ") you may experience bugs using it on this version of BroMaker. It's recommended that you update " + modNameLowerCase +  " to a newer version if possible.";
                             }
                             mod.Initialize();
                             mods.Add(mod);
