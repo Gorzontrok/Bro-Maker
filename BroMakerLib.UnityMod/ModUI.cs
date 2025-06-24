@@ -125,7 +125,7 @@ namespace BroMakerLib.UnityMod
                     GUILayout.Label( " " );
                     GUILayout.EndHorizontal();
                 }
-                catch
+                catch ( Exception )
                 {
                 }
                 return;
@@ -168,25 +168,13 @@ namespace BroMakerLib.UnityMod
             if ( _enabledStyleButton == null )
             {
                 _enabledStyleButton = new GUIStyle( GUI.skin.button );
-                //_enabledStyleButton.normal.textColor = Color.green;
-                _enabledStyleButton.normal.textColor = Color.black;
-                Texture2D texture = new Texture2D( 1, 1 );
-                texture.SetPixel( 0, 0, Color.green );
-                texture.Apply();
-                _enabledStyleButton.normal.background = texture;
-                _enabledStyleButton.hover.background = texture;
+                _enabledStyleButton.normal.textColor = Color.green;
             }
 
             if ( _disabledStyleButton == null )
             {
                 _disabledStyleButton = new GUIStyle( GUI.skin.button );
-                //_disabledStyleButton.normal.textColor = Color.red;
-                _disabledStyleButton.normal.textColor = Color.black;
-                Texture2D texture = new Texture2D( 1, 1 );
-                texture.SetPixel( 0, 0, Color.red );
-                texture.Apply();
-                _disabledStyleButton.normal.background = texture;
-                _disabledStyleButton.hover.background = texture;
+                _disabledStyleButton.normal.textColor = Color.red;
             }
 
             string[] tabsNames = _tabs.Keys.ToArray();
