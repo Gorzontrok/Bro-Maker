@@ -150,9 +150,9 @@ namespace BroMakerLib
             foreach (KeyValuePair<string, bool> bro in this.enabledBros)
             {
                 bool found = false;
-                for (int i = 0; i < MakerObjectStorage.Bros.Length; ++i)
+                for (int i = 0; i < BroMakerStorage.Bros.Length; ++i)
                 {
-                    if (MakerObjectStorage.Bros[i].name == bro.Key )
+                    if (BroMakerStorage.Bros[i].name == bro.Key )
                     {
                         found = true;
                         break;
@@ -186,7 +186,7 @@ namespace BroMakerLib
             if ( this.overrideNextBroSpawn )
             {
                 this.overrideNextBroSpawn = false;
-                return MakerObjectStorage.GetHeroByName(this.nextBroSpawn);
+                return BroMakerStorage.GetHeroByName(this.nextBroSpawn);
             }
 
             int chosen = UnityEngine.Random.Range(0, enabledBroCount);
@@ -204,7 +204,7 @@ namespace BroMakerLib
                 }
             }
 
-            return MakerObjectStorage.GetHeroByName( chosenName);
+            return BroMakerStorage.GetHeroByName( chosenName);
         }
 
         public StoredHero GetRandomHardcoreBro(bool isRescue)
@@ -212,7 +212,7 @@ namespace BroMakerLib
             if (this.overrideNextBroSpawn)
             {
                 this.overrideNextBroSpawn = false;
-                return MakerObjectStorage.GetHeroByName( this.nextBroSpawn);
+                return BroMakerStorage.GetHeroByName( this.nextBroSpawn);
             }
 
             if ( isRescue && this.notUnlockedBros.Count() > 0 )
@@ -222,14 +222,14 @@ namespace BroMakerLib
                 this.availableBros.Add(this.notUnlockedBros[chosen]);
                 this.notUnlockedBros.RemoveAt(chosen);
 
-                return MakerObjectStorage.GetHeroByName( chosenName);
+                return BroMakerStorage.GetHeroByName( chosenName);
             }
             else
             {
                 int chosen = UnityEngine.Random.Range(0, this.availableBros.Count());
                 string chosenName = this.availableBros[chosen];
 
-                return MakerObjectStorage.GetHeroByName( chosenName);
+                return BroMakerStorage.GetHeroByName( chosenName);
             }
         }
     }

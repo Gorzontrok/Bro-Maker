@@ -3,7 +3,6 @@ using BroMakerLib.Editor;
 using BroMakerLib.Infos;
 using BroMakerLib.Loaders;
 using BroMakerLib.Loggers;
-using BroMakerLib.ModManager;
 using BroMakerLib.Storages;
 using RocketLib;
 using System;
@@ -24,14 +23,14 @@ namespace BroMakerLib.UnityMod
         {
             get
             {
-                return ModLoader.mods;
+                return BroMakerStorage.mods;
             }
         }
         public static List<BroMakerMod> IncompatibleMods
         {
             get
             {
-                return ModLoader.incompatibleMods;
+                return BroMakerStorage.incompatibleMods;
             }
         }
 
@@ -224,7 +223,7 @@ namespace BroMakerLib.UnityMod
                 GUILayout.BeginHorizontal();
                 if ( GUILayout.Button( new GUIContent( "Reload Mods", "Reloads all BroMaker mods" ), GUILayout.ExpandWidth( false ) ) )
                 {
-                    ModManager.ModLoader.Initialize();
+                    BroMakerStorage.Initialize();
                 }
                 if ( GUILayout.Button( new GUIContent( "Reload Bros", "Reloads all custom bros in the currently loaded BroMaker mods" ), GUILayout.ExpandWidth( false ) ) )
                 {

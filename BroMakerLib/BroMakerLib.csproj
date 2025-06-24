@@ -131,7 +131,7 @@
     <Compile Include="Cutscenes\CutsceneSpriteAnimatedJsonConverter.cs" />
     <Compile Include="Cutscenes\CutsceneIntroExtra.cs" />
     <Compile Include="Loaders\LoadBroforceObjects.cs" />
-    <Compile Include="ModManager\BroMakerMod.cs" />
+    <Compile Include="Storages\BroMakerMod.cs" />
     <Compile Include="Info.cs" />
     <Compile Include="CustomObjects\Bros\SwordHero.cs" />
     <Compile Include="Cutscenes\CustomCutsceneController.cs" />
@@ -143,12 +143,11 @@
     <Compile Include="Infos\AbilityInfo.cs" />
     <Compile Include="Infos\CustomBroforceObjectInfo.cs" />
     <Compile Include="Infos\CustomCharacterInfo.cs" />
-    <Compile Include="ModManager\ModLoader.cs" />
     <Compile Include="Parameters.cs" />
-    <Compile Include="PresetManager.cs" />
+    <Compile Include="Storages\PresetManager.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="Storages\MakerObjectStorage.cs" />
-    <Compile Include="DirectoriesManager.cs" />
+    <Compile Include="Storages\BroMakerStorage.cs" />
+    <Compile Include="Storages\DirectoriesManager.cs" />
     <Compile Include="CustomObjects\ICustomHero.cs" />
     <Compile Include="Infos\CustomBroInfo.cs" />
     <Compile Include="Loaders\LoadHero.cs" />

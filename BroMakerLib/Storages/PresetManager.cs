@@ -1,6 +1,6 @@
 ﻿using BroMakerLib.Attributes;
 using BroMakerLib.Loggers;
-using BroMakerLib.ModManager;
+using BroMakerLib.Storages;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -33,7 +33,7 @@ namespace BroMakerLib
             CheckAssembly(Assembly.GetExecutingAssembly());
 
             // Load assemblies of mods
-            foreach (BroMakerMod mod in ModLoader.mods)
+            foreach (BroMakerMod mod in BroMakerStorage.mods)
             {
                 foreach(string assemblyPath in mod.Assemblies)
                 {

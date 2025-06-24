@@ -1,7 +1,6 @@
 ﻿using BroMakerLib.CustomObjects.Bros;
 using BroMakerLib.Infos;
 using BroMakerLib.Loggers;
-using BroMakerLib.ModManager;
 using BroMakerLib.Storages;
 using HarmonyLib;
 using Newtonsoft.Json.Linq;
@@ -31,8 +30,7 @@ namespace BroMakerLib
                 Settings.Load();
                 DirectoriesManager.Initialize();
 
-                ModLoader.Initialize();
-                MakerObjectStorage.Initialize();
+                BroMakerStorage.Initialize();
                 PresetManager.Initialize();
 
                 _hasInit = true;
@@ -58,9 +56,9 @@ namespace BroMakerLib
         public static void PreloadBroAssets()
         {
             // Preload all assets listed in the Json file
-            for ( int i = 0; i < MakerObjectStorage.Bros.Length; ++i )
+            for ( int i = 0; i < BroMakerStorage.Bros.Length; ++i )
             {
-                CustomBroInfo info = MakerObjectStorage.Bros[i].GetInfo();
+                CustomBroInfo info = BroMakerStorage.Bros[i].GetInfo();
                 List<string> spritePaths = new List<string>();
                 List<string> soundPaths = new List<string>();
 
@@ -136,7 +134,7 @@ namespace BroMakerLib
 
         public static void ReloadFiles()
         {
-            MakerObjectStorage.Initialize();
+            BroMakerStorage.Initialize();
         }
     }
 }
