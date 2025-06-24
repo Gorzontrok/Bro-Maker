@@ -1,12 +1,9 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using BroMakerLib.Storages;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using BroMakerLib.Storages;
-using System.Collections;
 
 namespace BroMakerLib
 {
@@ -51,14 +48,14 @@ namespace BroMakerLib
         public List<List<string>> _availableBros;
 
         [JsonIgnore]
-        public List<string> notUnlockedBros
+        public List<string> NotUnlockedBros
         {
             get => _notUnlockedBros[PlayerProgress.currentWorldMapSaveSlot];
             set => _notUnlockedBros[PlayerProgress.currentWorldMapSaveSlot] = value;
         }
 
         [JsonIgnore]
-        public List<string> availableBros
+        public List<string> AvailableBros
         {
             get => _availableBros[PlayerProgress.currentWorldMapSaveSlot];
             set => _availableBros[PlayerProgress.currentWorldMapSaveSlot] = value;
@@ -123,15 +120,15 @@ namespace BroMakerLib
 
         public void SetBroEnabled(string name, bool enabled)
         {
-            enabledBros[name] = enabled;
-            if ( enabled )
+            if ( enabled && !enabledBros[name] )
             {
                 ++enabledBroCount;
             }
-            else
+            else if ( !enabled && enabledBros[name] )
             {
                 --enabledBroCount;
             }
+            enabledBros[name] = enabled;
             // Update spawn probability to account for additional enabled / disabled bro
             if ( this.equalSpawnProbability )
             {
@@ -215,19 +212,19 @@ namespace BroMakerLib
                 return BroMakerStorage.GetHeroByName( this.nextBroSpawn);
             }
 
-            if ( isRescue && this.notUnlockedBros.Count() > 0 )
+            if ( isRescue && this.NotUnlockedBros.Count() > 0 )
             {
-                int chosen = UnityEngine.Random.Range(0, this.notUnlockedBros.Count());
-                string chosenName = this.notUnlockedBros[chosen];
-                this.availableBros.Add(this.notUnlockedBros[chosen]);
-                this.notUnlockedBros.RemoveAt(chosen);
+                int chosen = UnityEngine.Random.Range(0, this.NotUnlockedBros.Count());
+                string chosenName = this.NotUnlockedBros[chosen];
+                this.AvailableBros.Add(this.NotUnlockedBros[chosen]);
+                this.NotUnlockedBros.RemoveAt(chosen);
 
                 return BroMakerStorage.GetHeroByName( chosenName);
             }
             else
             {
-                int chosen = UnityEngine.Random.Range(0, this.availableBros.Count());
-                string chosenName = this.availableBros[chosen];
+                int chosen = UnityEngine.Random.Range(0, this.AvailableBros.Count());
+                string chosenName = this.AvailableBros[chosen];
 
                 return BroMakerStorage.GetHeroByName( chosenName);
             }

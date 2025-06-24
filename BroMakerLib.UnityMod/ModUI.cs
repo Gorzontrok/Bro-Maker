@@ -426,6 +426,7 @@ namespace BroMakerLib.UnityMod
                             BSett.instance.SetBroEnabled( hero.name, true );
                         }
                     }
+                    BSett.instance.CountEnabledBros();
                 }
                 GUILayout.Space( 5 );
                 if ( GUILayout.Button( new GUIContent( "Disable All", "Disable autospawn for all custom bros" ), ScaledWidth(100) ) )
@@ -437,6 +438,7 @@ namespace BroMakerLib.UnityMod
                             BSett.instance.SetBroEnabled( hero.name, false );
                         }
                     }
+                    BSett.instance.CountEnabledBros();
                 }
                 GUILayout.EndHorizontal();
                 GUILayout.EndVertical();

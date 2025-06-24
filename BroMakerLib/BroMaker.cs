@@ -127,7 +127,14 @@ namespace BroMakerLib
                 if (typeof(CustomHero).IsAssignableFrom(kvp.Value))
                 {
                     CustomHero bro = heroHolder.AddComponent(kvp.Value) as CustomHero;
-                    bro.PreloadAssets();
+                    try
+                    {
+                        bro.PreloadAssets();
+                    }
+                    catch ( Exception ex )
+                    {
+                        BMLogger.ExceptionLog( "Exception occurred while preloading " + kvp.Key + "'s assets:", ex );
+                    }
                 }
             }
         }

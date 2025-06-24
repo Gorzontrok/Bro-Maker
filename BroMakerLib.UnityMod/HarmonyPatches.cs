@@ -67,7 +67,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
 
                             PlayerProgress.Instance.yetToBePlayedUnlockedHeroes.Remove(nextHeroType);
                             GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Remove(nextHeroType);
-                            if ( BSett.instance.notUnlockedBros.Count() > 0 )
+                            if ( BSett.instance.NotUnlockedBros.Count() > 0 )
                             {
                                 LoadHero.playCutscene = true;
                             }
@@ -76,8 +76,8 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                         {
                             // Probability of a custom bro being unlocked should be the number of custom bros / number of custom bros + notUnlocked or dead normal bros
                             // We add 1 because the chosen bro will have already been added to the available bros
-                            LoadHero.willReplaceBro[__instance.playerNum] = UnityEngine.Random.value <= (BSett.instance.notUnlockedBros.Count() /
-                                (BSett.instance.notUnlockedBros.Count() + PlayerProgress.Instance.unlockedHeroes.Count() -
+                            LoadHero.willReplaceBro[__instance.playerNum] = UnityEngine.Random.value <= (BSett.instance.NotUnlockedBros.Count() /
+                                (BSett.instance.NotUnlockedBros.Count() + PlayerProgress.Instance.unlockedHeroes.Count() -
                                 GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count() - GameState.Instance.currentWorldmapSave.hardcoreModeDeadBros.Count() + 1.0f));
 
                             // If replacing hero, remove previously unlocked one from available bros
@@ -92,17 +92,17 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                     else if (BSett.instance.onlyCustomInHardcore)
                     {
                         // Check if this is the first character being spawned
-                        if (BSett.instance.availableBros.Count() == 0)
+                        if (BSett.instance.AvailableBros.Count() == 0)
                         {
                             // We use this function to add a character to the pool to start with
                             BSett.instance.GetRandomHardcoreBro(true);
                         }
                         LoadHero.willReplaceBro[__instance.playerNum] = true;
                     }
-                    else if (BSett.instance.availableBros.Count() > 0)
+                    else if (BSett.instance.AvailableBros.Count() > 0)
                     {
-                        LoadHero.willReplaceBro[__instance.playerNum] = UnityEngine.Random.value <= (BSett.instance.availableBros.Count() /
-                        ((float)BSett.instance.availableBros.Count() + GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count()));
+                        LoadHero.willReplaceBro[__instance.playerNum] = UnityEngine.Random.value <= (BSett.instance.AvailableBros.Count() /
+                        ((float)BSett.instance.AvailableBros.Count() + GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count()));
                     }
                 }
                 else if (BSett.instance.automaticSpawn && BSett.instance.enabledBroCount > 0)
@@ -357,7 +357,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
             }
 
             // If there are no available vanilla bros but still more custom bros, make sure the herotype is set to rambro so the game still tries to spawn the player in
-            if (GameModeController.IsHardcoreMode && GameState.Instance.currentWorldmapSave != null && GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count() == 0 && BSett.instance.availableBros.Count() > 0 )
+            if (GameModeController.IsHardcoreMode && GameState.Instance.currentWorldmapSave != null && GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count() == 0 && BSett.instance.AvailableBros.Count() > 0 )
             {
                 __result = HeroType.Rambro;
                 return false;
@@ -413,11 +413,11 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
 
             if (GameModeController.IsHardcoreMode)
             {
-                if ( BSett.instance.onlyCustomInHardcore && BSett.instance.notUnlockedBros.Count() == 0 )
+                if ( BSett.instance.onlyCustomInHardcore && BSett.instance.NotUnlockedBros.Count() == 0 )
                 {
                     return false;
                 }
-                else if ( BSett.instance.notUnlockedBros.Count() +
+                else if ( BSett.instance.NotUnlockedBros.Count() +
                     GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count() + PlayerProgress.Instance.yetToBePlayedUnlockedHeroes.Count() == 0 )
                 {
                     return false;
@@ -442,7 +442,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
             {
                 ICustomHero customHero = (__instance.character as ICustomHero);
                 string broName = customHero.info.name;
-                BSett.instance.availableBros.Remove(broName);
+                BSett.instance.AvailableBros.Remove(broName);
                 __instance.Lives--;
                 return false;
             }
@@ -463,11 +463,11 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
 
             if ( BSett.instance.onlyCustomInHardcore )
             {
-                __result = BSett.instance.notUnlockedBros.Count() > 0;
+                __result = BSett.instance.NotUnlockedBros.Count() > 0;
             }
             else
             {
-                __result = __result || BSett.instance.notUnlockedBros.Count() > 0;
+                __result = __result || BSett.instance.NotUnlockedBros.Count() > 0;
             }
         }
     }
