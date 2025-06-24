@@ -29,25 +29,6 @@ namespace BroMakerLib.Loaders
         public static Player.SpawnType[] previousSpawnInfo = new Player.SpawnType[] { Player.SpawnType.Unknown, Player.SpawnType.Unknown, Player.SpawnType.Unknown, Player.SpawnType.Unknown };
         public static bool[] wasFirstDeployment = new bool[] { false, false, false, false };
         public static Dictionary<int, CustomBroInfo> customBroDeaths;
-        public static void WithCustomBroInfo<T>(int selectedPlayerNum, CustomBroInfo customBroInfo) where T : CustomHero
-        {
-            WithCustomBroInfo(selectedPlayerNum, customBroInfo, typeof(T));
-        }
-
-        public static void WithCustomBroInfo(int selectedPlayerNum, CustomBroInfo customBroInfo)
-        {
-            string preset = customBroInfo.characterPreset;
-            if (preset.IsNullOrEmpty())
-            {
-                throw new NullReferenceException("'characterPreset' is null or empty");
-            }
-            if (!PresetManager.heroesPreset.ContainsKey(preset))
-            {
-                throw new Exception($"'characterPreset': {preset} doesn't exist. Check if you have the preset installed or if there is a typo.");
-            }
-            WithCustomBroInfo(selectedPlayerNum, customBroInfo, PresetManager.heroesPreset[preset]);
-        }
-
 
         public static void WithCustomBroInfo(int selectedPlayerNum, CustomBroInfo customBroInfo, Type type)
         {
@@ -293,76 +274,76 @@ namespace BroMakerLib.Loaders
             player.SetSpawnPositon(bro, arg2, flag2, arg);
         }
 
-        private static void AssignFlexPower(TestVanDammeAnim testVanDammeAnim)
+        private static void AssignFlexPower( TestVanDammeAnim testVanDammeAnim )
         {
             var player = testVanDammeAnim.player;
 
-            if (player.GetFieldValue<PickupType>("_forceFlexPowerupSpawn") != PickupType.None)
+            if ( player.GetFieldValue<PickupType>( "_forceFlexPowerupSpawn" ) != PickupType.None )
             {
-                player.AddFlexPower(player.GetFieldValue<PickupType>("_forceFlexPowerupSpawn"), true);
-                Net.RPC<PickupType, bool>(PID.TargetOthers, new RpcSignature<PickupType, bool>(player.AddFlexPower), player.GetFieldValue<PickupType>("_forceFlexPowerupSpawn"), true, false);
+                player.AddFlexPower( player.GetFieldValue<PickupType>( "_forceFlexPowerupSpawn" ), true );
+                Net.RPC<PickupType, bool>( PID.TargetOthers, new RpcSignature<PickupType, bool>( player.AddFlexPower ), player.GetFieldValue<PickupType>( "_forceFlexPowerupSpawn" ), true, false );
             }
             else
             {
-                switch (Map.MapData.flexPowerType)
+                switch ( Map.MapData.flexPowerType )
                 {
                     case FlexPowerMapType.SpawnWithRandomFlex:
-                        switch (UnityEngine.Random.Range(0, 4))
+                        switch ( UnityEngine.Random.Range( 0, 4 ) )
                         {
                             case 0:
-                                player.AddFlexPower(PickupType.FlexGoldenLight, true);
+                                player.AddFlexPower( PickupType.FlexGoldenLight, true );
                                 break;
                             case 1:
-                                player.AddFlexPower(PickupType.FlexInvulnerability, true);
+                                player.AddFlexPower( PickupType.FlexInvulnerability, true );
                                 break;
                             case 2:
-                                player.AddFlexPower(PickupType.FlexAirJump, true);
+                                player.AddFlexPower( PickupType.FlexAirJump, true );
                                 break;
                             case 3:
-                                player.AddFlexPower(PickupType.FlexTeleport, true);
+                                player.AddFlexPower( PickupType.FlexTeleport, true );
                                 break;
                         }
                         break;
                     case FlexPowerMapType.SpawnWithAllure:
-                        player.AddFlexPower(PickupType.FlexAlluring, true);
+                        player.AddFlexPower( PickupType.FlexAlluring, true );
                         break;
                     case FlexPowerMapType.SpawnWithGoldenLight:
-                        player.AddFlexPower(PickupType.FlexGoldenLight, true);
+                        player.AddFlexPower( PickupType.FlexGoldenLight, true );
                         break;
                     case FlexPowerMapType.SpawnWithInvincible:
-                        player.AddFlexPower(PickupType.FlexInvulnerability, true);
+                        player.AddFlexPower( PickupType.FlexInvulnerability, true );
                         break;
                     case FlexPowerMapType.SpawnWithAirFlex:
-                        player.AddFlexPower(PickupType.FlexAirJump, true);
+                        player.AddFlexPower( PickupType.FlexAirJump, true );
                         break;
                     case FlexPowerMapType.SpawnWithTeleport:
-                        player.AddFlexPower(PickupType.FlexTeleport, true);
+                        player.AddFlexPower( PickupType.FlexTeleport, true );
                         break;
                     case FlexPowerMapType.SpawnWithEarnedFlex:
-                        switch (UnityEngine.Random.Range(0, 4))
+                        switch ( UnityEngine.Random.Range( 0, 4 ) )
                         {
                             case 0:
-                                if (PlayerProgress.IsPickupUnlockedInAnySave(PickupType.FlexGoldenLight))
+                                if ( PlayerProgress.IsPickupUnlockedInAnySave( PickupType.FlexGoldenLight ) )
                                 {
-                                    player.AddFlexPower(PickupType.FlexGoldenLight, true);
+                                    player.AddFlexPower( PickupType.FlexGoldenLight, true );
                                 }
                                 break;
                             case 1:
-                                if (PlayerProgress.IsPickupUnlockedInAnySave(PickupType.FlexInvulnerability))
+                                if ( PlayerProgress.IsPickupUnlockedInAnySave( PickupType.FlexInvulnerability ) )
                                 {
-                                    player.AddFlexPower(PickupType.FlexInvulnerability, true);
+                                    player.AddFlexPower( PickupType.FlexInvulnerability, true );
                                 }
                                 break;
                             case 2:
-                                if (PlayerProgress.IsPickupUnlockedInAnySave(PickupType.FlexAirJump))
+                                if ( PlayerProgress.IsPickupUnlockedInAnySave( PickupType.FlexAirJump ) )
                                 {
-                                    player.AddFlexPower(PickupType.FlexAirJump, true);
+                                    player.AddFlexPower( PickupType.FlexAirJump, true );
                                 }
                                 break;
                             case 3:
-                                if (PlayerProgress.IsPickupUnlockedInAnySave(PickupType.FlexTeleport))
+                                if ( PlayerProgress.IsPickupUnlockedInAnySave( PickupType.FlexTeleport ) )
                                 {
-                                    player.AddFlexPower(PickupType.FlexTeleport, true);
+                                    player.AddFlexPower( PickupType.FlexTeleport, true );
                                 }
                                 break;
                         }
@@ -370,7 +351,6 @@ namespace BroMakerLib.Loaders
                 }
             }
         }
-        private static TestVanDammeAnim GetHeroPrefab(HeroType heroType) => HeroController.GetHeroPrefab(heroType);
 
         public static HeroType GetBaseHeroTypeOfPreset(Type type)
         {
@@ -384,8 +364,7 @@ namespace BroMakerLib.Loaders
 
         private static GameObject CreateOriginal(HeroType heroType, Type type)
         {
-            //GameObject prefab = GetPrefab("networkobjects:Rambo");
-            GameObject prefab = GetHeroPrefab(heroType).gameObject;
+            GameObject prefab = HeroController.GetHeroPrefab( heroType).gameObject;
             prefab.SetActive(false);
             GameObject inst  = UnityEngine.Object.Instantiate(prefab, Vector3.zero, Quaternion.identity);
             prefab.SetActive(true);

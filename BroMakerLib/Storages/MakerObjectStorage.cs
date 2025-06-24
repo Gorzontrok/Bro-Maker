@@ -1,10 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
+﻿using BroMakerLib.CustomObjects.Bros;
+using BroMakerLib.Infos;
 using BroMakerLib.Loggers;
 using BroMakerLib.ModManager;
-using BroMakerLib.Infos;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using static UnityModManagerNet.UnityModManager.Param;
 
 namespace BroMakerLib.Storages
 {
@@ -98,6 +100,36 @@ namespace BroMakerLib.Storages
             {
                 if (storedHero.mod == mod && storedHero.name == name)
                     return storedHero;
+            }
+
+            return new StoredHero();
+        }
+
+        public static StoredHero GetHeroByName( string name )
+        {
+            if ( _bros.IsNullOrEmpty() || name.IsNullOrEmpty() )
+                return new StoredHero();
+
+            foreach ( StoredHero storedHero in _bros )
+            {
+                if ( storedHero.name == name )
+                    return storedHero;
+            }
+
+            return new StoredHero();
+        }
+
+        public static StoredHero GetHeroByType<T>() where T : CustomHero
+        {
+            if ( _bros.IsNullOrEmpty() )
+                return new StoredHero();
+
+            foreach ( StoredHero storedHero in _bros )
+            {
+                if ( PresetManager.GetHeroPreset( storedHero.GetInfo().characterPreset ) == typeof( T ) )
+                {
+                    return storedHero;
+                }
             }
 
             return new StoredHero();

@@ -99,12 +99,12 @@ namespace BroMakerLib.UnityMod
             };
             _toolTipStyle.normal.textColor = Color.white;
 
-            BSett.instance.checkForDeletedBros();
-            BSett.instance.countEnabledBros();
+            BSett.instance.CheckForDeletedBros();
+            BSett.instance.CountEnabledBros();
 
             if ( BSett.instance.equalSpawnProbability )
             {
-                BSett.instance.automaticSpawnProbabilty = BSett.instance.calculateSpawnProbability();
+                BSett.instance.automaticSpawnProbabilty = BSett.instance.CalculateSpawnProbability();
             }
         }
 
@@ -232,11 +232,11 @@ namespace BroMakerLib.UnityMod
                     PresetManager.disableWarnings = true;
                     PresetManager.Initialize();
                     PresetManager.disableWarnings = false;
-                    BSett.instance.checkForDeletedBros();
-                    BSett.instance.countEnabledBros();
+                    BSett.instance.CheckForDeletedBros();
+                    BSett.instance.CountEnabledBros();
                     if ( BSett.instance.equalSpawnProbability )
                     {
-                        BSett.instance.automaticSpawnProbabilty = BSett.instance.calculateSpawnProbability();
+                        BSett.instance.automaticSpawnProbabilty = BSett.instance.CalculateSpawnProbability();
                     }
                 }
                 if ( GUILayout.Button( new GUIContent( "Reload Preset", "Reloads custom bro presets" ), GUILayout.ExpandWidth( false ) ) )
@@ -436,7 +436,7 @@ namespace BroMakerLib.UnityMod
                     {
                         foreach ( StoredHero hero in mod.StoredHeroes )
                         {
-                            BSett.instance.setBroEnabled( hero.name, true );
+                            BSett.instance.SetBroEnabled( hero.name, true );
                         }
                     }
                 }
@@ -447,7 +447,7 @@ namespace BroMakerLib.UnityMod
                     {
                         foreach ( StoredHero hero in mod.StoredHeroes )
                         {
-                            BSett.instance.setBroEnabled( hero.name, false );
+                            BSett.instance.SetBroEnabled( hero.name, false );
                         }
                     }
                 }
@@ -532,15 +532,15 @@ namespace BroMakerLib.UnityMod
                 LoadHero.wasFirstDeployment[Main.selectedPlayerNum] = false;
                 bro.LoadBro(Main.selectedPlayerNum);
             }
-            bool broEnabled = BSett.instance.getBroEnabled(bro.name);
+            bool broEnabled = BSett.instance.GetBroEnabled(bro.name);
             if ( mod.StoredHeroes.Count() > 1 )
             {
                 if ( GUILayout.Button( new GUIContent( ( broEnabled ? "Autospawn Enabled" : "Autospawn Disabled" ), "Toggle whether this bro is part of the spawn rotation" ), ScaledWidth( 300 ) ) )
                 {
-                    BSett.instance.setBroEnabled( bro.name, !broEnabled );
+                    BSett.instance.SetBroEnabled( bro.name, !broEnabled );
                     if ( BSett.instance.equalSpawnProbability )
                     {
-                        BSett.instance.automaticSpawnProbabilty = BSett.instance.calculateSpawnProbability();
+                        BSett.instance.automaticSpawnProbabilty = BSett.instance.CalculateSpawnProbability();
                     }
                 }
             }
@@ -614,18 +614,18 @@ namespace BroMakerLib.UnityMod
             {
                 GUILayout.Button( new GUIContent( "Disabled in Settings", "Automatic spawning of bros is disabled in Spawn Options in the Settings tab" ), _disabledStyleButton, ScaledWidth( 130 ) );
             }
-            else if ( BSett.instance.getBroEnabled( mod.StoredHeroes[0].name ) )
+            else if ( BSett.instance.GetBroEnabled( mod.StoredHeroes[0].name ) )
             {
                 if ( GUILayout.Button( new GUIContent("Enabled", "Click to disable autospawn for this bro"), _enabledStyleButton, ScaledWidth( 110 ) ) )
                 {
-                    BSett.instance.setBroEnabled( mod.StoredHeroes[0].name, false );
+                    BSett.instance.SetBroEnabled( mod.StoredHeroes[0].name, false );
                 }
             }
             else
             {
                 if ( GUILayout.Button( new GUIContent( "Disabled", "Click to enable autospawn for this bro"), _disabledStyleButton, ScaledWidth( 110 ) ) )
                 {
-                    BSett.instance.setBroEnabled( mod.StoredHeroes[0].name, true );
+                    BSett.instance.SetBroEnabled( mod.StoredHeroes[0].name, true );
                 }
             }
             GUILayout.EndHorizontal();
@@ -687,7 +687,7 @@ namespace BroMakerLib.UnityMod
             {
                 if ( BSett.instance.equalSpawnProbability )
                 {
-                    BSett.instance.automaticSpawnProbabilty = BSett.instance.calculateSpawnProbability();
+                    BSett.instance.automaticSpawnProbabilty = BSett.instance.CalculateSpawnProbability();
                 }
             }
             GUILayout.EndHorizontal();

@@ -95,7 +95,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                         if (BSett.instance.availableBros.Count() == 0)
                         {
                             // We use this function to add a character to the pool to start with
-                            BSett.instance.getRandomHardcoreBro(true);
+                            BSett.instance.GetRandomHardcoreBro(true);
                         }
                         LoadHero.willReplaceBro[__instance.playerNum] = true;
                     }
@@ -130,11 +130,11 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                     Storages.StoredHero choice;
                     if ( GameModeController.IsHardcoreMode )
                     {
-                        choice = BSett.instance.getRandomHardcoreBro(LoadHero.playCutscene);
+                        choice = BSett.instance.GetRandomHardcoreBro(LoadHero.playCutscene);
                     }
                     else
                     {
-                        choice = BSett.instance.getRandomEnabledBro();
+                        choice = BSett.instance.GetRandomEnabledBro();
                         if ( LoadHero.playCutscene = !BSett.instance.seenBros.Contains(choice.name) && choice.GetInfo().cutscene.playCutsceneOnFirstSpawn )
                         {
                             BSett.instance.seenBros.Add(choice.name);

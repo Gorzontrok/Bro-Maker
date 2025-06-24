@@ -15,15 +15,6 @@ namespace BroMakerLib
 {
     public static class BroMaker
     {
-
-        public static Shader Shader1
-        {
-            get
-            {
-                return HeroController.GetAvatarMaterial(HeroType.Rambro).shader;
-            }
-        }
-
         internal static Harmony harmony;
 
         private static bool _hasInit;

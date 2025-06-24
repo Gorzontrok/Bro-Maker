@@ -41,14 +41,14 @@ namespace BroMakerLib.Storages
                 BMLogger.ExceptionLog(e);
                 this.name = Path.GetFileNameWithoutExtension(this.path);
             }
-            BSett.instance.addBroEnabled(this.name, true);
+            BSett.instance.AddBroEnabled(this.name, true);
         }
         public StoredHero(CustomBroInfo bInfo, BroMakerMod mod)
         {
             info = bInfo;
             path = bInfo.path;
             name = bInfo.name;
-            BSett.instance.addBroEnabled(this.name, true);
+            BSett.instance.AddBroEnabled(this.name, true);
             this.mod = mod;
         }
 

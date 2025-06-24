@@ -95,7 +95,7 @@ namespace BroMakerLib
             File.WriteAllText(FilePath, json);
         }
 
-        public float calculateSpawnProbability()
+        public float CalculateSpawnProbability()
         {
             int enabledBroCount = 0;
             foreach (KeyValuePair<string, bool> bro in this.enabledBros)
@@ -109,7 +109,7 @@ namespace BroMakerLib
             return (enabledBroCount / (41.0f + enabledBroCount)) * 100.0f;
         }
 
-        public void addBroEnabled(string name, bool enabled)
+        public void AddBroEnabled(string name, bool enabled)
         {
             if ( !enabledBros.ContainsKey(name) )
             {
@@ -121,7 +121,7 @@ namespace BroMakerLib
             } 
         }
 
-        public void setBroEnabled(string name, bool enabled)
+        public void SetBroEnabled(string name, bool enabled)
         {
             enabledBros[name] = enabled;
             if ( enabled )
@@ -135,16 +135,16 @@ namespace BroMakerLib
             // Update spawn probability to account for additional enabled / disabled bro
             if ( this.equalSpawnProbability )
             {
-                this.automaticSpawnProbabilty = this.calculateSpawnProbability();
+                this.automaticSpawnProbabilty = this.CalculateSpawnProbability();
             }
         }
 
-        public bool getBroEnabled(string name)
+        public bool GetBroEnabled(string name)
         {
             return enabledBros[name];
         }
 
-        public void checkForDeletedBros()
+        public void CheckForDeletedBros()
         {
             List<string> toBeRemoved = new List<string>();
             foreach (KeyValuePair<string, bool> bro in this.enabledBros)
@@ -169,7 +169,7 @@ namespace BroMakerLib
             }
         }
 
-        public void countEnabledBros()
+        public void CountEnabledBros()
         {
             enabledBroCount = 0;
             foreach (KeyValuePair<string, bool> bro in this.enabledBros)
@@ -181,25 +181,12 @@ namespace BroMakerLib
             }
         }
 
-        public StoredHero getStoredCharacter( string name )
-        {
-            for (int i = 0; i < MakerObjectStorage.Bros.Length; ++i)
-            {
-                if (MakerObjectStorage.Bros[i].name == name)
-                {
-                    return MakerObjectStorage.Bros[i];
-                }
-            }
-
-            return MakerObjectStorage.Bros[0];
-        }
-
-        public StoredHero getRandomEnabledBro()
+        public StoredHero GetRandomEnabledBro()
         {
             if ( this.overrideNextBroSpawn )
             {
                 this.overrideNextBroSpawn = false;
-                return getStoredCharacter(this.nextBroSpawn);
+                return MakerObjectStorage.GetHeroByName(this.nextBroSpawn);
             }
 
             int chosen = UnityEngine.Random.Range(0, enabledBroCount);
@@ -217,15 +204,15 @@ namespace BroMakerLib
                 }
             }
 
-            return getStoredCharacter(chosenName);
+            return MakerObjectStorage.GetHeroByName( chosenName);
         }
 
-        public StoredHero getRandomHardcoreBro(bool isRescue)
+        public StoredHero GetRandomHardcoreBro(bool isRescue)
         {
             if (this.overrideNextBroSpawn)
             {
                 this.overrideNextBroSpawn = false;
-                return getStoredCharacter(this.nextBroSpawn);
+                return MakerObjectStorage.GetHeroByName( this.nextBroSpawn);
             }
 
             if ( isRescue && this.notUnlockedBros.Count() > 0 )
@@ -235,14 +222,14 @@ namespace BroMakerLib
                 this.availableBros.Add(this.notUnlockedBros[chosen]);
                 this.notUnlockedBros.RemoveAt(chosen);
 
-                return getStoredCharacter(chosenName);
+                return MakerObjectStorage.GetHeroByName( chosenName);
             }
             else
             {
                 int chosen = UnityEngine.Random.Range(0, this.availableBros.Count());
                 string chosenName = this.availableBros[chosen];
 
-                return getStoredCharacter(chosenName);
+                return MakerObjectStorage.GetHeroByName( chosenName);
             }
         }
     }

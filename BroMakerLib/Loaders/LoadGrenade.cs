@@ -96,25 +96,6 @@ namespace BroMakerLib.Loaders
             return null;
         }
 
-        private static GameObject CreateOriginal(Type type)
-        {
-            //GameObject prefab = GetPrefab("networkobjects:Rambo");
-            GameObject prefab = null;
-            GameObject inst = UnityEngine.Object.Instantiate(prefab, Vector3.zero, Quaternion.identity);
-
-            inst.AddComponent(type);
-            inst.name = LoadHero.GAMEOBJECT_PREFIX + currentInfo.name;
-            if (inst == null)
-                throw new Exception("CreateOriginal: Instantiate has failed is null");
-            BMLogger.Debug("CreateOriginal: Has Instantiate Hero.");
-            inst.SetActive(false);
-
-            AddObjectToPrefabList(inst);
-            BMLogger.Debug("CreateOriginal: inst added to list");
-
-            return inst;
-        }
-
         private static string GetBaseGrenadeNameOfPreset(Type type)
         {
             var attributes = type.GetCustomAttributes(typeof(GrenadePresetAttribute), true);
@@ -124,8 +105,5 @@ namespace BroMakerLib.Loaders
             }
             throw new NotImplementedException($"Type {type} as no attribute of {nameof(GrenadePresetAttribute)}");
         }
-
-        private static void AddObjectToPrefabList(GameObject obj)
-        { }
     }
 }
