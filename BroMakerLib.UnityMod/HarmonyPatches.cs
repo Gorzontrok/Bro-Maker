@@ -508,7 +508,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 return;
             }
 
-            if ( __result && ( obj is ICustomHero || obj is CustomProjectile || obj is CustomGrenade || obj is CustomSachelPack ) )
+            if ( __result && ( obj is ICustomHero || obj is ICustomProjectile ) )
             {
                 ++customObjectIsConsumed;
                 Traverse assTraverse = Traverse.Create(__instance);
@@ -543,7 +543,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
             {
                 Traverse assTraverse = Traverse.Create(__instance);
                 object obj = assTraverse.GetFieldValue( "transportedObject" );
-                if ( assTraverse.GetFieldValue("CurrentAssMouthBlock") == null && ( obj is ICustomHero || obj is CustomProjectile || obj is CustomGrenade || obj is CustomSachelPack ) )
+                if ( assTraverse.GetFieldValue("CurrentAssMouthBlock") == null && ( obj is ICustomHero || obj is ICustomProjectile ) )
                 {
                     __instance.ExitAssMouth((assTraverse.GetFieldValue("PrevAssMouthBlock") as AssMouthBlock).orificeInstance);
                     --AssMouthOrifice_TryConsumeObject_Patch.customObjectIsConsumed;
@@ -779,6 +779,81 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
             {
                 HeroController.AddTemporaryPlayerTarget( playerNum, __result.transform );
             }
+            return false;
+        }
+    }
+
+    // Ensures custom projectiles are activated after instantiation.
+    [HarmonyPatch( typeof( ProjectileController ), "SpawnGrenadeLocally" )]
+    static class ProjectileController_SpawnGrenadeLocally_Patch
+    {
+        public static bool Prefix( ref Grenade grenadePrefab, ref MonoBehaviour firedBy, ref float x, ref float y, ref float radius, ref float force, ref float xI, ref float yI, ref int playerNum, ref int seed, ref Grenade __result )
+        {
+            if ( !Main.enabled || !( grenadePrefab is ICustomProjectile ) )
+            {
+                return true;
+            }
+
+            GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>( grenadePrefab.gameObject );
+            gameObject.SetActive( true );
+            __result = gameObject.GetComponent<Grenade>();
+            __result.SetupGrenade( seed, playerNum, firedBy );
+            __result.Launch( x, y, xI, yI );
+            __result.NetworkSetup( PID.MyID );
+            return false;
+        }
+    }
+
+    // Ensures custom projectiles are activated after instantiation.
+    [HarmonyPatch( typeof( ProjectileController ), "SpawnProjectileLocally", new Type[] { typeof(Projectile), typeof(MonoBehaviour), typeof(float), typeof(float), typeof(float), typeof(float), typeof(int) } )]
+    static class ProjectileController_SpawnProjectileLocally_Patch
+    {
+        public static bool Prefix( ref Projectile projectilePrefab, ref MonoBehaviour FiredBy, ref float x, ref float y, ref float xI, ref float yI, ref int playerNum, ref Projectile __result )
+        {
+            if ( !Main.enabled || !( projectilePrefab is ICustomProjectile ) )
+            {
+                return true;
+            }
+
+            __result = UnityEngine.Object.Instantiate<Projectile>( projectilePrefab, new Vector3( x, y, 0f ), Quaternion.identity );
+            __result.gameObject.SetActive( true );
+            __result.Fire( x, y, xI, yI, 0f, playerNum, FiredBy );
+            return false;
+        }
+    }
+
+    // Ensures custom projectiles are activated after instantiation.
+    [HarmonyPatch( typeof( ProjectileController ), "SpawnProjectileLocally", new Type[] { typeof( Projectile ), typeof( MonoBehaviour ), typeof( float ), typeof( float ), typeof( float ), typeof( float ), typeof( int ), typeof( bool ), typeof( float ) } )]
+    static class ProjectileController_SpawnProjectileLocally2_Patch
+    {
+        public static bool Prefix( ref Projectile prefab, ref MonoBehaviour FiredBy, ref float x, ref float y, ref float xI, ref float yI, ref int playerNum, ref bool AddTemporaryPlayerTarget, ref float _zOffset, ref Projectile __result )
+        {
+            if ( !Main.enabled || !( prefab is ICustomProjectile ) )
+            {
+                return true;
+            }
+
+            __result = UnityEngine.Object.Instantiate<Projectile>( prefab, new Vector3( x, y, 0f ), Quaternion.identity );
+            __result.gameObject.SetActive( true );
+            __result.Fire( x, y, xI, yI, _zOffset, playerNum, FiredBy );
+            return false;
+        }
+    }
+
+    // Ensures custom projectiles are activated after instantiation.
+    [HarmonyPatch( typeof( ProjectileController ), "SpawnProjectileLocally", new Type[] { typeof( Projectile ), typeof( MonoBehaviour ), typeof( float ), typeof( float ), typeof( float ), typeof( float ), typeof(bool), typeof( int ), typeof( bool ), typeof( bool ), typeof( float ) } )]
+    static class ProjectileController_SpawnProjectileLocally3_Patch
+    {
+        public static bool Prefix( ref Projectile prefab, ref MonoBehaviour FiredBy, ref float x, ref float y, ref float xI, ref float yI, ref bool synced, ref int playerNum, ref bool AddTemporaryPlayerTarget, ref bool executeImmediately, ref float _zOffset, ref Projectile __result )
+        {
+            if ( !Main.enabled || !( prefab is ICustomProjectile ) )
+            {
+                return true;
+            }
+
+            __result = UnityEngine.Object.Instantiate( prefab, new Vector3( x, y, 0f ), Quaternion.identity );
+            __result.gameObject.SetActive( true );
+            __result.Fire( x, y, xI, yI, _zOffset, playerNum, FiredBy );
             return false;
         }
     }

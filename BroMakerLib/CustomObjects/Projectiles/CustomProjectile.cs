@@ -11,7 +11,7 @@ namespace BroMakerLib.CustomObjects.Projectiles
     /// <summary>
     /// CustomProjectile has all the default functionality of the Projectile class, with extra methods to make creating custom projectiles easier
     /// </summary>
-    public class CustomProjectile : Projectile
+    public class CustomProjectile : Projectile, ICustomProjectile
     {
         /// <summary>
         /// Override Awake() and set this value to false to prevent the sprite from being loaded automatically
@@ -209,6 +209,7 @@ namespace BroMakerLib.CustomObjects.Projectiles
                 prefab.PrefabSetup();
                 prefab.RanSetup = true;
                 prefab.enabled = false;
+                prefab.gameObject.SetActive( false );
                 UnityEngine.Object.DontDestroyOnLoad( prefab.gameObject );
                 CustomProjectilePrefabs.Add( typeof( T ), prefab );
                 return prefab;
@@ -234,6 +235,7 @@ namespace BroMakerLib.CustomObjects.Projectiles
                 prefab.PrefabSetup();
                 prefab.RanSetup = true;
                 prefab.enabled = false;
+                prefab.gameObject.SetActive( false );
                 UnityEngine.Object.DontDestroyOnLoad( prefab.gameObject );
                 CustomProjectilePrefabs.Add( typeof( T ), prefab );
                 return prefab;

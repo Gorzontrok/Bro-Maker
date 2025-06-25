@@ -554,6 +554,11 @@
             <param name="_zOffset">The Z-axis offset for the projectile spawn position.</param>
             <returns>The spawned Projectile instance.</returns>
         </member>
+        <member name="T:BroMakerLib.CustomObjects.ICustomProjectile">
+            <summary>
+            Custom projectile or grenade
+            </summary>
+        </member>
         <member name="F:BroMakerLib.CustomObjects.Bros.CustomHero.directoryPath">
             <summary>
             Contains the path to the directory that contains your custom bro's dll
