@@ -126,6 +126,7 @@
     <Compile Include="Attributes\CustomObjectPresetAttribute.cs" />
     <Compile Include="BroMakerUtilities.cs" />
     <Compile Include="CustomObjects\Projectiles\CustomGrenade.cs" />
+    <Compile Include="CustomObjects\Projectiles\CustomPockettedSpecial.cs" />
     <Compile Include="CustomObjects\Projectiles\CustomProjectile.cs" />
     <Compile Include="CustomObjects\Projectiles\CustomSachelPack.cs" />
     <Compile Include="Cutscenes\CutsceneSpriteAnimatedJsonConverter.cs" />

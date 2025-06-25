@@ -226,6 +226,44 @@
             <param name="seed">Random seed for deterministic grenade behavior. Defaults to UnityEngine.Random.Range( 0, 10000 )</param>
             <returns>The spawned Grenade instance.</returns>
         </member>
+        <member name="M:BroMakerLib.CustomObjects.Projectiles.CustomPockettedSpecial.AddPockettedSpecial(TestVanDammeAnim,BroMakerLib.CustomObjects.Projectiles.CustomPockettedSpecial)">
+            <summary>
+            Gives a custom pocketted special to a bro
+            </summary>
+            <param name="character">Bro to receive the special</param>
+            <param name="special">Instance of your custom pocketted special</param>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Projectiles.CustomPockettedSpecial.ClearPockettedSpecials(System.Int32)">
+            <summary>
+            Clears all custom pocketted specials for a specific player
+            </summary>
+            <param name="playerNum"></param>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Projectiles.CustomPockettedSpecial.UseSpecial(BroBase)">
+            <summary>
+            Override this to perform whatever action your pocketted special does, whether that be spawning a projectile or something else.
+            </summary>
+            <param name="bro">The bro who's using the pocketted special</param>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Projectiles.CustomPockettedSpecial.SetSpecialMaterials(BroBase)">
+            <summary>
+            Override this to set the special material to the material of your custom pocketted special.
+            I recommend using the SetSpecialMaterials method from BroMakerUtilities
+            </summary>
+            <param name="bro">The bro who has the pocketted special</param>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Projectiles.CustomPockettedSpecial.RefreshAmmo">
+            <summary>
+            Override this to set whether the bro will have their special ammo reset to full after using this pocketted special
+            </summary>
+            <returns>True to have the ammo refreshed</returns>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Projectiles.CustomPockettedSpecial.UseThrowingAnimation">
+            <summary>
+            Override this to set what animation the bro will use while activating your pocketted special.
+            </summary>
+            <returns>If true, it will be the throwing animation, if false, it will be the flex animation</returns>
+        </member>
         <member name="T:BroMakerLib.CustomObjects.Projectiles.CustomProjectile">
             <summary>
             CustomProjectile has all the default functionality of the Projectile class, with extra methods to make creating custom projectiles easier

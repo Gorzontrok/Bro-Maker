@@ -1,15 +1,16 @@
-﻿using HarmonyLib;
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using BroMakerLib.Loggers;
+﻿using BroMakerLib.CustomObjects;
+using BroMakerLib.CustomObjects.Projectiles;
 using BroMakerLib.Cutscenes;
 using BroMakerLib.Infos;
-using UnityEngine;
 using BroMakerLib.Loaders;
+using BroMakerLib.Loggers;
+using HarmonyLib;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using UnityEngine;
 using BSett = BroMakerLib.Settings;
-using BroMakerLib.CustomObjects;
-using BroMakerLib.CustomObjects.Projectiles;
 
 namespace BroMakerLib.UnityMod.HarmonyPatches
 {
@@ -45,6 +46,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
         {
             if (Main.enabled)
             {
+                CustomPockettedSpecial.ClearPockettedSpecials( __instance.playerNum );
                 if ( BSett.instance.overrideNextBroSpawn )
                 {
                     LoadHero.willReplaceBro[__instance.playerNum] = true;
@@ -778,6 +780,82 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 HeroController.AddTemporaryPlayerTarget( playerNum, __result.transform );
             }
             return false;
+        }
+    }
+
+    // Handle custom pocketted special ammo
+    [HarmonyPatch( typeof( BroBase ), "SetPlayerHUDAmmo" )]
+    static class BroBase_SetPlayerHUDAmmo_Patch
+    {
+        public static bool Prefix( ref BroBase __instance )
+        {
+            if ( !Main.enabled )
+            {
+                return true;
+            }
+
+            if ( __instance.pockettedSpecialAmmo.Count > 0 && __instance.pockettedSpecialAmmo[__instance.pockettedSpecialAmmo.Count - 1] == PockettedSpecialAmmoType.None && CustomPockettedSpecial.pockettedSpecials[__instance.playerNum].Count > 0 )
+            {
+                CustomPockettedSpecial.pockettedSpecials[__instance.playerNum].Last().SetSpecialMaterials( __instance );
+                __instance.player.hud.SetGrenades( 1 );
+                return false;
+            }
+
+            return true;
+        }
+    }
+
+    [HarmonyPatch( typeof( BroBase ), "StartPockettedSpecial" )]
+    static class BroBase_StartPockettedSpecial_Patch
+    {
+        public static void Postfix( ref BroBase __instance )
+        {
+            if ( !Main.enabled )
+            {
+                return;
+            }
+
+            if ( __instance.pockettedSpecialAmmo.Count > 0 && __instance.pockettedSpecialAmmo[__instance.pockettedSpecialAmmo.Count - 1] == PockettedSpecialAmmoType.None && CustomPockettedSpecial.pockettedSpecials[__instance.playerNum].Count > 0 )
+            {
+                // If the pocketted special uses the throwing animation then we need to set the usingPockettedSpecialType to something other than None, which defaults to the flex animation
+                if ( CustomPockettedSpecial.pockettedSpecials[__instance.playerNum].Last().UseThrowingAnimation() )
+                {
+                    __instance.SetFieldValue( "usingPockettedSpecialType", PockettedSpecialAmmoType.Airstrike );
+                }
+            }
+        }
+    }
+
+    [HarmonyPatch( typeof( BroBase ), "UsePockettedSpecial" )]
+    static class BroBase_UsePockettedSpecial_Patch
+    {
+        public static bool Prefix( ref BroBase __instance )
+        {
+            if ( !Main.enabled )
+            {
+                return true;
+            }
+
+            if ( __instance.pockettedSpecialAmmo.Count > 0 && __instance.pockettedSpecialAmmo[__instance.pockettedSpecialAmmo.Count - 1] == PockettedSpecialAmmoType.None && CustomPockettedSpecial.pockettedSpecials[__instance.playerNum].Count > 0 )
+            {
+                __instance.SetFieldValue( "pressSpecialFacingDirection", 0 );
+                CustomPockettedSpecial special = CustomPockettedSpecial.pockettedSpecials[__instance.playerNum].Last();
+                special.UseSpecial( __instance );
+                CustomPockettedSpecial.pockettedSpecials[__instance.playerNum].Remove( special );
+                __instance.pockettedSpecialAmmo.RemoveAt( __instance.pockettedSpecialAmmo.Count - 1 );
+
+                // Reset bro's specials to original count if this pocketted special allows it
+                if ( special.RefreshAmmo() )
+                {
+                    __instance.ResetSpecialAmmo();
+                }
+
+                // Call private method SetPlayerHUDAmmo
+                typeof( BroBase ).GetMethod( "SetPlayerHUDAmmo", BindingFlags.NonPublic | BindingFlags.Instance ).Invoke( __instance, new object[] {} );
+                return false;
+            }
+
+            return true;
         }
     }
 }
