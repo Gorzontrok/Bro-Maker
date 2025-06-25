@@ -79,9 +79,6 @@ namespace BroMakerLib.UnityMod
 
         // Settings Menu
         private static GUIStyle _headerStyle;
-        private static bool _showGeneralSettings = true;
-        private static bool _showSpawnSettings = true;
-        private static bool _showDeveloperSettings = false;
 
         private static float _windowWidth = -1f;
 
@@ -633,23 +630,23 @@ namespace BroMakerLib.UnityMod
 
         public static void Settings()
         {
-            _showGeneralSettings = GUILayout.Toggle( _showGeneralSettings, new GUIContent( "General Options", "Click to " + (_showGeneralSettings ? "collapse" : "expand") + " section" ), _headerStyle );
+            BSett.instance.showGeneralSettings = GUILayout.Toggle( BSett.instance.showGeneralSettings, new GUIContent( "General Options", "Click to " + ( BSett.instance.showGeneralSettings ? "collapse" : "expand") + " section" ), _headerStyle );
 
-            if ( _showGeneralSettings )
+            if ( BSett.instance.showGeneralSettings )
             {
                 ShowGeneralSettings();
             }
 
-            _showSpawnSettings = GUILayout.Toggle( _showSpawnSettings, new GUIContent( "Spawn Options", "Click to " + ( _showSpawnSettings ? "collapse" : "expand" ) + " section" ), _headerStyle );
+            BSett.instance.showSpawnSettings = GUILayout.Toggle( BSett.instance.showSpawnSettings, new GUIContent( "Spawn Options", "Click to " + ( BSett.instance.showSpawnSettings ? "collapse" : "expand" ) + " section" ), _headerStyle );
 
-            if ( _showSpawnSettings )
+            if ( BSett.instance.showSpawnSettings )
             {
                 ShowSpawnSettings();
             }
 
-            _showDeveloperSettings = GUILayout.Toggle( _showDeveloperSettings, new GUIContent( "Developer Options", "Click to " + ( _showDeveloperSettings ? "collapse" : "expand" ) + " section" ), _headerStyle );
+            BSett.instance.showDeveloperSettings = GUILayout.Toggle( BSett.instance.showDeveloperSettings, new GUIContent( "Developer Options", "Click to " + ( BSett.instance.showDeveloperSettings ? "collapse" : "expand" ) + " section" ), _headerStyle );
 
-            if ( _showDeveloperSettings )
+            if ( BSett.instance.showDeveloperSettings )
             {
                 ShowDeveloperSettings();
             }

@@ -47,6 +47,11 @@ namespace BroMakerLib
         public List<List<string>> _notUnlockedBros;
         public List<List<string>> _availableBros;
 
+        // Settings menu
+        public bool showGeneralSettings = true;
+        public bool showSpawnSettings = true;
+        public bool showDeveloperSettings = false;
+
         [JsonIgnore]
         public List<string> NotUnlockedBros
         {
