@@ -1,5 +1,4 @@
 ﻿using BroMakerLib.CustomObjects.Bros;
-using BroMakerLib.Editor;
 using BroMakerLib.Infos;
 using BroMakerLib.Loaders;
 using BroMakerLib.Loggers;
@@ -34,21 +33,11 @@ namespace BroMakerLib.UnityMod
             }
         }
 
-        private static Dictionary<string, Action> _normalTabs = new Dictionary<string, Action>()
+        private static Dictionary<string, Action> _tabs = new Dictionary<string, Action>()
         {
             { "Custom Bros", Spawner },
             { "Settings", Settings }
         };
-        private static Dictionary<string, Action> _developerModeTabs = new Dictionary<string, Action>()
-        {
-            { "Custom Bros", Spawner },
-            { "Create New Object", CreateFileEditor.UnityUI },
-            { "Settings", Settings }
-        };
-        private static Dictionary<string, Action> _tabs
-        {
-            get => BSett.instance.developerMode ? _developerModeTabs : _normalTabs;
-        }
         private static Settings _Settings
         {
             get { return Main.settings; }
@@ -707,18 +696,7 @@ namespace BroMakerLib.UnityMod
             GUILayout.EndHorizontal();
             GUILayout.Space( 15 );
             _Settings.debugLogs = GUILayout.Toggle( _Settings.debugLogs, new GUIContent( "Debug Logs", "Enables debug logging which can be viewed in the UnityModManager log" ) );
-            if ( BSett.instance.developerMode != (BSett.instance.developerMode = GUILayout.Toggle( BSett.instance.developerMode, new GUIContent( "Developer Mode", "Enables more options in the BroMakerSettings window for bro developers" ) ) ) )
-            {
-                // Enabled developer mode
-                if ( BSett.instance.developerMode )
-                {
-                    _tabSelected = _developerModeTabs.Count() - 1;
-                }
-                else
-                {
-                    _tabSelected = _normalTabs.Count() - 1;
-                }
-            }
+            BSett.instance.developerMode = GUILayout.Toggle( BSett.instance.developerMode, new GUIContent( "Developer Mode", "Enables more options in the BroMakerSettings window for bro developers" ) );
             GUILayout.Space( 10 );
         }
 

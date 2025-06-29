@@ -47,9 +47,6 @@
     <Reference Include="BroMakerLib">
       <HintPath>..\BroMakerLib\bin\Debug\BroMakerLib.dll</HintPath>
     </Reference>
-    <Reference Include="BroMakerLib.Editor">
-      <HintPath>..\BroMakerLib.Editor\bin\Debug\BroMakerLib.Editor.dll</HintPath>
-    </Reference>
     <Reference Include="RocketLib">
       <HintPath>..\lib\RocketLib.dll</HintPath>
     </Reference>
