@@ -225,6 +225,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>XCOPY /Y /R "$(TargetPath)" "$(SolutionDir)\BroMakerLib.UnityMod\_Mod\$(ProjectName).dll*"
+XCOPY /Y /R "$(TargetDir)$(TargetName).xml" "$(SolutionDir)\BroMakerLib.UnityMod\_Mod\$(ProjectName).xml*"
 del "$(BroforcePath)\Mods\BroMaker\*.cache" 2&gt; nul || set errorlevel=0</PostBuildEvent>
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
