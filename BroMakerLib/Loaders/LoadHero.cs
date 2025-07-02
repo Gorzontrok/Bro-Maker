@@ -11,6 +11,18 @@ using HarmonyLib;
 
 namespace BroMakerLib.Loaders
 {
+    public struct CustomBroDeath
+    {
+        public CustomBroInfo info;
+        public int variantIndex;
+        
+        public CustomBroDeath(CustomBroInfo info, int variantIndex)
+        {
+            this.info = info;
+            this.variantIndex = variantIndex;
+        }
+    }
+    
     public static class LoadHero
     {
         public const string GAMEOBJECT_PREFIX = "BM_";
@@ -28,11 +40,12 @@ namespace BroMakerLib.Loaders
         public static bool tryReplaceAvatar = false;
         public static Player.SpawnType[] previousSpawnInfo = new Player.SpawnType[] { Player.SpawnType.Unknown, Player.SpawnType.Unknown, Player.SpawnType.Unknown, Player.SpawnType.Unknown };
         public static bool[] wasFirstDeployment = new bool[] { false, false, false, false };
-        public static Dictionary<int, CustomBroInfo> customBroDeaths;
+        public static Dictionary<int, CustomBroDeath> customBroDeaths;
 
-        public static void WithCustomBroInfo(int selectedPlayerNum, CustomBroInfo customBroInfo, Type type)
+        public static TestVanDammeAnim WithCustomBroInfo(int selectedPlayerNum, CustomBroInfo customBroInfo, Type type)
         {
             tryReplaceAvatar = true;
+            TestVanDammeAnim hero = null;
             try
             {
                 if (!typeof(ICustomHero).IsAssignableFrom(type))
@@ -87,7 +100,7 @@ namespace BroMakerLib.Loaders
                 }
 
 
-                TestVanDammeAnim hero = Net.InstantiateBuffered<GameObject>(original, previousPosition, Quaternion.identity, new object[0], false).GetComponent(type) as TestVanDammeAnim;
+                hero = Net.InstantiateBuffered<GameObject>(original, previousPosition, Quaternion.identity, new object[0], false).GetComponent(type) as TestVanDammeAnim;
                 hero.gameObject.SetActive(true);
                 BMLogger.Debug($"AfterInstantiation: InstantiateBuffered.");
 
@@ -135,6 +148,7 @@ namespace BroMakerLib.Loaders
                 BMLogger.ExceptionLog(e);
             }
             spawnFromPlayer = false;
+            return hero;
         }
 
         private static TestVanDammeAnim AfterInstantiation(TestVanDammeAnim hero, HeroType heroTypeEnum, int playerNum, Type type, Vector3 position)

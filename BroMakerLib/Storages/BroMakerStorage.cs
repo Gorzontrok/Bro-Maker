@@ -194,7 +194,10 @@ namespace BroMakerLib.Storages
                 {
                     CustomBroInfo info = broObject as CustomBroInfo;
                     info.path = mod.Path;
-                    info.cutscene.path = mod.Path;
+                    foreach (var cutscene in info.Cutscene)
+                    {
+                        cutscene.path = mod.Path;
+                    }
                     var hero = new StoredHero(info, mod);
                     temp.Add(hero);
                     _bros.Add(hero);

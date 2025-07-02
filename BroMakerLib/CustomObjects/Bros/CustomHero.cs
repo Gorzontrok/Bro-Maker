@@ -20,20 +20,12 @@ namespace BroMakerLib.CustomObjects.Bros
         public CustomBroInfo info { get; set; }
         [Syncronize]
         public BroBase character { get; set; }
-
-		// This is needed to ensure Unity Serializes the Getter / Setter field
-        [field: SerializeField]
-        public List<Material> specialMaterials { get; set; } = new List<Material>();
-        [field: SerializeField]
-        public Vector2 specialMaterialOffset { get; set; } = Vector2.zero;
-        [field: SerializeField]
-        public float specialMaterialSpacing { get; set; } = 0f;
-        [field: SerializeField]
-        public Material firstAvatar { get; set; } = null;
-        [field: SerializeField]
-        public Vector2 gunSpriteOffset { get; set; } = Vector2.zero;
-        [field: SerializeField]
+        [JsonIgnore]
         public MuscleTempleFlexEffect flexEffect { get; set; }
+        
+        public int CurrentVariant { get; set; }
+        
+        public Vector2 CurrentGunSpriteOffset = Vector2.zero;
 
 		/// <summary>
 		/// Contains the path to the directory that contains your custom bro's dll
@@ -54,8 +46,7 @@ namespace BroMakerLib.CustomObjects.Bros
                 base.Awake();
                 info.AfterAwake(this);
 
-				// Somehow it becomes 0, 0 if it's in the parameters
-                info.gunSpriteOffset = gunSpriteOffset;
+				// Removed - gunSpriteOffset is now stored in info
 
 				// Make sure parachute isn't null, for some reason the game's default way of handling this doesn't work
 				if ( this.parachute == null )
@@ -83,6 +74,7 @@ namespace BroMakerLib.CustomObjects.Bros
             try
             {
                 info.BeforeStart(this);
+                this.SetSprites();
 				if ( character.gameObject.GetComponent<InvulnerabilityFlash>() == null )
 				{
                     character.gameObject.AddComponent<InvulnerabilityFlash>().SetCharacter(character);
@@ -280,7 +272,7 @@ namespace BroMakerLib.CustomObjects.Bros
 
         protected override void SetGunPosition(float xOffset, float yOffset)
         {
-            this.gunSprite.transform.localPosition = new Vector3(xOffset + gunSpriteOffset.x, yOffset + gunSpriteOffset.y, -1f);
+            this.gunSprite.transform.localPosition = new Vector3(xOffset + CurrentGunSpriteOffset.x, yOffset + CurrentGunSpriteOffset.y, -1f);
         }
         #endregion
 
@@ -364,6 +356,18 @@ namespace BroMakerLib.CustomObjects.Bros
             {
                 BMLogger.ExceptionLog( "Failed to load settings in SetupPrefab: ", ex );
             }
+        }
+
+        /// <summary>
+        /// Override this to customize variant selection logic
+        /// </summary>
+        public virtual int GetVariant()
+        {
+            if ( info.VariantCount <= 1 )
+            {
+                return 0;
+            }
+            return UnityEngine.Random.Range( 0, info.VariantCount );
         }
         #endregion
 

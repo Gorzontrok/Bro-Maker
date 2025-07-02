@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using BroMakerLib.Cutscenes;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using UnityEngine;
-using Networking;
 
 namespace BroMakerLib.Infos
 {
@@ -11,27 +11,29 @@ namespace BroMakerLib.Infos
         public CustomBroInfo() : base() { }
         public CustomBroInfo(string name) : base(name) { }
 
-        [JsonIgnore]
-        public string spritePath;
-        [JsonIgnore]
-        public string gunSpritePath;
-        [JsonIgnore]
-        public Vector2 gunSpriteOffset = Vector2.zero;
+        [JsonConverter(typeof(CutsceneConverter))]
+        public List<CustomIntroCutscene> Cutscene = new List<CustomIntroCutscene> { new CustomIntroCutscene() };
 
-        public override void Initialize()
-        {
-            base.Initialize();
-        }
+        [JsonIgnore]
+        public List<string> SpritePath = new List<string>();
+        [JsonIgnore]
+        public List<string> GunSpritePath = new List<string>();
+        [JsonIgnore]
+        public List<Vector2> GunSpriteOffset = new List<Vector2> { Vector2.zero };
+        [JsonIgnore]
+        public List<List<Material>> SpecialMaterials = new List<List<Material>> { new List<Material>() };
+        [JsonIgnore]
+        public List<Vector2> SpecialMaterialOffset = new List<Vector2> { Vector2.zero };
+        [JsonIgnore]
+        public List<float> SpecialMaterialSpacing = new List<float> { 0f };
+        [JsonIgnore]
+        public List<Material> FirstAvatar = new List<Material> { null };
+        [JsonIgnore]
+        public int VariantCount = 1;
 
         public override string SerializeJSON()
         {
             return SerializeJSON(DirectoriesManager.BrosDirectory);
-        }
-
-        [AllowedRPC]
-        public override void ReadParameters(object obj)
-        {
-            base.ReadParameters(obj);
         }
     }
 }

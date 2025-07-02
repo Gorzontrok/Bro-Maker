@@ -131,6 +131,7 @@
     <Compile Include="CustomObjects\Projectiles\CustomSachelPack.cs" />
     <Compile Include="CustomObjects\Projectiles\ICustomProjectile.cs" />
     <Compile Include="Cutscenes\CutsceneSpriteAnimatedJsonConverter.cs" />
+    <Compile Include="Cutscenes\CutsceneConverter.cs" />
     <Compile Include="Cutscenes\CutsceneIntroExtra.cs" />
     <Compile Include="Loaders\LoadBroforceObjects.cs" />
     <Compile Include="Storages\BroMakerMod.cs" />

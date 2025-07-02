@@ -150,25 +150,26 @@ namespace BroMakerLib
                     info.afterStart.Add("maxHealth", 1);
             }
 
-            if (info.beforeStart.ContainsKey("sprite"))
+            // Migrate legacy sprite/gunSprite properties
+            MigrateLegacySprites(hero);
+            
+            // Determine variant count from all variant properties
+            DetermineVariantCount(hero.info);
+            
+            // Validate all variant lists
+            ValidateVariantLists(hero.info);
+            
+            // Select variant
+            if (hero is CustomObjects.Bros.CustomHero customHero)
             {
-                info.spritePath = Path.Combine( info.path, info.beforeStart["sprite"] as string );
-                info.gunSpritePath = Path.Combine( info.path, info.beforeStart["gunSprite"] as string );
+                customHero.CurrentVariant = customHero.GetVariant();
+                // Set the cached gun sprite offset
+                customHero.CurrentGunSpriteOffset = BroMakerUtilities.GetVariantValue(hero.info.GunSpriteOffset, customHero.CurrentVariant);
             }
-            else if (info.afterStart.ContainsKey("sprite"))
+            else
             {
-                info.spritePath = Path.Combine(info.path, info.afterStart["sprite"] as string );
-                info.gunSpritePath = Path.Combine(info.path, info.afterStart["gunSprite"] as string);
-            }
-            else if (info.beforeAwake.ContainsKey("sprite"))
-            {
-                info.spritePath = Path.Combine(info.path, info.beforeAwake["sprite"] as string);
-                info.gunSpritePath = Path.Combine(info.path, info.beforeAwake["gunSprite"] as string);
-            }
-            else if (info.afterAwake.ContainsKey("sprite"))
-            {
-                info.spritePath = Path.Combine(info.path, info.afterAwake["sprite"] as string);
-                info.gunSpritePath = Path.Combine(info.path, info.afterAwake["gunSprite"] as string);
+                // For vanilla bros, use random selection
+                hero.CurrentVariant = UnityEngine.Random.Range(0, hero.info.VariantCount);
             }
 
             // Set canCeilingHang to true by default 
@@ -201,6 +202,125 @@ namespace BroMakerLib
             {
                 UnityEngine.Object.Destroy(lastGlowLight);
                 BMLogger.Debug("GlowLight Destroyed");
+            }
+        }
+        
+        private static void MigrateLegacySprites(ICustomHero hero)
+        {
+            var info = hero.info;
+            // Check beforeAwake, afterAwake, beforeStart, afterStart for sprite/gunSprite
+            if (info.beforeStart.ContainsKey("sprite"))
+            {
+                if (info.SpritePath.Count == 0)
+                    info.SpritePath.Add(info.beforeStart["sprite"] as string);
+                info.beforeStart.Remove("sprite");
+                
+                if (info.beforeStart.ContainsKey("gunSprite"))
+                {
+                    if (info.GunSpritePath.Count == 0)
+                        info.GunSpritePath.Add(info.beforeStart["gunSprite"] as string);
+                    info.beforeStart.Remove("gunSprite");
+                }
+            }
+            else if (info.afterStart.ContainsKey("sprite"))
+            {
+                if (info.SpritePath.Count == 0)
+                    info.SpritePath.Add(info.afterStart["sprite"] as string);
+                info.afterStart.Remove("sprite");
+                
+                if (info.afterStart.ContainsKey("gunSprite"))
+                {
+                    if (info.GunSpritePath.Count == 0)
+                        info.GunSpritePath.Add(info.afterStart["gunSprite"] as string);
+                    info.afterStart.Remove("gunSprite");
+                }
+            }
+            else if (info.beforeAwake.ContainsKey("sprite"))
+            {
+                if (info.SpritePath.Count == 0)
+                    info.SpritePath.Add(info.beforeAwake["sprite"] as string);
+                info.beforeAwake.Remove("sprite");
+                
+                if (info.beforeAwake.ContainsKey("gunSprite"))
+                {
+                    if (info.GunSpritePath.Count == 0)
+                        info.GunSpritePath.Add(info.beforeAwake["gunSprite"] as string);
+                    info.beforeAwake.Remove("gunSprite");
+                }
+            }
+            else if (info.afterAwake.ContainsKey("sprite"))
+            {
+                if (info.SpritePath.Count == 0)
+                    info.SpritePath.Add(info.afterAwake["sprite"] as string);
+                info.afterAwake.Remove("sprite");
+                
+                if (info.afterAwake.ContainsKey("gunSprite"))
+                {
+                    if (info.GunSpritePath.Count == 0)
+                        info.GunSpritePath.Add(info.afterAwake["gunSprite"] as string);
+                    info.afterAwake.Remove("gunSprite");
+                }
+            }
+        }
+        
+        private static void DetermineVariantCount(Infos.CustomBroInfo info)
+        {
+            int maxCount = 1;
+            
+            // Check all variant property lists
+            if (info.SpritePath?.Count > maxCount) maxCount = info.SpritePath.Count;
+            if (info.GunSpritePath?.Count > maxCount) maxCount = info.GunSpritePath.Count;
+            if (info.GunSpriteOffset?.Count > maxCount) maxCount = info.GunSpriteOffset.Count;
+            if (info.SpecialMaterials?.Count > maxCount) maxCount = info.SpecialMaterials.Count;
+            if (info.SpecialMaterialOffset?.Count > maxCount) maxCount = info.SpecialMaterialOffset.Count;
+            if (info.SpecialMaterialSpacing?.Count > maxCount) maxCount = info.SpecialMaterialSpacing.Count;
+            if (info.FirstAvatar?.Count > maxCount) maxCount = info.FirstAvatar.Count;
+            if (info.Cutscene?.Count > maxCount) maxCount = info.Cutscene.Count;
+            
+            info.VariantCount = maxCount;
+        }
+        
+        private static void ValidateVariantLists(Infos.CustomBroInfo info)
+        {
+            // Each list must have either 1 item or exactly VariantCount items
+            ValidateList(info.SpritePath, "SpritePath", info.VariantCount);
+            ValidateList(info.GunSpritePath, "GunSpritePath", info.VariantCount);
+            ValidateList(info.GunSpriteOffset, "GunSpriteOffset", info.VariantCount);
+            ValidateList(info.SpecialMaterials, "SpecialMaterials", info.VariantCount);
+            ValidateList(info.SpecialMaterialOffset, "SpecialMaterialOffset", info.VariantCount);
+            ValidateList(info.SpecialMaterialSpacing, "SpecialMaterialSpacing", info.VariantCount);
+            ValidateList(info.FirstAvatar, "FirstAvatar", info.VariantCount);
+            ValidateList(info.Cutscene, "Cutscene", info.VariantCount);
+        }
+        
+        private static void ValidateList<T>(System.Collections.Generic.List<T> list, string propertyName, int expectedCount)
+        {
+            if (list != null && list.Count > 1 && list.Count != expectedCount)
+            {
+                throw new InvalidOperationException(
+                    $"{propertyName} has {list.Count} items but VariantCount is {expectedCount}. " +
+                    $"Lists must have either 1 item (shared across variants) or exactly {expectedCount} items (one per variant).");
+            }
+        }
+        
+        public static void SetSprites(this ICustomHero hero)
+        {
+            // Get sprite paths for current variant
+            string spritePath = BroMakerUtilities.GetVariantValue(hero.info.SpritePath, hero.CurrentVariant);
+            string gunSpritePath = BroMakerUtilities.GetVariantValue(hero.info.GunSpritePath, hero.CurrentVariant);
+            
+            BroBase character = hero.character;
+            
+            // Set main sprite
+            if (!string.IsNullOrEmpty(spritePath))
+            {
+                character.Sprite().SetTexture(ResourcesController.GetTexture(hero.info.path, spritePath));
+            }
+            
+            // Set gun sprite
+            if (!string.IsNullOrEmpty(gunSpritePath))
+            {
+                character.gunSprite.SetTexture(ResourcesController.GetTexture(hero.info.path, gunSpritePath));
             }
         }
     }

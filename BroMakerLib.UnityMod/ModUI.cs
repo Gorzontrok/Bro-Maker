@@ -523,7 +523,17 @@ namespace BroMakerLib.UnityMod
             {
                 try
                 {
-                    Cutscenes.CustomCutsceneController.LoadHeroCutscene(bro.GetInfo().cutscene);
+                    var cutscenes = bro.GetInfo().Cutscene;
+                    if (cutscenes.Count > 0)
+                    {
+                        // Choose a random cutscene variant
+                        int randomIndex = UnityEngine.Random.Range(0, cutscenes.Count);
+                        Cutscenes.CustomCutsceneController.LoadHeroCutscene(cutscenes[randomIndex]);
+                    }
+                    else
+                    {
+                        throw new ArgumentNullException("The bro has no cutscene");
+                    }
                 }
                 catch (ArgumentNullException ex)
                 {

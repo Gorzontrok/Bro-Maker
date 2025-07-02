@@ -11,6 +11,22 @@ namespace BroMakerLib
     public static class BroMakerUtilities
     {
         /// <summary>
+        /// Gets the appropriate value from a variant list based on the variant index.
+        /// Returns the value at variantIndex if available, otherwise returns the first item, or default(T) if list is empty.
+        /// </summary>
+        /// <typeparam name="T">Type of the list elements</typeparam>
+        /// <param name="list">The variant list</param>
+        /// <param name="variantIndex">The desired variant index</param>
+        /// <returns>The appropriate value for the variant</returns>
+        public static T GetVariantValue<T>(List<T> list, int variantIndex)
+        {
+            if (list == null || list.Count == 0) return default(T);
+            if (list.Count == 1) return list[0];
+            if (variantIndex < list.Count) return list[variantIndex];
+            return list[0]; // Fallback to first if index out of range
+        }
+        
+        /// <summary>
         /// Determines if the specified unit is a boss
         /// </summary>
         /// <param name="unit">Unit to check</param>

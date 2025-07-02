@@ -29,6 +29,16 @@
             Use a Jetpack. Not fully functionnal for some reason
             </summary>
         </member>
+        <member name="M:BroMakerLib.BroMakerUtilities.GetVariantValue``1(System.Collections.Generic.List{``0},System.Int32)">
+            <summary>
+            Gets the appropriate value from a variant list based on the variant index.
+            Returns the value at variantIndex if available, otherwise returns the first item, or default(T) if list is empty.
+            </summary>
+            <typeparam name="T">Type of the list elements</typeparam>
+            <param name="list">The variant list</param>
+            <param name="variantIndex">The desired variant index</param>
+            <returns>The appropriate value for the variant</returns>
+        </member>
         <member name="M:BroMakerLib.BroMakerUtilities.IsBoss(Unit)">
             <summary>
             Determines if the specified unit is a boss
@@ -597,6 +607,11 @@
         <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.PrefabSetup">
             <summary>
             This method is called once after the prefab is created.
+            </summary>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.GetVariant">
+            <summary>
+            Override this to customize variant selection logic
             </summary>
         </member>
         <member name="T:BroMakerLib.CustomObjects.Bros.CustomHero.SaveableSettingAttribute">

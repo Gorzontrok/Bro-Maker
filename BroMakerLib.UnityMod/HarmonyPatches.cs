@@ -1,4 +1,5 @@
 ﻿using BroMakerLib.CustomObjects;
+using BroMakerLib.CustomObjects.Bros;
 using BroMakerLib.CustomObjects.Projectiles;
 using BroMakerLib.Cutscenes;
 using BroMakerLib.Infos;
@@ -137,20 +138,20 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                     else
                     {
                         choice = BSett.instance.GetRandomEnabledBro();
-                        if ( LoadHero.playCutscene = !BSett.instance.seenBros.Contains(choice.name) && choice.GetInfo().cutscene.playCutsceneOnFirstSpawn )
+                        if ( LoadHero.playCutscene = !BSett.instance.seenBros.Contains(choice.name) && choice.GetInfo().Cutscene.Count > 0 && choice.GetInfo().Cutscene[0].playCutsceneOnFirstSpawn )
                         {
                             BSett.instance.seenBros.Add(choice.name);
                         }
                     }
                     LoadHero.spawnFromPlayer = (__instance.rescuingThisBro != null);
 
-                    if (LoadHero.playCutscene)
+                    TestVanDammeAnim bro = choice.LoadBro(__instance.playerNum);
+
+                    if ( LoadHero.playCutscene )
                     {
-                        Cutscenes.CustomCutsceneController.LoadHeroCutscene(choice.GetInfo().cutscene);
+                        Cutscenes.CustomCutsceneController.LoadHeroCutscene( BroMakerUtilities.GetVariantValue( choice.GetInfo().Cutscene, (bro as CustomHero).CurrentVariant ) );
                         LoadHero.playCutscene = false;
                     }
-
-                    choice.LoadBro(__instance.playerNum);
                     __instance.changingBroFromTrigger = false;
                     LoadHero.spawningCustomBro[__instance.playerNum] = false;
                     LoadHero.anyCustomSpawning = false;
@@ -278,12 +279,19 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
 
             int playerNum = Convert.ToInt32(Traverse.Create(__instance).Field("playerNum").GetValue());
             TestVanDammeAnim currentCharacter = HeroController.players[playerNum].character;
-            if ( currentCharacter is ICustomHero && (currentCharacter as ICustomHero).specialMaterials != null )
+            if (currentCharacter is ICustomHero)
             {
-                ICustomHero customHero = (currentCharacter as ICustomHero);
-
-                BroMakerUtilities.SetSpecialMaterials(playerNum, customHero.specialMaterials, customHero.specialMaterialOffset, customHero.specialMaterialSpacing);
-                return false;
+                ICustomHero customHero = currentCharacter as ICustomHero;
+                var materials = BroMakerUtilities.GetVariantValue(customHero.info.SpecialMaterials, customHero.CurrentVariant);
+                
+                if (materials != null && materials.Count > 0)
+                {
+                    var offset = BroMakerUtilities.GetVariantValue(customHero.info.SpecialMaterialOffset, customHero.CurrentVariant);
+                    var spacing = BroMakerUtilities.GetVariantValue(customHero.info.SpecialMaterialSpacing, customHero.CurrentVariant);
+                    
+                    BroMakerUtilities.SetSpecialMaterials(playerNum, materials, offset, spacing);
+                    return false;
+                }
             }
             else
             {
@@ -633,9 +641,10 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
             {
                 LoadHero.tryReplaceAvatar = false;
 
-                ICustomHero customHero = (HeroController.players[LoadHero.playerNum].character as ICustomHero);
-                Material mat = customHero.firstAvatar;
-                if ( mat != null )
+                ICustomHero customHero = HeroController.players[LoadHero.playerNum].character as ICustomHero;
+                Material mat = BroMakerUtilities.GetVariantValue(customHero.info.FirstAvatar, customHero.CurrentVariant);
+                    
+                if (mat != null)
                 {
                     sprite.GetComponent<Renderer>().material = mat;
 
@@ -659,7 +668,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 return;
             }
 
-            LoadHero.customBroDeaths = new Dictionary<int, CustomBroInfo>();
+            LoadHero.customBroDeaths = new Dictionary<int, CustomBroDeath>();
 
             return;
         }
@@ -678,7 +687,9 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
 
             if (vanDamme is ICustomHero && deathType != DeathType.None )
             {
-                LoadHero.customBroDeaths.Add(SingletonNetObj<StatisticsController>.Instance.currentStats.deathList.Count, (vanDamme as ICustomHero).info);
+                ICustomHero customHero = vanDamme as ICustomHero;
+                LoadHero.customBroDeaths.Add(SingletonNetObj<StatisticsController>.Instance.currentStats.deathList.Count, 
+                    new CustomBroDeath(customHero.info, customHero.CurrentVariant));
             }
         }
     }
@@ -714,11 +725,19 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 if ( deathObject != null )
                 {
                     VictoryMookDeath victoryMookDeath = UnityEngine.Object.Instantiate<VictoryMookDeath>(__instance.broDeathGenericPrefab, position, Quaternion.identity);
-                    CustomBroInfo bro = LoadHero.customBroDeaths[deathNum];
+                    CustomBroDeath broDeath = LoadHero.customBroDeaths[deathNum];
+                    CustomBroInfo bro = broDeath.info;
+                    int variant = broDeath.variantIndex;
+                    
                     victoryMookDeath.Setup(deathObject, 0.2f, parent, shakeObject);
-                    victoryMookDeath.GetComponent<MeshRenderer>().material.mainTexture = ResourcesController.GetTexture(bro.spritePath);
-                    victoryMookDeath.gunSprite.GetComponent<MeshRenderer>().material.mainTexture = ResourcesController.GetTexture(bro.gunSpritePath);
-                    victoryMookDeath.gunSprite.SetOffset(bro.gunSpriteOffset.x, bro.gunSpriteOffset.y, 0);
+                    
+                    string spritePath = BroMakerUtilities.GetVariantValue(bro.SpritePath, variant);
+                    string gunSpritePath = BroMakerUtilities.GetVariantValue(bro.GunSpritePath, variant);
+                    Vector2 gunOffset = BroMakerUtilities.GetVariantValue(bro.GunSpriteOffset, variant);
+                    
+                    victoryMookDeath.GetComponent<MeshRenderer>().material.mainTexture = ResourcesController.GetTexture(spritePath);
+                    victoryMookDeath.gunSprite.GetComponent<MeshRenderer>().material.mainTexture = ResourcesController.GetTexture(gunSpritePath);
+                    victoryMookDeath.gunSprite.SetOffset(gunOffset.x, gunOffset.y, 0);
                 }
                 return false;
             }

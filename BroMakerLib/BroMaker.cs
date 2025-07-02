@@ -55,32 +55,76 @@ namespace BroMakerLib
 
         public static void PreloadBroAssets()
         {
-            // Preload all assets listed in the Json file
+            // Preload all assets listed in the JSON file
             for ( int i = 0; i < BroMakerStorage.Bros.Length; ++i )
             {
                 CustomBroInfo info = BroMakerStorage.Bros[i].GetInfo();
                 List<string> spritePaths = new List<string>();
                 List<string> soundPaths = new List<string>();
 
-                if (info.beforeStart.ContainsKey("sprite"))
+                // Handle Sprite parameter
+                if (info.parameters.ContainsKey("Sprite"))
                 {
-                    spritePaths.Add(info.beforeStart["sprite"] as string);
-                    spritePaths.Add(info.beforeStart["gunSprite"] as string);
+                    if (info.parameters["Sprite"] is string sprite)
+                    {
+                        spritePaths.Add(sprite);
+                    }
+                    else if (info.parameters["Sprite"] is JArray spriteArray)
+                    {
+                        foreach (var item in spriteArray)
+                        {
+                            string spritePath = item.ToObject<string>();
+                            if (!string.IsNullOrEmpty(spritePath))
+                                spritePaths.Add(spritePath);
+                        }
+                    }
                 }
-                else if (info.afterStart.ContainsKey("sprite"))
+                
+                // Handle GunSprite parameter
+                if (info.parameters.ContainsKey("GunSprite"))
                 {
-                    spritePaths.Add(info.afterStart["sprite"] as string);
-                    spritePaths.Add(info.afterStart["gunSprite"] as string);
+                    if (info.parameters["GunSprite"] is string gunSprite)
+                    {
+                        spritePaths.Add(gunSprite);
+                    }
+                    else if (info.parameters["GunSprite"] is JArray gunSpriteArray)
+                    {
+                        foreach (var item in gunSpriteArray)
+                        {
+                            string gunSpritePath = item.ToObject<string>();
+                            if (!string.IsNullOrEmpty(gunSpritePath))
+                                spritePaths.Add(gunSpritePath);
+                        }
+                    }
                 }
-                else if (info.beforeAwake.ContainsKey("sprite"))
+                
+                // Check old locations
+                if (spritePaths.Count == 0)
                 {
-                    spritePaths.Add(info.beforeAwake["sprite"] as string);
-                    spritePaths.Add(info.beforeAwake["gunSprite"] as string);
-                }
-                else if (info.afterAwake.ContainsKey("sprite"))
-                {
-                    spritePaths.Add(info.afterAwake["sprite"] as string);
-                    spritePaths.Add(info.afterAwake["gunSprite"] as string);
+                    if (info.beforeStart.ContainsKey("sprite"))
+                    {
+                        spritePaths.Add(info.beforeStart["sprite"] as string);
+                        if (info.beforeStart.ContainsKey("gunSprite"))
+                            spritePaths.Add(info.beforeStart["gunSprite"] as string);
+                    }
+                    else if (info.afterStart.ContainsKey("sprite"))
+                    {
+                        spritePaths.Add(info.afterStart["sprite"] as string);
+                        if (info.afterStart.ContainsKey("gunSprite"))
+                            spritePaths.Add(info.afterStart["gunSprite"] as string);
+                    }
+                    else if (info.beforeAwake.ContainsKey("sprite"))
+                    {
+                        spritePaths.Add(info.beforeAwake["sprite"] as string);
+                        if (info.beforeAwake.ContainsKey("gunSprite"))
+                            spritePaths.Add(info.beforeAwake["gunSprite"] as string);
+                    }
+                    else if (info.afterAwake.ContainsKey("sprite"))
+                    {
+                        spritePaths.Add(info.afterAwake["sprite"] as string);
+                        if (info.afterAwake.ContainsKey("gunSprite"))
+                            spritePaths.Add(info.afterAwake["gunSprite"] as string);
+                    }
                 }
 
                 if ( info.parameters.ContainsKey( "SpecialIcons" ) )
@@ -91,28 +135,103 @@ namespace BroMakerLib
                     }
                     else if ( info.parameters["SpecialIcons"] is JArray paths )
                     {
-                        for ( int j = 0; j < paths.Count; ++j )
+                        foreach (var item in paths)
                         {
-                            spritePaths.Add( paths[j].ToObject<string>() );
+                            if (item is JArray variantIcons)
+                            {
+                                // Array of arrays - each variant has multiple icons
+                                foreach (var icon in variantIcons)
+                                {
+                                    string iconPath = icon.ToObject<string>();
+                                    if (!string.IsNullOrEmpty(iconPath))
+                                        spritePaths.Add(iconPath);
+                                }
+                            }
+                            else
+                            {
+                                // Simple array - one icon per variant
+                                string iconPath = item.ToObject<string>();
+                                if (!string.IsNullOrEmpty(iconPath))
+                                    spritePaths.Add(iconPath);
+                            }
                         }
                     }
                 }
                 if ( info.parameters.ContainsKey("Avatar") )
                 {
-                    spritePaths.Add(info.parameters["Avatar"] as string);
+                    if (info.parameters["Avatar"] is string avatar)
+                    {
+                        spritePaths.Add(avatar);
+                    }
+                    else if (info.parameters["Avatar"] is JArray avatarArray)
+                    {
+                        foreach (var item in avatarArray)
+                        {
+                            string avatarPath = item.ToObject<string>();
+                            if (!string.IsNullOrEmpty(avatarPath))
+                                spritePaths.Add(avatarPath);
+                        }
+                    }
                 }
 
-                if ( info.cutscene.spritePath != string.Empty )
+                // Handle SpecialMaterials parameter
+                if (info.parameters.ContainsKey("SpecialMaterials"))
                 {
-                    spritePaths.Add(info.cutscene.spritePath);
+                    if (info.parameters["SpecialMaterials"] is JArray materialsArray)
+                    {
+                        foreach (var item in materialsArray)
+                        {
+                            if (item is JArray variantMaterials)
+                            {
+                                foreach (var material in variantMaterials)
+                                {
+                                    string materialPath = material.ToObject<string>();
+                                    if (!string.IsNullOrEmpty(materialPath))
+                                        spritePaths.Add(materialPath);
+                                }
+                            }
+                            else
+                            {
+                                string materialPath = item.ToObject<string>();
+                                if (!string.IsNullOrEmpty(materialPath))
+                                    spritePaths.Add(materialPath);
+                            }
+                        }
+                    }
                 }
-                if ( info.cutscene.barkPath != string.Empty )
+                
+                // Handle FirstAvatar parameter
+                if (info.parameters.ContainsKey("FirstAvatar"))
                 {
-                    soundPaths.Add(info.cutscene.barkPath);
+                    if (info.parameters["FirstAvatar"] is string firstAvatar)
+                    {
+                        spritePaths.Add(firstAvatar);
+                    }
+                    else if (info.parameters["FirstAvatar"] is JArray firstAvatarArray)
+                    {
+                        foreach (var item in firstAvatarArray)
+                        {
+                            string firstAvatarPath = item.ToObject<string>();
+                            if (!string.IsNullOrEmpty(firstAvatarPath))
+                                spritePaths.Add(firstAvatarPath);
+                        }
+                    }
                 }
-                if ( info.cutscene.fanfarePath != string.Empty )
+
+                foreach (var cutscene in info.Cutscene)
                 {
-                    soundPaths.Add(info.cutscene.fanfarePath);
+                    if ( cutscene.spritePath != string.Empty )
+                    {
+                        spritePaths.Add(cutscene.spritePath);
+                    }
+                    if ( cutscene.barkPath != string.Empty )
+                    {
+                        soundPaths.Add(cutscene.barkPath);
+                    }
+                    if ( cutscene.fanfarePath != string.Empty )
+                    {
+                        soundPaths.Add(cutscene.fanfarePath);
+                    }
                 }
                 
                 CustomHero.PreloadSprites(info.path, spritePaths);

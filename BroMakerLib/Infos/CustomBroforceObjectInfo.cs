@@ -21,18 +21,12 @@ namespace BroMakerLib.Infos
         [JsonProperty(Required = Required.Always, Order = -9)]
         public string name;
 
-        public CustomIntroCutscene cutscene = new CustomIntroCutscene();
-
         public Dictionary<string, object> parameters = new Dictionary<string, object>();
-        // Ability names: [On + Method Name, *]
-        public Dictionary<string, string[]> abilities = new Dictionary<string, string[]>();
 
         public Dictionary<string, object> beforeAwake = new Dictionary<string, object>();
         public Dictionary<string, object> afterAwake = new Dictionary<string, object>();
         public Dictionary<string, object> beforeStart = new Dictionary<string, object>();
         public Dictionary<string, object> afterStart = new Dictionary<string, object>();
-
-        protected Dictionary<string, string[]> callableAbilities = new Dictionary<string, string[]>();
 
         [JsonIgnore]
         public string path = string.Empty;
@@ -121,10 +115,6 @@ namespace BroMakerLib.Infos
                 beforeStart = new Dictionary<string, object>();
             if(afterStart == null)
                 afterStart = new Dictionary<string, object>();
-            if(abilities == null)
-                abilities = new Dictionary<string, string[]>();
-            if (cutscene == null)
-                cutscene = new CustomIntroCutscene();
         }
         public override string ToString()
         {

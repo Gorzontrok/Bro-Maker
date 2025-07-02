@@ -65,24 +65,28 @@ namespace BroMakerLib.Storages
             {
                 info = CustomBroInfo.DeserializeJSON<CustomBroInfo>(path);
                 info.path = Path.GetDirectoryName(path);
-                info.cutscene.path = info.path;
+                foreach (var cutscene in info.Cutscene)
+                {
+                    cutscene.path = info.path;
+                }
             }
             BMLogger.Debug("End Deserialization");
             return info;
         }
 
-        public void LoadBro(int playerNum)
+        public TestVanDammeAnim LoadBro(int playerNum)
         {
             try
             {
                 BMLogger.Debug("Spawning Hero " + name);
                 var info = GetInfo();
-                Loaders.LoadHero.WithCustomBroInfo(playerNum, info, PresetManager.GetHeroPreset(info.characterPreset));
+                return Loaders.LoadHero.WithCustomBroInfo(playerNum, info, PresetManager.GetHeroPreset(info.characterPreset));
             }
             catch (Exception e)
             {
                 BMLogger.ExceptionLog(e);
             }
+            return null;
         }
 
         public override string ToString()

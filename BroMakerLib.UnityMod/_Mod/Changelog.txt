@@ -1,5 +1,6 @@
-v2.6.0
-Added CustomGrenade and CustomProjectile classes to make creating custom projectiles easier.
+v2.6.0 (unreleased)
+Added CustomGrenade, CustomProjectile, and CustomSachelPack classes to make creating custom projectiles easier.
+Added option to specify multiple sprites, gunsprites, avatars, special icons, and cutscenes for a single bro.
 Fixed issue where audio clips couldn't be played multiple times simultaneously.
 Fixed custom hero prefabs being destroyed on level reload
 Removed BroMakerData.mod.json file.

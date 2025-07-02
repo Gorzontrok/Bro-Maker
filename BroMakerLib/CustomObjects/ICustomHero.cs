@@ -1,4 +1,5 @@
 ﻿using BroMakerLib.Infos;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,12 +11,7 @@ namespace BroMakerLib.CustomObjects
         CustomBroInfo info { get; set; }
         [Syncronize]
         BroBase character { get; set; }
-
-        List<Material> specialMaterials { get; set; }
-        Vector2 specialMaterialOffset { get; set; }
-        float specialMaterialSpacing { get; set; }
-        Material firstAvatar { get; set; }
-        Vector2 gunSpriteOffset { get; set; }
         MuscleTempleFlexEffect flexEffect { get; set; }
+        int CurrentVariant { get; set; }
     }
 }
