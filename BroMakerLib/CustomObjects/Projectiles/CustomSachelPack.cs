@@ -163,7 +163,7 @@ namespace BroMakerLib.CustomObjects.Projectiles
                     this.sprite.height = this.spriteHeight;
                     this.sprite.offset = this.spriteOffset;
                     this.sprite.plane = SpriteBase.SPRITE_PLANE.XY;
-                    this.sprite.color = Color.white;
+                    this.sprite.color = this.spriteColor;
                 }
 
                 if ( this.soundHolder == null )
