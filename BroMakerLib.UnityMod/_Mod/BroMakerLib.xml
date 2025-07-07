@@ -614,6 +614,12 @@
             Override this to customize variant selection logic
             </summary>
         </member>
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.SwitchVariant(System.Int32)">
+            <summary>
+            This method switches the current variant and changes all assigned parameters to the new variant's values
+            </summary>
+            <param name="variant">Variant to switch to</param>
+        </member>
         <member name="T:BroMakerLib.CustomObjects.Bros.CustomHero.SaveableSettingAttribute">
             <summary>
             Marks a static field or property to be saved/loaded as a persistent setting.

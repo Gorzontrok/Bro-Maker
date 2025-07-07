@@ -282,12 +282,12 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
             if (currentCharacter is ICustomHero)
             {
                 ICustomHero customHero = currentCharacter as ICustomHero;
-                var materials = BroMakerUtilities.GetVariantValue(customHero.info.SpecialMaterials, customHero.CurrentVariant);
+                var materials = customHero.CurrentSpecialMaterials;
                 
                 if (materials != null && materials.Count > 0)
                 {
-                    var offset = BroMakerUtilities.GetVariantValue(customHero.info.SpecialMaterialOffset, customHero.CurrentVariant);
-                    var spacing = BroMakerUtilities.GetVariantValue(customHero.info.SpecialMaterialSpacing, customHero.CurrentVariant);
+                    var offset = customHero.CurrentSpecialMaterialOffset;
+                    var spacing = customHero.CurrentSpecialMaterialSpacing;
                     
                     BroMakerUtilities.SetSpecialMaterials(playerNum, materials, offset, spacing);
                     return false;
@@ -642,7 +642,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 LoadHero.tryReplaceAvatar = false;
 
                 ICustomHero customHero = HeroController.players[LoadHero.playerNum].character as ICustomHero;
-                Material mat = BroMakerUtilities.GetVariantValue(customHero.info.FirstAvatar, customHero.CurrentVariant);
+                Material mat = customHero.CurrentFirstAvatar;
                     
                 if (mat != null)
                 {

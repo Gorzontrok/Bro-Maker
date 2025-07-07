@@ -1,11 +1,10 @@
 ﻿using BroMakerLib.CustomObjects;
 using BroMakerLib.Loaders;
 using BroMakerLib.Loggers;
+using Networking;
 using RocketLib;
 using System;
-using System.IO;
 using UnityEngine;
-using Networking;
 using Net = Networking.Networking;
 
 namespace BroMakerLib
@@ -163,14 +162,19 @@ namespace BroMakerLib
             if (hero is CustomObjects.Bros.CustomHero customHero)
             {
                 customHero.CurrentVariant = customHero.GetVariant();
-                // Set the cached gun sprite offset
-                customHero.CurrentGunSpriteOffset = BroMakerUtilities.GetVariantValue(hero.info.GunSpriteOffset, customHero.CurrentVariant);
             }
             else
             {
                 // For vanilla bros, use random selection
                 hero.CurrentVariant = UnityEngine.Random.Range(0, hero.info.VariantCount);
             }
+
+            // Cache current variant parameters
+            hero.CurrentGunSpriteOffset = BroMakerUtilities.GetVariantValue( hero.info.GunSpriteOffset, hero.CurrentVariant );
+            hero.CurrentSpecialMaterials = BroMakerUtilities.GetVariantValue( hero.info.SpecialMaterials, hero.CurrentVariant );
+            hero.CurrentSpecialMaterialOffset = BroMakerUtilities.GetVariantValue( hero.info.SpecialMaterialOffset, hero.CurrentVariant );
+            hero.CurrentSpecialMaterialSpacing = BroMakerUtilities.GetVariantValue( hero.info.SpecialMaterialSpacing, hero.CurrentVariant );
+            hero.CurrentFirstAvatar = BroMakerUtilities.GetVariantValue( hero.info.FirstAvatar, hero.CurrentVariant );
 
             // Set canCeilingHang to true by default 
             if ( !info.beforeAwake.ContainsKey("canCeilingHang") )
@@ -314,13 +318,13 @@ namespace BroMakerLib
             // Set main sprite
             if (!string.IsNullOrEmpty(spritePath))
             {
-                character.Sprite().SetTexture(ResourcesController.GetTexture(hero.info.path, spritePath));
+                character.GetComponent<SpriteSM>().meshRender.sharedMaterial = ResourcesController.GetMaterial( hero.info.path, spritePath );
             }
             
             // Set gun sprite
             if (!string.IsNullOrEmpty(gunSpritePath))
             {
-                character.gunSprite.SetTexture(ResourcesController.GetTexture(hero.info.path, gunSpritePath));
+                character.gunSprite.meshRender.sharedMaterial = ResourcesController.GetMaterial( hero.info.path, gunSpritePath );
             }
         }
     }

@@ -17,6 +17,11 @@ namespace BroMakerLib.Vanilla.Bros
         public BroBase character { get; set; }
         public MuscleTempleFlexEffect flexEffect { get; set; }
         public int CurrentVariant { get; set; }
+        public Vector2 CurrentGunSpriteOffset { get; set; }
+        public List<Material> CurrentSpecialMaterials { get; set; }
+        public Vector2 CurrentSpecialMaterialOffset { get; set; }
+        public float CurrentSpecialMaterialSpacing { get; set; }
+        public Material CurrentFirstAvatar { get; set; }
 
         protected override void Awake()
         {

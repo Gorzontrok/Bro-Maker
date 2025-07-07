@@ -22,15 +22,24 @@ namespace BroMakerLib.CustomObjects.Bros
         public BroBase character { get; set; }
         [JsonIgnore]
         public MuscleTempleFlexEffect flexEffect { get; set; }
-        
-        public int CurrentVariant { get; set; }
-        
-        public Vector2 CurrentGunSpriteOffset = Vector2.zero;
 
-		/// <summary>
-		/// Contains the path to the directory that contains your custom bro's dll
-		/// </summary>
-		public string directoryPath;
+        [JsonIgnore]
+        public int CurrentVariant { get; set; }
+        [JsonIgnore]
+        public Vector2 CurrentGunSpriteOffset { get; set; }
+        [JsonIgnore]
+        public List<Material> CurrentSpecialMaterials { get; set; }
+        [JsonIgnore]
+        public Vector2 CurrentSpecialMaterialOffset { get; set; }
+        [JsonIgnore]
+        public float CurrentSpecialMaterialSpacing { get; set; }
+        [JsonIgnore]
+        public Material CurrentFirstAvatar { get; set; }
+
+        /// <summary>
+        /// Contains the path to the directory that contains your custom bro's dll
+        /// </summary>
+        public string directoryPath;
 
         #region BroBase Methods
         protected override void Awake()
@@ -368,6 +377,24 @@ namespace BroMakerLib.CustomObjects.Bros
                 return 0;
             }
             return UnityEngine.Random.Range( 0, info.VariantCount );
+        }
+
+        /// <summary>
+        /// This method switches the current variant and changes all assigned parameters to the new variant's values
+        /// </summary>
+        /// <param name="variant">Variant to switch to</param>
+        public virtual void SwitchVariant( int variant )
+        {
+            this.CurrentVariant = variant;
+            this.CurrentGunSpriteOffset = BroMakerUtilities.GetVariantValue( this.info.GunSpriteOffset, this.CurrentVariant );
+            this.CurrentSpecialMaterials = BroMakerUtilities.GetVariantValue( this.info.SpecialMaterials, this.CurrentVariant );
+            this.CurrentSpecialMaterialOffset = BroMakerUtilities.GetVariantValue( this.info.SpecialMaterialOffset, this.CurrentVariant );
+            this.CurrentSpecialMaterialSpacing = BroMakerUtilities.GetVariantValue( this.info.SpecialMaterialSpacing, this.CurrentVariant );
+            this.CurrentFirstAvatar = BroMakerUtilities.GetVariantValue( this.info.FirstAvatar, this.CurrentVariant );
+
+            this.SetSprites();
+            BroMakerUtilities.SetSpecialMaterials( this.playerNum, this.CurrentSpecialMaterials, this.CurrentSpecialMaterialOffset, this.CurrentSpecialMaterialSpacing );
+            HeroController.SetAvatarMaterial( playerNum, this.CurrentFirstAvatar );
         }
         #endregion
 
