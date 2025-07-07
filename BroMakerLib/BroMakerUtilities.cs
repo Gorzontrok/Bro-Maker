@@ -34,7 +34,7 @@ namespace BroMakerLib
         public static bool IsBoss(Unit unit)
         {
             return unit.CompareTag("Boss") || unit is DolphLundrenSoldier || unit is SatanMiniboss || (unit is AlienSandWorm && !(unit is AlienWormFacehuggerLauncher)) || 
-                unit is TankBig || unit is Mookopter || unit is GoliathMech;
+                unit is TankBig || unit is Mookopter || unit is GoliathMech || unit is MechWeapon;
         }
 
         /// <summary>
