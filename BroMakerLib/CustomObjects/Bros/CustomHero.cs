@@ -337,6 +337,8 @@ namespace BroMakerLib.CustomObjects.Bros
 
 		/// <summary>
 		/// This method is called once after the prefab is created.
+        /// 
+        /// IMPORTANT: Make sure if you override this you still call the base implementation.
 		/// </summary>
 		public virtual void PrefabSetup()
 		{

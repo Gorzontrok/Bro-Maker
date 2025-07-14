@@ -215,7 +215,7 @@ namespace BroMakerLib.Loaders
                         if (customHero != null)
                         {
                             // Ensure character has the right sprite when spawning attached to a vehicle
-                            customHero.info.BeforeStart(customHero);
+                            customHero.SetSprites();
                         }
                         Map.AddBroToHeroTransport(bro);
                         arg = bro.transform.position;

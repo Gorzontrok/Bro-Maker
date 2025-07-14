@@ -607,6 +607,8 @@
         <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.PrefabSetup">
             <summary>
             This method is called once after the prefab is created.
+            
+            IMPORTANT: Make sure if you override this you still call the base implementation.
             </summary>
         </member>
         <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.GetVariant">

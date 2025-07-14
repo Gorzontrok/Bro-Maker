@@ -734,9 +734,9 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                     string spritePath = BroMakerUtilities.GetVariantValue(bro.SpritePath, variant);
                     string gunSpritePath = BroMakerUtilities.GetVariantValue(bro.GunSpritePath, variant);
                     Vector2 gunOffset = BroMakerUtilities.GetVariantValue(bro.GunSpriteOffset, variant);
-                    
-                    victoryMookDeath.GetComponent<MeshRenderer>().material.mainTexture = ResourcesController.GetTexture(spritePath);
-                    victoryMookDeath.gunSprite.GetComponent<MeshRenderer>().material.mainTexture = ResourcesController.GetTexture(gunSpritePath);
+
+                    victoryMookDeath.GetComponent<MeshRenderer>().material = ResourcesController.GetMaterial( bro.path, spritePath );
+                    victoryMookDeath.gunSprite.GetComponent<MeshRenderer>().material = ResourcesController.GetMaterial( bro.path, gunSpritePath );
                     victoryMookDeath.gunSprite.SetOffset(gunOffset.x, gunOffset.y, 0);
                 }
                 return false;
