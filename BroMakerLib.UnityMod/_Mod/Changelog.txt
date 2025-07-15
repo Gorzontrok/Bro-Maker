@@ -1,4 +1,5 @@
 v2.6.0 (unreleased)
+BREAKING CHANGE: Moved gunSprite and sprite from beforeStart / afterStart to the Parameters
 Added CustomGrenade, CustomProjectile, and CustomSachelPack classes to make creating custom projectiles easier.
 Added option to specify multiple sprites, gunsprites, avatars, special icons, and cutscenes for a single bro.
 Fixed issue where audio clips couldn't be played multiple times simultaneously.

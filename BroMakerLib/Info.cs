@@ -8,9 +8,9 @@ namespace BroMakerLib
         public const string AUTHOR = "Gorzontrok";
         public const string VERSION = "2.6.0";
         // Used to show a warning that if bros are below this version they may experience bugs
-        public const string SUGGESTEDMINIMUMVERSION = "2.4.0";
+        public const string SUGGESTEDMINIMUMVERSION = "2.6.0";
         // Used for when BroMaker makes breaking changes that will require Bro mods to be updated
-        public const string MINIMUMVERSION = "2.3.0";
+        public const string MINIMUMVERSION = "2.6.0";
 
         public static System.Version ParsedVersion
         {

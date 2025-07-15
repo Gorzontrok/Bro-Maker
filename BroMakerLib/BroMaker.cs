@@ -97,35 +97,6 @@ namespace BroMakerLib
                         }
                     }
                 }
-                
-                // Check old locations
-                if (spritePaths.Count == 0)
-                {
-                    if (info.beforeStart.ContainsKey("sprite"))
-                    {
-                        spritePaths.Add(info.beforeStart["sprite"] as string);
-                        if (info.beforeStart.ContainsKey("gunSprite"))
-                            spritePaths.Add(info.beforeStart["gunSprite"] as string);
-                    }
-                    else if (info.afterStart.ContainsKey("sprite"))
-                    {
-                        spritePaths.Add(info.afterStart["sprite"] as string);
-                        if (info.afterStart.ContainsKey("gunSprite"))
-                            spritePaths.Add(info.afterStart["gunSprite"] as string);
-                    }
-                    else if (info.beforeAwake.ContainsKey("sprite"))
-                    {
-                        spritePaths.Add(info.beforeAwake["sprite"] as string);
-                        if (info.beforeAwake.ContainsKey("gunSprite"))
-                            spritePaths.Add(info.beforeAwake["gunSprite"] as string);
-                    }
-                    else if (info.afterAwake.ContainsKey("sprite"))
-                    {
-                        spritePaths.Add(info.afterAwake["sprite"] as string);
-                        if (info.afterAwake.ContainsKey("gunSprite"))
-                            spritePaths.Add(info.afterAwake["gunSprite"] as string);
-                    }
-                }
 
                 if ( info.parameters.ContainsKey( "SpecialIcons" ) )
                 {

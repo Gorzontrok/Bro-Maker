@@ -382,6 +382,13 @@ namespace BroMakerLib.CustomObjects.Bros
         }
 
         /// <summary>
+        /// Override this if you have additional sprites that need to be set up and showing immediately
+        /// </summary>
+        public virtual void SetupAdditionalSprites()
+        {
+        }
+
+        /// <summary>
         /// This method switches the current variant and changes all assigned parameters to the new variant's values
         /// </summary>
         /// <param name="variant">Variant to switch to</param>

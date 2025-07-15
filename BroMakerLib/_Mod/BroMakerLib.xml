@@ -616,6 +616,11 @@
             Override this to customize variant selection logic
             </summary>
         </member>
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.SetupAdditionalSprites">
+            <summary>
+            Override this if you have additional sprites that need to be set up and showing immediately
+            </summary>
+        </member>
         <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.SwitchVariant(System.Int32)">
             <summary>
             This method switches the current variant and changes all assigned parameters to the new variant's values
@@ -724,6 +729,12 @@
             </summary>
             <param name="hero"></param>
             <exception cref="T:System.NullReferenceException"></exception>
+        </member>
+        <member name="M:BroMakerLib.ICustomHeroExtensions.SetSprites(BroMakerLib.CustomObjects.ICustomHero)">
+            <summary>
+            Loads and sets the sprite and gunsprite material for the given bro.
+            </summary>
+            <param name="bro">Bro to load sprites for</param>
         </member>
         <member name="F:BroMakerLib.Infos.CustomBroforceObjectInfo.name">
             <summary>
