@@ -280,5 +280,47 @@ namespace BroMakerLib
                 customHero.SetupAdditionalSprites();
             }
         }
+
+        /// <summary>
+        /// Called before base.Awake() for vanilla bros
+        /// </summary>
+        /// <param name="hero">The hero instance to setup</param>
+        /// <param name="fixNullVariableLocal">Optional action to fix null variables specific to the hero type</param>
+        public static void StandardBeforeAwake(this ICustomHero hero, Action fixNullVariableLocal = null)
+        {
+            hero.character = hero as BroBase;
+            hero.info = LoadHero.currentInfo;
+            fixNullVariableLocal?.Invoke();
+            hero.SetupCustomHero();
+            hero.info.BeforeAwake(hero);
+        }
+
+        /// <summary>
+        /// Called after base.Awake() for vanilla bros
+        /// </summary>
+        /// <param name="hero">The hero instance to cleanup</param>
+        public static void StandardAfterAwake(this ICustomHero hero)
+        {
+            hero.SetSprites();
+            hero.info.AfterAwake(hero);
+        }
+
+        /// <summary>
+        /// Called before base.Start() for vanilla bros
+        /// </summary>
+        /// <param name="hero">The hero instance to setup</param>
+        public static void StandardBeforeStart(this ICustomHero hero)
+        {
+            hero.info.BeforeStart(hero);
+        }
+
+        /// <summary>
+        /// Called after base.Start() for vanilla bros
+        /// </summary>
+        /// <param name="hero">The hero instance to cleanup</param>
+        public static void StandardAfterStart(this ICustomHero hero)
+        {
+            hero.info.AfterStart(hero);
+        }
     }
 }

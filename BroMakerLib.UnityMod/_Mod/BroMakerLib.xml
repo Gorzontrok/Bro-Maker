@@ -736,6 +736,31 @@
             </summary>
             <param name="bro">Bro to load sprites for</param>
         </member>
+        <member name="M:BroMakerLib.ICustomHeroExtensions.StandardBeforeAwake(BroMakerLib.CustomObjects.ICustomHero,System.Action)">
+            <summary>
+            Called before base.Awake() for vanilla bros
+            </summary>
+            <param name="hero">The hero instance to setup</param>
+            <param name="fixNullVariableLocal">Optional action to fix null variables specific to the hero type</param>
+        </member>
+        <member name="M:BroMakerLib.ICustomHeroExtensions.StandardAfterAwake(BroMakerLib.CustomObjects.ICustomHero)">
+            <summary>
+            Called after base.Awake() for vanilla bros
+            </summary>
+            <param name="hero">The hero instance to cleanup</param>
+        </member>
+        <member name="M:BroMakerLib.ICustomHeroExtensions.StandardBeforeStart(BroMakerLib.CustomObjects.ICustomHero)">
+            <summary>
+            Called before base.Start() for vanilla bros
+            </summary>
+            <param name="hero">The hero instance to setup</param>
+        </member>
+        <member name="M:BroMakerLib.ICustomHeroExtensions.StandardAfterStart(BroMakerLib.CustomObjects.ICustomHero)">
+            <summary>
+            Called after base.Start() for vanilla bros
+            </summary>
+            <param name="hero">The hero instance to cleanup</param>
+        </member>
         <member name="F:BroMakerLib.Infos.CustomBroforceObjectInfo.name">
             <summary>
             Name of the Custom Object

@@ -53,9 +53,8 @@ namespace BroMakerLib.CustomObjects.Bros
 
                 info.BeforeAwake(this);
                 base.Awake();
+                this.SetSprites();
                 info.AfterAwake(this);
-
-				// Removed - gunSpriteOffset is now stored in info
 
 				// Make sure parachute isn't null, for some reason the game's default way of handling this doesn't work
 				if ( this.parachute == null )
@@ -83,7 +82,6 @@ namespace BroMakerLib.CustomObjects.Bros
             try
             {
                 info.BeforeStart(this);
-                this.SetSprites();
 				if ( character.gameObject.GetComponent<InvulnerabilityFlash>() == null )
 				{
                     character.gameObject.AddComponent<InvulnerabilityFlash>().SetCharacter(character);

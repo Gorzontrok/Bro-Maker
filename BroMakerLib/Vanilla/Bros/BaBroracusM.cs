@@ -23,15 +23,11 @@ namespace BroMakerLib.Vanilla.Bros
 
         protected override void Awake()
         {
-            character = this;
-            info = LoadHero.currentInfo;
             try
             {
-                FixNullVariableLocal();
-                this.SetupCustomHero();
-                info.BeforeAwake(this);
+                this.StandardBeforeAwake(FixNullVariableLocal);
                 base.Awake();
-                info.AfterAwake(this);
+                this.StandardAfterAwake();
             }
             catch (Exception ex)
             {
@@ -44,10 +40,9 @@ namespace BroMakerLib.Vanilla.Bros
         {
             try
             {
-                info.BeforeStart(this);
-                this.SetSprites();
+                this.StandardBeforeStart();
                 base.Start();
-                info.AfterStart(this);
+                this.StandardAfterStart();
             }
             catch (Exception ex)
             {

@@ -211,12 +211,6 @@ namespace BroMakerLib.Loaders
                     goto IL_1E7;
                 case Player.SpawnType.AddBroToTransport:
                     {
-                        ICustomHero customHero = bro as ICustomHero;
-                        if (customHero != null)
-                        {
-                            // Ensure character has the right sprite when spawning attached to a vehicle
-                            customHero.SetSprites();
-                        }
                         Map.AddBroToHeroTransport(bro);
                         arg = bro.transform.position;
                         goto IL_1E7;
