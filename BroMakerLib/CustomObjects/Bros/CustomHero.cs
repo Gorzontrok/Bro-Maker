@@ -37,6 +37,11 @@ namespace BroMakerLib.CustomObjects.Bros
         public Material CurrentFirstAvatar { get; set; }
 
         /// <summary>
+        /// Set this to control which hero is used for the default soundHolder sounds
+        /// </summary>
+        public HeroType SoundHolderHeroType = HeroType.None;
+
+        /// <summary>
         /// Contains the path to the directory that contains your custom bro's dll
         /// </summary>
         public string directoryPath;
@@ -340,7 +345,12 @@ namespace BroMakerLib.CustomObjects.Bros
 		/// </summary>
 		public virtual void PrefabSetup()
 		{
-			HeroType baseHeroType = LoadHero.GetBaseHeroTypeOfPreset( this.GetType() );
+            HeroType baseHeroType = this.SoundHolderHeroType;
+            // Use base hero type if SoundHolderHeroType is unassigned
+            if ( baseHeroType == HeroType.None )
+            {
+                baseHeroType = LoadHero.GetBaseHeroTypeOfPreset( this.GetType() );
+            }
             this.soundHolder = UnityEngine.Object.Instantiate( HeroController.GetHeroPrefab( baseHeroType ).soundHolder );
             this.soundHolder.gameObject.SetActive( false );
             this.soundHolder.gameObject.name = "SoundHolder " + this.name;

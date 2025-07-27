@@ -569,6 +569,11 @@
             Custom projectile or grenade
             </summary>
         </member>
+        <member name="F:BroMakerLib.CustomObjects.Bros.CustomHero.SoundHolderHeroType">
+            <summary>
+            Set this to control which hero is used for the default soundHolder sounds
+            </summary>
+        </member>
         <member name="F:BroMakerLib.CustomObjects.Bros.CustomHero.directoryPath">
             <summary>
             Contains the path to the directory that contains your custom bro's dll
