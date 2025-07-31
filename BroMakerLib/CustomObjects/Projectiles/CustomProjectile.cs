@@ -205,7 +205,7 @@ namespace BroMakerLib.CustomObjects.Projectiles
             }
             else
             {
-                T prefab = new GameObject( typeof( T ).Name, new Type[] { typeof( Transform ), typeof( MeshFilter ), typeof( MeshRenderer ), typeof( SpriteSM ), typeof( T ) } ).GetComponent<T>();
+                T prefab = new GameObject( typeof( T ).Name, new Type[] { typeof( MeshFilter ), typeof( MeshRenderer ), typeof( SpriteSM ), typeof( T ) } ).GetComponent<T>();
                 prefab.PrefabSetup();
                 prefab.RanSetup = true;
                 prefab.enabled = false;
@@ -230,7 +230,7 @@ namespace BroMakerLib.CustomObjects.Projectiles
             }
             else
             {
-                Type[] components = ( new List<Type> { typeof( Transform ), typeof( MeshFilter ), typeof( MeshRenderer ), typeof( SpriteSM ), typeof( T ) } ).Concat( additionalComponents ).ToArray();
+                Type[] components = ( new List<Type> { typeof( MeshFilter ), typeof( MeshRenderer ), typeof( SpriteSM ), typeof( T ) } ).Concat( additionalComponents ).ToArray();
                 T prefab = new GameObject( typeof( T ).Name, components ).GetComponent<T>();
                 prefab.PrefabSetup();
                 prefab.RanSetup = true;

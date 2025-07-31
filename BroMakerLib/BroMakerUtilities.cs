@@ -152,7 +152,7 @@ namespace BroMakerLib
             float frictionM = 0.5f, float drag = 0,
             bool randomiseGravityM = false, float gravityMrandomRange = 0.1f, AudioClip[] fallHitSound = null, bool isOnFire = false)
         {
-            Gib gib = new GameObject(name, new Type[] { typeof(Transform), typeof(MeshFilter), typeof(MeshRenderer), typeof(SpriteSM), typeof(Gib) }).GetComponent<Gib>();
+            Gib gib = new GameObject(name, new Type[] { typeof(MeshFilter), typeof(MeshRenderer), typeof(SpriteSM), typeof(Gib) }).GetComponent<Gib>();
 
             SpriteSM gibSprite = gib.gameObject.GetComponent<SpriteSM>();
             gibSprite.plane = SpriteBase.SPRITE_PLANE.XY;
@@ -191,7 +191,7 @@ namespace BroMakerLib
             gib.gravityMrandomRange = gravityMrandomRange;
             if ( fallHitSound != null )
             {
-                gib.soundHolder = new GameObject(name + "soundHolder", new Type[] { typeof(Transform), typeof(SoundHolder) }).GetComponent<SoundHolder>();
+                gib.soundHolder = new GameObject(name + "soundHolder", new Type[] { typeof(SoundHolder) }).GetComponent<SoundHolder>();
                 gib.soundHolder.fallHitSound = fallHitSound;
             }
             gib.isOnFire = isOnFire;
