@@ -71,7 +71,6 @@ namespace BroMakerLib
                 BMLogger.Debug("FixOtherComponentValues: Parachute Not Found");
             character.RemoveComponent<WavyGrassEffector>();
             BMLogger.Debug($"FixOtherComponentValues: Removed 'WavyGrassEffector' component.");
-            character.gameObject.RemoveComponent<InvulnerabilityFlash>();
             character.RemoveComponent<PathAgent>();
             BMLogger.Debug("FixOtherComponentValues: Removed 'PathAgent' component.");
         }

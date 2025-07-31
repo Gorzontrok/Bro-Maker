@@ -87,14 +87,13 @@ namespace BroMakerLib.CustomObjects.Bros
             try
             {
                 info.BeforeStart(this);
-				if ( character.gameObject.GetComponent<InvulnerabilityFlash>() == null )
+				InvulnerabilityFlash invulnFlash = character.gameObject.GetComponent<InvulnerabilityFlash>();
+				if ( invulnFlash == null )
 				{
-                    character.gameObject.AddComponent<InvulnerabilityFlash>().SetCharacter(character);
+                    invulnFlash = character.gameObject.AddComponent<InvulnerabilityFlash>();
                 }
-				else
-				{
-					character.gameObject.GetComponent<InvulnerabilityFlash>().enabled = true;
-                }
+				invulnFlash.SetCharacter(character);
+				invulnFlash.enabled = true;
 				WavyGrassEffector[] wavyGrassEffectors = character.gameObject.GetComponents<WavyGrassEffector>();
 				if ( wavyGrassEffectors.Length == 0 )
 				{
