@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using UnityEngine;
+using BSett = BroMakerLib.Settings;
 
 namespace BroMakerLib.Loggers
 {
@@ -66,6 +66,10 @@ namespace BroMakerLib.Loggers
 
         public static void Debug(object message, LogType logType = LogType.Log, bool useColors = true)
         {
+            if ( !BSett.instance.debugLogs )
+            {
+                return;
+            }
             StringBuilder sb = new StringBuilder(FormatLogType(logType));
             sb.Insert(0, "[DEBUG] ");
             sb.AppendLine(FormatMessage(message.ToString(), logType, useColors));

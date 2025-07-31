@@ -705,7 +705,7 @@ namespace BroMakerLib.UnityMod
             }
             GUILayout.EndHorizontal();
             GUILayout.Space( 15 );
-            _Settings.debugLogs = GUILayout.Toggle( _Settings.debugLogs, new GUIContent( "Debug Logs", "Enables debug logging which can be viewed in the UnityModManager log" ) );
+            BSett.instance.debugLogs = _Settings.debugLogs = GUILayout.Toggle( _Settings.debugLogs, new GUIContent( "Debug Logs", "Enables debug logging which can be viewed in the UnityModManager log" ) );
             BSett.instance.developerMode = GUILayout.Toggle( BSett.instance.developerMode, new GUIContent( "Developer Mode", "Enables more options in the BroMakerSettings window for bro developers" ) );
             GUILayout.Space( 10 );
         }

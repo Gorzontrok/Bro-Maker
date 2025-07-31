@@ -39,6 +39,7 @@ namespace BroMakerLib
         public bool scaleUIWithWindowWidth = false;
         public bool disableTooltips = false;
         public bool scaleUIHeight = false;
+        public bool debugLogs = false;
 
         public Dictionary<string, bool> enabledBros = new Dictionary<string, bool>();
         public int enabledBroCount = 0;

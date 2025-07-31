@@ -270,14 +270,14 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
     [HarmonyPatch(typeof(PlayerHUD), "SetGrenadeMaterials", new Type[] { typeof(HeroType) })]
     static class PlayerHUD_SetGrenadeMaterials_Patch
     {
-        public static bool Prefix(PlayerHUD __instance, ref HeroType type)
+        public static bool Prefix(PlayerHUD __instance, ref HeroType type, int ___playerNum)
         {
             if ( !Main.enabled )
             {
                 return true;
             }
 
-            int playerNum = Convert.ToInt32(Traverse.Create(__instance).Field("playerNum").GetValue());
+            int playerNum = ___playerNum;
             TestVanDammeAnim currentCharacter = HeroController.players[playerNum].character;
             if (currentCharacter is ICustomHero)
             {
@@ -307,14 +307,14 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
     [HarmonyPatch(typeof(CutsceneIntroRoot), "OnLoadComplete")]
     static class CutsceneIntroRoot_OnLoadComplete_Patch
     {
-        public static void Prefix(CutsceneIntroRoot __instance, ref string resourceName, ref object asset)
+        public static void Prefix(CutsceneIntroRoot __instance, ref string resourceName, ref object asset, ref string ____curIntroResourceName)
         {
             if ( !Main.enabled || !CustomCutsceneController.willLoadCustomCutscene )
             {
                 return;
             }
 
-            Traverse.Create(__instance).Field("_curIntroResourceName").SetValue(string.Format("{0}:{1}", "cutscenes", "Intro_Bro_Rambro"));
+            ____curIntroResourceName = string.Format("{0}:{1}", "cutscenes", "Intro_Bro_Rambro");
 
             CutsceneIntroData data = CustomCutsceneController.cutsceneToLoad.ToCutsceneIntroData(__instance);
 
@@ -509,7 +509,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
     static class AssMouthOrifice_TryConsumeObject_Patch
     {
         public static int customObjectIsConsumed = 0;
-        public static void Postfix(AssMouthOrifice __instance, ref BroforceObject obj, ref bool __result )
+        public static void Postfix(AssMouthOrifice __instance, ref BroforceObject obj, ref bool __result, ref bool ___playSwallowAnim, ref float ___swallowFrameTimer, ref int ___swallowFrame, List<BroforceObject> ___consumedThisFrame )
         {
             if (!Main.enabled)
             {
@@ -519,13 +519,12 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
             if ( __result && ( obj is ICustomHero || obj is ICustomProjectile ) )
             {
                 ++customObjectIsConsumed;
-                Traverse assTraverse = Traverse.Create(__instance);
-                assTraverse.SetFieldValue("playSwallowAnim", true);
-                assTraverse.SetFieldValue("swallowFrameTimer", 0f);
-                assTraverse.SetFieldValue("swallowFrame", 0);
+                ___playSwallowAnim = true;
+                ___swallowFrameTimer = 0f;
+                ___swallowFrame = 0;
                 AssMouthTransportWrapper assMouthTransportWrapper = UnityEngine.Object.Instantiate<AssMouthTransportWrapper>(__instance.wrapperPrefab);
                 assMouthTransportWrapper.Setup(obj, __instance.root);
-                (assTraverse.GetFieldValue("consumedThisFrame") as List<BroforceObject>).Add(obj);
+                ___consumedThisFrame.Add(obj);
                 __instance.open = true;
                 if (__instance.enterSound)
                 {
@@ -540,7 +539,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
     [HarmonyPatch(typeof(AssMouthTransportWrapper), "RunAssMouthMovement")]
     static class AssMouthTransportWrapper_RunAssMouthMovement_Patch
     {
-        public static void Postfix(AssMouthTransportWrapper __instance)
+        public static void Postfix(AssMouthTransportWrapper __instance, object ___transportedObject, AssMouthBlock ___CurrentAssMouthBlock, AssMouthBlock ___PrevAssMouthBlock)
         {
             if (!Main.enabled)
             {
@@ -549,11 +548,9 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
 
             if ( AssMouthOrifice_TryConsumeObject_Patch.customObjectIsConsumed > 0 )
             {
-                Traverse assTraverse = Traverse.Create(__instance);
-                object obj = assTraverse.GetFieldValue( "transportedObject" );
-                if ( assTraverse.GetFieldValue("CurrentAssMouthBlock") == null && ( obj is ICustomHero || obj is ICustomProjectile ) )
+                if ( ___CurrentAssMouthBlock == null && ( ___transportedObject is ICustomHero || ___transportedObject is ICustomProjectile ) )
                 {
-                    __instance.ExitAssMouth((assTraverse.GetFieldValue("PrevAssMouthBlock") as AssMouthBlock).orificeInstance);
+                    __instance.ExitAssMouth(___PrevAssMouthBlock.orificeInstance);
                     --AssMouthOrifice_TryConsumeObject_Patch.customObjectIsConsumed;
                 }
             }
@@ -902,7 +899,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
     [HarmonyPatch( typeof( BroBase ), "StartPockettedSpecial" )]
     static class BroBase_StartPockettedSpecial_Patch
     {
-        public static void Postfix( ref BroBase __instance )
+        public static void Postfix( ref BroBase __instance, ref PockettedSpecialAmmoType ___usingPockettedSpecialType )
         {
             if ( !Main.enabled )
             {
@@ -914,7 +911,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 // If the pocketted special uses the throwing animation then we need to set the usingPockettedSpecialType to something other than None, which defaults to the flex animation
                 if ( CustomPockettedSpecial.pockettedSpecials[__instance.playerNum].Last().UseThrowingAnimation() )
                 {
-                    __instance.SetFieldValue( "usingPockettedSpecialType", PockettedSpecialAmmoType.Airstrike );
+                    ___usingPockettedSpecialType = PockettedSpecialAmmoType.Airstrike;
                 }
             }
         }
@@ -923,7 +920,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
     [HarmonyPatch( typeof( BroBase ), "UsePockettedSpecial" )]
     static class BroBase_UsePockettedSpecial_Patch
     {
-        public static bool Prefix( ref BroBase __instance )
+        public static bool Prefix( ref BroBase __instance, ref int ___pressSpecialFacingDirection )
         {
             if ( !Main.enabled )
             {
@@ -932,7 +929,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
 
             if ( __instance.pockettedSpecialAmmo.Count > 0 && __instance.pockettedSpecialAmmo[__instance.pockettedSpecialAmmo.Count - 1] == PockettedSpecialAmmoType.None && CustomPockettedSpecial.pockettedSpecials[__instance.playerNum].Count > 0 )
             {
-                __instance.SetFieldValue( "pressSpecialFacingDirection", 0 );
+                ___pressSpecialFacingDirection = 0;
                 CustomPockettedSpecial special = CustomPockettedSpecial.pockettedSpecials[__instance.playerNum].Last();
                 special.UseSpecial( __instance );
                 CustomPockettedSpecial.pockettedSpecials[__instance.playerNum].Remove( special );

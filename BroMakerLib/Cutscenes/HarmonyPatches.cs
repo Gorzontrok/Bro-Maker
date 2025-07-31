@@ -10,7 +10,7 @@ namespace BroMakerLib.Cutscenes
      static class CutsceneIntroRoot_StartCutscene_Patch
      {
 
-        static bool Prefix(CutsceneIntroRoot __instance, ref string resourceName, ref object asset)
+        static bool Prefix(CutsceneIntroRoot __instance, ref string resourceName, ref object asset, ref CutsceneIntroData ____curIntroData, ref Texture2D ____oldTex)
          {
             try
             {
@@ -20,7 +20,7 @@ namespace BroMakerLib.Cutscenes
                 asset = CustomCutsceneController.cutsceneToLoad.ToCutsceneIntroData(__instance);
 
                 CutsceneIntroData _curIntroData = (CutsceneIntroData)asset;
-                __instance.SetFieldValue("_curIntroData", _curIntroData);
+                ____curIntroData = _curIntroData;
 
                 CutsceneIntroDataExtra dataExtra = _curIntroData as CutsceneIntroDataExtra;
                 bool hasExtraData = dataExtra != null;
@@ -80,7 +80,7 @@ namespace BroMakerLib.Cutscenes
                 }
 
                 // Sprite
-                __instance.SetFieldValue("_oldTex", __instance.spriteRenderer.material.mainTexture);
+                ____oldTex = __instance.spriteRenderer.material.mainTexture as Texture2D;
                 __instance.spriteRenderer.material.mainTexture = _curIntroData.spriteTexture;
 
                 SpriteSM spriteSM = __instance.spriteRenderer.gameObject.GetComponent<SpriteSM>();

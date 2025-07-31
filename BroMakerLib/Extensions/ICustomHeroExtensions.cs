@@ -112,22 +112,17 @@ namespace BroMakerLib
             if (otherBroComponent != null)
             {
                 hero.AssignNullVariables(otherBroComponent);
-                //Net.RPC(PID.TargetAll, new RpcSignature<BroBase>(hero.AssignNullVariables), otherBroComponent);
                 var type = otherBroComponent.GetType();
                 UnityEngine.Object.Destroy(otherBroComponent);
-                //Net.RPC(PID.TargetAll, new RpcSignature<UnityEngine.Object>(UnityEngine.Object.Destroy), otherBroComponent);
                 BMLogger.Debug($"SetupCustomHero: Has destroy {type} component.");
                 hero.info.ReadParameters(hero.character);
-                //Net.RPC(PID.TargetAll, new RpcSignature<object>(hero.info.ReadParameters), hero.character);
                 BMLogger.Debug("SetupCustomHero: Has read parameters");
             }
             else
                 BMLogger.Debug("SetupCustomHero: No other bro component founded");
 
             hero.FixOtherComponentValues();
-            //Net.RPC(PID.TargetAll, new RpcSignature(hero.FixOtherComponentValues));
             hero.RemoveDuplicateGlowLight();
-            //Net.RPC(PID.TargetAll, new RpcSignature(hero.RemoveDuplicateGlowLight));
 
             EffectsController.CreateHeroIndicator(hero.character);
             hero.character.maxHealth = 1;

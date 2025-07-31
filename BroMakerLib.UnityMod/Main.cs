@@ -45,6 +45,7 @@ namespace BroMakerLib.UnityMod
                 DirectoriesManager.StorageDirectory = Path.Combine(Directory.GetCurrentDirectory(), "BroMaker_Storage\\");
                 // Initialize BroMaker
                 BroMaker.Initialize();
+                BroMakerLib.Settings.instance.debugLogs = settings.debugLogs;
                 // Apply all harmony patches if any bros have overridden the method
                 if ( harmony != null )
                 {
