@@ -32,7 +32,6 @@ namespace BroMakerLib
             heroCharacter.soundHolder = heroCharacter.soundHolder ?? character.soundHolder;
             heroCharacter.soundHolderFootSteps = heroCharacter.soundHolderFootSteps ?? character.soundHolderFootSteps;
             heroCharacter.soundHolderVoice = heroCharacter.soundHolderVoice ??character.soundHolderVoice;
-            heroCharacter.parachute = character.parachute;
             heroCharacter.gibs = character.gibs;
             heroCharacter.player1Bubble = character.player1Bubble;
             heroCharacter.player2Bubble = character.player2Bubble;
@@ -42,6 +41,7 @@ namespace BroMakerLib
             heroCharacter.heroTrailPrefab = character.heroTrailPrefab;
             heroCharacter.high5Bubble = character.high5Bubble;
             heroCharacter.projectile = character.projectile;
+            heroCharacter.jetPackSprite = character.jetPackSprite;
             heroCharacter.specialGrenade = LoadBroforceObjects.GetGrenadeFromName(string.Empty);
             heroCharacter.specialGrenade.playerNum = heroCharacter.playerNum;
             heroCharacter.heroType = character.heroType;
@@ -112,7 +112,7 @@ namespace BroMakerLib
             {
                 hero.AssignNullVariables(otherBroComponent);
                 var type = otherBroComponent.GetType();
-                UnityEngine.Object.Destroy(otherBroComponent);
+                UnityEngine.Object.DestroyImmediate(otherBroComponent);
                 BMLogger.Debug($"SetupCustomHero: Has destroy {type} component.");
                 hero.info.ReadParameters(hero.character);
                 BMLogger.Debug("SetupCustomHero: Has read parameters");
@@ -149,24 +149,6 @@ namespace BroMakerLib
             
             // Validate all variant lists
             ValidateVariantLists(hero.info);
-            
-            // Select variant
-            if (hero is CustomObjects.Bros.CustomHero customHero)
-            {
-                customHero.CurrentVariant = customHero.GetVariant();
-            }
-            else
-            {
-                // For vanilla bros, use random selection
-                hero.CurrentVariant = UnityEngine.Random.Range(0, hero.info.VariantCount);
-            }
-
-            // Cache current variant parameters
-            hero.CurrentGunSpriteOffset = BroMakerUtilities.GetVariantValue( hero.info.GunSpriteOffset, hero.CurrentVariant );
-            hero.CurrentSpecialMaterials = BroMakerUtilities.GetVariantValue( hero.info.SpecialMaterials, hero.CurrentVariant );
-            hero.CurrentSpecialMaterialOffset = BroMakerUtilities.GetVariantValue( hero.info.SpecialMaterialOffset, hero.CurrentVariant );
-            hero.CurrentSpecialMaterialSpacing = BroMakerUtilities.GetVariantValue( hero.info.SpecialMaterialSpacing, hero.CurrentVariant );
-            hero.CurrentFirstAvatar = BroMakerUtilities.GetVariantValue( hero.info.FirstAvatar, hero.CurrentVariant );
 
             // Set canCeilingHang to true by default 
             if ( !info.beforeAwake.ContainsKey("canCeilingHang") )
@@ -174,7 +156,21 @@ namespace BroMakerLib
                 info.beforeAwake.Add("canCeilingHang", true);
             }
 
-            hero.character.specialGrenade.playerNum = LoadHero.playerNum;
+            // Setup vanilla bro
+            if ( !(hero is CustomHero) )
+            {
+                // For vanilla bros, use random selection
+                hero.CurrentVariant = UnityEngine.Random.Range( 0, hero.info.VariantCount );
+
+                // Cache current variant parameters
+                hero.CurrentGunSpriteOffset = BroMakerUtilities.GetVariantValue( hero.info.GunSpriteOffset, hero.CurrentVariant );
+                hero.CurrentSpecialMaterials = BroMakerUtilities.GetVariantValue( hero.info.SpecialMaterials, hero.CurrentVariant );
+                hero.CurrentSpecialMaterialOffset = BroMakerUtilities.GetVariantValue( hero.info.SpecialMaterialOffset, hero.CurrentVariant );
+                hero.CurrentSpecialMaterialSpacing = BroMakerUtilities.GetVariantValue( hero.info.SpecialMaterialSpacing, hero.CurrentVariant );
+                hero.CurrentFirstAvatar = BroMakerUtilities.GetVariantValue( hero.info.FirstAvatar, hero.CurrentVariant );
+
+                hero.character.specialGrenade.playerNum = LoadHero.playerNum;
+            }
         }
 
         [AllowedRPC]

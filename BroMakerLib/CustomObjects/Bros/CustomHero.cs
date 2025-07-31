@@ -54,7 +54,18 @@ namespace BroMakerLib.CustomObjects.Bros
             try
             {
                 EnableSyncing(true, true);
-                this.SetupCustomHero();
+
+                // Select variant
+                this.CurrentVariant = this.GetVariant();
+
+                // Cache current variant parameters
+                this.CurrentGunSpriteOffset = BroMakerUtilities.GetVariantValue( this.info.GunSpriteOffset, this.CurrentVariant );
+                this.CurrentSpecialMaterials = BroMakerUtilities.GetVariantValue( this.info.SpecialMaterials, this.CurrentVariant );
+                this.CurrentSpecialMaterialOffset = BroMakerUtilities.GetVariantValue( this.info.SpecialMaterialOffset, this.CurrentVariant );
+                this.CurrentSpecialMaterialSpacing = BroMakerUtilities.GetVariantValue( this.info.SpecialMaterialSpacing, this.CurrentVariant );
+                this.CurrentFirstAvatar = BroMakerUtilities.GetVariantValue( this.info.FirstAvatar, this.CurrentVariant );
+
+                this.character.specialGrenade.playerNum = LoadHero.playerNum;
 
                 info.BeforeAwake(this);
                 base.Awake();
@@ -87,18 +98,6 @@ namespace BroMakerLib.CustomObjects.Bros
             try
             {
                 info.BeforeStart(this);
-				InvulnerabilityFlash invulnFlash = character.gameObject.GetComponent<InvulnerabilityFlash>();
-				if ( invulnFlash == null )
-				{
-                    invulnFlash = character.gameObject.AddComponent<InvulnerabilityFlash>();
-                }
-				invulnFlash.SetCharacter(character);
-				invulnFlash.enabled = true;
-				WavyGrassEffector[] wavyGrassEffectors = character.gameObject.GetComponents<WavyGrassEffector>();
-				if ( wavyGrassEffectors.Length == 0 )
-				{
-					character.gameObject.AddComponent<WavyGrassEffector>();
-				}
 				base.Start();
                 info.AfterStart(this);
             }
@@ -338,12 +337,14 @@ namespace BroMakerLib.CustomObjects.Bros
 		}
 
 		/// <summary>
-		/// This method is called once after the prefab is created.
-        /// 
-        /// IMPORTANT: Make sure if you override this you still call the base implementation.
+		/// This method is called once after the prefab is created. You can override this to add additional variables to be set up in your prefab.
 		/// </summary>
 		public virtual void PrefabSetup()
-		{
+        {
+        }
+
+        internal void BasePrefabSetup()
+        {
             HeroType baseHeroType = this.SoundHolderHeroType;
             // Use base hero type if SoundHolderHeroType is unassigned
             if ( baseHeroType == HeroType.None )
@@ -355,7 +356,7 @@ namespace BroMakerLib.CustomObjects.Bros
             this.soundHolder.gameObject.name = "SoundHolder " + this.name;
             UnityEngine.Object.DontDestroyOnLoad( this.soundHolder );
 
-            this.soundHolderVoice = UnityEngine.Object.Instantiate( (HeroController.GetHeroPrefab( baseHeroType ) as BroBase).soundHolderVoice );
+            this.soundHolderVoice = UnityEngine.Object.Instantiate( ( HeroController.GetHeroPrefab( baseHeroType ) as BroBase ).soundHolderVoice );
             this.soundHolderVoice.gameObject.SetActive( false );
             this.soundHolderVoice.gameObject.name = "SoundHolderVoice " + this.name;
             UnityEngine.Object.DontDestroyOnLoad( this.soundHolderVoice );
@@ -374,6 +375,14 @@ namespace BroMakerLib.CustomObjects.Bros
             {
                 BMLogger.ExceptionLog( "Failed to load settings in SetupPrefab: ", ex );
             }
+
+            this.character = this;
+            this.info = LoadHero.currentInfo;
+
+            // Setup CustomHero from original bro component and destroy it
+            this.SetupCustomHero();
+
+            this.PrefabSetup();
         }
 
         /// <summary>

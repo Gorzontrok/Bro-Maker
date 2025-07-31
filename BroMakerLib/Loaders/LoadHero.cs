@@ -165,10 +165,6 @@ namespace BroMakerLib.Loaders
 
             FixSpawnPosition(hero, position);
 
-            /*if (!GameModeController.ShowStandardHUDS())
-            {
-                Net.RPC<TestVanDammeAnim>(PID.TargetAll, new RpcSignature<TestVanDammeAnim>(player.SetUpDeathMatchHUD), testVanDammeAnim, false);
-            }*/
             if ((ProcGenGameMode.isEnabled || ProcGenGameMode.ProcGenTestBuild) && ProcGenGameMode.isInsideRoom && ProcGenGameMode.diedInsideRoom)
             {
                 ProcGenGameMode.UnlockAfterDyingInsideRoom(hero);
@@ -387,9 +383,10 @@ namespace BroMakerLib.Loaders
             BMLogger.Debug("CreateOriginal: Has Instantiate Hero.");
             inst.SetActive(false);
 
-            inst.GetComponent<CustomHero>().PrefabSetup();
+            // Set up custom bros
+            inst.GetComponent<CustomHero>()?.BasePrefabSetup();
 
-            AddObjectToPrefabList(inst);
+            AddObjectToPrefabList( inst );
             BMLogger.Debug("CreateOriginal: inst added to list");
 
             return inst;
