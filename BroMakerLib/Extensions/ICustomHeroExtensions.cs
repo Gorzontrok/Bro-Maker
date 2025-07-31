@@ -123,7 +123,6 @@ namespace BroMakerLib
             hero.FixOtherComponentValues();
             hero.RemoveDuplicateGlowLight();
 
-            EffectsController.CreateHeroIndicator(hero.character);
             hero.character.maxHealth = 1;
             var info = hero.info;
             if (!info.beforeAwake.ContainsKey("specialGrenade.playerNum"))

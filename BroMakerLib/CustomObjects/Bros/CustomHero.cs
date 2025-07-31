@@ -282,7 +282,7 @@ namespace BroMakerLib.CustomObjects.Bros
 
         protected override void SetGunPosition(float xOffset, float yOffset)
         {
-            this.gunSprite.transform.localPosition = new Vector3(xOffset + CurrentGunSpriteOffset.x, yOffset + CurrentGunSpriteOffset.y, -1f);
+            this.gunSprite.transform.localPosition = new Vector3(xOffset + CurrentGunSpriteOffset.x, yOffset + CurrentGunSpriteOffset.y, -.001f);
         }
         #endregion
 
