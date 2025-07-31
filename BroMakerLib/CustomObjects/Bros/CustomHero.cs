@@ -336,15 +336,26 @@ namespace BroMakerLib.CustomObjects.Bros
 			}
 		}
 
-		/// <summary>
-		/// This method is called once after the prefab is created. You can override this to add additional variables to be set up in your prefab.
-		/// </summary>
-		public virtual void PrefabSetup()
+        /// <summary>
+        /// This method is called once after the prefab is created and before BasePrefabSetup has run. You can override this to set SoundHolderHeroType to control which hero
+        /// your default soundHolder components are initialized from.
+        /// </summary>
+        public virtual void PrePrefabSetup()
+        {
+        }
+
+        /// <summary>
+        /// This method is called once after the prefab is created and after BasePrefabSetup has run. You can override this to add additional variables to be set up in your prefab.
+        /// The soundHolder, soundHolderVoice, and soundHolderFootSteps will have been set up at this point, as well as directoryPath, so you can load sounds and assign them to
+        /// these soundHolders to set up your bro's sounds.
+        /// </summary>
+        public virtual void PrefabSetup()
         {
         }
 
         internal void BasePrefabSetup()
         {
+            this.PrePrefabSetup();
             HeroType baseHeroType = this.SoundHolderHeroType;
             // Use base hero type if SoundHolderHeroType is unassigned
             if ( baseHeroType == HeroType.None )

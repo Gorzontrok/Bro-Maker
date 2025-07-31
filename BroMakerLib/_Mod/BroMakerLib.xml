@@ -609,9 +609,17 @@
             <param name="directoryPath">Path to the directory containing the sound files</param>
             <param name="soundPaths">Sounds to load</param>
         </member>
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.PrePrefabSetup">
+            <summary>
+            This method is called once after the prefab is created and before BasePrefabSetup has run. You can override this to set SoundHolderHeroType to control which hero
+            your default soundHolder components are initialized from.
+            </summary>
+        </member>
         <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.PrefabSetup">
             <summary>
-            This method is called once after the prefab is created. You can override this to add additional variables to be set up in your prefab.
+            This method is called once after the prefab is created and after BasePrefabSetup has run. You can override this to add additional variables to be set up in your prefab.
+            The soundHolder, soundHolderVoice, and soundHolderFootSteps will have been set up at this point, as well as directoryPath, so you can load sounds and assign them to
+            these soundHolders to set up your bro's sounds.
             </summary>
         </member>
         <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.GetVariant">
