@@ -372,7 +372,7 @@ namespace BroMakerLib.Loaders
             inst.SetActive(false);
 
             // Set up custom bros
-            inst.GetComponent<CustomHero>()?.BasePrefabSetup();
+            inst.GetComponent<CustomHero>()?.PrefabSetup();
 
             AddObjectToPrefabList( inst );
             BMLogger.Debug("CreateOriginal: inst added to list");

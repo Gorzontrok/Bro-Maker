@@ -569,9 +569,22 @@
             Custom projectile or grenade
             </summary>
         </member>
+        <member name="T:BroMakerLib.CustomObjects.Bros.CustomHero.SoundHolderVoiceTypes">
+            <summary>
+            Different types of SoundHolderVoice that are available in the base game
+            </summary>
+        </member>
         <member name="F:BroMakerLib.CustomObjects.Bros.CustomHero.SoundHolderHeroType">
             <summary>
-            Set this to control which hero is used for the default soundHolder sounds
+            Set this to control which hero is used for the default soundHolder.
+            If set to none, the base HeroType of your bro will be used.
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Bros.CustomHero.SoundHolderVoiceType">
+            <summary>
+            Set this to control which hero is used for the default SoundHolderVoice. 
+            If set to none, the SoundHolderHeroType will be used, unless that is set to None,
+            in which case the base HeroType of your bro will be used.
             </summary>
         </member>
         <member name="F:BroMakerLib.CustomObjects.Bros.CustomHero.directoryPath">
@@ -609,16 +622,16 @@
             <param name="directoryPath">Path to the directory containing the sound files</param>
             <param name="soundPaths">Sounds to load</param>
         </member>
-        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.PrePrefabSetup">
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.BeforePrefabSetup">
             <summary>
-            This method is called once after the prefab is created and before BasePrefabSetup has run. You can override this to set SoundHolderHeroType to control which hero
-            your default soundHolder components are initialized from.
+            This method is called once after the prefab is created and before PrefabSetup has run. You can override this to set SoundHolderHeroType or SoundHolderVoiceType
+            to control which heros your default soundHolder components are initialized from.
             </summary>
         </member>
-        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.PrefabSetup">
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.AfterPrefabSetup">
             <summary>
-            This method is called once after the prefab is created and after BasePrefabSetup has run. You can override this to add additional variables to be set up in your prefab.
-            The soundHolder, soundHolderVoice, and soundHolderFootSteps will have been set up at this point, as well as directoryPath, so you can load sounds and assign them to
+            This method is called once after the prefab is created and after PrefabSetup has run. You can override this to add additional variables to be set up in your prefab.
+            The soundHolder, SoundHolderVoice, and soundHolderFootSteps will have been set up at this point, as well as directoryPath, so you can load sounds and assign them to
             these soundHolders to set up your bro's sounds.
             </summary>
         </member>

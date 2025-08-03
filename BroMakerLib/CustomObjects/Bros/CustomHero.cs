@@ -16,6 +16,21 @@ namespace BroMakerLib.CustomObjects.Bros
     [HeroPreset("CustomHero", HeroType.Rambro)]
     public class CustomHero : BroBase, ICustomHero
     {
+        /// <summary>
+        /// Different types of SoundHolderVoice that are available in the base game
+        /// </summary>
+        public enum SoundHolderVoiceTypes
+        {
+            None,
+            MaleDeep,
+            MaleLight,
+            MaleRough,
+            MaleFlyInsect,
+            Female,
+            ChevBrolios,
+            ChevBroliosDrowsy
+        }
+
         [Syncronize]
         public CustomBroInfo info { get; set; }
         [Syncronize]
@@ -37,9 +52,17 @@ namespace BroMakerLib.CustomObjects.Bros
         public Material CurrentFirstAvatar { get; set; }
 
         /// <summary>
-        /// Set this to control which hero is used for the default soundHolder sounds
+        /// Set this to control which hero is used for the default soundHolder.
+        /// If set to none, the base HeroType of your bro will be used.
         /// </summary>
         public HeroType SoundHolderHeroType = HeroType.None;
+
+        /// <summary>
+        /// Set this to control which hero is used for the default SoundHolderVoice. 
+        /// If set to none, the SoundHolderHeroType will be used, unless that is set to None,
+        /// in which case the base HeroType of your bro will be used.
+        /// </summary>
+        public SoundHolderVoiceTypes SoundHolderVoiceType = SoundHolderVoiceTypes.None;
 
         /// <summary>
         /// Contains the path to the directory that contains your custom bro's dll
@@ -337,25 +360,25 @@ namespace BroMakerLib.CustomObjects.Bros
 		}
 
         /// <summary>
-        /// This method is called once after the prefab is created and before BasePrefabSetup has run. You can override this to set SoundHolderHeroType to control which hero
-        /// your default soundHolder components are initialized from.
+        /// This method is called once after the prefab is created and before PrefabSetup has run. You can override this to set SoundHolderHeroType or SoundHolderVoiceType
+        /// to control which heros your default soundHolder components are initialized from.
         /// </summary>
-        public virtual void PrePrefabSetup()
+        public virtual void BeforePrefabSetup()
         {
         }
 
         /// <summary>
-        /// This method is called once after the prefab is created and after BasePrefabSetup has run. You can override this to add additional variables to be set up in your prefab.
-        /// The soundHolder, soundHolderVoice, and soundHolderFootSteps will have been set up at this point, as well as directoryPath, so you can load sounds and assign them to
+        /// This method is called once after the prefab is created and after PrefabSetup has run. You can override this to add additional variables to be set up in your prefab.
+        /// The soundHolder, SoundHolderVoice, and soundHolderFootSteps will have been set up at this point, as well as directoryPath, so you can load sounds and assign them to
         /// these soundHolders to set up your bro's sounds.
         /// </summary>
-        public virtual void PrefabSetup()
+        public virtual void AfterPrefabSetup()
         {
         }
 
-        internal void BasePrefabSetup()
+        internal void PrefabSetup()
         {
-            this.PrePrefabSetup();
+            this.BeforePrefabSetup();
             HeroType baseHeroType = this.SoundHolderHeroType;
             // Use base hero type if SoundHolderHeroType is unassigned
             if ( baseHeroType == HeroType.None )
@@ -367,7 +390,37 @@ namespace BroMakerLib.CustomObjects.Bros
             this.soundHolder.gameObject.name = "SoundHolder " + this.name;
             UnityEngine.Object.DontDestroyOnLoad( this.soundHolder );
 
-            this.soundHolderVoice = UnityEngine.Object.Instantiate( ( HeroController.GetHeroPrefab( baseHeroType ) as BroBase ).soundHolderVoice );
+            if ( this.SoundHolderVoiceType == SoundHolderVoiceTypes.None )
+            {
+                this.soundHolderVoice = UnityEngine.Object.Instantiate( ( HeroController.GetHeroPrefab( baseHeroType ) as BroBase ).soundHolderVoice );
+            }
+            else
+            {
+                switch ( this.SoundHolderVoiceType )
+                {
+                    case SoundHolderVoiceTypes.MaleDeep:
+                        this.soundHolderVoice = UnityEngine.Object.Instantiate( ( HeroController.GetHeroPrefab( HeroType.Rambro ) as BroBase ).soundHolderVoice );
+                        break;
+                    case SoundHolderVoiceTypes.MaleLight:
+                        this.soundHolderVoice = UnityEngine.Object.Instantiate( ( HeroController.GetHeroPrefab( HeroType.McBrover ) as BroBase ).soundHolderVoice );
+                        break;
+                    case SoundHolderVoiceTypes.MaleRough:
+                        this.soundHolderVoice = UnityEngine.Object.Instantiate( ( HeroController.GetHeroPrefab( HeroType.SnakeBroSkin ) as BroBase ).soundHolderVoice );
+                        break;
+                    case SoundHolderVoiceTypes.MaleFlyInsect:
+                        this.soundHolderVoice = UnityEngine.Object.Instantiate( ( HeroController.GetHeroPrefab( HeroType.BrondleFly ) as BroBase ).soundHolderVoice );
+                        break;
+                    case SoundHolderVoiceTypes.Female:
+                        this.soundHolderVoice = UnityEngine.Object.Instantiate( ( HeroController.GetHeroPrefab( HeroType.EllenRipbro ) as BroBase ).soundHolderVoice );
+                        break;
+                    case SoundHolderVoiceTypes.ChevBrolios:
+                        this.soundHolderVoice = UnityEngine.Object.Instantiate( ( HeroController.GetHeroPrefab( HeroType.ChevBrolios ) as ChevBrolios ).arousedVoiceHolder );
+                        break;
+                    case SoundHolderVoiceTypes.ChevBroliosDrowsy:
+                        this.soundHolderVoice = UnityEngine.Object.Instantiate( ( HeroController.GetHeroPrefab( HeroType.ChevBrolios ) as ChevBrolios ).drowsyVoiceHolder );
+                        break;
+                }
+            }
             this.soundHolderVoice.gameObject.SetActive( false );
             this.soundHolderVoice.gameObject.name = "SoundHolderVoice " + this.name;
             UnityEngine.Object.DontDestroyOnLoad( this.soundHolderVoice );
@@ -393,7 +446,7 @@ namespace BroMakerLib.CustomObjects.Bros
             // Setup CustomHero from original bro component and destroy it
             this.SetupCustomHero();
 
-            this.PrefabSetup();
+            this.AfterPrefabSetup();
         }
 
         /// <summary>
