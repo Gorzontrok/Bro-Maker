@@ -114,18 +114,6 @@ namespace BroMakerLib.Loaders
                         previousCharacterBubble.GoAway();
                     }
                 }
-                // For some reason the change made to the WorkOutSpawn Position function changed how this stuff works
-                if (previousSpawnInfo[playerNum] != Player.SpawnType.AddBroToTransport)
-                {
-                    hero.playerBubble.SetPosition(hero.playerBubble.transform.localPosition + new Vector3(0f, 5f));
-                }
-                else
-                {
-                    hero.playerBubble.SetPosition(hero.playerBubble.transform.localPosition);
-                }
-                Traverse bubbleTrav = Traverse.Create(hero.playerBubble);
-                hero.playerBubble.RestartBubble();
-                bubbleTrav.Field("yStart").SetValue(hero.playerBubble.transform.localPosition.y + 5f);
 
                 // This ensures the high5Bubble is 5 pixels higher than the player bubble, which is apparently the correct place based off of how the vanilla bros work
                 hero.high5Bubble.SetPosition(hero.high5Bubble.transform.localPosition);
