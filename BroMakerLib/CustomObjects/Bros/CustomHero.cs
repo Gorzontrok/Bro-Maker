@@ -67,7 +67,12 @@ namespace BroMakerLib.CustomObjects.Bros
         /// <summary>
         /// Contains the path to the directory that contains your custom bro's dll
         /// </summary>
-        public string directoryPath;
+        public string directoryPath {
+            get => _directoryPath;
+        }
+
+        [SerializeField]
+        private string _directoryPath;
 
         #region BroBase Methods
         protected override void Awake()
@@ -430,7 +435,7 @@ namespace BroMakerLib.CustomObjects.Bros
             this.soundHolderFootSteps.gameObject.name = "SoundHolderFootSteps " + this.name;
             UnityEngine.Object.DontDestroyOnLoad( this.soundHolderFootSteps );
 
-            this.directoryPath = LoadHero.currentInfo.path;
+            this._directoryPath = LoadHero.currentInfo.path;
             try
             {
                 this.LoadSettings();
@@ -447,6 +452,11 @@ namespace BroMakerLib.CustomObjects.Bros
             this.SetupCustomHero();
 
             this.AfterPrefabSetup();
+        }
+
+        internal void SetDirectoryPath( string path )
+        {
+            this._directoryPath = path;
         }
 
         /// <summary>

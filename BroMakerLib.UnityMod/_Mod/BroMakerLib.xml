@@ -587,7 +587,7 @@
             in which case the base HeroType of your bro will be used.
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Bros.CustomHero.directoryPath">
+        <member name="P:BroMakerLib.CustomObjects.Bros.CustomHero.directoryPath">
             <summary>
             Contains the path to the directory that contains your custom bro's dll
             </summary>
