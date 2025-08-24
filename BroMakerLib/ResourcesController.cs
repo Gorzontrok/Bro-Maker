@@ -258,8 +258,8 @@ namespace BroMakerLib
         /// Loads AudioClip from cache if created previously.
         /// IMPORTANT: MP3 files will not load.
         /// </summary>
-        /// <param name="path">Path to an audio file</param>
-        /// <param name="fileName">Name of an audio file</param>
+        /// <param name="path">Path to the directory that contains the audio file</param>
+        /// <param name="fileName">Filename of an audio file, including the extension</param>
         /// <returns></returns>
         public static AudioClip GetAudioClip(string path, string fileName)
         {
@@ -300,6 +300,27 @@ namespace BroMakerLib
                 audioClips.Add(filePath, result);
             }
             return result;
+        }
+
+        /// <summary>
+        /// Loads an array of audio clips that follow a standard numbering pattern,
+        /// such as "file0.wav", "file1.wav", "file2.wav"
+        /// </summary>
+        /// <param name="path">Path to the directory that contains the audio files</param>
+        /// <param name="fileNameWithouExtension">Filename of the audio files without the extension</param>
+        /// <param name="length">Number of files to load</param>
+        /// <param name="extension">Extension of the audio files, defaults to .wav</param>
+        /// <param name="startingNumber">Number of the first audio clip, defaults to 0</param>
+        /// <returns></returns>
+        public static AudioClip[] GetAudioClipArray(string path, string fileNameWithouExtension, int length, string extension = ".wav", int startingNumber = 0 )
+        {
+            AudioClip[] clips = new AudioClip[length];
+            for ( int i = 0 + startingNumber; i < length + startingNumber; ++i )
+            {
+                clips[i] = GetAudioClip( path, fileNameWithouExtension + i + extension );
+            }
+
+            return clips;
         }
 
         /// <summary>
