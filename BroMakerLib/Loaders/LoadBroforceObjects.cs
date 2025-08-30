@@ -1,6 +1,6 @@
-﻿using BroMakerLib.Loggers;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using BroMakerLib.Loggers;
 using UnityEngine;
 
 namespace BroMakerLib.Loaders
@@ -89,48 +89,48 @@ namespace BroMakerLib.Loaders
             { "FlameThrower3", "sharedassets:FlameThrower Bullet 3" },
         };
 
-        public static Grenade GetGrenadeFromName( string name )
+        public static Grenade GetGrenadeFromName(string name)
         {
-            if ( string.IsNullOrEmpty( name ) )
+            if (string.IsNullOrEmpty(name))
             {
-                return InstantiationController.GetPrefabFromResourceName( GrenadesVanilla["Default"] ).GetComponent<Grenade>();
+                return InstantiationController.GetPrefabFromResourceName(GrenadesVanilla["Default"]).GetComponent<Grenade>();
             }
             try
             {
                 string resourceName = string.Empty;
-                if ( name.Contains( ":" ) )
+                if (name.Contains(":"))
                     resourceName = name;
                 else
                     resourceName = GrenadesVanilla[name];
-                var go = InstantiationController.GetPrefabFromResourceName( resourceName );
-                if ( go != null )
+                var go = InstantiationController.GetPrefabFromResourceName(resourceName);
+                if (go != null)
                     return go.GetComponent<Grenade>();
             }
-            catch ( Exception e )
+            catch (Exception e)
             {
-                BMLogger.Log( $"Error with loading {name}\n{e}", LogType.Warning );
+                BMLogger.Log($"Error with loading {name}\n{e}", LogType.Warning);
             }
-            return InstantiationController.GetPrefabFromResourceName( GrenadesVanilla["Default"] ).GetComponent<Grenade>();
+            return InstantiationController.GetPrefabFromResourceName(GrenadesVanilla["Default"]).GetComponent<Grenade>();
         }
 
-        public static Projectile GetProjectileFromName( string name )
+        public static Projectile GetProjectileFromName(string name)
         {
             try
             {
                 string resourceName = string.Empty;
-                if ( name.Contains( ":" ) )
+                if (name.Contains(":"))
                     resourceName = name;
                 else
                     resourceName = projectileVanilla[name];
-                var go = InstantiationController.GetPrefabFromResourceName( resourceName );
-                if ( go != null )
+                var go = InstantiationController.GetPrefabFromResourceName(resourceName);
+                if (go != null)
                     return go.GetComponent<Projectile>();
             }
-            catch ( Exception e )
+            catch (Exception e)
             {
-                BMLogger.Log( e.ToString(), UnityEngine.LogType.Warning );
+                BMLogger.Log(e.ToString(), UnityEngine.LogType.Warning);
             }
-            return InstantiationController.GetPrefabFromResourceName( projectileVanilla["Default"] ).GetComponent<Projectile>();
+            return InstantiationController.GetPrefabFromResourceName(projectileVanilla["Default"]).GetComponent<Projectile>();
         }
     }
 }

@@ -1,11 +1,9 @@
-using BroMakerLib.CustomObjects;
-using BroMakerLib.Infos;
-using BroMakerLib.Loaders;
-using BroMakerLib.Loggers;
-using RocketLib;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using BroMakerLib.CustomObjects;
+using BroMakerLib.Infos;
+using BroMakerLib.Loggers;
+using RocketLib;
 using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Bros
@@ -65,7 +63,7 @@ namespace BroMakerLib.Vanilla.Bros
 
             var temp = new List<SpriteSM>();
             Transform laserSightParent = null;
-            for(int i = 0; i < shoulderCannonSprite.transform.childCount; i++)
+            for (int i = 0; i < shoulderCannonSprite.transform.childCount; i++)
             {
                 var child = shoulderCannonSprite.transform.GetChild(i);
                 if (child.gameObject.name == "Lazer")

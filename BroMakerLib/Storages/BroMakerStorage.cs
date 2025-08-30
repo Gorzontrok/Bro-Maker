@@ -1,10 +1,10 @@
-﻿using BroMakerLib.CustomObjects.Bros;
-using BroMakerLib.Infos;
-using BroMakerLib.Loggers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using BroMakerLib.CustomObjects.Bros;
+using BroMakerLib.Infos;
+using BroMakerLib.Loggers;
 using UnityModManagerNet;
 
 namespace BroMakerLib.Storages
@@ -45,53 +45,53 @@ namespace BroMakerLib.Storages
 
         private static void LoadMods()
         {
-            BMLogger.Debug( "Loading Mods" );
-            string[] jsonFiles = Directory.GetFiles( DirectoriesManager.StorageDirectory, "*.mod.json", SearchOption.AllDirectories );
+            BMLogger.Debug("Loading Mods");
+            string[] jsonFiles = Directory.GetFiles(DirectoriesManager.StorageDirectory, "*.mod.json", SearchOption.AllDirectories);
 
-            foreach ( string jsonFile in jsonFiles )
+            foreach (string jsonFile in jsonFiles)
             {
                 BroMakerMod mod = null;
                 try
                 {
-                    mod = BroMakerMod.TryLoad( jsonFile );
-                    if ( mod != null )
+                    mod = BroMakerMod.TryLoad(jsonFile);
+                    if (mod != null)
                     {
-                        Version modVersion = UnityModManager.ParseVersion( mod.BroMakerVersion );
+                        Version modVersion = UnityModManager.ParseVersion(mod.BroMakerVersion);
                         string modName = mod.Name != string.Empty ? mod.Name : "This bro";
                         string modNameLowerCase = mod.Name != string.Empty ? mod.Name : "this bro";
                         // Mod requires a newer version of BroMaker
-                        if ( Info.ParsedVersion < modVersion )
+                        if (Info.ParsedVersion < modVersion)
                         {
-                            incompatibleMods.Add( mod );
-                            BMLogger.Error( $"{modName} requires a version of BroMaker >={mod.BroMakerVersion}. Current BroMaker version is {Info.VERSION}" );
+                            incompatibleMods.Add(mod);
+                            BMLogger.Error($"{modName} requires a version of BroMaker >={mod.BroMakerVersion}. Current BroMaker version is {Info.VERSION}");
                             mod.ErrorMessage = modName + " requires a newer version of BroMaker: " + mod.BroMakerVersion + ". Current BroMaker version is: " + Info.VERSION + ". You must update BroMaker.";
                         }
                         // Mod is too old for this version of BroMaker
-                        else if ( Info.ParsedMinimumVersion > modVersion )
+                        else if (Info.ParsedMinimumVersion > modVersion)
                         {
-                            incompatibleMods.Add( mod );
-                            BMLogger.Error( $"{modName} will not work with this version of BroMaker. You must update {modName}." );
+                            incompatibleMods.Add(mod);
+                            BMLogger.Error($"{modName} will not work with this version of BroMaker. You must update {modName}.");
                             mod.ErrorMessage = modName + " was created using an outdated version of BroMaker (" + mod.BroMakerVersion + ") you must update " + modNameLowerCase + " to a version that supports BroMaker " + Info.ParsedMinimumVersion + ".";
                         }
                         // Versions are compatible
                         else
                         {
                             // Let user know the bro may have compatibility issues with this version
-                            if ( Info.ParsedSuggestedMinimumVersion > modVersion )
+                            if (Info.ParsedSuggestedMinimumVersion > modVersion)
                             {
                                 mod.ErrorMessage = modName + " was created using an outdated version of BroMaker (" + mod.BroMakerVersion + ") you may experience bugs using it on this version of BroMaker. It's recommended that you update " + modNameLowerCase + " to a newer version if possible.";
                             }
                             mod.Initialize();
-                            mods.Add( mod );
+                            mods.Add(mod);
                         }
                     }
                 }
-                catch ( Exception ex )
+                catch (Exception ex)
                 {
-                    BMLogger.ExceptionLog( $"Unable to load BroMaker Mod at {jsonFile}.", ex );
+                    BMLogger.ExceptionLog($"Unable to load BroMaker Mod at {jsonFile}.", ex);
                 }
             }
-            BMLogger.Debug( "Finish Loading Mods" );
+            BMLogger.Debug("Finish Loading Mods");
         }
 
         public static StoredAbility GetAbilityByName(string name)
@@ -141,14 +141,14 @@ namespace BroMakerLib.Storages
             return new StoredHero();
         }
 
-        public static StoredHero GetHeroByName( string name )
+        public static StoredHero GetHeroByName(string name)
         {
-            if ( _bros.IsNullOrEmpty() || name.IsNullOrEmpty() )
+            if (_bros.IsNullOrEmpty() || name.IsNullOrEmpty())
                 return new StoredHero();
 
-            foreach ( StoredHero storedHero in _bros )
+            foreach (StoredHero storedHero in _bros)
             {
-                if ( storedHero.name == name )
+                if (storedHero.name == name)
                     return storedHero;
             }
 
@@ -157,12 +157,12 @@ namespace BroMakerLib.Storages
 
         public static StoredHero GetHeroByType<T>() where T : CustomHero
         {
-            if ( _bros.IsNullOrEmpty() )
+            if (_bros.IsNullOrEmpty())
                 return new StoredHero();
 
-            foreach ( StoredHero storedHero in _bros )
+            foreach (StoredHero storedHero in _bros)
             {
-                if ( PresetManager.GetHeroPreset( storedHero.GetInfo().characterPreset ) == typeof( T ) )
+                if (PresetManager.GetHeroPreset(storedHero.GetInfo().characterPreset) == typeof(T))
                 {
                     return storedHero;
                 }

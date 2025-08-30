@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using UnityEngine;
-using BroMakerLib.CustomObjects.Bros;
 using HarmonyLib;
+using UnityEngine;
 
 namespace BroMakerLib
 {
@@ -25,7 +23,7 @@ namespace BroMakerLib
             if (variantIndex < list.Count) return list[variantIndex];
             return list[0]; // Fallback to first if index out of range
         }
-        
+
         /// <summary>
         /// Determines if the specified unit is a boss
         /// </summary>
@@ -33,7 +31,7 @@ namespace BroMakerLib
         /// <returns>True if unit is a boss</returns>
         public static bool IsBoss(Unit unit)
         {
-            return unit.CompareTag("Boss") || unit is DolphLundrenSoldier || unit is SatanMiniboss || (unit is AlienSandWorm && !(unit is AlienWormFacehuggerLauncher)) || 
+            return unit.CompareTag("Boss") || unit is DolphLundrenSoldier || unit is SatanMiniboss || (unit is AlienSandWorm && !(unit is AlienWormFacehuggerLauncher)) ||
                 unit is TankBig || unit is Mookopter || unit is GoliathMech || unit is MechWeapon;
         }
 
@@ -44,7 +42,7 @@ namespace BroMakerLib
         /// <param name="specialMaterials">List of materials to set special to, if only one is specified, all icons will be set to it</param>
         /// <param name="offset">Offset to move all special icons horizontally or vertically</param>
         /// <param name="spacing">Spacing between special icons</param>
-        public static void SetSpecialMaterials(int playerNum, List<Material> specialMaterials, Vector2 offset, float spacing )
+        public static void SetSpecialMaterials(int playerNum, List<Material> specialMaterials, Vector2 offset, float spacing)
         {
             PlayerHUD hud = HeroController.players[playerNum].hud;
             for (int i = 0; i < hud.grenadeIcons.Length; i++)
@@ -145,7 +143,7 @@ namespace BroMakerLib
         /// <param name="fallHitSound"></param>
         /// <param name="isOnFire"></param>
         /// <returns></returns>
-        public static Gib CreateGibPrefab(string name, Vector2 lowerLeftPixel, Vector2 pixelDimensions, float spriteWidth, float spriteHeight, Vector3 spriteOffset, Vector3 localPositionOffset, bool doesRotate, DoodadGibsType gibType, 
+        public static Gib CreateGibPrefab(string name, Vector2 lowerLeftPixel, Vector2 pixelDimensions, float spriteWidth, float spriteHeight, Vector3 spriteOffset, Vector3 localPositionOffset, bool doesRotate, DoodadGibsType gibType,
             float size = 3f, bool hasBloodTrail = true, BloodColor color = BloodColor.None, float bloodyM = 1f,
             bool shrink = false, int rotateFrames = 8, bool rotateAtRightAngles = false, bool hasSmokeTrail = false, int smokeTrailBounces = 3, float forceMultiplier = 1f,
             float startLife = 1f, float lifeM = 1f, float randomLifeM = 1f, float r = 0f, float rotationSpeedMultiplier = 1f, float bounceM = 0.4f,
@@ -189,7 +187,7 @@ namespace BroMakerLib
             gib.drag = drag;
             gib.randomiseGravityM = randomiseGravityM;
             gib.gravityMrandomRange = gravityMrandomRange;
-            if ( fallHitSound != null )
+            if (fallHitSound != null)
             {
                 gib.soundHolder = new GameObject(name + "soundHolder", new Type[] { typeof(SoundHolder) }).GetComponent<SoundHolder>();
                 gib.soundHolder.fallHitSound = fallHitSound;

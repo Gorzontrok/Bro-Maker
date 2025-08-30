@@ -1,7 +1,7 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace BroMakerLib.Cutscenes
 {
@@ -28,18 +28,18 @@ namespace BroMakerLib.Cutscenes
                 // Single cutscene object - check for variantSprites
                 JObject jo = JObject.Load(reader);
                 JArray variantSprites = (JArray)jo["variantSprites"];
-                
+
                 if (variantSprites != null && variantSprites.Count > 0)
                 {
                     // Remove variantSprites so it doesn't interfere with deserialization
                     jo.Remove("variantSprites");
-                    
+
                     var cutscenes = new List<CustomIntroCutscene>();
                     var processedSprites = new HashSet<string>();
-                    
+
                     // Check if there's an existing spritePath
                     string baseSpritePathStr = jo["spritePath"]?.ToString();
-                    
+
                     // If base sprite exists and isn't in variantSprites, add it first
                     if (!string.IsNullOrEmpty(baseSpritePathStr))
                     {
@@ -52,7 +52,7 @@ namespace BroMakerLib.Cutscenes
                                 break;
                             }
                         }
-                        
+
                         if (!isInVariants)
                         {
                             // Add the base sprite as the first cutscene
@@ -61,7 +61,7 @@ namespace BroMakerLib.Cutscenes
                             processedSprites.Add(baseSpritePathStr);
                         }
                     }
-                    
+
                     // Create a cutscene for each variant sprite (avoiding duplicates)
                     foreach (var sprite in variantSprites)
                     {
@@ -70,14 +70,14 @@ namespace BroMakerLib.Cutscenes
                         {
                             var cutsceneObj = jo.DeepClone() as JObject;
                             cutsceneObj["spritePath"] = sprite;
-                            
+
                             // Deserialize and set the path
                             var cutscene = cutsceneObj.ToObject<CustomIntroCutscene>();
                             cutscenes.Add(cutscene);
                             processedSprites.Add(spritePath);
                         }
                     }
-                    
+
                     return cutscenes;
                 }
                 else
@@ -102,7 +102,7 @@ namespace BroMakerLib.Cutscenes
             }
         }
     }
-    
+
     // Keep the generic version for backwards compatibility if needed elsewhere
     public class SingleOrArrayConverter<T> : JsonConverter
     {

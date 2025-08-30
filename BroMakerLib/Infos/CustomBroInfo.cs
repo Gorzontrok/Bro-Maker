@@ -1,5 +1,5 @@
-﻿using BroMakerLib.Cutscenes;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using BroMakerLib.Cutscenes;
 using Newtonsoft.Json;
 using UnityEngine;
 

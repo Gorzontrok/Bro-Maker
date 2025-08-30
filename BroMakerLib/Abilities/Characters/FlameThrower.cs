@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace BroMakerLib.Abilities.Characters
+﻿namespace BroMakerLib.Abilities.Characters
 {
 
     public class FlameThrower : CharacterAbility
@@ -21,7 +16,7 @@ namespace BroMakerLib.Abilities.Characters
             {
                 ProjectileController.SpawnProjectileLocally(owner.projectile, owner, x, y, xSpeed, ySpeed, PlayerNum);
             }
-            else if(num == 1)
+            else if (num == 1)
             {
                 ProjectileController.SpawnProjectileLocally(projectile2, owner, x, y, xSpeed, ySpeed, PlayerNum);
             }

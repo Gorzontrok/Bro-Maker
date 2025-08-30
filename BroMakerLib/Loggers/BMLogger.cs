@@ -66,7 +66,7 @@ namespace BroMakerLib.Loggers
 
         public static void Debug(object message, LogType logType = LogType.Log, bool useColors = true)
         {
-            if ( !BSett.instance.debugLogs )
+            if (!BSett.instance.debugLogs)
             {
                 return;
             }

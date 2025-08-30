@@ -1,12 +1,11 @@
-﻿using BroMakerLib.CustomObjects;
+﻿using System;
+using BroMakerLib.CustomObjects;
 using BroMakerLib.CustomObjects.Bros;
 using BroMakerLib.Loaders;
 using BroMakerLib.Loggers;
 using Networking;
 using RocketLib;
-using System;
 using UnityEngine;
-using Net = Networking.Networking;
 
 namespace BroMakerLib
 {
@@ -31,7 +30,7 @@ namespace BroMakerLib
             heroCharacter.gunSprite = character.gunSprite;
             heroCharacter.soundHolder = heroCharacter.soundHolder ?? character.soundHolder;
             heroCharacter.soundHolderFootSteps = heroCharacter.soundHolderFootSteps ?? character.soundHolderFootSteps;
-            heroCharacter.soundHolderVoice = heroCharacter.soundHolderVoice ??character.soundHolderVoice;
+            heroCharacter.soundHolderVoice = heroCharacter.soundHolderVoice ?? character.soundHolderVoice;
             heroCharacter.gibs = character.gibs;
             heroCharacter.player1Bubble = character.player1Bubble;
             heroCharacter.player2Bubble = character.player2Bubble;
@@ -127,10 +126,10 @@ namespace BroMakerLib
             var info = hero.info;
             if (!info.beforeAwake.ContainsKey("specialGrenade.playerNum"))
                 info.beforeAwake.Add("specialGrenade.playerNum", LoadHero.playerNum);
-            if(!info.beforeAwake.ContainsKey("health"))
+            if (!info.beforeAwake.ContainsKey("health"))
                 info.beforeAwake.Add("health", 1);
 
-            if(Settings.instance.maxHealthAtOne)
+            if (Settings.instance.maxHealthAtOne)
             {
                 if (info.afterStart.ContainsKey("health"))
                     info.afterStart["health"] = 1;
@@ -142,31 +141,31 @@ namespace BroMakerLib
                 else
                     info.afterStart.Add("maxHealth", 1);
             }
-            
+
             // Determine variant count from all variant properties
             DetermineVariantCount(hero.info);
-            
+
             // Validate all variant lists
             ValidateVariantLists(hero.info);
 
             // Set canCeilingHang to true by default 
-            if ( !info.beforeAwake.ContainsKey("canCeilingHang") )
+            if (!info.beforeAwake.ContainsKey("canCeilingHang"))
             {
                 info.beforeAwake.Add("canCeilingHang", true);
             }
 
             // Setup vanilla bro
-            if ( !(hero is CustomHero) )
+            if (!(hero is CustomHero))
             {
                 // For vanilla bros, use random selection
-                hero.CurrentVariant = UnityEngine.Random.Range( 0, hero.info.VariantCount );
+                hero.CurrentVariant = UnityEngine.Random.Range(0, hero.info.VariantCount);
 
                 // Cache current variant parameters
-                hero.CurrentGunSpriteOffset = BroMakerUtilities.GetVariantValue( hero.info.GunSpriteOffset, hero.CurrentVariant );
-                hero.CurrentSpecialMaterials = BroMakerUtilities.GetVariantValue( hero.info.SpecialMaterials, hero.CurrentVariant );
-                hero.CurrentSpecialMaterialOffset = BroMakerUtilities.GetVariantValue( hero.info.SpecialMaterialOffset, hero.CurrentVariant );
-                hero.CurrentSpecialMaterialSpacing = BroMakerUtilities.GetVariantValue( hero.info.SpecialMaterialSpacing, hero.CurrentVariant );
-                hero.CurrentFirstAvatar = BroMakerUtilities.GetVariantValue( hero.info.FirstAvatar, hero.CurrentVariant );
+                hero.CurrentGunSpriteOffset = BroMakerUtilities.GetVariantValue(hero.info.GunSpriteOffset, hero.CurrentVariant);
+                hero.CurrentSpecialMaterials = BroMakerUtilities.GetVariantValue(hero.info.SpecialMaterials, hero.CurrentVariant);
+                hero.CurrentSpecialMaterialOffset = BroMakerUtilities.GetVariantValue(hero.info.SpecialMaterialOffset, hero.CurrentVariant);
+                hero.CurrentSpecialMaterialSpacing = BroMakerUtilities.GetVariantValue(hero.info.SpecialMaterialSpacing, hero.CurrentVariant);
+                hero.CurrentFirstAvatar = BroMakerUtilities.GetVariantValue(hero.info.FirstAvatar, hero.CurrentVariant);
 
                 hero.character.specialGrenade.playerNum = LoadHero.playerNum;
             }
@@ -195,11 +194,11 @@ namespace BroMakerLib
                 BMLogger.Debug("GlowLight Destroyed");
             }
         }
-        
+
         private static void DetermineVariantCount(Infos.CustomBroInfo info)
         {
             int maxCount = 1;
-            
+
             // Check all variant property lists
             if (info.SpritePath?.Count > maxCount) maxCount = info.SpritePath.Count;
             if (info.GunSpritePath?.Count > maxCount) maxCount = info.GunSpritePath.Count;
@@ -209,10 +208,10 @@ namespace BroMakerLib
             if (info.SpecialMaterialSpacing?.Count > maxCount) maxCount = info.SpecialMaterialSpacing.Count;
             if (info.FirstAvatar?.Count > maxCount) maxCount = info.FirstAvatar.Count;
             if (info.Cutscene?.Count > maxCount) maxCount = info.Cutscene.Count;
-            
+
             info.VariantCount = maxCount;
         }
-        
+
         private static void ValidateVariantLists(Infos.CustomBroInfo info)
         {
             // Each list must have either 1 item or exactly VariantCount items
@@ -225,7 +224,7 @@ namespace BroMakerLib
             ValidateList(info.FirstAvatar, "FirstAvatar", info.VariantCount);
             ValidateList(info.Cutscene, "Cutscene", info.VariantCount);
         }
-        
+
         private static void ValidateList<T>(System.Collections.Generic.List<T> list, string propertyName, int expectedCount)
         {
             if (list != null && list.Count > 1 && list.Count != expectedCount)
@@ -235,7 +234,7 @@ namespace BroMakerLib
                     $"Lists must have either 1 item (shared across variants) or exactly {expectedCount} items (one per variant).");
             }
         }
-        
+
         /// <summary>
         /// Loads and sets the sprite and gunsprite material for the given bro.
         /// </summary>
@@ -245,26 +244,26 @@ namespace BroMakerLib
             // Get sprite paths for current variant
             string spritePath = BroMakerUtilities.GetVariantValue(bro.info.SpritePath, bro.CurrentVariant);
             string gunSpritePath = BroMakerUtilities.GetVariantValue(bro.info.GunSpritePath, bro.CurrentVariant);
-            
+
             BroBase character = bro.character;
-            
+
             // Set main sprite
             if (!string.IsNullOrEmpty(spritePath))
             {
-                Material material = ResourcesController.GetMaterial( bro.info.path, spritePath );
+                Material material = ResourcesController.GetMaterial(bro.info.path, spritePath);
                 character.material = material;
-                character.SetFieldValue( "defaultMaterial", material );
+                character.SetFieldValue("defaultMaterial", material);
             }
-            
+
             // Set gun sprite
             if (!string.IsNullOrEmpty(gunSpritePath))
             {
-                Material gunMaterial = ResourcesController.GetMaterial( bro.info.path, gunSpritePath );
+                Material gunMaterial = ResourcesController.GetMaterial(bro.info.path, gunSpritePath);
                 character.gunSprite.meshRender.sharedMaterial = gunMaterial;
-                character.SetFieldValue( "gunMaterial", gunMaterial );
+                character.SetFieldValue("gunMaterial", gunMaterial);
             }
 
-            if ( character is CustomHero customHero )
+            if (character is CustomHero customHero)
             {
                 customHero.SetupAdditionalSprites();
             }

@@ -1,9 +1,9 @@
-﻿using BroMakerLib.Storages;
-using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using BroMakerLib.Storages;
+using Newtonsoft.Json;
 
 namespace BroMakerLib
 {
@@ -73,11 +73,11 @@ namespace BroMakerLib
                 instance = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(FilePath));
             if (instance == null)
                 instance = new Settings();
-            if ( instance.seenBros == null )
+            if (instance.seenBros == null)
             {
                 instance.seenBros = new List<string>();
             }
-            if ( instance._notUnlockedBros == null )
+            if (instance._notUnlockedBros == null)
             {
                 instance._notUnlockedBros = new List<List<string>> { new List<string>(), new List<string>(), new List<string>(), new List<string>(), new List<string>() };
             }
@@ -114,29 +114,29 @@ namespace BroMakerLib
 
         public void AddBroEnabled(string name, bool enabled)
         {
-            if ( !enabledBros.ContainsKey(name) )
+            if (!enabledBros.ContainsKey(name))
             {
                 enabledBros.Add(name, enabled);
                 if (enabled)
                 {
                     ++enabledBroCount;
                 }
-            } 
+            }
         }
 
         public void SetBroEnabled(string name, bool enabled)
         {
-            if ( enabled && !enabledBros[name] )
+            if (enabled && !enabledBros[name])
             {
                 ++enabledBroCount;
             }
-            else if ( !enabled && enabledBros[name] )
+            else if (!enabled && enabledBros[name])
             {
                 --enabledBroCount;
             }
             enabledBros[name] = enabled;
             // Update spawn probability to account for additional enabled / disabled bro
-            if ( this.equalSpawnProbability )
+            if (this.equalSpawnProbability)
             {
                 this.automaticSpawnProbabilty = this.CalculateSpawnProbability();
             }
@@ -155,18 +155,18 @@ namespace BroMakerLib
                 bool found = false;
                 for (int i = 0; i < BroMakerStorage.Bros.Length; ++i)
                 {
-                    if (BroMakerStorage.Bros[i].name == bro.Key )
+                    if (BroMakerStorage.Bros[i].name == bro.Key)
                     {
                         found = true;
                         break;
                     }
                 }
-                if ( !found )
+                if (!found)
                 {
                     toBeRemoved.Add(bro.Key);
                 }
             }
-            foreach ( string remove in toBeRemoved )
+            foreach (string remove in toBeRemoved)
             {
                 this.enabledBros.Remove(remove);
             }
@@ -186,7 +186,7 @@ namespace BroMakerLib
 
         public StoredHero GetRandomEnabledBro()
         {
-            if ( this.overrideNextBroSpawn )
+            if (this.overrideNextBroSpawn)
             {
                 this.overrideNextBroSpawn = false;
                 return BroMakerStorage.GetHeroByName(this.nextBroSpawn);
@@ -198,7 +198,7 @@ namespace BroMakerLib
             {
                 if (bro.Value)
                 {
-                    if ( chosen == 0 )
+                    if (chosen == 0)
                     {
                         chosenName = bro.Key;
                         break;
@@ -207,7 +207,7 @@ namespace BroMakerLib
                 }
             }
 
-            return BroMakerStorage.GetHeroByName( chosenName);
+            return BroMakerStorage.GetHeroByName(chosenName);
         }
 
         public StoredHero GetRandomHardcoreBro(bool isRescue)
@@ -215,24 +215,24 @@ namespace BroMakerLib
             if (this.overrideNextBroSpawn)
             {
                 this.overrideNextBroSpawn = false;
-                return BroMakerStorage.GetHeroByName( this.nextBroSpawn);
+                return BroMakerStorage.GetHeroByName(this.nextBroSpawn);
             }
 
-            if ( isRescue && this.NotUnlockedBros.Count() > 0 )
+            if (isRescue && this.NotUnlockedBros.Count() > 0)
             {
                 int chosen = UnityEngine.Random.Range(0, this.NotUnlockedBros.Count());
                 string chosenName = this.NotUnlockedBros[chosen];
                 this.AvailableBros.Add(this.NotUnlockedBros[chosen]);
                 this.NotUnlockedBros.RemoveAt(chosen);
 
-                return BroMakerStorage.GetHeroByName( chosenName);
+                return BroMakerStorage.GetHeroByName(chosenName);
             }
             else
             {
                 int chosen = UnityEngine.Random.Range(0, this.AvailableBros.Count());
                 string chosenName = this.AvailableBros[chosen];
 
-                return BroMakerStorage.GetHeroByName( chosenName);
+                return BroMakerStorage.GetHeroByName(chosenName);
             }
         }
     }

@@ -1,14 +1,13 @@
-﻿using BroMakerLib.Loggers;
-using BroMakerLib.Cutscenes;
-using HarmonyLib;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using UnityEngine;
 using System.Reflection;
+using System.Text;
 using BroMakerLib.Loaders;
+using BroMakerLib.Loggers;
+using HarmonyLib;
+using Newtonsoft.Json;
+using UnityEngine;
 
 namespace BroMakerLib.Infos
 {
@@ -107,13 +106,13 @@ namespace BroMakerLib.Infos
 
         public virtual void Initialize()
         {
-            if(beforeAwake == null)
+            if (beforeAwake == null)
                 beforeAwake = new Dictionary<string, object>();
-            if(afterAwake == null)
+            if (afterAwake == null)
                 afterAwake = new Dictionary<string, object>();
-            if(beforeStart == null)
+            if (beforeStart == null)
                 beforeStart = new Dictionary<string, object>();
-            if(afterStart == null)
+            if (afterStart == null)
                 afterStart = new Dictionary<string, object>();
         }
         public override string ToString()

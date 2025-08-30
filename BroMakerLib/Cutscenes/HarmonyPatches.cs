@@ -1,17 +1,17 @@
-﻿using BroMakerLib.Loggers;
+﻿using System;
+using BroMakerLib.Loggers;
 using HarmonyLib;
 using RocketLib;
-using System;
 using UnityEngine;
 
 namespace BroMakerLib.Cutscenes
 {
-     [HarmonyPatch(typeof(CutsceneIntroRoot), "OnLoadComplete", typeof(string), typeof(object))]
-     static class CutsceneIntroRoot_StartCutscene_Patch
-     {
+    [HarmonyPatch(typeof(CutsceneIntroRoot), "OnLoadComplete", typeof(string), typeof(object))]
+    static class CutsceneIntroRoot_StartCutscene_Patch
+    {
 
         static bool Prefix(CutsceneIntroRoot __instance, ref string resourceName, ref object asset, ref CutsceneIntroData ____curIntroData, ref Texture2D ____oldTex)
-         {
+        {
             try
             {
                 if (!CustomCutsceneController.willLoadCustomCutscene)
@@ -166,7 +166,7 @@ namespace BroMakerLib.Cutscenes
                 return;
             }
 
-            if ( (hasExtraData && dataExtra.isAnimated) || introData.spriteAnimRateFramesWidth.x > 0f)
+            if ((hasExtraData && dataExtra.isAnimated) || introData.spriteAnimRateFramesWidth.x > 0f)
             {
                 animatedTexture.frameRate = introData.spriteAnimRateFramesWidth.x;
                 animatedTexture.frames = (int)introData.spriteAnimRateFramesWidth.y;
@@ -188,5 +188,5 @@ namespace BroMakerLib.Cutscenes
                 animatedTexture.enabled = false;
             }
         }
-     }
+    }
 }

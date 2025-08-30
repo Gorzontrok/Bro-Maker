@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using UnityEngine;
 using BroMakerLib.Loggers;
 using TFBGames.Systems;
+using UnityEngine;
 
 namespace BroMakerLib
 {
@@ -54,9 +54,9 @@ namespace BroMakerLib
 
         public static string resourceFolder = "BroMaker.Assets.";
 
-        private static Dictionary<string, Material> materials = new Dictionary<string, Material>();
-        private static Dictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
-        private static Dictionary<string, AudioClip> audioClips = new Dictionary<string, AudioClip>();
+        private static readonly Dictionary<string, Material> materials = new Dictionary<string, Material>();
+        private static readonly Dictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
+        private static readonly Dictionary<string, AudioClip> audioClips = new Dictionary<string, AudioClip>();
 
         /// <summary>
         /// Creates a Material using the shader Unlit_DepthCutout.
@@ -84,7 +84,7 @@ namespace BroMakerLib
                 return materials[filePath];
             }
 
-            if ( File.Exists(filePath) )
+            if (File.Exists(filePath))
             {
                 result = CreateMaterial(filePath, Unlit_DepthCutout);
             }
@@ -312,12 +312,12 @@ namespace BroMakerLib
         /// <param name="extension">Extension of the audio files, defaults to .wav</param>
         /// <param name="startingNumber">Number of the first audio clip, defaults to 0</param>
         /// <returns></returns>
-        public static AudioClip[] GetAudioClipArray(string path, string fileNameWithouExtension, int length, string extension = ".wav", int startingNumber = 0 )
+        public static AudioClip[] GetAudioClipArray(string path, string fileNameWithouExtension, int length, string extension = ".wav", int startingNumber = 0)
         {
             AudioClip[] clips = new AudioClip[length];
-            for ( int i = 0 + startingNumber; i < length + startingNumber; ++i )
+            for (int i = 0 + startingNumber; i < length + startingNumber; ++i)
             {
-                clips[i] = GetAudioClip( path, fileNameWithouExtension + i + extension );
+                clips[i] = GetAudioClip(path, fileNameWithouExtension + i + extension);
             }
 
             return clips;
@@ -331,10 +331,10 @@ namespace BroMakerLib
         /// <param name="path">Path to an audio file</param>
         /// <param name="fileName">Name of an audio file</param>
         /// <returns></returns>
-        public static AudioClip CreateAudioClip( string path, string fileName )
+        public static AudioClip CreateAudioClip(string path, string fileName)
         {
-            string filePath = Path.GetFullPath( Path.Combine( path, fileName ) );
-            return CreateAudioClip( filePath );
+            string filePath = Path.GetFullPath(Path.Combine(path, fileName));
+            return CreateAudioClip(filePath);
         }
 
         /// <summary>
@@ -350,9 +350,10 @@ namespace BroMakerLib
                 throw new FileNotFoundException("File not found", filePath);
             WWW getClip = new WWW("file:////" + filePath);
 
-            while ( !getClip.isDone )
+            while (!getClip.isDone)
             {
-            };
+            }
+            ;
 
             if (getClip.error != null)
                 BMLogger.ExceptionLog(getClip.error);

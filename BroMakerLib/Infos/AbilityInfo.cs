@@ -1,6 +1,6 @@
-﻿using BroMakerLib.Abilities;
+﻿using System;
+using BroMakerLib.Abilities;
 using BroMakerLib.Loggers;
-using System;
 
 namespace BroMakerLib.Infos
 {
@@ -20,7 +20,7 @@ namespace BroMakerLib.Infos
             }
             if (type != typeof(Ability<T>) && !type.IsSubclassOf(typeof(Ability<T>)))
             {
-                BMLogger.Log($"Ability {type} is not type or subclass of {typeof(Ability <T>)}");
+                BMLogger.Log($"Ability {type} is not type or subclass of {typeof(Ability<T>)}");
             }
             Ability<T> ability = (Ability<T>)Activator.CreateInstance(type);
             ability.info = this;

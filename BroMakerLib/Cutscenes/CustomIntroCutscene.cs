@@ -1,9 +1,9 @@
-﻿using BroMakerLib.Infos;
-using BroMakerLib.Loggers;
-using RocketLib.JsonConverters;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.IO;
+using BroMakerLib.Infos;
+using BroMakerLib.Loggers;
+using Newtonsoft.Json;
+using RocketLib.JsonConverters;
 using TFBGames.Systems;
 using UnityEngine;
 
@@ -121,7 +121,7 @@ namespace BroMakerLib.Cutscenes
             data.spriteRect = spriteRect;
             data.spriteAnimRateFramesWidth = spriteAnimRateFramesWidth;
 
-            if ( anim.IsNullOrEmpty() )
+            if (anim.IsNullOrEmpty())
             {
                 data.animClip = rambroCutscene.animClip;
             }
@@ -131,7 +131,7 @@ namespace BroMakerLib.Cutscenes
                 data.animClip = requestedCutscene.animClip;
             }
 
-            if ( barkPath.IsNullOrEmpty() )
+            if (barkPath.IsNullOrEmpty())
             {
                 data.bark = null;
             }
@@ -142,14 +142,14 @@ namespace BroMakerLib.Cutscenes
                     AudioClip bark = ResourcesController.GetAudioClip(path, barkPath);
                     data.bark = bark;
                 }
-                catch ( Exception ex )
+                catch (Exception ex)
                 {
                     BMLogger.Log(ex);
                     data.bark = null;
                 }
             }
 
-            if ( fanfarePath.IsNullOrEmpty() )
+            if (fanfarePath.IsNullOrEmpty())
             {
                 data.introFanfare = null;
             }
@@ -160,7 +160,7 @@ namespace BroMakerLib.Cutscenes
                     AudioClip fanfare = ResourcesController.GetAudioClip(path, fanfarePath);
                     data.introFanfare = fanfare;
                 }
-                catch ( Exception ex )
+                catch (Exception ex)
                 {
                     BMLogger.Log(ex);
                     data.introFanfare = null;

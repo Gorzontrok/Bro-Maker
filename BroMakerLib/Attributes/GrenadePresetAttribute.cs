@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace BroMakerLib.Attributes
+﻿namespace BroMakerLib.Attributes
 {
     internal class GrenadePresetAttribute : CustomObjectPresetAttribute
     {

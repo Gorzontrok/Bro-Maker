@@ -1,10 +1,6 @@
 ﻿using BroMakerLib.Attributes;
 using Newtonsoft.Json;
 using RocketLib.JsonConverters;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace BroMakerLib.Abilities.Characters
@@ -34,7 +30,7 @@ namespace BroMakerLib.Abilities.Characters
         protected override void Update()
         {
             base.Update();
-            if (_isTeleporting )
+            if (_isTeleporting)
             {
                 owner.xI = 0;
                 owner.yI = 0;

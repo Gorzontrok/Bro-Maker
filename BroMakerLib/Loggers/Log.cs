@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace BroMakerLib.Loggers
@@ -11,7 +9,7 @@ namespace BroMakerLib.Loggers
         public string message;
         public string formatedLog;
 
-        private DateTime _time;
+        private readonly DateTime _time;
 
         public Log(string message)
         {

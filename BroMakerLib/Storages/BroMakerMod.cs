@@ -1,11 +1,10 @@
-﻿using BroMakerLib.Loggers;
-using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using Newtonsoft.Json.Linq;
 using BroMakerLib.Infos;
+using BroMakerLib.Loggers;
 using BroMakerLib.Storages;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace BroMakerLib
 {
@@ -29,9 +28,9 @@ namespace BroMakerLib
         [JsonIgnore]
         public string[] BrosNames { get; protected set; }
         [JsonIgnore]
-        public StoredHero[] StoredHeroes {  get; set; }
+        public StoredHero[] StoredHeroes { get; set; }
         [JsonIgnore]
-        public StoredAbility[] StoredAbilities {  get; set; }
+        public StoredAbility[] StoredAbilities { get; set; }
 
         public static BroMakerMod TryLoad(string path)
         {

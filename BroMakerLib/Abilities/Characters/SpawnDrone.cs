@@ -1,10 +1,10 @@
-﻿using BroMakerLib.Attributes;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using BroMakerLib.Attributes;
+using BroMakerLib.Loggers;
+using Newtonsoft.Json;
 using RocketLib.JsonConverters;
 using UnityEngine;
-using BroMakerLib.Loggers;
 
 namespace BroMakerLib.Abilities.Characters
 {
@@ -79,7 +79,7 @@ namespace BroMakerLib.Abilities.Characters
                 return;
 
             var temp = new List<Drone>();
-            foreach(Drone drone in _spawnedDrone)
+            foreach (Drone drone in _spawnedDrone)
             {
                 if (drone != null || drone.IsAlive())
                 {

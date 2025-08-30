@@ -1,11 +1,11 @@
-﻿using BroMakerLib.Attributes;
-using BroMakerLib.Loggers;
-using BroMakerLib.Storages;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using BroMakerLib.Attributes;
+using BroMakerLib.Loggers;
+using BroMakerLib.Storages;
 
 namespace BroMakerLib
 {
@@ -35,7 +35,7 @@ namespace BroMakerLib
             // Load assemblies of mods
             foreach (BroMakerMod mod in BroMakerStorage.mods)
             {
-                foreach(string assemblyPath in mod.Assemblies)
+                foreach (string assemblyPath in mod.Assemblies)
                 {
                     try
                     {
@@ -43,7 +43,7 @@ namespace BroMakerLib
                         if (File.Exists(path))
                         {
                             string destFileName = path + ".cache";
-                            if (!File.Exists (destFileName))
+                            if (!File.Exists(destFileName))
                             {
                                 //File.Delete(destFileName);
                                 File.Copy(path, destFileName);
@@ -125,7 +125,7 @@ namespace BroMakerLib
                 return;
 
             var methods = paramerterType.GetMethods();
-            foreach(var method in methods)
+            foreach (var method in methods)
             {
                 var attributes = method.GetCustomAttributes(typeof(ParameterAttribute), true);
                 if (attributes.IsNotNullOrEmpty())
@@ -210,7 +210,7 @@ namespace BroMakerLib
 
             if (collection.ContainsKey(name))
             {
-                if ( !disableWarnings )
+                if (!disableWarnings)
                 {
                     BMLogger.Warning($"{collectionName} Preset of name {name} already exist. Type: {preset} ; Assembly: {preset.Assembly.FullName}");
                 }

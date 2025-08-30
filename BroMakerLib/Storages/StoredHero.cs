@@ -2,7 +2,6 @@
 using System.IO;
 using BroMakerLib.Infos;
 using BroMakerLib.Loggers;
-using BroMakerLib.CustomObjects.Bros;
 using BSett = BroMakerLib.Settings;
 
 namespace BroMakerLib.Storages

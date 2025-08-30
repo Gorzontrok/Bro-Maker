@@ -1,6 +1,6 @@
-﻿using BroMakerLib.Loggers;
+﻿using System;
+using BroMakerLib.Loggers;
 using Newtonsoft.Json;
-using System;
 using UnityEngine;
 
 namespace BroMakerLib

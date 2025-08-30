@@ -1,10 +1,4 @@
-﻿using BroMakerLib.CustomObjects;
-using BroMakerLib.CustomObjects.Bros;
-using BroMakerLib.Infos;
-using BroMakerLib.Loaders;
-using BroMakerLib.Loggers;
-using System;
-using World.Generation.MapGenV4;
+﻿using BroMakerLib.CustomObjects.Bros;
 
 namespace BroMakerLib.Vanilla.Bros
 {

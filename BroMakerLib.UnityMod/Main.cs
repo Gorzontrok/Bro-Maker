@@ -47,14 +47,14 @@ namespace BroMakerLib.UnityMod
                 BroMaker.Initialize();
                 BroMakerLib.Settings.instance.debugLogs = settings.debugLogs;
                 // Apply all harmony patches if any bros have overridden the method
-                if ( harmony != null )
+                if (harmony != null)
                 {
                     BroMaker.ApplyBroPatches(harmony);
                 }
                 // Preload all bro assets
                 BroMaker.PreloadBroAssets();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Main.Log("Error while loading BroMaker.\n" + ex);
             }
@@ -63,15 +63,15 @@ namespace BroMakerLib.UnityMod
             {
                 ModUI.Initialize();
             }
-            catch ( Exception ex)
+            catch (Exception ex)
             {
                 Main.Log("Error while intializing the GUI.\n" + ex);
             }
 
             // Log missed messages
-            for ( int i = 0; i < BMLogger.logs.Count; ++i )
+            for (int i = 0; i < BMLogger.logs.Count; ++i)
             {
-                Main.Log( BMLogger.logs[i], BroMakerLib.Loggers.Log.PREFIX );
+                Main.Log(BMLogger.logs[i], BroMakerLib.Loggers.Log.PREFIX);
             }
 
             return true;
@@ -83,7 +83,7 @@ namespace BroMakerLib.UnityMod
             {
                 ModUI.UI();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Log("UI\n" + e);
             }

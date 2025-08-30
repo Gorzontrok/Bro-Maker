@@ -1,13 +1,13 @@
-﻿using BroMakerLib.Infos;
-using BroMakerLib.Loggers;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
-using BroMakerLib.CustomObjects.Bros;
 using BroMakerLib.CustomObjects;
+using BroMakerLib.CustomObjects.Bros;
+using BroMakerLib.Infos;
+using BroMakerLib.Loggers;
+using HarmonyLib;
+using UnityEngine;
 using World.Generation.MapGenV4;
 using Net = Networking.Networking;
-using HarmonyLib;
 
 namespace BroMakerLib.Loaders
 {
@@ -15,21 +15,21 @@ namespace BroMakerLib.Loaders
     {
         public CustomBroInfo info;
         public int variantIndex;
-        
+
         public CustomBroDeath(CustomBroInfo info, int variantIndex)
         {
             this.info = info;
             this.variantIndex = variantIndex;
         }
     }
-    
+
     public static class LoadHero
     {
         public const string GAMEOBJECT_PREFIX = "BM_";
         public static CustomBroInfo currentInfo;
         public static int playerNum = 0;
 
-        private static Dictionary<string, int> prefabIndex = new Dictionary<string, int>();
+        private static readonly Dictionary<string, int> prefabIndex = new Dictionary<string, int>();
 
         public static bool spawnFromPlayer = false;
         public static bool[] willReplaceBro = new bool[] { false, false, false, false };
@@ -68,7 +68,7 @@ namespace BroMakerLib.Loaders
 
                 // Check Player
                 Player player = HeroController.players[playerNum];
-                if(player == null)
+                if (player == null)
                     throw new NullReferenceException($"Player number {playerNum} doesn't exist.");
 
 
@@ -105,11 +105,11 @@ namespace BroMakerLib.Loaders
                 BMLogger.Debug($"AfterInstantiation: InstantiateBuffered.");
 
                 var bro = AfterInstantiation(hero, heroType, playerNum, type, previousPosition);
-                if ( previousCharacterTraverse != null )
+                if (previousCharacterTraverse != null)
                 {
                     // Make previous character sprite disappear faster
                     previousCharacterTraverse.Field("recallCounter").SetValue(1f);
-                    if ( previousCharacterBubble != null )
+                    if (previousCharacterBubble != null)
                     {
                         previousCharacterBubble.GoAway();
                     }
@@ -122,9 +122,9 @@ namespace BroMakerLib.Loaders
                 high5BubbleTrav.Field("yStart").SetValue(hero.high5Bubble.transform.localPosition.y);
 
                 // Destroy character we replaced
-                if ( previousCharacter != null )
+                if (previousCharacter != null)
                 {
-                    UnityEngine.Object.Destroy( previousCharacter.gameObject );
+                    UnityEngine.Object.Destroy(previousCharacter.gameObject);
                 }
 
                 BMLogger.Debug("Spawner: Finished AfterInstantiation.");
@@ -167,7 +167,7 @@ namespace BroMakerLib.Loaders
         private static void FixSpawnPosition(TestVanDammeAnim hero, Vector3 position)
         {
             Player player = hero.player;
-            if(spawnFromPlayer)
+            if (spawnFromPlayer)
             {
                 if (position == Vector3.zero)
                 {
@@ -266,76 +266,76 @@ namespace BroMakerLib.Loaders
             player.SetSpawnPositon(bro, arg2, flag2, arg);
         }
 
-        private static void AssignFlexPower( TestVanDammeAnim testVanDammeAnim )
+        private static void AssignFlexPower(TestVanDammeAnim testVanDammeAnim)
         {
             var player = testVanDammeAnim.player;
 
-            if ( player.GetFieldValue<PickupType>( "_forceFlexPowerupSpawn" ) != PickupType.None )
+            if (player.GetFieldValue<PickupType>("_forceFlexPowerupSpawn") != PickupType.None)
             {
-                player.AddFlexPower( player.GetFieldValue<PickupType>( "_forceFlexPowerupSpawn" ), true );
-                Net.RPC<PickupType, bool>( PID.TargetOthers, new RpcSignature<PickupType, bool>( player.AddFlexPower ), player.GetFieldValue<PickupType>( "_forceFlexPowerupSpawn" ), true, false );
+                player.AddFlexPower(player.GetFieldValue<PickupType>("_forceFlexPowerupSpawn"), true);
+                Net.RPC<PickupType, bool>(PID.TargetOthers, new RpcSignature<PickupType, bool>(player.AddFlexPower), player.GetFieldValue<PickupType>("_forceFlexPowerupSpawn"), true, false);
             }
             else
             {
-                switch ( Map.MapData.flexPowerType )
+                switch (Map.MapData.flexPowerType)
                 {
                     case FlexPowerMapType.SpawnWithRandomFlex:
-                        switch ( UnityEngine.Random.Range( 0, 4 ) )
+                        switch (UnityEngine.Random.Range(0, 4))
                         {
                             case 0:
-                                player.AddFlexPower( PickupType.FlexGoldenLight, true );
+                                player.AddFlexPower(PickupType.FlexGoldenLight, true);
                                 break;
                             case 1:
-                                player.AddFlexPower( PickupType.FlexInvulnerability, true );
+                                player.AddFlexPower(PickupType.FlexInvulnerability, true);
                                 break;
                             case 2:
-                                player.AddFlexPower( PickupType.FlexAirJump, true );
+                                player.AddFlexPower(PickupType.FlexAirJump, true);
                                 break;
                             case 3:
-                                player.AddFlexPower( PickupType.FlexTeleport, true );
+                                player.AddFlexPower(PickupType.FlexTeleport, true);
                                 break;
                         }
                         break;
                     case FlexPowerMapType.SpawnWithAllure:
-                        player.AddFlexPower( PickupType.FlexAlluring, true );
+                        player.AddFlexPower(PickupType.FlexAlluring, true);
                         break;
                     case FlexPowerMapType.SpawnWithGoldenLight:
-                        player.AddFlexPower( PickupType.FlexGoldenLight, true );
+                        player.AddFlexPower(PickupType.FlexGoldenLight, true);
                         break;
                     case FlexPowerMapType.SpawnWithInvincible:
-                        player.AddFlexPower( PickupType.FlexInvulnerability, true );
+                        player.AddFlexPower(PickupType.FlexInvulnerability, true);
                         break;
                     case FlexPowerMapType.SpawnWithAirFlex:
-                        player.AddFlexPower( PickupType.FlexAirJump, true );
+                        player.AddFlexPower(PickupType.FlexAirJump, true);
                         break;
                     case FlexPowerMapType.SpawnWithTeleport:
-                        player.AddFlexPower( PickupType.FlexTeleport, true );
+                        player.AddFlexPower(PickupType.FlexTeleport, true);
                         break;
                     case FlexPowerMapType.SpawnWithEarnedFlex:
-                        switch ( UnityEngine.Random.Range( 0, 4 ) )
+                        switch (UnityEngine.Random.Range(0, 4))
                         {
                             case 0:
-                                if ( PlayerProgress.IsPickupUnlockedInAnySave( PickupType.FlexGoldenLight ) )
+                                if (PlayerProgress.IsPickupUnlockedInAnySave(PickupType.FlexGoldenLight))
                                 {
-                                    player.AddFlexPower( PickupType.FlexGoldenLight, true );
+                                    player.AddFlexPower(PickupType.FlexGoldenLight, true);
                                 }
                                 break;
                             case 1:
-                                if ( PlayerProgress.IsPickupUnlockedInAnySave( PickupType.FlexInvulnerability ) )
+                                if (PlayerProgress.IsPickupUnlockedInAnySave(PickupType.FlexInvulnerability))
                                 {
-                                    player.AddFlexPower( PickupType.FlexInvulnerability, true );
+                                    player.AddFlexPower(PickupType.FlexInvulnerability, true);
                                 }
                                 break;
                             case 2:
-                                if ( PlayerProgress.IsPickupUnlockedInAnySave( PickupType.FlexAirJump ) )
+                                if (PlayerProgress.IsPickupUnlockedInAnySave(PickupType.FlexAirJump))
                                 {
-                                    player.AddFlexPower( PickupType.FlexAirJump, true );
+                                    player.AddFlexPower(PickupType.FlexAirJump, true);
                                 }
                                 break;
                             case 3:
-                                if ( PlayerProgress.IsPickupUnlockedInAnySave( PickupType.FlexTeleport ) )
+                                if (PlayerProgress.IsPickupUnlockedInAnySave(PickupType.FlexTeleport))
                                 {
-                                    player.AddFlexPower( PickupType.FlexTeleport, true );
+                                    player.AddFlexPower(PickupType.FlexTeleport, true);
                                 }
                                 break;
                         }
@@ -356,13 +356,13 @@ namespace BroMakerLib.Loaders
 
         private static GameObject CreateOriginal(HeroType heroType, Type type)
         {
-            GameObject prefab = HeroController.GetHeroPrefab( heroType).gameObject;
+            GameObject prefab = HeroController.GetHeroPrefab(heroType).gameObject;
             prefab.SetActive(false);
-            GameObject inst  = UnityEngine.Object.Instantiate(prefab, Vector3.zero, Quaternion.identity);
+            GameObject inst = UnityEngine.Object.Instantiate(prefab, Vector3.zero, Quaternion.identity);
             prefab.SetActive(true);
 
             // Ensure prefab is only created once
-            UnityEngine.Object.DontDestroyOnLoad( inst );
+            UnityEngine.Object.DontDestroyOnLoad(inst);
 
             inst.AddComponent(type);
             inst.name = GAMEOBJECT_PREFIX + currentInfo.name;
@@ -374,7 +374,7 @@ namespace BroMakerLib.Loaders
             // Set up custom bros
             inst.GetComponent<CustomHero>()?.PrefabSetup();
 
-            AddObjectToPrefabList( inst );
+            AddObjectToPrefabList(inst);
             BMLogger.Debug("CreateOriginal: inst added to list");
 
             return inst;

@@ -1,13 +1,12 @@
-﻿using BroMakerLib.CustomObjects.Bros;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
+using BroMakerLib.CustomObjects.Bros;
 using BroMakerLib.Infos;
 using BroMakerLib.Loggers;
 using BroMakerLib.Storages;
 using HarmonyLib;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
 using UnityEngine;
 
 namespace BroMakerLib
@@ -20,7 +19,7 @@ namespace BroMakerLib
 
         public static void Initialize()
         {
-            if(!_hasInit)
+            if (!_hasInit)
             {
                 BMLogger.Log("Initialization of BroMaker");
 
@@ -38,7 +37,7 @@ namespace BroMakerLib
             }
         }
 
-        public static void ApplyBroPatches( Harmony harmony )
+        public static void ApplyBroPatches(Harmony harmony)
         {
             GameObject heroHolder = new GameObject();
             heroHolder.SetActive(false);
@@ -56,7 +55,7 @@ namespace BroMakerLib
         public static void PreloadBroAssets()
         {
             // Preload all assets listed in the JSON file
-            for ( int i = 0; i < BroMakerStorage.Bros.Length; ++i )
+            for (int i = 0; i < BroMakerStorage.Bros.Length; ++i)
             {
                 CustomBroInfo info = BroMakerStorage.Bros[i].GetInfo();
                 List<string> spritePaths = new List<string>();
@@ -79,7 +78,7 @@ namespace BroMakerLib
                         }
                     }
                 }
-                
+
                 // Handle GunSprite parameter
                 if (info.parameters.ContainsKey("GunSprite"))
                 {
@@ -98,13 +97,13 @@ namespace BroMakerLib
                     }
                 }
 
-                if ( info.parameters.ContainsKey( "SpecialIcons" ) )
+                if (info.parameters.ContainsKey("SpecialIcons"))
                 {
-                    if ( info.parameters["SpecialIcons"] is string path )
-                    {   
-                        spritePaths.Add( path );
+                    if (info.parameters["SpecialIcons"] is string path)
+                    {
+                        spritePaths.Add(path);
                     }
-                    else if ( info.parameters["SpecialIcons"] is JArray paths )
+                    else if (info.parameters["SpecialIcons"] is JArray paths)
                     {
                         foreach (var item in paths)
                         {
@@ -128,7 +127,7 @@ namespace BroMakerLib
                         }
                     }
                 }
-                if ( info.parameters.ContainsKey("Avatar") )
+                if (info.parameters.ContainsKey("Avatar"))
                 {
                     if (info.parameters["Avatar"] is string avatar)
                     {
@@ -170,7 +169,7 @@ namespace BroMakerLib
                         }
                     }
                 }
-                
+
                 // Handle FirstAvatar parameter
                 if (info.parameters.ContainsKey("FirstAvatar"))
                 {
@@ -191,20 +190,20 @@ namespace BroMakerLib
 
                 foreach (var cutscene in info.Cutscene)
                 {
-                    if ( cutscene.spritePath != string.Empty )
+                    if (cutscene.spritePath != string.Empty)
                     {
                         spritePaths.Add(cutscene.spritePath);
                     }
-                    if ( cutscene.barkPath != string.Empty )
+                    if (cutscene.barkPath != string.Empty)
                     {
                         soundPaths.Add(cutscene.barkPath);
                     }
-                    if ( cutscene.fanfarePath != string.Empty )
+                    if (cutscene.fanfarePath != string.Empty)
                     {
                         soundPaths.Add(cutscene.fanfarePath);
                     }
                 }
-                
+
                 CustomHero.PreloadSprites(info.path, spritePaths);
                 CustomHero.PreloadSounds(info.path, soundPaths);
             }
@@ -221,9 +220,9 @@ namespace BroMakerLib
                     {
                         bro.PreloadAssets();
                     }
-                    catch ( Exception ex )
+                    catch (Exception ex)
                     {
-                        BMLogger.ExceptionLog( "Exception occurred while preloading " + kvp.Key + "'s assets:", ex );
+                        BMLogger.ExceptionLog("Exception occurred while preloading " + kvp.Key + "'s assets:", ex);
                     }
                 }
             }

@@ -1,9 +1,9 @@
-﻿using BroMakerLib.Loggers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using BroMakerLib.Loggers;
 using UnityEngine;
 
 namespace BroMakerLib.CustomObjects.Projectiles
@@ -111,35 +111,35 @@ namespace BroMakerLib.CustomObjects.Projectiles
             try
             {
                 // Only load sprite if we're creating a prefab and it hasn't been created yet.
-                if ( this.storedSprite == null && this.spriteAutoLoad )
+                if (this.storedSprite == null && this.spriteAutoLoad)
                 {
-                    this.assemblyPath = Path.GetDirectoryName( Assembly.GetCallingAssembly().Location );
-                    this.spriteDirectoryPath = Path.Combine( assemblyPath, spriteFolder );
-                    this.soundPath = Path.Combine( assemblyPath, soundFolder );
+                    this.assemblyPath = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
+                    this.spriteDirectoryPath = Path.Combine(assemblyPath, spriteFolder);
+                    this.soundPath = Path.Combine(assemblyPath, soundFolder);
 
-                    if ( spriteFileName == string.Empty )
+                    if (spriteFileName == string.Empty)
                     {
                         spriteFileName = className + ".png";
                     }
 
-                    Material mat = ResourcesController.GetMaterial( spriteDirectoryPath, spriteFileName );
+                    Material mat = ResourcesController.GetMaterial(spriteDirectoryPath, spriteFileName);
                     this.gameObject.GetComponent<MeshRenderer>().material = mat;
                     float imageWidth = mat.mainTexture.width;
                     float imageHeight = mat.mainTexture.height;
 
-                    if ( this.spritePixelDimensions == Vector2.zero )
+                    if (this.spritePixelDimensions == Vector2.zero)
                     {
-                        this.spritePixelDimensions = new Vector2( imageWidth, imageHeight );
+                        this.spritePixelDimensions = new Vector2(imageWidth, imageHeight);
                     }
-                    if ( this.spriteLowerLeftPixel == Vector2.zero )
+                    if (this.spriteLowerLeftPixel == Vector2.zero)
                     {
-                        this.spriteLowerLeftPixel = new Vector2( 0, imageHeight );
+                        this.spriteLowerLeftPixel = new Vector2(0, imageHeight);
                     }
-                    if ( this.spriteWidth == 2 )
+                    if (this.spriteWidth == 2)
                     {
                         this.spriteWidth = imageWidth;
                     }
-                    if ( this.spriteHeight == 2 )
+                    if (this.spriteHeight == 2)
                     {
                         this.spriteHeight = imageHeight;
                     }
@@ -156,19 +156,19 @@ namespace BroMakerLib.CustomObjects.Projectiles
 
                 this.sprite = this.storedSprite;
 
-                if ( this.soundHolder == null )
+                if (this.soundHolder == null)
                 {
-                    this.soundHolder = UnityEngine.Object.Instantiate( this.defaultSoundHolder ?? HeroController.GetHeroPrefab( HeroType.Rambro ).specialGrenade.soundHolder );
-                    this.soundHolder.gameObject.SetActive( false );
+                    this.soundHolder = UnityEngine.Object.Instantiate(this.defaultSoundHolder ?? HeroController.GetHeroPrefab(HeroType.Rambro).specialGrenade.soundHolder);
+                    this.soundHolder.gameObject.SetActive(false);
                     this.soundHolder.gameObject.name = "SoundHolder " + className;
-                    UnityEngine.Object.DontDestroyOnLoad( this.soundHolder );
+                    UnityEngine.Object.DontDestroyOnLoad(this.soundHolder);
                 }
 
                 base.Awake();
             }
-            catch ( Exception exception )
+            catch (Exception exception)
             {
-                BMLogger.Log( className + " threw an exception in awake: " + exception.ToString() );
+                BMLogger.Log(className + " threw an exception in awake: " + exception.ToString());
             }
         }
 
@@ -187,19 +187,19 @@ namespace BroMakerLib.CustomObjects.Projectiles
         /// <returns>The prefab of your custom grenade.</returns>
         public static T CreatePrefab<T>() where T : CustomGrenade
         {
-            if ( CustomGrenadePrefabs.TryGetValue( typeof( T ), out CustomGrenade customGrenade ) && customGrenade != null )
+            if (CustomGrenadePrefabs.TryGetValue(typeof(T), out CustomGrenade customGrenade) && customGrenade != null)
             {
                 return customGrenade as T;
             }
             else
             {
-                T prefab = new GameObject( typeof( T ).Name, new Type[] { typeof( MeshFilter ), typeof( MeshRenderer ), typeof( SpriteSM ), typeof( T ) } ).GetComponent<T>();
+                T prefab = new GameObject(typeof(T).Name, new Type[] { typeof(MeshFilter), typeof(MeshRenderer), typeof(SpriteSM), typeof(T) }).GetComponent<T>();
                 prefab.PrefabSetup();
                 prefab.RanSetup = true;
                 prefab.enabled = false;
-                prefab.gameObject.SetActive( false );
-                UnityEngine.Object.DontDestroyOnLoad( prefab.gameObject );
-                CustomGrenadePrefabs.Add( typeof( T ), prefab );
+                prefab.gameObject.SetActive(false);
+                UnityEngine.Object.DontDestroyOnLoad(prefab.gameObject);
+                CustomGrenadePrefabs.Add(typeof(T), prefab);
                 return prefab;
             }
         }
@@ -210,22 +210,22 @@ namespace BroMakerLib.CustomObjects.Projectiles
         /// <param name="additionalComponents">Additional components to add to the prefab.</param>
         /// <typeparam name="T">Type of your custom grenade class.</typeparam>
         /// <returns>The prefab of your custom grenade.</returns>
-        public static T CreatePrefab<T>( List<Type> additionalComponents ) where T : CustomGrenade
+        public static T CreatePrefab<T>(List<Type> additionalComponents) where T : CustomGrenade
         {
-            if ( CustomGrenadePrefabs.TryGetValue( typeof( T ), out CustomGrenade customGrenade ) && customGrenade != null )
+            if (CustomGrenadePrefabs.TryGetValue(typeof(T), out CustomGrenade customGrenade) && customGrenade != null)
             {
                 return customGrenade as T;
             }
             else
             {
-                Type[] components = ( new List<Type> { typeof( MeshFilter ), typeof( MeshRenderer ), typeof( SpriteSM ), typeof( T ) } ).Concat( additionalComponents ).ToArray();
-                T prefab = new GameObject( typeof( T ).Name, components ).GetComponent<T>();
+                Type[] components = (new List<Type> { typeof(MeshFilter), typeof(MeshRenderer), typeof(SpriteSM), typeof(T) }).Concat(additionalComponents).ToArray();
+                T prefab = new GameObject(typeof(T).Name, components).GetComponent<T>();
                 prefab.PrefabSetup();
                 prefab.RanSetup = true;
                 prefab.enabled = false;
-                prefab.gameObject.SetActive( false );
-                UnityEngine.Object.DontDestroyOnLoad( prefab.gameObject );
-                CustomGrenadePrefabs.Add( typeof( T ), prefab );
+                prefab.gameObject.SetActive(false);
+                UnityEngine.Object.DontDestroyOnLoad(prefab.gameObject);
+                CustomGrenadePrefabs.Add(typeof(T), prefab);
                 return prefab;
             }
         }
@@ -243,13 +243,13 @@ namespace BroMakerLib.CustomObjects.Projectiles
         /// <param name="playerNum">The player number who owns this grenade.</param>
         /// <param name="seed">Random seed for deterministic grenade behavior. Defaults to UnityEngine.Random.Range( 0, 10000 )</param>
         /// <returns>The spawned Grenade instance.</returns>
-        public virtual Grenade SpawnGrenadeLocally( MonoBehaviour firedBy, float x, float y, float radius, float force, float xI, float yI, int playerNum, int seed = -1 )
+        public virtual Grenade SpawnGrenadeLocally(MonoBehaviour firedBy, float x, float y, float radius, float force, float xI, float yI, int playerNum, int seed = -1)
         {
-            if ( seed == -1 )
+            if (seed == -1)
             {
-                seed = UnityEngine.Random.Range( 0, 10000 );
+                seed = UnityEngine.Random.Range(0, 10000);
             }
-            Grenade grenade = ProjectileController.SpawnGrenadeLocally( this, firedBy, x, y, radius, force, xI, yI, playerNum, seed );
+            Grenade grenade = ProjectileController.SpawnGrenadeLocally(this, firedBy, x, y, radius, force, xI, yI, playerNum, seed);
             grenade.enabled = true;
             return grenade;
         }

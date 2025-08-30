@@ -95,19 +95,19 @@ namespace BroMakerLib.CustomObjects.Bros
                         this.gunFrame = 0;
                     }
                     this.SetGunSprite(this.gunFrame, 0);
-                  /*  if (!this.hasPlayedAttackHitSound)
-					{
-						if (this.hasHitWithSlice)
-						{
-							this.PlaySliceSound();
-							this.hasPlayedAttackHitSound = true;
-						}
-						else if (this.hasHitWithWall)
-						{
-							this.PlayWallSound();
-							this.hasPlayedAttackHitSound = true;
-						}
-					}*/
+                    /*  if (!this.hasPlayedAttackHitSound)
+                      {
+                          if (this.hasHitWithSlice)
+                          {
+                              this.PlaySliceSound();
+                              this.hasPlayedAttackHitSound = true;
+                          }
+                          else if (this.hasHitWithWall)
+                          {
+                              this.PlayWallSound();
+                              this.hasPlayedAttackHitSound = true;
+                          }
+                      }*/
                     if (this.gunFrame >= 3)
                     {
                         this.SwingSword(this.hasHitWithWall);

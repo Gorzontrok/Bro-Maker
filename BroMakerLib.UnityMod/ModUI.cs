@@ -1,17 +1,13 @@
-﻿using BroMakerLib.CustomObjects.Bros;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using BroMakerLib.CustomObjects.Bros;
 using BroMakerLib.Infos;
 using BroMakerLib.Loaders;
 using BroMakerLib.Loggers;
 using BroMakerLib.Storages;
 using RocketLib;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime;
 using UnityEngine;
-using UnityModManagerNet;
-using static HarmonyLib.Code;
-using static UnityModManagerNet.UnityModManager;
 using BSett = BroMakerLib.Settings;
 
 namespace BroMakerLib.UnityMod
@@ -33,7 +29,7 @@ namespace BroMakerLib.UnityMod
             }
         }
 
-        private static Dictionary<string, Action> _tabs = new Dictionary<string, Action>()
+        private static readonly Dictionary<string, Action> _tabs = new Dictionary<string, Action>()
         {
             { "Custom Bros", Spawner },
             { "Settings", Settings }
@@ -46,7 +42,7 @@ namespace BroMakerLib.UnityMod
         private static object _objectToEdit = null;
         private static GUIStyle _toolTipStyle = new GUIStyle();
         private static int _tabSelected = 0;
-        private static GUIStyle _errorSwapingMessageStyle = new GUIStyle();
+        private static readonly GUIStyle _errorSwapingMessageStyle = new GUIStyle();
         private static Rect _toolTipRect = Rect.zero;
         private static int _selectedCustomBrosIndex = -1;
         private static int _selectedModIndex = -1;
@@ -56,7 +52,7 @@ namespace BroMakerLib.UnityMod
         private static bool heroCreated = false;
 
         private static Vector2 _spawnerScrollView;
-        private static int _broPerLines = 6;
+        private static readonly int _broPerLines = 6;
 
         private static GUIStyle _buttonStyle = null;
         private static GUIStyle _warningStyle = null;
@@ -87,7 +83,7 @@ namespace BroMakerLib.UnityMod
             BSett.instance.CheckForDeletedBros();
             BSett.instance.CountEnabledBros();
 
-            if ( BSett.instance.equalSpawnProbability )
+            if (BSett.instance.equalSpawnProbability)
             {
                 BSett.instance.automaticSpawnProbabilty = BSett.instance.CalculateSpawnProbability();
             }
@@ -95,23 +91,23 @@ namespace BroMakerLib.UnityMod
 
         public static void UI()
         {
-            if ( _windowWidth < 0 )
+            if (_windowWidth < 0)
             {
                 try
                 {
                     GUILayout.BeginHorizontal();
-                    if ( Event.current.type == EventType.Repaint )
+                    if (Event.current.type == EventType.Repaint)
                     {
-                        Rect rect = GUILayoutUtility.GetRect( 0, 0, GUILayout.ExpandWidth( true ) );
-                        if ( rect.width > 1 )
+                        Rect rect = GUILayoutUtility.GetRect(0, 0, GUILayout.ExpandWidth(true));
+                        if (rect.width > 1)
                         {
                             _windowWidth = rect.width;
                         }
                     }
-                    GUILayout.Label( " " );
+                    GUILayout.Label(" ");
                     GUILayout.EndHorizontal();
                 }
-                catch ( Exception )
+                catch (Exception)
                 {
                 }
                 return;
@@ -132,34 +128,34 @@ namespace BroMakerLib.UnityMod
                 _incompatibleStyle.normal.textColor = Color.red;
             }
 
-            if ( _headerStyle == null )
+            if (_headerStyle == null)
             {
-                _headerStyle = new GUIStyle( GUI.skin.button );
+                _headerStyle = new GUIStyle(GUI.skin.button);
                 _headerStyle.fontStyle = FontStyle.Bold;
-                _headerStyle.normal.textColor = new Color( 0.639216f, 0.909804f, 1f );
+                _headerStyle.normal.textColor = new Color(0.639216f, 0.909804f, 1f);
             }
 
-            if ( _enabledStyle == null )
+            if (_enabledStyle == null)
             {
-                _enabledStyle = new GUIStyle( GUI.skin.label );
+                _enabledStyle = new GUIStyle(GUI.skin.label);
                 _enabledStyle.normal.textColor = Color.green;
             }
 
-            if ( _disabledStyle == null )
+            if (_disabledStyle == null)
             {
-                _disabledStyle = new GUIStyle( GUI.skin.label );
+                _disabledStyle = new GUIStyle(GUI.skin.label);
                 _disabledStyle.normal.textColor = Color.red;
             }
 
-            if ( _enabledStyleButton == null )
+            if (_enabledStyleButton == null)
             {
-                _enabledStyleButton = new GUIStyle( GUI.skin.button );
+                _enabledStyleButton = new GUIStyle(GUI.skin.button);
                 _enabledStyleButton.normal.textColor = Color.green;
             }
 
-            if ( _disabledStyleButton == null )
+            if (_disabledStyleButton == null)
             {
-                _disabledStyleButton = new GUIStyle( GUI.skin.button );
+                _disabledStyleButton = new GUIStyle(GUI.skin.button);
                 _disabledStyleButton.normal.textColor = Color.red;
             }
 
@@ -173,33 +169,33 @@ namespace BroMakerLib.UnityMod
             _tabs.TryGetValue(tabsNames[_tabSelected], out Action action);
             action.Invoke();
             GUILayout.EndVertical();
-            if ( !BSett.instance.disableTooltips )
+            if (!BSett.instance.disableTooltips)
             {
-                GUI.Label( _toolTipRect, GUI.tooltip, _toolTipStyle );
+                GUI.Label(_toolTipRect, GUI.tooltip, _toolTipStyle);
             }
         }
 
-        private static GUILayoutOption ScaledWidth( float width )
+        private static GUILayoutOption ScaledWidth(float width)
         {
-            if ( BSett.instance.scaleUIWithWindowWidth && _windowWidth > 0 )
+            if (BSett.instance.scaleUIWithWindowWidth && _windowWidth > 0)
             {
                 float scaleFactor = _windowWidth / 1200f;
-                return GUILayout.Width( width * scaleFactor );
+                return GUILayout.Width(width * scaleFactor);
             }
-            return GUILayout.Width( width );
+            return GUILayout.Width(width);
         }
 
         public static void Spawner()
         {
             GUILayout.Label(BMLogger.errorSwapingMessage, _errorSwapingMessageStyle);
-            if ( BSett.instance.developerMode )
+            if (BSett.instance.developerMode)
             {
                 GUILayout.BeginHorizontal();
-                if ( GUILayout.Button( new GUIContent( "Reload Mods", "Reloads all BroMaker mods" ), GUILayout.ExpandWidth( false ) ) )
+                if (GUILayout.Button(new GUIContent("Reload Mods", "Reloads all BroMaker mods"), GUILayout.ExpandWidth(false)))
                 {
                     BroMakerStorage.Initialize();
                 }
-                if ( GUILayout.Button( new GUIContent( "Reload Bros", "Reloads all custom bros in the currently loaded BroMaker mods" ), GUILayout.ExpandWidth( false ) ) )
+                if (GUILayout.Button(new GUIContent("Reload Bros", "Reloads all custom bros in the currently loaded BroMaker mods"), GUILayout.ExpandWidth(false)))
                 {
                     ReloadFiles();
                     PresetManager.disableWarnings = true;
@@ -207,15 +203,15 @@ namespace BroMakerLib.UnityMod
                     PresetManager.disableWarnings = false;
                     BSett.instance.CheckForDeletedBros();
                     BSett.instance.CountEnabledBros();
-                    if ( BSett.instance.equalSpawnProbability )
+                    if (BSett.instance.equalSpawnProbability)
                     {
                         BSett.instance.automaticSpawnProbabilty = BSett.instance.CalculateSpawnProbability();
                     }
                 }
-                if ( GUILayout.Button( new GUIContent( "Reload Preset", "Reloads custom bro presets" ), GUILayout.ExpandWidth( false ) ) )
+                if (GUILayout.Button(new GUIContent("Reload Preset", "Reloads custom bro presets"), GUILayout.ExpandWidth(false)))
                     PresetManager.Initialize();
                 GUILayout.EndHorizontal();
-                GUILayout.Space( 15 );
+                GUILayout.Space(15);
             }
 
             // New UI
@@ -233,7 +229,7 @@ namespace BroMakerLib.UnityMod
             GUILayout.Label("Author", ScaledWidth(200));
             GUILayout.Label("Version", ScaledWidth(200));
             GUILayout.Label("BroMaker Version", ScaledWidth(200));
-            GUILayout.Label( "Autospawn Enabled", ScaledWidth( 200 ) );
+            GUILayout.Label("Autospawn Enabled", ScaledWidth(200));
             GUILayout.EndHorizontal();
             GUILayout.Space(15);
             if (Mods.Count > 8 && !BSett.instance.scaleUIHeight)
@@ -252,7 +248,7 @@ namespace BroMakerLib.UnityMod
 
                     var name = mod.Name;
                     // If only one custom bro is in the mod, we can just display them where the mod name would be
-                    if ( mod.StoredHeroes.Length == 1 )
+                    if (mod.StoredHeroes.Length == 1)
                     {
                         SpawnerUIOneHero(mod, broIndex);
 
@@ -264,10 +260,10 @@ namespace BroMakerLib.UnityMod
                     {
                         // show mod information
                         GUILayout.BeginHorizontal("box");
-                        if ((_selectedModIndex == modCount) != GUILayout.Toggle(_selectedModIndex == modCount, name, _buttonStyle, ScaledWidth(150)) )
+                        if ((_selectedModIndex == modCount) != GUILayout.Toggle(_selectedModIndex == modCount, name, _buttonStyle, ScaledWidth(150)))
                         {
                             // Deselect
-                            if ( _selectedModIndex == modCount )
+                            if (_selectedModIndex == modCount)
                             {
                                 _selectedModIndex = -1;
                             }
@@ -279,7 +275,7 @@ namespace BroMakerLib.UnityMod
                         GUILayout.Space(50);
                         GUILayout.Label(mod.Author, ScaledWidth(200));
                         GUILayout.Label(mod.Version, ScaledWidth(200));
-                        if ( mod.ErrorMessage == string.Empty )
+                        if (mod.ErrorMessage == string.Empty)
                         {
                             GUILayout.Label(mod.BroMakerVersion, ScaledWidth(200));
                         }
@@ -290,7 +286,7 @@ namespace BroMakerLib.UnityMod
                         GUILayout.EndHorizontal();
 
                         // Only show custom bros of this mod if this mod is selected
-                        if ( _selectedModIndex == modCount )
+                        if (_selectedModIndex == modCount)
                         {
                             // Show bros
                             GUILayout.BeginVertical("box");
@@ -306,7 +302,7 @@ namespace BroMakerLib.UnityMod
                                     isHorizontalOpen = true;
                                 }
 
-                                if ( (_selectedCustomBrosIndex == broIndex) != GUILayout.Toggle(_selectedCustomBrosIndex == broIndex, mod.StoredHeroes[modIndex].name, _buttonStyle, ScaledWidth(150)) )
+                                if ((_selectedCustomBrosIndex == broIndex) != GUILayout.Toggle(_selectedCustomBrosIndex == broIndex, mod.StoredHeroes[modIndex].name, _buttonStyle, ScaledWidth(150)))
                                 {
                                     if (_selectedCustomBrosIndex == broIndex)
                                     {
@@ -401,27 +397,27 @@ namespace BroMakerLib.UnityMod
                     ++modCount;
                 }
 
-                GUILayout.Space( 5 );
+                GUILayout.Space(5);
                 GUILayout.BeginHorizontal();
-                if ( GUILayout.Button( new GUIContent( "Enable All", "Enable autospawn for all custom bros" ), ScaledWidth(100) ) )
+                if (GUILayout.Button(new GUIContent("Enable All", "Enable autospawn for all custom bros"), ScaledWidth(100)))
                 {
-                    foreach ( BroMakerMod mod in Mods )
+                    foreach (BroMakerMod mod in Mods)
                     {
-                        foreach ( StoredHero hero in mod.StoredHeroes )
+                        foreach (StoredHero hero in mod.StoredHeroes)
                         {
-                            BSett.instance.SetBroEnabled( hero.name, true );
+                            BSett.instance.SetBroEnabled(hero.name, true);
                         }
                     }
                     BSett.instance.CountEnabledBros();
                 }
-                GUILayout.Space( 5 );
-                if ( GUILayout.Button( new GUIContent( "Disable All", "Disable autospawn for all custom bros" ), ScaledWidth(100) ) )
+                GUILayout.Space(5);
+                if (GUILayout.Button(new GUIContent("Disable All", "Disable autospawn for all custom bros"), ScaledWidth(100)))
                 {
-                    foreach ( BroMakerMod mod in Mods )
+                    foreach (BroMakerMod mod in Mods)
                     {
-                        foreach ( StoredHero hero in mod.StoredHeroes )
+                        foreach (StoredHero hero in mod.StoredHeroes)
                         {
-                            BSett.instance.SetBroEnabled( hero.name, false );
+                            BSett.instance.SetBroEnabled(hero.name, false);
                         }
                     }
                     BSett.instance.CountEnabledBros();
@@ -461,7 +457,7 @@ namespace BroMakerLib.UnityMod
                     UnityEngine.Object.DontDestroyOnLoad(heroHolder);
                 }
                 _selectedHero = heroHolder.AddComponent(PresetManager.heroesPreset[preset]) as CustomHero;
-                _selectedHero.SetDirectoryPath( _selectedBro.info.path );
+                _selectedHero.SetDirectoryPath(_selectedBro.info.path);
                 _selectedHero.LoadSettings();
                 _selectedHero.enabled = false;
                 heroCreated = true;
@@ -488,10 +484,10 @@ namespace BroMakerLib.UnityMod
 
             // Player Selector
             //Main.selectedPlayerNum = RGUI.HorizontalSliderInt("Player Num: ", Main.selectedPlayerNum, 0, 3, 200);
-            GUILayout.BeginHorizontal( GUILayout.ExpandWidth( false ), ScaledWidth(500) );
-            for ( int i = 0; i < 4; ++i )
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false), ScaledWidth(500));
+            for (int i = 0; i < 4; ++i)
             {
-                if ( ( Main.selectedPlayerNum == i ) != GUILayout.Toggle( Main.selectedPlayerNum == i, new GUIContent( "Player " + ( i + 1 ), "Select which player to switch to this custom bro when you press switch to bro" ), _buttonStyle ) )
+                if ((Main.selectedPlayerNum == i) != GUILayout.Toggle(Main.selectedPlayerNum == i, new GUIContent("Player " + (i + 1), "Select which player to switch to this custom bro when you press switch to bro"), _buttonStyle))
                 {
                     Main.selectedPlayerNum = i;
                 }
@@ -501,25 +497,25 @@ namespace BroMakerLib.UnityMod
 
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
 
-            if (GUILayout.Button(new GUIContent("Switch to Bro", "Switch selected player to this custom bro"), ScaledWidth( 300 ) ))
+            if (GUILayout.Button(new GUIContent("Switch to Bro", "Switch selected player to this custom bro"), ScaledWidth(300)))
             {
                 LoadHero.previousSpawnInfo[Main.selectedPlayerNum] = Player.SpawnType.TriggerSwapBro;
                 LoadHero.wasFirstDeployment[Main.selectedPlayerNum] = false;
                 bro.LoadBro(Main.selectedPlayerNum);
             }
             bool broEnabled = BSett.instance.GetBroEnabled(bro.name);
-            if ( mod.StoredHeroes.Count() > 1 )
+            if (mod.StoredHeroes.Count() > 1)
             {
-                if ( GUILayout.Button( new GUIContent( ( broEnabled ? "Autospawn Enabled" : "Autospawn Disabled" ), "Toggle whether this bro is part of the spawn rotation" ), ScaledWidth( 300 ) ) )
+                if (GUILayout.Button(new GUIContent((broEnabled ? "Autospawn Enabled" : "Autospawn Disabled"), "Toggle whether this bro is part of the spawn rotation"), ScaledWidth(300)))
                 {
-                    BSett.instance.SetBroEnabled( bro.name, !broEnabled );
-                    if ( BSett.instance.equalSpawnProbability )
+                    BSett.instance.SetBroEnabled(bro.name, !broEnabled);
+                    if (BSett.instance.equalSpawnProbability)
                     {
                         BSett.instance.automaticSpawnProbabilty = BSett.instance.CalculateSpawnProbability();
                     }
                 }
             }
-            if (GUILayout.Button(new GUIContent("Play Unlock Cutscene", "Play this bro's unlock cutscene if in-game"), ScaledWidth( 300 ) ))
+            if (GUILayout.Button(new GUIContent("Play Unlock Cutscene", "Play this bro's unlock cutscene if in-game"), ScaledWidth(300)))
             {
                 try
                 {
@@ -547,7 +543,7 @@ namespace BroMakerLib.UnityMod
             GUILayout.EndHorizontal();
 
             // Display any UI options the bro developer added
-            if ( _selectedHero != null )
+            if (_selectedHero != null)
             {
                 try
                 {
@@ -558,7 +554,7 @@ namespace BroMakerLib.UnityMod
                 }
             }
             // If hero was created before but is now null, the game object was probably deleted
-            else if ( heroCreated )
+            else if (heroCreated)
             {
                 CreateSelectedBro();
             }
@@ -587,7 +583,7 @@ namespace BroMakerLib.UnityMod
             GUILayout.Space(50);
             GUILayout.Label(mod.Author, ScaledWidth(200));
             GUILayout.Label(mod.Version, ScaledWidth(200));
-            if ( mod.ErrorMessage == string.Empty )
+            if (mod.ErrorMessage == string.Empty)
             {
                 GUILayout.Label(mod.BroMakerVersion, ScaledWidth(200));
             }
@@ -595,22 +591,22 @@ namespace BroMakerLib.UnityMod
             {
                 GUILayout.Label(mod.BroMakerVersion, _warningStyle, ScaledWidth(200));
             }
-            if ( !BSett.instance.automaticSpawn )
+            if (!BSett.instance.automaticSpawn)
             {
-                GUILayout.Button( new GUIContent( "Disabled in Settings", "Automatic spawning of bros is disabled in Spawn Options in the Settings tab" ), _disabledStyleButton, ScaledWidth( 130 ) );
+                GUILayout.Button(new GUIContent("Disabled in Settings", "Automatic spawning of bros is disabled in Spawn Options in the Settings tab"), _disabledStyleButton, ScaledWidth(130));
             }
-            else if ( BSett.instance.GetBroEnabled( mod.StoredHeroes[0].name ) )
+            else if (BSett.instance.GetBroEnabled(mod.StoredHeroes[0].name))
             {
-                if ( GUILayout.Button( new GUIContent("Enabled", "Click to disable autospawn for this bro"), _enabledStyleButton, ScaledWidth( 110 ) ) )
+                if (GUILayout.Button(new GUIContent("Enabled", "Click to disable autospawn for this bro"), _enabledStyleButton, ScaledWidth(110)))
                 {
-                    BSett.instance.SetBroEnabled( mod.StoredHeroes[0].name, false );
+                    BSett.instance.SetBroEnabled(mod.StoredHeroes[0].name, false);
                 }
             }
             else
             {
-                if ( GUILayout.Button( new GUIContent( "Disabled", "Click to enable autospawn for this bro"), _disabledStyleButton, ScaledWidth( 110 ) ) )
+                if (GUILayout.Button(new GUIContent("Disabled", "Click to enable autospawn for this bro"), _disabledStyleButton, ScaledWidth(110)))
                 {
-                    BSett.instance.SetBroEnabled( mod.StoredHeroes[0].name, true );
+                    BSett.instance.SetBroEnabled(mod.StoredHeroes[0].name, true);
                 }
             }
             GUILayout.EndHorizontal();
@@ -629,23 +625,23 @@ namespace BroMakerLib.UnityMod
 
         public static void Settings()
         {
-            BSett.instance.showGeneralSettings = GUILayout.Toggle( BSett.instance.showGeneralSettings, new GUIContent( "General Options", "Click to " + ( BSett.instance.showGeneralSettings ? "collapse" : "expand") + " section" ), _headerStyle );
+            BSett.instance.showGeneralSettings = GUILayout.Toggle(BSett.instance.showGeneralSettings, new GUIContent("General Options", "Click to " + (BSett.instance.showGeneralSettings ? "collapse" : "expand") + " section"), _headerStyle);
 
-            if ( BSett.instance.showGeneralSettings )
+            if (BSett.instance.showGeneralSettings)
             {
                 ShowGeneralSettings();
             }
 
-            BSett.instance.showSpawnSettings = GUILayout.Toggle( BSett.instance.showSpawnSettings, new GUIContent( "Spawn Options", "Click to " + ( BSett.instance.showSpawnSettings ? "collapse" : "expand" ) + " section" ), _headerStyle );
+            BSett.instance.showSpawnSettings = GUILayout.Toggle(BSett.instance.showSpawnSettings, new GUIContent("Spawn Options", "Click to " + (BSett.instance.showSpawnSettings ? "collapse" : "expand") + " section"), _headerStyle);
 
-            if ( BSett.instance.showSpawnSettings )
+            if (BSett.instance.showSpawnSettings)
             {
                 ShowSpawnSettings();
             }
 
-            BSett.instance.showDeveloperSettings = GUILayout.Toggle( BSett.instance.showDeveloperSettings, new GUIContent( "Developer Options", "Click to " + ( BSett.instance.showDeveloperSettings ? "collapse" : "expand" ) + " section" ), _headerStyle );
+            BSett.instance.showDeveloperSettings = GUILayout.Toggle(BSett.instance.showDeveloperSettings, new GUIContent("Developer Options", "Click to " + (BSett.instance.showDeveloperSettings ? "collapse" : "expand") + " section"), _headerStyle);
 
-            if ( BSett.instance.showDeveloperSettings )
+            if (BSett.instance.showDeveloperSettings)
             {
                 ShowDeveloperSettings();
             }
@@ -654,60 +650,60 @@ namespace BroMakerLib.UnityMod
 
         private static void ShowGeneralSettings()
         {
-            GUILayout.Space( 15 );
-            BSett.instance.scaleUIWithWindowWidth = GUILayout.Toggle( BSett.instance.scaleUIWithWindowWidth, new GUIContent( "Scale UI width based on window width", "Scales BroMaker settings UI elements based on the width of the UnityModManager window" ) );
-            GUILayout.Space( 5 );
-            BSett.instance.scaleUIHeight = GUILayout.Toggle( BSett.instance.scaleUIHeight, new GUIContent( "Scale UI height based on bro count", "Increases the height of the BroMaker settings window when more than 8 bros are installed rather than switching to using a scrollbar." ) );
-            GUILayout.Space( 5 );
-            BSett.instance.disableTooltips = GUILayout.Toggle( BSett.instance.disableTooltips, new GUIContent( "Disable Tooltips", "Disables tooltips in the BroMaker settings" ) );
-            GUILayout.Space( 15 );
+            GUILayout.Space(15);
+            BSett.instance.scaleUIWithWindowWidth = GUILayout.Toggle(BSett.instance.scaleUIWithWindowWidth, new GUIContent("Scale UI width based on window width", "Scales BroMaker settings UI elements based on the width of the UnityModManager window"));
+            GUILayout.Space(5);
+            BSett.instance.scaleUIHeight = GUILayout.Toggle(BSett.instance.scaleUIHeight, new GUIContent("Scale UI height based on bro count", "Increases the height of the BroMaker settings window when more than 8 bros are installed rather than switching to using a scrollbar."));
+            GUILayout.Space(5);
+            BSett.instance.disableTooltips = GUILayout.Toggle(BSett.instance.disableTooltips, new GUIContent("Disable Tooltips", "Disables tooltips in the BroMaker settings"));
+            GUILayout.Space(15);
         }
 
         private static void ShowSpawnSettings()
         {
-            GUILayout.Space( 15 );
+            GUILayout.Space(15);
             GUILayout.BeginHorizontal();
-            BSett.instance.automaticSpawn = GUILayout.Toggle( BSett.instance.automaticSpawn, new GUIContent( "Automatic Spawn", "Enable automatic spawning of custom bros" ) );
-            if ( BSett.instance.equalSpawnProbability != ( BSett.instance.equalSpawnProbability = GUILayout.Toggle( BSett.instance.equalSpawnProbability, new GUIContent( "Custom bros have an equal chance of spawning as vanilla bros", "Automatically adjusts spawn probability so that custom bros have the same probability of spawning as vanilla bros" ) ) ) )
+            BSett.instance.automaticSpawn = GUILayout.Toggle(BSett.instance.automaticSpawn, new GUIContent("Automatic Spawn", "Enable automatic spawning of custom bros"));
+            if (BSett.instance.equalSpawnProbability != (BSett.instance.equalSpawnProbability = GUILayout.Toggle(BSett.instance.equalSpawnProbability, new GUIContent("Custom bros have an equal chance of spawning as vanilla bros", "Automatically adjusts spawn probability so that custom bros have the same probability of spawning as vanilla bros"))))
             {
-                if ( BSett.instance.equalSpawnProbability )
+                if (BSett.instance.equalSpawnProbability)
                 {
                     BSett.instance.automaticSpawnProbabilty = BSett.instance.CalculateSpawnProbability();
                 }
             }
             GUILayout.EndHorizontal();
-            GUILayout.Space( 15 );
+            GUILayout.Space(15);
 
-            if ( BSett.instance.automaticSpawnProbabilty != ( BSett.instance.automaticSpawnProbabilty = RGUI.HorizontalSlider( "Spawn Probability: ", "Probability of a custom bro spawning. The probability of any given custom bro spawning is equal to this divided by however many bros you have installed and enabled, which is " + (BSett.instance.automaticSpawnProbabilty / BSett.instance.enabledBroCount )+ "%", BSett.instance.automaticSpawnProbabilty, 0f, 100f ) ) )
+            if (BSett.instance.automaticSpawnProbabilty != (BSett.instance.automaticSpawnProbabilty = RGUI.HorizontalSlider("Spawn Probability: ", "Probability of a custom bro spawning. The probability of any given custom bro spawning is equal to this divided by however many bros you have installed and enabled, which is " + (BSett.instance.automaticSpawnProbabilty / BSett.instance.enabledBroCount) + "%", BSett.instance.automaticSpawnProbabilty, 0f, 100f)))
             {
                 BSett.instance.equalSpawnProbability = false;
             }
-            GUILayout.Space( 15 );
-            BSett.instance.onlyCustomInHardcore = GUILayout.Toggle( BSett.instance.onlyCustomInHardcore, new GUIContent( "Only custom characters will spawn in IronBro mode", "Only custom bros will be unlockable in IronBro, once you have unlocked them all you will be unable to gain more lives" ) );
-            GUILayout.Space( 15 );
-            BSett.instance.maxHealthAtOne = GUILayout.Toggle( BSett.instance.maxHealthAtOne, new GUIContent( "Max health always at 1", "This makes sure that bros default to 1 health even if it's not explicitly set in the json file" ) );
-            GUILayout.Space( 15 );
-            BSett.instance.disableCustomAvatarFlash = GUILayout.Toggle( BSett.instance.disableCustomAvatarFlash, new GUIContent( "Disable avatar flashing for custom bros", "Prevents avatar flash effect on custom bros that plays when invulnerable or idle. This is disabled on vanilla bros by default." ) );
+            GUILayout.Space(15);
+            BSett.instance.onlyCustomInHardcore = GUILayout.Toggle(BSett.instance.onlyCustomInHardcore, new GUIContent("Only custom characters will spawn in IronBro mode", "Only custom bros will be unlockable in IronBro, once you have unlocked them all you will be unable to gain more lives"));
+            GUILayout.Space(15);
+            BSett.instance.maxHealthAtOne = GUILayout.Toggle(BSett.instance.maxHealthAtOne, new GUIContent("Max health always at 1", "This makes sure that bros default to 1 health even if it's not explicitly set in the json file"));
+            GUILayout.Space(15);
+            BSett.instance.disableCustomAvatarFlash = GUILayout.Toggle(BSett.instance.disableCustomAvatarFlash, new GUIContent("Disable avatar flashing for custom bros", "Prevents avatar flash effect on custom bros that plays when invulnerable or idle. This is disabled on vanilla bros by default."));
         }
 
         private static void ShowDeveloperSettings()
         {
-            GUILayout.Space( 15 );
+            GUILayout.Space(15);
             GUILayout.BeginHorizontal();
-            if ( GUILayout.Button( new GUIContent( "Check Directories", "Creates BroMaker_Storage directory if it doesn't already exist" ), GUILayout.ExpandWidth( false ) ) )
+            if (GUILayout.Button(new GUIContent("Check Directories", "Creates BroMaker_Storage directory if it doesn't already exist"), GUILayout.ExpandWidth(false)))
                 DirectoriesManager.Initialize();
-            if ( GUILayout.Button( new GUIContent( "Show Presets", "Lists all available presets to the log" ), GUILayout.ExpandWidth( false ) ) )
+            if (GUILayout.Button(new GUIContent("Show Presets", "Lists all available presets to the log"), GUILayout.ExpandWidth(false)))
             {
-                foreach ( KeyValuePair<string, Type> kvp in PresetManager.heroesPreset )
+                foreach (KeyValuePair<string, Type> kvp in PresetManager.heroesPreset)
                 {
-                    Main.Log( $"{kvp.Key}\t{kvp.Value}" );
+                    Main.Log($"{kvp.Key}\t{kvp.Value}");
                 }
             }
             GUILayout.EndHorizontal();
-            GUILayout.Space( 15 );
-            BSett.instance.debugLogs = _Settings.debugLogs = GUILayout.Toggle( _Settings.debugLogs, new GUIContent( "Debug Logs", "Enables debug logging which can be viewed in the UnityModManager log" ) );
-            BSett.instance.developerMode = GUILayout.Toggle( BSett.instance.developerMode, new GUIContent( "Developer Mode", "Enables more options in the BroMakerSettings window for bro developers" ) );
-            GUILayout.Space( 10 );
+            GUILayout.Space(15);
+            BSett.instance.debugLogs = _Settings.debugLogs = GUILayout.Toggle(_Settings.debugLogs, new GUIContent("Debug Logs", "Enables debug logging which can be viewed in the UnityModManager log"));
+            BSett.instance.developerMode = GUILayout.Toggle(BSett.instance.developerMode, new GUIContent("Developer Mode", "Enables more options in the BroMakerSettings window for bro developers"));
+            GUILayout.Space(10);
         }
 
         private static void ReloadFiles()
