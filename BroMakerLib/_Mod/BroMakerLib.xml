@@ -908,7 +908,7 @@
             <param name="filePath">Path to an audio file</param>
             <returns></returns>
         </member>
-        <member name="M:BroMakerLib.ResourcesController.GetAudioClipArray(System.String,System.String,System.Int32,System.String,System.Int32)">
+        <member name="M:BroMakerLib.ResourcesController.GetAudioClipArray(System.String,System.String,System.Int32,System.Int32,System.String)">
             <summary>
             Loads an array of audio clips that follow a standard numbering pattern,
             such as "file0.wav", "file1.wav", "file2.wav"
@@ -916,8 +916,8 @@
             <param name="path">Path to the directory that contains the audio files</param>
             <param name="fileNameWithouExtension">Filename of the audio files without the extension</param>
             <param name="length">Number of files to load</param>
-            <param name="extension">Extension of the audio files, defaults to .wav</param>
             <param name="startingNumber">Number of the first audio clip, defaults to 0</param>
+            <param name="extension">Extension of the audio files, defaults to .wav</param>
             <returns></returns>
         </member>
         <member name="M:BroMakerLib.ResourcesController.CreateAudioClip(System.String,System.String)">

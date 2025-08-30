@@ -309,15 +309,15 @@ namespace BroMakerLib
         /// <param name="path">Path to the directory that contains the audio files</param>
         /// <param name="fileNameWithouExtension">Filename of the audio files without the extension</param>
         /// <param name="length">Number of files to load</param>
-        /// <param name="extension">Extension of the audio files, defaults to .wav</param>
         /// <param name="startingNumber">Number of the first audio clip, defaults to 0</param>
+        /// <param name="extension">Extension of the audio files, defaults to .wav</param>
         /// <returns></returns>
-        public static AudioClip[] GetAudioClipArray(string path, string fileNameWithouExtension, int length, string extension = ".wav", int startingNumber = 0)
+        public static AudioClip[] GetAudioClipArray(string path, string fileNameWithouExtension, int length, int startingNumber = 0, string extension = ".wav")
         {
             AudioClip[] clips = new AudioClip[length];
             for (int i = 0 + startingNumber; i < length + startingNumber; ++i)
             {
-                clips[i] = GetAudioClip(path, fileNameWithouExtension + i + extension);
+                clips[i - startingNumber] = GetAudioClip(path, fileNameWithouExtension + i + extension);
             }
 
             return clips;
