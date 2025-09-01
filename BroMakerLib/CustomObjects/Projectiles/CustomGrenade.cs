@@ -16,12 +16,12 @@ namespace BroMakerLib.CustomObjects.Projectiles
         /// <summary>
         /// Override Awake() and set this value to false to prevent the sprite from being loaded automatically
         /// </summary>
-        public bool spriteAutoLoad = true;
+        public bool SpriteAutoLoad = true;
 
         /// <summary>
         /// Stores the sprite that was loaded if automatic loading is enabled
         /// </summary>
-        public SpriteSM storedSprite = null;
+        public SpriteSM StoredSprite = null;
 
         /// <summary>
         /// Stores all custom projectile prefabs that have been created to avoid having to recreate them.
@@ -38,68 +38,68 @@ namespace BroMakerLib.CustomObjects.Projectiles
         /// Defaults to "projectiles". 
         /// Set this to "" if your grenades are in the same folder as your .dll
         /// </summary>
-        public string spriteFolder = "projectiles";
+        public string SpriteFolder = "projectiles";
 
         /// <summary>
         /// Name of your image file that will be automatically loaded.
         /// Defaults to "nameofyourclass.png".
         /// </summary>
-        public string spriteFileName = string.Empty;
+        public string SpriteFileName = string.Empty;
 
         /// <summary>
         /// Automatically gets set to the path to the folder your sprite is in.
         /// Don't set this manually.
         /// </summary>
-        public string spriteDirectoryPath = string.Empty;
+        public string SpriteDirectoryPath = string.Empty;
 
         /// <summary>
         /// Automatically gets set to the path to the folder your grenade's assembly is in.
         /// Don't set this manually.
         /// </summary>
-        public string assemblyPath = string.Empty;
+        public string AssemblyPath = string.Empty;
 
         /// <summary>
         /// Folder that contains your grenade's sounds.
         /// Defaults to "sounds". 
         /// Set this to "" if your sounds are in the same folder as your .dll
         /// </summary>
-        public string soundFolder = "sounds";
+        public string SoundFolder = "sounds";
 
         /// <summary>
         /// Automatically gets set to the path to the folder your grenade's sounds are in.
         /// Assumes they're in a folder called sounds
         /// </summary>
-        public string soundPath = string.Empty;
+        public string SoundPath = string.Empty;
 
         /// <summary>
         /// Size of one frame of your grenade. 
         /// By default this will be the whole image, but if your grenade has multiple frames, you will want to change this.
         /// </summary>
-        public Vector2 spritePixelDimensions = Vector2.zero;
+        public Vector2 SpritePixelDimensions = Vector2.zero;
 
         /// <summary>
         /// Sets the lower left corner of your sprite.
         /// Defaults to (0, heightofyourimage), which will include the whole image.
         /// </summary>
-        public Vector2 spriteLowerLeftPixel = Vector2.zero;
+        public Vector2 SpriteLowerLeftPixel = Vector2.zero;
 
         /// <summary>
         /// Sets the offset of your sprite from the game object.
         /// Defaults to (0, 0, 0).
         /// </summary>
-        public Vector3 spriteOffset = Vector3.zero;
+        public Vector3 SpriteOffset = Vector3.zero;
 
         /// <summary>
         /// Sets the sprite color.
         /// Defaults to white.
         /// </summary>
-        public Color spriteColor = Color.white;
+        public Color SpriteColor = Color.white;
 
         /// <summary>
         /// Sets the SoundHolder of the grenade.
         /// Defaults to Rambro's Grenade's SoundHolder.
         /// </summary>
-        public SoundHolder defaultSoundHolder = null;
+        public SoundHolder DefaultSoundHolder = null;
 
         /// <summary>
         /// You must override this function for automatic sprite loading to work.
@@ -111,29 +111,29 @@ namespace BroMakerLib.CustomObjects.Projectiles
             try
             {
                 // Only load sprite if we're creating a prefab and it hasn't been created yet.
-                if (this.storedSprite == null && this.spriteAutoLoad)
+                if (this.StoredSprite == null && this.SpriteAutoLoad)
                 {
-                    this.assemblyPath = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
-                    this.spriteDirectoryPath = Path.Combine(assemblyPath, spriteFolder);
-                    this.soundPath = Path.Combine(assemblyPath, soundFolder);
+                    this.AssemblyPath = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
+                    this.SpriteDirectoryPath = Path.Combine(AssemblyPath, SpriteFolder);
+                    this.SoundPath = Path.Combine(AssemblyPath, SoundFolder);
 
-                    if (spriteFileName == string.Empty)
+                    if (SpriteFileName == string.Empty)
                     {
-                        spriteFileName = className + ".png";
+                        SpriteFileName = className + ".png";
                     }
 
-                    Material mat = ResourcesController.GetMaterial(spriteDirectoryPath, spriteFileName);
+                    Material mat = ResourcesController.GetMaterial(SpriteDirectoryPath, SpriteFileName);
                     this.gameObject.GetComponent<MeshRenderer>().material = mat;
                     float imageWidth = mat.mainTexture.width;
                     float imageHeight = mat.mainTexture.height;
 
-                    if (this.spritePixelDimensions == Vector2.zero)
+                    if (this.SpritePixelDimensions == Vector2.zero)
                     {
-                        this.spritePixelDimensions = new Vector2(imageWidth, imageHeight);
+                        this.SpritePixelDimensions = new Vector2(imageWidth, imageHeight);
                     }
-                    if (this.spriteLowerLeftPixel == Vector2.zero)
+                    if (this.SpriteLowerLeftPixel == Vector2.zero)
                     {
-                        this.spriteLowerLeftPixel = new Vector2(0, imageHeight);
+                        this.SpriteLowerLeftPixel = new Vector2(0, imageHeight);
                     }
                     if (this.spriteWidth == 2)
                     {
@@ -144,21 +144,21 @@ namespace BroMakerLib.CustomObjects.Projectiles
                         this.spriteHeight = imageHeight;
                     }
 
-                    this.storedSprite = this.gameObject.GetComponent<SpriteSM>();
-                    this.storedSprite.pixelDimensions = spritePixelDimensions;
-                    this.storedSprite.lowerLeftPixel = this.spriteLowerLeftPixel;
-                    this.storedSprite.width = this.spriteWidth;
-                    this.storedSprite.height = this.spriteHeight;
-                    this.storedSprite.offset = this.spriteOffset;
-                    this.storedSprite.plane = SpriteBase.SPRITE_PLANE.XY;
-                    this.storedSprite.color = this.spriteColor;
+                    this.StoredSprite = this.gameObject.GetComponent<SpriteSM>();
+                    this.StoredSprite.pixelDimensions = SpritePixelDimensions;
+                    this.StoredSprite.lowerLeftPixel = this.SpriteLowerLeftPixel;
+                    this.StoredSprite.width = this.spriteWidth;
+                    this.StoredSprite.height = this.spriteHeight;
+                    this.StoredSprite.offset = this.SpriteOffset;
+                    this.StoredSprite.plane = SpriteBase.SPRITE_PLANE.XY;
+                    this.StoredSprite.color = this.SpriteColor;
                 }
 
-                this.sprite = this.storedSprite;
+                this.sprite = this.StoredSprite;
 
                 if (this.soundHolder == null)
                 {
-                    this.soundHolder = UnityEngine.Object.Instantiate(this.defaultSoundHolder ?? HeroController.GetHeroPrefab(HeroType.Rambro).specialGrenade.soundHolder);
+                    this.soundHolder = UnityEngine.Object.Instantiate(this.DefaultSoundHolder ?? HeroController.GetHeroPrefab(HeroType.Rambro).specialGrenade.soundHolder);
                     this.soundHolder.gameObject.SetActive(false);
                     this.soundHolder.gameObject.name = "SoundHolder " + className;
                     UnityEngine.Object.DontDestroyOnLoad(this.soundHolder);

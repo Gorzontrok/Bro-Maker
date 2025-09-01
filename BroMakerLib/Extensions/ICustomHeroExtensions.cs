@@ -19,10 +19,10 @@ namespace BroMakerLib
         [AllowedRPC]
         public static void AssignNullVariables(this ICustomHero hero, BroBase character)
         {
-            if (hero.character == null)
+            if (hero.Character == null)
                 throw new NullReferenceException("AssignNullVariables: ICustomHero.character is null");
 
-            var heroCharacter = hero.character;
+            var heroCharacter = hero.Character;
             BMLogger.Debug($"AssignNullVariables: {heroCharacter.GetType()}: Start Assigning null variables from {character.GetType()}.");
 
             // Global
@@ -57,10 +57,10 @@ namespace BroMakerLib
         [AllowedRPC]
         public static void FixOtherComponentValues(this ICustomHero hero)
         {
-            if (hero.character == null)
+            if (hero.Character == null)
                 throw new NullReferenceException("FixOtherComponentValues: ICustomHero.character is null");
 
-            var character = hero.character;
+            var character = hero.Character;
             if (character.parachute != null)
             {
                 character.parachute.tvd = character;
@@ -79,7 +79,7 @@ namespace BroMakerLib
         /// </summary>
         public static BroBase GetTheOtherBroBaseComponent(this ICustomHero hero)
         {
-            var character = hero.character;
+            var character = hero.Character;
             BroBase result = null;
 
             BroBase[] bros = character.GetComponents<BroBase>();
@@ -113,7 +113,7 @@ namespace BroMakerLib
                 var type = otherBroComponent.GetType();
                 UnityEngine.Object.DestroyImmediate(otherBroComponent);
                 BMLogger.Debug($"SetupCustomHero: Has destroy {type} component.");
-                hero.info.ReadParameters(hero.character);
+                hero.Info.ReadParameters(hero.Character);
                 BMLogger.Debug("SetupCustomHero: Has read parameters");
             }
             else
@@ -122,8 +122,8 @@ namespace BroMakerLib
             hero.FixOtherComponentValues();
             hero.RemoveDuplicateGlowLight();
 
-            hero.character.maxHealth = 1;
-            var info = hero.info;
+            hero.Character.maxHealth = 1;
+            var info = hero.Info;
             if (!info.beforeAwake.ContainsKey("specialGrenade.playerNum"))
                 info.beforeAwake.Add("specialGrenade.playerNum", LoadHero.playerNum);
             if (!info.beforeAwake.ContainsKey("health"))
@@ -143,10 +143,10 @@ namespace BroMakerLib
             }
 
             // Determine variant count from all variant properties
-            DetermineVariantCount(hero.info);
+            DetermineVariantCount(hero.Info);
 
             // Validate all variant lists
-            ValidateVariantLists(hero.info);
+            ValidateVariantLists(hero.Info);
 
             // Set canCeilingHang to true by default 
             if (!info.beforeAwake.ContainsKey("canCeilingHang"))
@@ -158,23 +158,23 @@ namespace BroMakerLib
             if (!(hero is CustomHero))
             {
                 // For vanilla bros, use random selection
-                hero.CurrentVariant = UnityEngine.Random.Range(0, hero.info.VariantCount);
+                hero.CurrentVariant = UnityEngine.Random.Range(0, hero.Info.VariantCount);
 
                 // Cache current variant parameters
-                hero.CurrentGunSpriteOffset = BroMakerUtilities.GetVariantValue(hero.info.GunSpriteOffset, hero.CurrentVariant);
-                hero.CurrentSpecialMaterials = BroMakerUtilities.GetVariantValue(hero.info.SpecialMaterials, hero.CurrentVariant);
-                hero.CurrentSpecialMaterialOffset = BroMakerUtilities.GetVariantValue(hero.info.SpecialMaterialOffset, hero.CurrentVariant);
-                hero.CurrentSpecialMaterialSpacing = BroMakerUtilities.GetVariantValue(hero.info.SpecialMaterialSpacing, hero.CurrentVariant);
-                hero.CurrentFirstAvatar = BroMakerUtilities.GetVariantValue(hero.info.FirstAvatar, hero.CurrentVariant);
+                hero.CurrentGunSpriteOffset = BroMakerUtilities.GetVariantValue(hero.Info.GunSpriteOffset, hero.CurrentVariant);
+                hero.CurrentSpecialMaterials = BroMakerUtilities.GetVariantValue(hero.Info.SpecialMaterials, hero.CurrentVariant);
+                hero.CurrentSpecialMaterialOffset = BroMakerUtilities.GetVariantValue(hero.Info.SpecialMaterialOffset, hero.CurrentVariant);
+                hero.CurrentSpecialMaterialSpacing = BroMakerUtilities.GetVariantValue(hero.Info.SpecialMaterialSpacing, hero.CurrentVariant);
+                hero.CurrentFirstAvatar = BroMakerUtilities.GetVariantValue(hero.Info.FirstAvatar, hero.CurrentVariant);
 
-                hero.character.specialGrenade.playerNum = LoadHero.playerNum;
+                hero.Character.specialGrenade.playerNum = LoadHero.playerNum;
             }
         }
 
         [AllowedRPC]
         public static void RemoveDuplicateGlowLight(this ICustomHero hero)
         {
-            var transform = hero.character.transform;
+            var transform = hero.Character.transform;
             int childCount = transform.childCount;
             int glowLightFounded = 0;
             GameObject lastGlowLight = null;
@@ -242,15 +242,15 @@ namespace BroMakerLib
         public static void SetSprites(this ICustomHero bro)
         {
             // Get sprite paths for current variant
-            string spritePath = BroMakerUtilities.GetVariantValue(bro.info.SpritePath, bro.CurrentVariant);
-            string gunSpritePath = BroMakerUtilities.GetVariantValue(bro.info.GunSpritePath, bro.CurrentVariant);
+            string spritePath = BroMakerUtilities.GetVariantValue(bro.Info.SpritePath, bro.CurrentVariant);
+            string gunSpritePath = BroMakerUtilities.GetVariantValue(bro.Info.GunSpritePath, bro.CurrentVariant);
 
-            BroBase character = bro.character;
+            BroBase character = bro.Character;
 
             // Set main sprite
             if (!string.IsNullOrEmpty(spritePath))
             {
-                Material material = ResourcesController.GetMaterial(bro.info.path, spritePath);
+                Material material = ResourcesController.GetMaterial(bro.Info.path, spritePath);
                 character.material = material;
                 character.SetFieldValue("defaultMaterial", material);
             }
@@ -258,7 +258,7 @@ namespace BroMakerLib
             // Set gun sprite
             if (!string.IsNullOrEmpty(gunSpritePath))
             {
-                Material gunMaterial = ResourcesController.GetMaterial(bro.info.path, gunSpritePath);
+                Material gunMaterial = ResourcesController.GetMaterial(bro.Info.path, gunSpritePath);
                 character.gunSprite.meshRender.sharedMaterial = gunMaterial;
                 character.SetFieldValue("gunMaterial", gunMaterial);
             }
@@ -276,11 +276,11 @@ namespace BroMakerLib
         /// <param name="fixNullVariableLocal">Optional action to fix null variables specific to the hero type</param>
         public static void StandardBeforeAwake(this ICustomHero hero, Action fixNullVariableLocal = null)
         {
-            hero.character = hero as BroBase;
-            hero.info = LoadHero.currentInfo;
+            hero.Character = hero as BroBase;
+            hero.Info = LoadHero.currentInfo;
             fixNullVariableLocal?.Invoke();
             hero.SetupCustomHero();
-            hero.info.BeforeAwake(hero);
+            hero.Info.BeforeAwake(hero);
         }
 
         /// <summary>
@@ -290,7 +290,7 @@ namespace BroMakerLib
         public static void StandardAfterAwake(this ICustomHero hero)
         {
             hero.SetSprites();
-            hero.info.AfterAwake(hero);
+            hero.Info.AfterAwake(hero);
         }
 
         /// <summary>
@@ -299,7 +299,7 @@ namespace BroMakerLib
         /// <param name="hero">The hero instance to setup</param>
         public static void StandardBeforeStart(this ICustomHero hero)
         {
-            hero.info.BeforeStart(hero);
+            hero.Info.BeforeStart(hero);
         }
 
         /// <summary>
@@ -308,7 +308,7 @@ namespace BroMakerLib
         /// <param name="hero">The hero instance to cleanup</param>
         public static void StandardAfterStart(this ICustomHero hero)
         {
-            hero.info.AfterStart(hero);
+            hero.Info.AfterStart(hero);
         }
     }
 }

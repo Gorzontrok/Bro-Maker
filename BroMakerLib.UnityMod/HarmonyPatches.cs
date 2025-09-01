@@ -451,7 +451,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
             if (GameModeController.IsHardcoreMode && __instance.character is ICustomHero)
             {
                 ICustomHero customHero = (__instance.character as ICustomHero);
-                string broName = customHero.info.name;
+                string broName = customHero.Info.name;
                 BSett.instance.AvailableBros.Remove(broName);
                 __instance.Lives--;
                 return false;
@@ -686,7 +686,7 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
             {
                 ICustomHero customHero = vanDamme as ICustomHero;
                 LoadHero.customBroDeaths.Add(SingletonNetObj<StatisticsController>.Instance.currentStats.deathList.Count,
-                    new CustomBroDeath(customHero.info, customHero.CurrentVariant));
+                    new CustomBroDeath(customHero.Info, customHero.CurrentVariant));
             }
         }
     }
@@ -885,9 +885,9 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 return true;
             }
 
-            if (__instance.pockettedSpecialAmmo.Count > 0 && __instance.pockettedSpecialAmmo[__instance.pockettedSpecialAmmo.Count - 1] == PockettedSpecialAmmoType.None && CustomPockettedSpecial.pockettedSpecials[__instance.playerNum].Count > 0)
+            if (__instance.pockettedSpecialAmmo.Count > 0 && __instance.pockettedSpecialAmmo[__instance.pockettedSpecialAmmo.Count - 1] == PockettedSpecialAmmoType.None && CustomPockettedSpecial.PockettedSpecials[__instance.playerNum].Count > 0)
             {
-                CustomPockettedSpecial.pockettedSpecials[__instance.playerNum].Last().SetSpecialMaterials(__instance);
+                CustomPockettedSpecial.PockettedSpecials[__instance.playerNum].Last().SetSpecialMaterials(__instance);
                 __instance.player.hud.SetGrenades(1);
                 return false;
             }
@@ -906,10 +906,10 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 return;
             }
 
-            if (__instance.pockettedSpecialAmmo.Count > 0 && __instance.pockettedSpecialAmmo[__instance.pockettedSpecialAmmo.Count - 1] == PockettedSpecialAmmoType.None && CustomPockettedSpecial.pockettedSpecials[__instance.playerNum].Count > 0)
+            if (__instance.pockettedSpecialAmmo.Count > 0 && __instance.pockettedSpecialAmmo[__instance.pockettedSpecialAmmo.Count - 1] == PockettedSpecialAmmoType.None && CustomPockettedSpecial.PockettedSpecials[__instance.playerNum].Count > 0)
             {
                 // If the pocketted special uses the throwing animation then we need to set the usingPockettedSpecialType to something other than None, which defaults to the flex animation
-                if (CustomPockettedSpecial.pockettedSpecials[__instance.playerNum].Last().UseThrowingAnimation())
+                if (CustomPockettedSpecial.PockettedSpecials[__instance.playerNum].Last().UseThrowingAnimation())
                 {
                     ___usingPockettedSpecialType = PockettedSpecialAmmoType.Airstrike;
                 }
@@ -927,12 +927,12 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                 return true;
             }
 
-            if (__instance.pockettedSpecialAmmo.Count > 0 && __instance.pockettedSpecialAmmo[__instance.pockettedSpecialAmmo.Count - 1] == PockettedSpecialAmmoType.None && CustomPockettedSpecial.pockettedSpecials[__instance.playerNum].Count > 0)
+            if (__instance.pockettedSpecialAmmo.Count > 0 && __instance.pockettedSpecialAmmo[__instance.pockettedSpecialAmmo.Count - 1] == PockettedSpecialAmmoType.None && CustomPockettedSpecial.PockettedSpecials[__instance.playerNum].Count > 0)
             {
                 ___pressSpecialFacingDirection = 0;
-                CustomPockettedSpecial special = CustomPockettedSpecial.pockettedSpecials[__instance.playerNum].Last();
+                CustomPockettedSpecial special = CustomPockettedSpecial.PockettedSpecials[__instance.playerNum].Last();
                 special.UseSpecial(__instance);
-                CustomPockettedSpecial.pockettedSpecials[__instance.playerNum].Remove(special);
+                CustomPockettedSpecial.PockettedSpecials[__instance.playerNum].Remove(special);
                 __instance.pockettedSpecialAmmo.RemoveAt(__instance.pockettedSpecialAmmo.Count - 1);
 
                 // Reset bro's specials to original count if this pocketted special allows it

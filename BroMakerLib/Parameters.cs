@@ -111,19 +111,19 @@ namespace BroMakerLib
 
             // Prevent multiple calls from overwriting data
             // Check if we have more than the default empty list, or if the default list has content
-            if (hero.info.SpecialMaterials.Count > 1 ||
-                (hero.info.SpecialMaterials.Count == 1 && hero.info.SpecialMaterials[0].Count > 0))
+            if (hero.Info.SpecialMaterials.Count > 1 ||
+                (hero.Info.SpecialMaterials.Count == 1 && hero.Info.SpecialMaterials[0].Count > 0))
                 return;
 
             // Clear existing special materials first
-            hero.info.SpecialMaterials.Clear();
+            hero.Info.SpecialMaterials.Clear();
 
             if (value is string)
             {
                 // Single string - shared across all variants
                 string iconFile = value as string;
-                Material specialMat = ResourcesController.GetMaterial(hero.info.path, iconFile);
-                hero.info.SpecialMaterials.Add(new List<Material> { specialMat });
+                Material specialMat = ResourcesController.GetMaterial(hero.Info.path, iconFile);
+                hero.Info.SpecialMaterials.Add(new List<Material> { specialMat });
             }
             else if (value is JArray array)
             {
@@ -141,11 +141,11 @@ namespace BroMakerLib
                                 foreach (var icon in icons)
                                 {
                                     string iconFile = icon.ToObject<string>();
-                                    Material specialMat = ResourcesController.GetMaterial(hero.info.path, iconFile);
+                                    Material specialMat = ResourcesController.GetMaterial(hero.Info.path, iconFile);
                                     variantMaterials.Add(specialMat);
                                 }
                             }
-                            hero.info.SpecialMaterials.Add(variantMaterials);
+                            hero.Info.SpecialMaterials.Add(variantMaterials);
                         }
                     }
                     else
@@ -154,8 +154,8 @@ namespace BroMakerLib
                         foreach (var item in array)
                         {
                             string iconFile = item.ToObject<string>();
-                            Material specialMat = ResourcesController.GetMaterial(hero.info.path, iconFile);
-                            hero.info.SpecialMaterials.Add(new List<Material> { specialMat });
+                            Material specialMat = ResourcesController.GetMaterial(hero.Info.path, iconFile);
+                            hero.Info.SpecialMaterials.Add(new List<Material> { specialMat });
                         }
                     }
                 }
@@ -166,8 +166,8 @@ namespace BroMakerLib
                 string[] iconFiles = value as string[];
                 for (int i = 0; i < iconFiles.Length; ++i)
                 {
-                    Material specialMat = ResourcesController.GetMaterial(hero.info.path, iconFiles[i]);
-                    hero.info.SpecialMaterials.Add(new List<Material> { specialMat });
+                    Material specialMat = ResourcesController.GetMaterial(hero.Info.path, iconFiles[i]);
+                    hero.Info.SpecialMaterials.Add(new List<Material> { specialMat });
                 }
             }
             else
@@ -192,18 +192,18 @@ namespace BroMakerLib
                 if (value is JArray array)
                 {
                     // Prevent multiple calls from overwriting data
-                    if (hero.info.SpecialMaterialOffset.Count > 1 ||
-                        (hero.info.SpecialMaterialOffset.Count == 1 && hero.info.SpecialMaterialOffset[0] != Vector2.zero))
+                    if (hero.Info.SpecialMaterialOffset.Count > 1 ||
+                        (hero.Info.SpecialMaterialOffset.Count == 1 && hero.Info.SpecialMaterialOffset[0] != Vector2.zero))
                         return;
 
-                    hero.info.SpecialMaterialOffset.Clear();
+                    hero.Info.SpecialMaterialOffset.Clear();
                     foreach (var item in array)
                     {
                         if (item is JObject jObj)
                         {
                             float x = Convert.ToSingle(jObj.GetValue("x").ToObject<object>());
                             float y = Convert.ToSingle(jObj.GetValue("y").ToObject<object>());
-                            hero.info.SpecialMaterialOffset.Add(new Vector2(x, y));
+                            hero.Info.SpecialMaterialOffset.Add(new Vector2(x, y));
                         }
                     }
                 }
@@ -211,7 +211,7 @@ namespace BroMakerLib
                 else if (value is JObject)
                 {
                     // Only process if not already set as array
-                    if (hero.info.SpecialMaterialOffset.Count <= 1)
+                    if (hero.Info.SpecialMaterialOffset.Count <= 1)
                     {
                         JToken xToken = value.As<JObject>().GetValue("x");
                         JToken yToken = value.As<JObject>().GetValue("y");
@@ -219,10 +219,10 @@ namespace BroMakerLib
                         float x = Convert.ToSingle(xToken.ToObject<object>());
                         float y = Convert.ToSingle(yToken.ToObject<object>());
 
-                        if (hero.info.SpecialMaterialOffset.Count == 0)
-                            hero.info.SpecialMaterialOffset.Add(new Vector2(x, y));
-                        else if (hero.info.SpecialMaterialOffset[0] == Vector2.zero)
-                            hero.info.SpecialMaterialOffset[0] = new Vector2(x, y);
+                        if (hero.Info.SpecialMaterialOffset.Count == 0)
+                            hero.Info.SpecialMaterialOffset.Add(new Vector2(x, y));
+                        else if (hero.Info.SpecialMaterialOffset[0] == Vector2.zero)
+                            hero.Info.SpecialMaterialOffset[0] = new Vector2(x, y);
                     }
                 }
                 else
@@ -252,26 +252,26 @@ namespace BroMakerLib
                 if (value is JArray array)
                 {
                     // Prevent multiple calls from overwriting data
-                    if (hero.info.SpecialMaterialSpacing.Count > 1 ||
-                        (hero.info.SpecialMaterialSpacing.Count == 1 && hero.info.SpecialMaterialSpacing[0] != 0f))
+                    if (hero.Info.SpecialMaterialSpacing.Count > 1 ||
+                        (hero.Info.SpecialMaterialSpacing.Count == 1 && hero.Info.SpecialMaterialSpacing[0] != 0f))
                         return;
 
-                    hero.info.SpecialMaterialSpacing.Clear();
+                    hero.Info.SpecialMaterialSpacing.Clear();
                     foreach (var item in array)
                     {
-                        hero.info.SpecialMaterialSpacing.Add(Convert.ToSingle(item));
+                        hero.Info.SpecialMaterialSpacing.Add(Convert.ToSingle(item));
                     }
                 }
                 // Handle single spacing (backwards compatibility)
                 else
                 {
                     // Only process if not already set as array
-                    if (hero.info.SpecialMaterialSpacing.Count <= 1)
+                    if (hero.Info.SpecialMaterialSpacing.Count <= 1)
                     {
-                        if (hero.info.SpecialMaterialSpacing.Count == 0)
-                            hero.info.SpecialMaterialSpacing.Add(Convert.ToSingle(value));
-                        else if (hero.info.SpecialMaterialSpacing[0] == 0f)
-                            hero.info.SpecialMaterialSpacing[0] = Convert.ToSingle(value);
+                        if (hero.Info.SpecialMaterialSpacing.Count == 0)
+                            hero.Info.SpecialMaterialSpacing.Add(Convert.ToSingle(value));
+                        else if (hero.Info.SpecialMaterialSpacing[0] == 0f)
+                            hero.Info.SpecialMaterialSpacing[0] = Convert.ToSingle(value);
                     }
                 }
             }
@@ -295,40 +295,40 @@ namespace BroMakerLib
             if (value is JArray array)
             {
                 // Prevent multiple calls from overwriting data
-                if (hero.info.FirstAvatar.Count > 1 ||
-                    (hero.info.FirstAvatar.Count == 1 && hero.info.FirstAvatar[0] != null))
+                if (hero.Info.FirstAvatar.Count > 1 ||
+                    (hero.Info.FirstAvatar.Count == 1 && hero.Info.FirstAvatar[0] != null))
                     return;
 
-                hero.info.FirstAvatar.Clear();
+                hero.Info.FirstAvatar.Clear();
                 foreach (var item in array)
                 {
                     string avatarPath = item.ToObject<string>();
-                    hero.info.FirstAvatar.Add(ResourcesController.GetMaterial(hero.info.path, avatarPath));
+                    hero.Info.FirstAvatar.Add(ResourcesController.GetMaterial(hero.Info.path, avatarPath));
                 }
             }
             else if (value is string[] stringArray)
             {
                 // Prevent multiple calls from overwriting data
-                if (hero.info.FirstAvatar.Count > 1 ||
-                    (hero.info.FirstAvatar.Count == 1 && hero.info.FirstAvatar[0] != null))
+                if (hero.Info.FirstAvatar.Count > 1 ||
+                    (hero.Info.FirstAvatar.Count == 1 && hero.Info.FirstAvatar[0] != null))
                     return;
 
-                hero.info.FirstAvatar.Clear();
+                hero.Info.FirstAvatar.Clear();
                 foreach (var avatarPath in stringArray)
                 {
-                    hero.info.FirstAvatar.Add(ResourcesController.GetMaterial(hero.info.path, avatarPath));
+                    hero.Info.FirstAvatar.Add(ResourcesController.GetMaterial(hero.Info.path, avatarPath));
                 }
             }
             // Handle single avatar (backwards compatibility)
             else if (value is string)
             {
                 // Only process if not already set as array
-                if (hero.info.FirstAvatar.Count <= 1)
+                if (hero.Info.FirstAvatar.Count <= 1)
                 {
-                    if (hero.info.FirstAvatar.Count == 0)
-                        hero.info.FirstAvatar.Add(ResourcesController.GetMaterial(hero.info.path, value as string));
-                    else if (hero.info.FirstAvatar[0] == null)
-                        hero.info.FirstAvatar[0] = ResourcesController.GetMaterial(hero.info.path, value as string);
+                    if (hero.Info.FirstAvatar.Count == 0)
+                        hero.Info.FirstAvatar.Add(ResourcesController.GetMaterial(hero.Info.path, value as string));
+                    else if (hero.Info.FirstAvatar[0] == null)
+                        hero.Info.FirstAvatar[0] = ResourcesController.GetMaterial(hero.Info.path, value as string);
                 }
             }
         }
@@ -349,18 +349,18 @@ namespace BroMakerLib
                 if (value is JArray array)
                 {
                     // Prevent multiple calls from overwriting data
-                    if (hero.info.GunSpriteOffset.Count > 1 ||
-                        (hero.info.GunSpriteOffset.Count == 1 && hero.info.GunSpriteOffset[0] != Vector2.zero))
+                    if (hero.Info.GunSpriteOffset.Count > 1 ||
+                        (hero.Info.GunSpriteOffset.Count == 1 && hero.Info.GunSpriteOffset[0] != Vector2.zero))
                         return;
 
-                    hero.info.GunSpriteOffset.Clear();
+                    hero.Info.GunSpriteOffset.Clear();
                     foreach (var item in array)
                     {
                         if (item is JObject jObj)
                         {
                             float x = Convert.ToSingle(jObj.GetValue("x").ToObject<object>());
                             float y = Convert.ToSingle(jObj.GetValue("y").ToObject<object>());
-                            hero.info.GunSpriteOffset.Add(new Vector2(x, y));
+                            hero.Info.GunSpriteOffset.Add(new Vector2(x, y));
                         }
                     }
                 }
@@ -368,7 +368,7 @@ namespace BroMakerLib
                 else if (value is JObject)
                 {
                     // Only process if not already set as array
-                    if (hero.info.GunSpriteOffset.Count <= 1)
+                    if (hero.Info.GunSpriteOffset.Count <= 1)
                     {
                         JToken xToken = value.As<JObject>().GetValue("x");
                         JToken yToken = value.As<JObject>().GetValue("y");
@@ -376,10 +376,10 @@ namespace BroMakerLib
                         float x = Convert.ToSingle(xToken.ToObject<object>());
                         float y = Convert.ToSingle(yToken.ToObject<object>());
 
-                        if (hero.info.GunSpriteOffset.Count == 0)
-                            hero.info.GunSpriteOffset.Add(new Vector2(x, y));
-                        else if (hero.info.GunSpriteOffset[0] == Vector2.zero)
-                            hero.info.GunSpriteOffset[0] = new Vector2(x, y);
+                        if (hero.Info.GunSpriteOffset.Count == 0)
+                            hero.Info.GunSpriteOffset.Add(new Vector2(x, y));
+                        else if (hero.Info.GunSpriteOffset[0] == Vector2.zero)
+                            hero.Info.GunSpriteOffset[0] = new Vector2(x, y);
                     }
                 }
                 else
@@ -403,7 +403,7 @@ namespace BroMakerLib
                 return;
             }
 
-            if (hero.info.SpritePath.Count != 0)
+            if (hero.Info.SpritePath.Count != 0)
             {
                 return;
             }
@@ -411,27 +411,27 @@ namespace BroMakerLib
             // Handle array of sprites
             if (value is JArray array)
             {
-                hero.info.SpritePath.Clear();
+                hero.Info.SpritePath.Clear();
                 foreach (var item in array)
                 {
-                    hero.info.SpritePath.Add(item.ToObject<string>());
+                    hero.Info.SpritePath.Add(item.ToObject<string>());
                 }
             }
             else if (value is string[] stringArray)
             {
-                hero.info.SpritePath.Clear();
-                hero.info.SpritePath.AddRange(stringArray);
+                hero.Info.SpritePath.Clear();
+                hero.Info.SpritePath.AddRange(stringArray);
             }
             // Handle single sprite (backwards compatibility)
             else if (value is string)
             {
-                if (hero.info.SpritePath.Count == 0)
+                if (hero.Info.SpritePath.Count == 0)
                 {
-                    hero.info.SpritePath.Add(value as string);
+                    hero.Info.SpritePath.Add(value as string);
                 }
-                else if (hero.info.SpritePath.Count == 1)
+                else if (hero.Info.SpritePath.Count == 1)
                 {
-                    hero.info.SpritePath[0] = value as string;
+                    hero.Info.SpritePath[0] = value as string;
                 }
                 // If count > 1, it's already been set as an array, don't override
             }
@@ -447,7 +447,7 @@ namespace BroMakerLib
                 return;
             }
 
-            if (hero.info.GunSpritePath.Count != 0)
+            if (hero.Info.GunSpritePath.Count != 0)
             {
                 return;
             }
@@ -455,27 +455,27 @@ namespace BroMakerLib
             // Handle array of gun sprites
             if (value is JArray array)
             {
-                hero.info.GunSpritePath.Clear();
+                hero.Info.GunSpritePath.Clear();
                 foreach (var item in array)
                 {
-                    hero.info.GunSpritePath.Add(item.ToObject<string>());
+                    hero.Info.GunSpritePath.Add(item.ToObject<string>());
                 }
             }
             else if (value is string[] stringArray)
             {
-                hero.info.GunSpritePath.Clear();
-                hero.info.GunSpritePath.AddRange(stringArray);
+                hero.Info.GunSpritePath.Clear();
+                hero.Info.GunSpritePath.AddRange(stringArray);
             }
             // Handle single gun sprite
             else if (value is string)
             {
-                if (hero.info.GunSpritePath.Count == 0)
+                if (hero.Info.GunSpritePath.Count == 0)
                 {
-                    hero.info.GunSpritePath.Add(value as string);
+                    hero.Info.GunSpritePath.Add(value as string);
                 }
-                else if (hero.info.GunSpritePath.Count == 1)
+                else if (hero.Info.GunSpritePath.Count == 1)
                 {
-                    hero.info.GunSpritePath[0] = value as string;
+                    hero.Info.GunSpritePath[0] = value as string;
                 }
             }
         }

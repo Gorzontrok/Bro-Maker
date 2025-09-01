@@ -4,7 +4,7 @@ namespace BroMakerLib.CustomObjects.Projectiles
 {
     public abstract class CustomPockettedSpecial
     {
-        public static List<List<CustomPockettedSpecial>> pockettedSpecials = new List<List<CustomPockettedSpecial>> { new List<CustomPockettedSpecial>(), new List<CustomPockettedSpecial>(), new List<CustomPockettedSpecial>(), new List<CustomPockettedSpecial>() };
+        public static List<List<CustomPockettedSpecial>> PockettedSpecials = new List<List<CustomPockettedSpecial>> { new List<CustomPockettedSpecial>(), new List<CustomPockettedSpecial>(), new List<CustomPockettedSpecial>(), new List<CustomPockettedSpecial>() };
 
         /// <summary>
         /// Gives a custom pocketted special to a bro
@@ -15,7 +15,7 @@ namespace BroMakerLib.CustomObjects.Projectiles
         {
             if (character is BroBase bro)
             {
-                pockettedSpecials[bro.playerNum].Add(special);
+                PockettedSpecials[bro.playerNum].Add(special);
                 bro.pockettedSpecialAmmo.Add(PockettedSpecialAmmoType.None);
                 special.SetSpecialMaterials(bro);
                 bro.player.hud.SetGrenades(1);
@@ -29,7 +29,7 @@ namespace BroMakerLib.CustomObjects.Projectiles
         /// <param name="playerNum"></param>
         public static void ClearPockettedSpecials(int playerNum)
         {
-            pockettedSpecials[playerNum].Clear();
+            PockettedSpecials[playerNum].Clear();
         }
 
         /// <summary>

@@ -102,32 +102,7 @@ namespace BroMakerLib.Storages
             return _abilities.FirstOrDefault(s => s.name == name);
         }
 
-        public static StoredHero GetHeroByObject(object obj, BroMakerMod mod)
-        {
-            if (obj == null)
-            {
-                throw new ArgumentNullException(nameof(obj));
-            }
-
-            if (_bros.IsNullOrEmpty())
-                return new StoredHero();
-
-            string name = null;
-            if (obj is string)
-            {
-
-            }
-
-            foreach (StoredHero storedHero in _bros)
-            {
-                if (storedHero.mod == mod && storedHero.name == name)
-                    return storedHero;
-            }
-
-            return new StoredHero();
-        }
-
-        public static StoredHero GetHeroByName(string name, BroMakerMod mod)
+        public static StoredHero GetStoredHeroByName(string name, BroMakerMod mod)
         {
             if (_bros.IsNullOrEmpty() || name.IsNullOrEmpty())
                 return new StoredHero();
@@ -141,7 +116,7 @@ namespace BroMakerLib.Storages
             return new StoredHero();
         }
 
-        public static StoredHero GetHeroByName(string name)
+        public static StoredHero GetStoredHeroByName(string name)
         {
             if (_bros.IsNullOrEmpty() || name.IsNullOrEmpty())
                 return new StoredHero();
@@ -155,14 +130,30 @@ namespace BroMakerLib.Storages
             return new StoredHero();
         }
 
-        public static StoredHero GetHeroByType<T>() where T : CustomHero
+        public static StoredHero GetStoredHeroByCustomHeroType<T>() where T : CustomHero
         {
             if (_bros.IsNullOrEmpty())
                 return new StoredHero();
 
             foreach (StoredHero storedHero in _bros)
             {
-                if (PresetManager.GetHeroPreset(storedHero.GetInfo().characterPreset) == typeof(T))
+                if (PresetManager.GetHeroPreset(storedHero.GetInfo().CharacterPreset) == typeof(T))
+                {
+                    return storedHero;
+                }
+            }
+
+            return new StoredHero();
+        }
+
+        public static StoredHero GetStoredHeroByCustomHeroType(Type customHeroType)
+        {
+            if (_bros.IsNullOrEmpty() || !typeof(CustomHero).IsAssignableFrom(customHeroType))
+                return new StoredHero();
+
+            foreach (StoredHero storedHero in _bros)
+            {
+                if (PresetManager.GetHeroPreset(storedHero.GetInfo().CharacterPreset) == customHeroType)
                 {
                     return storedHero;
                 }

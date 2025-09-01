@@ -6,6 +6,6 @@
         public CustomCharacterInfo() : base() { }
         public CustomCharacterInfo(string name) : base(name) { }
 
-        public string characterPreset = "CustomHero";
+        public string CharacterPreset = "CustomHero";
     }
 }

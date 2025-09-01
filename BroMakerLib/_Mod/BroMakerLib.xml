@@ -106,12 +106,12 @@
             CustomGrenade has all the default functionality of the Grenade class, with extra methods to make creating custom grenades easier
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.spriteAutoLoad">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.SpriteAutoLoad">
             <summary>
             Override Awake() and set this value to false to prevent the sprite from being loaded automatically
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.storedSprite">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.StoredSprite">
             <summary>
             Stores the sprite that was loaded if automatic loading is enabled
             </summary>
@@ -126,69 +126,69 @@
             Tracks whether the prefab setup has been run or not.
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.spriteFolder">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.SpriteFolder">
             <summary>
             Folder that contains your sprite image file. 
             Defaults to "projectiles". 
             Set this to "" if your grenades are in the same folder as your .dll
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.spriteFileName">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.SpriteFileName">
             <summary>
             Name of your image file that will be automatically loaded.
             Defaults to "nameofyourclass.png".
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.spriteDirectoryPath">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.SpriteDirectoryPath">
             <summary>
             Automatically gets set to the path to the folder your sprite is in.
             Don't set this manually.
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.assemblyPath">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.AssemblyPath">
             <summary>
             Automatically gets set to the path to the folder your grenade's assembly is in.
             Don't set this manually.
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.soundFolder">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.SoundFolder">
             <summary>
             Folder that contains your grenade's sounds.
             Defaults to "sounds". 
             Set this to "" if your sounds are in the same folder as your .dll
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.soundPath">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.SoundPath">
             <summary>
             Automatically gets set to the path to the folder your grenade's sounds are in.
             Assumes they're in a folder called sounds
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.spritePixelDimensions">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.SpritePixelDimensions">
             <summary>
             Size of one frame of your grenade. 
             By default this will be the whole image, but if your grenade has multiple frames, you will want to change this.
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.spriteLowerLeftPixel">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.SpriteLowerLeftPixel">
             <summary>
             Sets the lower left corner of your sprite.
             Defaults to (0, heightofyourimage), which will include the whole image.
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.spriteOffset">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.SpriteOffset">
             <summary>
             Sets the offset of your sprite from the game object.
             Defaults to (0, 0, 0).
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.spriteColor">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.SpriteColor">
             <summary>
             Sets the sprite color.
             Defaults to white.
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.defaultSoundHolder">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomGrenade.DefaultSoundHolder">
             <summary>
             Sets the SoundHolder of the grenade.
             Defaults to Rambro's Grenade's SoundHolder.
@@ -279,12 +279,12 @@
             CustomProjectile has all the default functionality of the Projectile class, with extra methods to make creating custom projectiles easier
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.spriteAutoLoad">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.SpriteAutoLoad">
             <summary>
             Override Awake() and set this value to false to prevent the sprite from being loaded automatically
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.sprite">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.Sprite">
             <summary>
             Stores the sprite that was loaded if automatic loading is enabled
             </summary>
@@ -299,81 +299,81 @@
             Tracks whether the prefab setup has been run or not.
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.spriteFolder">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.SpriteFolder">
             <summary>
             Folder that contains your sprite image file. 
             Defaults to "projectiles". 
             Set this to "" if your sprite is in the same folder as your .dll
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.spriteFileName">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.SpriteFileName">
             <summary>
             Name of your image file that will be automatically loaded.
             Defaults to "nameofyourclass.png".
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.spriteDirectoryPath">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.SpriteDirectoryPath">
             <summary>
             Automatically gets set to the path to the folder your sprite is in.
             Don't set this manually.
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.assemblyPath">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.AssemblyPath">
             <summary>
             Automatically gets set to the path to the folder your projectile's assembly is in.
             Don't set this manually.
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.soundFolder">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.SoundFolder">
             <summary>
             Folder that contains your projectile's sounds.
             Defaults to "sounds". 
             Set this to "" if your sounds are in the same folder as your .dll
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.soundPath">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.SoundPath">
             <summary>
             Automatically gets set to the path to the folder your projectile's sounds are in.
             Assumes they're in a folder called sounds
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.spritePixelDimensions">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.SpritePixelDimensions">
             <summary>
             Size of one frame of your projectile. 
             By default this will be the whole image, but if your projectile has multiple frames, you will want to change this.
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.spriteLowerLeftPixel">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.SpriteLowerLeftPixel">
             <summary>
             Sets the lower left corner of your sprite.
             Defaults to (0, heightofyourimage), which will include the whole image.
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.spriteWidth">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.SpriteWidth">
             <summary>
             Controls how wide your sprite appears in-game. This can be set to anything, regardless of the actual image size.
             Defaults to the same width as your image file.
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.spriteHeight">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.SpriteHeight">
             <summary>
             Controls how tall your sprite appears in-game. This can be set to anything, regardless of the actual image size.
             Defaults to the same height as your image file.
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.spriteOffset">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.SpriteOffset">
             <summary>
             Sets the offset of your sprite from the game object.
             Defaults to (0, 0, 0).
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.spriteColor">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.SpriteColor">
             <summary>
             Sets the sprite color.
             Defaults to white.
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.defaultSoundHolder">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomProjectile.DefaultSoundHolder">
             <summary>
             Sets the SoundHolder of the projectile.
             Defaults to Rambro's Bullet's SoundHolder.
@@ -424,12 +424,12 @@
             CustomSacehlPack has all the default functionality of the SachelPack class, with extra methods to make creating custom projectiles easier
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomSachelPack.spriteAutoLoad">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomSachelPack.SpriteAutoLoad">
             <summary>
             Override Awake() and set this value to false to prevent the sprite from being loaded automatically
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomSachelPack.sprite">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomSachelPack.Sprite">
             <summary>
             Stores the sprite that was loaded if automatic loading is enabled
             </summary>
@@ -444,81 +444,81 @@
             Tracks whether the prefab setup has been run or not.
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomSachelPack.spriteFolder">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomSachelPack.SpriteFolder">
             <summary>
             Folder that contains your sprite image file. 
             Defaults to "projectiles". 
             Set this to "" if your sprite is in the same folder as your .dll
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomSachelPack.spriteFileName">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomSachelPack.SpriteFileName">
             <summary>
             Name of your image file that will be automatically loaded.
             Defaults to "nameofyourclass.png".
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomSachelPack.spriteDirectoryPath">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomSachelPack.SpriteDirectoryPath">
             <summary>
             Automatically gets set to the path to the folder your sprite is in.
             Don't set this manually.
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomSachelPack.assemblyPath">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomSachelPack.AssemblyPath">
             <summary>
             Automatically gets set to the path to the folder your projectile's assembly is in.
             Don't set this manually.
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomSachelPack.soundFolder">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomSachelPack.SoundFolder">
             <summary>
             Folder that contains your projectile's sounds.
             Defaults to "sounds". 
             Set this to "" if your sounds are in the same folder as your .dll
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomSachelPack.soundPath">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomSachelPack.SoundPath">
             <summary>
             Automatically gets set to the path to the folder your projectile's sounds are in.
             Assumes they're in a folder called sounds
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomSachelPack.spritePixelDimensions">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomSachelPack.SpritePixelDimensions">
             <summary>
             Size of one frame of your projectile. 
             By default this will be the whole image, but if your projectile has multiple frames, you will want to change this.
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomSachelPack.spriteLowerLeftPixel">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomSachelPack.SpriteLowerLeftPixel">
             <summary>
             Sets the lower left corner of your sprite.
             Defaults to (0, heightofyourimage), which will include the whole image.
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomSachelPack.spriteWidth">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomSachelPack.SpriteWidth">
             <summary>
             Controls how wide your sprite appears in-game. This can be set to anything, regardless of the actual image size.
             Defaults to the same width as your image file.
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomSachelPack.spriteHeight">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomSachelPack.SpriteHeight">
             <summary>
             Controls how tall your sprite appears in-game. This can be set to anything, regardless of the actual image size.
             Defaults to the same height as your image file.
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomSachelPack.spriteOffset">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomSachelPack.SpriteOffset">
             <summary>
             Sets the offset of your sprite from the game object.
             Defaults to (0, 0, 0).
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomSachelPack.spriteColor">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomSachelPack.SpriteColor">
             <summary>
             Sets the sprite color.
             Defaults to white.
             </summary>
         </member>
-        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomSachelPack.defaultSoundHolder">
+        <member name="F:BroMakerLib.CustomObjects.Projectiles.CustomSachelPack.DefaultSoundHolder">
             <summary>
             Sets the SoundHolder of the projectile.
             Defaults to Rambro's Bullet's SoundHolder.
@@ -587,9 +587,19 @@
             in which case the base HeroType of your bro will be used.
             </summary>
         </member>
-        <member name="P:BroMakerLib.CustomObjects.Bros.CustomHero.directoryPath">
+        <member name="P:BroMakerLib.CustomObjects.Bros.CustomHero.DirectoryPath">
             <summary>
             Contains the path to the directory that contains your custom bro's dll
+            </summary>
+        </member>
+        <member name="P:BroMakerLib.CustomObjects.Bros.CustomHero.SoundPath">
+            <summary>
+            Contains the path to your bro's sound folder (assumes the folder is named "sounds" by default)
+            </summary>
+        </member>
+        <member name="P:BroMakerLib.CustomObjects.Bros.CustomHero.ProjectilePath">
+            <summary>
+            Contains the path to your bro's projectile folder (assumes the folder is named "projectiles" by default)
             </summary>
         </member>
         <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.UIOptions">
@@ -634,6 +644,14 @@
             The soundHolder, SoundHolderVoice, and soundHolderFootSteps will have been set up at this point, as well as directoryPath, so you can load sounds and assign them to
             these soundHolders to set up your bro's sounds.
             </summary>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.AssignDirectoryPaths(System.String)">
+            <summary>
+            Sets up the DirectoryPath, SoundPath, and ProjectilePath variables.
+            You can override this to adjust the paths if your sounds / projectiles folders 
+            are named something other than "sounds" and "projectiles"
+            </summary>
+            <param name="directoryPath">Path to the directory that contains your custom bro's .dll</param>
         </member>
         <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.GetVariant">
             <summary>

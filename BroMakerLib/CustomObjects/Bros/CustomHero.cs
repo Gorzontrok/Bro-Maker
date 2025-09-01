@@ -32,11 +32,11 @@ namespace BroMakerLib.CustomObjects.Bros
         }
 
         [Syncronize]
-        public CustomBroInfo info { get; set; }
+        public CustomBroInfo Info { get; set; }
         [Syncronize]
-        public BroBase character { get; set; }
+        public BroBase Character { get; set; }
         [JsonIgnore]
-        public MuscleTempleFlexEffect flexEffect { get; set; }
+        public MuscleTempleFlexEffect FlexEffect { get; set; }
 
         [JsonIgnore]
         public int CurrentVariant { get; set; }
@@ -67,19 +67,39 @@ namespace BroMakerLib.CustomObjects.Bros
         /// <summary>
         /// Contains the path to the directory that contains your custom bro's dll
         /// </summary>
-        public string directoryPath
+        public string DirectoryPath
         {
             get => _directoryPath;
         }
 
+        /// <summary>
+        /// Contains the path to your bro's sound folder (assumes the folder is named "sounds" by default)
+        /// </summary>
+        public string SoundPath
+        {
+            get => _soundPath;
+        }
+
+        /// <summary>
+        /// Contains the path to your bro's projectile folder (assumes the folder is named "projectiles" by default)
+        /// </summary>
+        public string ProjectilePath
+        {
+            get => _projectilePath;
+        }
+
         [SerializeField]
         private string _directoryPath;
+        [SerializeField]
+        private string _soundPath;
+        [SerializeField]
+        private string _projectilePath;
 
         #region BroBase Methods
         protected override void Awake()
         {
-            character = this;
-            info = LoadHero.currentInfo;
+            Character = this;
+            Info = LoadHero.currentInfo;
             try
             {
                 EnableSyncing(true, true);
@@ -88,18 +108,18 @@ namespace BroMakerLib.CustomObjects.Bros
                 this.CurrentVariant = this.GetVariant();
 
                 // Cache current variant parameters
-                this.CurrentGunSpriteOffset = BroMakerUtilities.GetVariantValue(this.info.GunSpriteOffset, this.CurrentVariant);
-                this.CurrentSpecialMaterials = BroMakerUtilities.GetVariantValue(this.info.SpecialMaterials, this.CurrentVariant);
-                this.CurrentSpecialMaterialOffset = BroMakerUtilities.GetVariantValue(this.info.SpecialMaterialOffset, this.CurrentVariant);
-                this.CurrentSpecialMaterialSpacing = BroMakerUtilities.GetVariantValue(this.info.SpecialMaterialSpacing, this.CurrentVariant);
-                this.CurrentFirstAvatar = BroMakerUtilities.GetVariantValue(this.info.FirstAvatar, this.CurrentVariant);
+                this.CurrentGunSpriteOffset = BroMakerUtilities.GetVariantValue(this.Info.GunSpriteOffset, this.CurrentVariant);
+                this.CurrentSpecialMaterials = BroMakerUtilities.GetVariantValue(this.Info.SpecialMaterials, this.CurrentVariant);
+                this.CurrentSpecialMaterialOffset = BroMakerUtilities.GetVariantValue(this.Info.SpecialMaterialOffset, this.CurrentVariant);
+                this.CurrentSpecialMaterialSpacing = BroMakerUtilities.GetVariantValue(this.Info.SpecialMaterialSpacing, this.CurrentVariant);
+                this.CurrentFirstAvatar = BroMakerUtilities.GetVariantValue(this.Info.FirstAvatar, this.CurrentVariant);
 
-                this.character.specialGrenade.playerNum = LoadHero.playerNum;
+                this.Character.specialGrenade.playerNum = LoadHero.playerNum;
 
-                info.BeforeAwake(this);
+                Info.BeforeAwake(this);
                 base.Awake();
                 this.SetSprites();
-                info.AfterAwake(this);
+                Info.AfterAwake(this);
 
                 // Make sure parachute isn't null, for some reason the game's default way of handling this doesn't work
                 if (this.parachute == null)
@@ -126,9 +146,9 @@ namespace BroMakerLib.CustomObjects.Bros
         {
             try
             {
-                info.BeforeStart(this);
+                Info.BeforeStart(this);
                 base.Start();
-                info.AfterStart(this);
+                Info.AfterStart(this);
             }
             catch (Exception ex)
             {
@@ -284,13 +304,13 @@ namespace BroMakerLib.CustomObjects.Bros
             }
             if (this.player.HasFlexPower(PickupType.FlexGoldenLight))
             {
-                if (flexEffect == null)
+                if (FlexEffect == null)
                 {
-                    this.flexEffect = Traverse.Create((this as BroBase)).GetFieldValue("flexEffect") as MuscleTempleFlexEffect;
+                    this.FlexEffect = Traverse.Create((this as BroBase)).GetFieldValue("flexEffect") as MuscleTempleFlexEffect;
                 }
-                if (this.flexEffect != null)
+                if (this.FlexEffect != null)
                 {
-                    this.flexEffect.PlaySoundEffect();
+                    this.FlexEffect.PlaySoundEffect();
                 }
                 if (base.IsMine)
                 {
@@ -303,9 +323,9 @@ namespace BroMakerLib.CustomObjects.Bros
                     }
                 }
             }
-            else if (this.player.HasFlexPower(PickupType.FlexInvulnerability) && this.flexEffect != null)
+            else if (this.player.HasFlexPower(PickupType.FlexInvulnerability) && this.FlexEffect != null)
             {
-                this.flexEffect.PlaySoundEffect();
+                this.FlexEffect.PlaySoundEffect();
             }
         }
 
@@ -436,7 +456,7 @@ namespace BroMakerLib.CustomObjects.Bros
             this.soundHolderFootSteps.gameObject.name = "SoundHolderFootSteps " + this.name;
             UnityEngine.Object.DontDestroyOnLoad(this.soundHolderFootSteps);
 
-            this._directoryPath = LoadHero.currentInfo.path;
+            this.AssignDirectoryPaths(LoadHero.currentInfo.path);
             try
             {
                 this.LoadSettings();
@@ -446,8 +466,8 @@ namespace BroMakerLib.CustomObjects.Bros
                 BMLogger.ExceptionLog("Failed to load settings in SetupPrefab: ", ex);
             }
 
-            this.character = this;
-            this.info = LoadHero.currentInfo;
+            this.Character = this;
+            this.Info = LoadHero.currentInfo;
 
             // Setup CustomHero from original bro component and destroy it
             this.SetupCustomHero();
@@ -455,9 +475,17 @@ namespace BroMakerLib.CustomObjects.Bros
             this.AfterPrefabSetup();
         }
 
-        internal void SetDirectoryPath(string path)
+        /// <summary>
+        /// Sets up the DirectoryPath, SoundPath, and ProjectilePath variables.
+        /// You can override this to adjust the paths if your sounds / projectiles folders 
+        /// are named something other than "sounds" and "projectiles"
+        /// </summary>
+        /// <param name="directoryPath">Path to the directory that contains your custom bro's .dll</param>
+        public virtual void AssignDirectoryPaths(string directoryPath)
         {
-            this._directoryPath = path;
+            this._directoryPath = directoryPath;
+            this._soundPath = Path.Combine(directoryPath, "sounds");
+            this._projectilePath = Path.Combine(directoryPath, "projectiles");
         }
 
         /// <summary>
@@ -465,11 +493,11 @@ namespace BroMakerLib.CustomObjects.Bros
         /// </summary>
         public virtual int GetVariant()
         {
-            if (info.VariantCount <= 1)
+            if (Info.VariantCount <= 1)
             {
                 return 0;
             }
-            return UnityEngine.Random.Range(0, info.VariantCount);
+            return UnityEngine.Random.Range(0, Info.VariantCount);
         }
 
         /// <summary>
@@ -486,11 +514,11 @@ namespace BroMakerLib.CustomObjects.Bros
         public virtual void SwitchVariant(int variant)
         {
             this.CurrentVariant = variant;
-            this.CurrentGunSpriteOffset = BroMakerUtilities.GetVariantValue(this.info.GunSpriteOffset, this.CurrentVariant);
-            this.CurrentSpecialMaterials = BroMakerUtilities.GetVariantValue(this.info.SpecialMaterials, this.CurrentVariant);
-            this.CurrentSpecialMaterialOffset = BroMakerUtilities.GetVariantValue(this.info.SpecialMaterialOffset, this.CurrentVariant);
-            this.CurrentSpecialMaterialSpacing = BroMakerUtilities.GetVariantValue(this.info.SpecialMaterialSpacing, this.CurrentVariant);
-            this.CurrentFirstAvatar = BroMakerUtilities.GetVariantValue(this.info.FirstAvatar, this.CurrentVariant);
+            this.CurrentGunSpriteOffset = BroMakerUtilities.GetVariantValue(this.Info.GunSpriteOffset, this.CurrentVariant);
+            this.CurrentSpecialMaterials = BroMakerUtilities.GetVariantValue(this.Info.SpecialMaterials, this.CurrentVariant);
+            this.CurrentSpecialMaterialOffset = BroMakerUtilities.GetVariantValue(this.Info.SpecialMaterialOffset, this.CurrentVariant);
+            this.CurrentSpecialMaterialSpacing = BroMakerUtilities.GetVariantValue(this.Info.SpecialMaterialSpacing, this.CurrentVariant);
+            this.CurrentFirstAvatar = BroMakerUtilities.GetVariantValue(this.Info.FirstAvatar, this.CurrentVariant);
 
             this.SetSprites();
             BroMakerUtilities.SetSpecialMaterials(this.playerNum, this.CurrentSpecialMaterials, this.CurrentSpecialMaterialOffset, this.CurrentSpecialMaterialSpacing);
@@ -541,7 +569,7 @@ namespace BroMakerLib.CustomObjects.Bros
             var type = GetType();
 
             // Cache the directory path for this type
-            _typeDirectoryCache[type] = this.directoryPath;
+            _typeDirectoryCache[type] = this.DirectoryPath;
 
             if (!HasSaveableFields(type))
                 return;
@@ -576,7 +604,7 @@ namespace BroMakerLib.CustomObjects.Bros
             {
                 var fileName = $"{type.Name}settings.json";
                 string json = JsonConvert.SerializeObject(data, Formatting.Indented);
-                File.WriteAllText(Path.Combine(directoryPath, fileName), json);
+                File.WriteAllText(Path.Combine(DirectoryPath, fileName), json);
             }
         }
 
@@ -596,12 +624,12 @@ namespace BroMakerLib.CustomObjects.Bros
             var type = GetType();
 
             // Cache the directory path for this type
-            _typeDirectoryCache[type] = this.directoryPath;
+            _typeDirectoryCache[type] = this.DirectoryPath;
 
             if (!HasSaveableFields(type))
                 return;
 
-            var fileName = Path.Combine(this.directoryPath, $"{type.Name}settings.json");
+            var fileName = Path.Combine(this.DirectoryPath, $"{type.Name}settings.json");
             if (!File.Exists(fileName))
                 return;
 
@@ -688,7 +716,7 @@ namespace BroMakerLib.CustomObjects.Bros
             string directoryPath;
             if (!_typeDirectoryCache.TryGetValue(type, out directoryPath))
             {
-                directoryPath = Storages.BroMakerStorage.GetHeroByType<T>().GetInfo().path;
+                directoryPath = Storages.BroMakerStorage.GetStoredHeroByCustomHeroType<T>().GetInfo().path;
                 if (string.IsNullOrEmpty(directoryPath))
                 {
                     Console.WriteLine($"Error: Could not determine directory path for custom bro {type.Name}");
@@ -753,7 +781,7 @@ namespace BroMakerLib.CustomObjects.Bros
             string directoryPath;
             if (!_typeDirectoryCache.TryGetValue(type, out directoryPath))
             {
-                directoryPath = Storages.BroMakerStorage.GetHeroByType<T>().GetInfo().path;
+                directoryPath = Storages.BroMakerStorage.GetStoredHeroByCustomHeroType<T>().GetInfo().path;
                 if (string.IsNullOrEmpty(directoryPath))
                 {
                     Console.WriteLine($"Error: Could not determine directory path for custom bro {type.Name}");

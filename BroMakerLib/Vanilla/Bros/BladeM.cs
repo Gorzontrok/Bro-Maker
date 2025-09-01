@@ -10,9 +10,9 @@ namespace BroMakerLib.Vanilla.Bros
     [HeroPreset("Brade", HeroType.Blade)]
     public class BladeM : Blade, ICustomHero
     {
-        public CustomBroInfo info { get; set; }
-        public BroBase character { get; set; }
-        public MuscleTempleFlexEffect flexEffect { get; set; }
+        public CustomBroInfo Info { get; set; }
+        public BroBase Character { get; set; }
+        public MuscleTempleFlexEffect FlexEffect { get; set; }
         public int CurrentVariant { get; set; }
         public Vector2 CurrentGunSpriteOffset { get; set; }
         public List<Material> CurrentSpecialMaterials { get; set; }

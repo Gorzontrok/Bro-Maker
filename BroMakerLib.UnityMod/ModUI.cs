@@ -441,7 +441,7 @@ namespace BroMakerLib.UnityMod
                 {
                     _selectedHero.DestroyMe();
                 }
-                string preset = (_objectToEdit as CustomBroInfo).characterPreset;
+                string preset = (_objectToEdit as CustomBroInfo).CharacterPreset;
                 if (preset.IsNullOrEmpty())
                 {
                     throw new NullReferenceException("'characterPreset' is null or empty");
@@ -457,7 +457,7 @@ namespace BroMakerLib.UnityMod
                     UnityEngine.Object.DontDestroyOnLoad(heroHolder);
                 }
                 _selectedHero = heroHolder.AddComponent(PresetManager.heroesPreset[preset]) as CustomHero;
-                _selectedHero.SetDirectoryPath(_selectedBro.info.path);
+                _selectedHero.AssignDirectoryPaths(_selectedBro.info.path);
                 _selectedHero.LoadSettings();
                 _selectedHero.enabled = false;
                 heroCreated = true;

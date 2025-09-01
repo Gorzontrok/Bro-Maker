@@ -7,10 +7,10 @@ namespace BroMakerLib.CustomObjects
     public interface ICustomHero
     {
         [Syncronize]
-        CustomBroInfo info { get; set; }
+        CustomBroInfo Info { get; set; }
         [Syncronize]
-        BroBase character { get; set; }
-        MuscleTempleFlexEffect flexEffect { get; set; }
+        BroBase Character { get; set; }
+        MuscleTempleFlexEffect FlexEffect { get; set; }
         int CurrentVariant { get; set; }
         Vector2 CurrentGunSpriteOffset { get; set; }
         List<Material> CurrentSpecialMaterials { get; set; }

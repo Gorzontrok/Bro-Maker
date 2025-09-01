@@ -189,7 +189,7 @@ namespace BroMakerLib
             if (this.overrideNextBroSpawn)
             {
                 this.overrideNextBroSpawn = false;
-                return BroMakerStorage.GetHeroByName(this.nextBroSpawn);
+                return BroMakerStorage.GetStoredHeroByName(this.nextBroSpawn);
             }
 
             int chosen = UnityEngine.Random.Range(0, enabledBroCount);
@@ -207,7 +207,7 @@ namespace BroMakerLib
                 }
             }
 
-            return BroMakerStorage.GetHeroByName(chosenName);
+            return BroMakerStorage.GetStoredHeroByName(chosenName);
         }
 
         public StoredHero GetRandomHardcoreBro(bool isRescue)
@@ -215,7 +215,7 @@ namespace BroMakerLib
             if (this.overrideNextBroSpawn)
             {
                 this.overrideNextBroSpawn = false;
-                return BroMakerStorage.GetHeroByName(this.nextBroSpawn);
+                return BroMakerStorage.GetStoredHeroByName(this.nextBroSpawn);
             }
 
             if (isRescue && this.NotUnlockedBros.Count() > 0)
@@ -225,14 +225,14 @@ namespace BroMakerLib
                 this.AvailableBros.Add(this.NotUnlockedBros[chosen]);
                 this.NotUnlockedBros.RemoveAt(chosen);
 
-                return BroMakerStorage.GetHeroByName(chosenName);
+                return BroMakerStorage.GetStoredHeroByName(chosenName);
             }
             else
             {
                 int chosen = UnityEngine.Random.Range(0, this.AvailableBros.Count());
                 string chosenName = this.AvailableBros[chosen];
 
-                return BroMakerStorage.GetHeroByName(chosenName);
+                return BroMakerStorage.GetStoredHeroByName(chosenName);
             }
         }
     }

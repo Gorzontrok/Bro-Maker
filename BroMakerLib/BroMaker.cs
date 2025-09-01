@@ -215,9 +215,14 @@ namespace BroMakerLib
             {
                 if (typeof(CustomHero).IsAssignableFrom(kvp.Value))
                 {
-                    CustomHero bro = heroHolder.AddComponent(kvp.Value) as CustomHero;
                     try
                     {
+                        CustomHero bro = heroHolder.AddComponent(kvp.Value) as CustomHero;
+                        try
+                        {
+                            bro.AssignDirectoryPaths(BroMakerStorage.GetStoredHeroByCustomHeroType(kvp.Value).GetInfo().path);
+                        }
+                        catch { }
                         bro.PreloadAssets();
                     }
                     catch (Exception ex)
