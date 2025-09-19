@@ -491,6 +491,7 @@ namespace BroMakerLib.CustomObjects.Bros
         /// <summary>
         /// Override this to customize variant selection logic
         /// </summary>
+        /// <returns>Variant to spawn bro as</returns>
         public virtual int GetVariant()
         {
             if (Info.VariantCount <= 1)

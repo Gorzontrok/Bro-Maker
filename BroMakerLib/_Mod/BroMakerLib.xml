@@ -657,6 +657,7 @@
             <summary>
             Override this to customize variant selection logic
             </summary>
+            <returns>Variant to spawn bro as</returns>
         </member>
         <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.SetupAdditionalSprites">
             <summary>
