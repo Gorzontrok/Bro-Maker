@@ -95,7 +95,8 @@
   <PropertyGroup>
     <PostBuildEvent>XCOPY /Y /R "$(TargetPath)" "$(ProjectDir)\_Mod\$(ProjectName).dll*"
 XCOPY /Y /I /E "$(ProjectDir)\_Mod\*.*" "$(BroforcePath)\Mods\BroMaker\"
-del "$(BroforcePath)\Mods\BroMaker\*.cache" 2&gt; nul || set errorlevel=0</PostBuildEvent>
+del "$(BroforcePath)\Mods\BroMaker\*.cache" 2&gt; nul || set errorlevel=0
+start steam://rungameid/274190</PostBuildEvent>
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
   <PropertyGroup>

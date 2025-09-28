@@ -1,0 +1,305 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using BroMakerLib.Loggers;
+using BroMakerLib.Storages;
+using Newtonsoft.Json;
+
+namespace BroMakerLib.Unlocks
+{
+    public class BroUnlockManager
+    {
+        private static BroUnlockManager _instance;
+        public static BroUnlockManager Instance => _instance ?? (_instance = new BroUnlockManager());
+
+        private BroUnlockProgressData progressData;
+        private readonly Queue<string> pendingUnlockedBros = new Queue<string>();
+        private readonly string saveFilePath;
+
+        private BroUnlockManager()
+        {
+            saveFilePath = Path.Combine(Settings.directory, "BroMaker_UnlockProgress.json");
+        }
+
+        public void Initialize()
+        {
+            LoadProgressData();
+            ProcessNewlyInstalledBros();
+        }
+
+        public bool IsBroUnlocked(string broName)
+        {
+            if (progressData?.BroStates == null || !progressData.BroStates.ContainsKey(broName))
+            {
+                return true;
+            }
+
+            return progressData.BroStates[broName].IsUnlocked;
+        }
+
+        public bool HasPendingUnlockedBro()
+        {
+            return pendingUnlockedBros.Count > 0;
+        }
+
+        public string GetAndClearPendingUnlockedBro()
+        {
+            if (pendingUnlockedBros.Count > 0)
+            {
+                return pendingUnlockedBros.Dequeue();
+            }
+            return null;
+        }
+
+        public void CheckRescueUnlocks(int currentRescueCount)
+        {
+            if (progressData?.BroStates == null) return;
+
+            bool anyUnlocked = false;
+            foreach (var kvp in progressData.BroStates)
+            {
+                var state = kvp.Value;
+                if (!state.IsUnlocked &&
+                    (state.ConfiguredMethod == UnlockMethod.RescueCount ||
+                     state.ConfiguredMethod == UnlockMethod.RescueOrLevel))
+                {
+                    if (currentRescueCount >= state.TargetRescueCount)
+                    {
+                        UnlockBro(state.BroName, "rescue count");
+                        anyUnlocked = true;
+                    }
+                }
+            }
+
+            if (anyUnlocked)
+            {
+                SaveProgressData();
+            }
+
+            progressData.LastKnownTotalRescues = currentRescueCount;
+        }
+
+        public bool CheckLevelUnlocks(string levelName)
+        {
+            if (progressData?.BroStates == null || string.IsNullOrEmpty(levelName))
+                return false;
+
+            BMLogger.Debug($"Checking level unlocks for: {levelName}");
+
+            bool anyUnlocked = false;
+            foreach (var kvp in progressData.BroStates)
+            {
+                var state = kvp.Value;
+                if (!state.IsUnlocked &&
+                    (state.ConfiguredMethod == UnlockMethod.UnlockLevel ||
+                     state.ConfiguredMethod == UnlockMethod.RescueOrLevel))
+                {
+                    if (!string.IsNullOrEmpty(state.UnlockLevelName))
+                    {
+                        BMLogger.Debug($"Comparing level '{levelName}' with required '{state.UnlockLevelName}'");
+
+                        if (levelName.Equals(state.UnlockLevelName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            UnlockBro(state.BroName, "level completion");
+                            anyUnlocked = true;
+                        }
+                    }
+                }
+            }
+
+            if (anyUnlocked)
+            {
+                SaveProgressData();
+            }
+
+            return anyUnlocked;
+        }
+
+        public void UnlockBro(string broName, string reason = null)
+        {
+            if (progressData?.BroStates == null || !progressData.BroStates.ContainsKey(broName))
+                return;
+
+            var state = progressData.BroStates[broName];
+            if (state.IsUnlocked) return;
+
+            state.IsUnlocked = true;
+            state.UnlockedDate = DateTime.UtcNow;
+
+            pendingUnlockedBros.Enqueue(broName);
+
+            string logMessage = $"Bro '{broName}' unlocked";
+            if (!string.IsNullOrEmpty(reason))
+            {
+                logMessage += $" via {reason}";
+            }
+            BMLogger.Log(logMessage);
+        }
+
+        public void UnlockAllBros()
+        {
+            if (progressData?.BroStates == null) return;
+
+            foreach (var kvp in progressData.BroStates)
+            {
+                if (!kvp.Value.IsUnlocked)
+                {
+                    kvp.Value.IsUnlocked = true;
+                    kvp.Value.UnlockedDate = DateTime.UtcNow;
+                }
+            }
+
+            SaveProgressData();
+            BMLogger.Log("All bros have been unlocked via Developer Options");
+        }
+
+        private void ProcessNewlyInstalledBros()
+        {
+            if (progressData == null)
+            {
+                progressData = new BroUnlockProgressData();
+            }
+
+            var allBros = BroMakerStorage.Bros;
+            if (allBros == null) return;
+
+            bool anyNewBros = false;
+            foreach (var bro in allBros)
+            {
+                if (!progressData.BroStates.ContainsKey(bro.name))
+                {
+                    var unlockConfig = bro.GetInfo()?.UnlockConfig ?? new BroUnlockConfig();
+                    var state = new BroUnlockState
+                    {
+                        BroName = bro.name,
+                        ConfiguredMethod = unlockConfig.Method,
+                        FirstSeenDate = DateTime.UtcNow
+                    };
+
+                    if (unlockConfig.Method == UnlockMethod.AlwaysUnlocked)
+                    {
+                        state.IsUnlocked = true;
+                        state.UnlockedDate = DateTime.UtcNow;
+                    }
+                    else if (unlockConfig.Method == UnlockMethod.RescueCount ||
+                             unlockConfig.Method == UnlockMethod.RescueOrLevel)
+                    {
+                        state.TargetRescueCount = CalculateStaggeredRescueTarget(unlockConfig.RescueCountRequired);
+                    }
+
+                    if (unlockConfig.Method == UnlockMethod.UnlockLevel ||
+                        unlockConfig.Method == UnlockMethod.RescueOrLevel)
+                    {
+                        state.UnlockLevelPath = unlockConfig.UnlockLevelPath;
+                        state.UnlockLevelName = unlockConfig.UnlockLevelName;
+
+                        if (!string.IsNullOrEmpty(unlockConfig.UnlockLevelPath) &&
+                            !ValidateUnlockLevel(bro, unlockConfig.UnlockLevelPath))
+                        {
+                            BMLogger.Error($"Bro '{bro.name}' has invalid unlock level: {unlockConfig.UnlockLevelPath}");
+                        }
+                    }
+
+                    progressData.BroStates[bro.name] = state;
+                    anyNewBros = true;
+
+                    BMLogger.Debug($"Registered new bro '{bro.name}' with unlock method: {unlockConfig.Method}");
+                }
+            }
+
+            if (anyNewBros)
+            {
+                SaveProgressData();
+            }
+        }
+
+        private int CalculateStaggeredRescueTarget(int baseRequirement)
+        {
+            if (progressData?.BroStates == null) return baseRequirement;
+
+            int highestTarget = progressData.LastKnownTotalRescues;
+
+            foreach (var kvp in progressData.BroStates)
+            {
+                var state = kvp.Value;
+                if (!state.IsUnlocked &&
+                    (state.ConfiguredMethod == UnlockMethod.RescueCount ||
+                     state.ConfiguredMethod == UnlockMethod.RescueOrLevel))
+                {
+                    if (state.TargetRescueCount > highestTarget)
+                    {
+                        highestTarget = state.TargetRescueCount;
+                    }
+                }
+            }
+
+            return highestTarget + baseRequirement;
+        }
+
+        private bool ValidateUnlockLevel(StoredHero bro, string levelPath)
+        {
+            if (string.IsNullOrEmpty(levelPath))
+                return false;
+
+            string fullLevelPath = System.IO.Path.Combine(bro.GetInfo().path, levelPath);
+            bool exists = File.Exists(fullLevelPath) || File.Exists(fullLevelPath + ".bfc");
+
+            if (!exists)
+            {
+                BMLogger.Debug($"Level file not found at: {fullLevelPath}");
+            }
+
+            return exists;
+        }
+
+        private void LoadProgressData()
+        {
+            try
+            {
+                if (File.Exists(saveFilePath))
+                {
+                    string json = File.ReadAllText(saveFilePath);
+                    progressData = JsonConvert.DeserializeObject<BroUnlockProgressData>(json);
+
+                    if (progressData != null && progressData.Version != 1)
+                    {
+                        progressData = BroUnlockProgressData.MigrateData(progressData);
+                    }
+
+                    BMLogger.Debug($"Loaded unlock progress for {progressData?.BroStates?.Count ?? 0} bros");
+                }
+                else
+                {
+                    progressData = new BroUnlockProgressData();
+                    BMLogger.Debug("No existing unlock progress file, creating new one");
+                }
+            }
+            catch (Exception ex)
+            {
+                BMLogger.Error($"Failed to load unlock progress: {ex.Message}");
+                progressData = new BroUnlockProgressData();
+            }
+        }
+
+        private void SaveProgressData()
+        {
+            try
+            {
+                if (progressData == null) return;
+
+                string json = JsonConvert.SerializeObject(progressData, Formatting.Indented);
+                File.WriteAllText(saveFilePath, json);
+                BMLogger.Debug("Saved unlock progress data");
+            }
+            catch (Exception ex)
+            {
+                BMLogger.Error($"Failed to save unlock progress: {ex.Message}");
+            }
+        }
+
+        public void OnModUnload()
+        {
+            SaveProgressData();
+        }
+    }
+}

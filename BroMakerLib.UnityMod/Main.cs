@@ -3,6 +3,7 @@ using System.IO;
 using System.Reflection;
 using BroMakerLib.CustomObjects.Bros;
 using BroMakerLib.Loggers;
+using BroMakerLib.Unlocks;
 using HarmonyLib;
 using UnityModManagerNet;
 
@@ -23,6 +24,7 @@ namespace BroMakerLib.UnityMod
             modEntry.OnGUI = OnGUI;
             modEntry.OnToggle = OnToggle;
             modEntry.OnSaveGUI = OnSaveGUI;
+            modEntry.OnUnload = OnUnload;
             modEntry.Info.DisplayName = "<color=\"#d68c16\">BroMaker Unity</color>";
             settings = Settings.Load<Settings>(modEntry);
             Harmony harmony = null;
@@ -46,6 +48,8 @@ namespace BroMakerLib.UnityMod
                 // Initialize BroMaker
                 BroMaker.Initialize();
                 BroMakerLib.Settings.instance.debugLogs = settings.debugLogs;
+                // Initialize Unlock Manager
+                BroUnlockManager.Instance.Initialize();
                 // Apply all harmony patches if any bros have overridden the method
                 if (harmony != null)
                 {
@@ -66,6 +70,22 @@ namespace BroMakerLib.UnityMod
             catch (Exception ex)
             {
                 Main.Log("Error while intializing the GUI.\n" + ex);
+            }
+
+            // Register Custom Bros menu with MainMenu
+            try
+            {
+                RocketLib.Menus.Core.MenuRegistry.RegisterAction(
+                    displayText: "CUSTOM BROS",
+                    onSelect: (menu) => BroMakerLib.Menus.CustomBrosGridMenu.Show(menu),
+                    targetMenu: RocketLib.Menus.Core.TargetMenu.MainMenu,
+                    position: RocketLib.Menus.Core.PositionMode.After,
+                    positionReference: "START"
+                );
+            }
+            catch (Exception ex)
+            {
+                Main.Log("Error while registering Custom Bros menu.\n" + ex);
             }
 
             // Log missed messages
@@ -92,6 +112,12 @@ namespace BroMakerLib.UnityMod
         static bool OnToggle(UnityModManager.ModEntry modEntry, bool value)
         {
             enabled = value;
+            return true;
+        }
+
+        static bool OnUnload(UnityModManager.ModEntry modEntry)
+        {
+            BroUnlockManager.Instance.OnModUnload();
             return true;
         }
 

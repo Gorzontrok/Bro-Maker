@@ -5,6 +5,7 @@ using BroMakerLib.CustomObjects.Bros;
 using BroMakerLib.Infos;
 using BroMakerLib.Loggers;
 using BroMakerLib.Storages;
+using BroMakerLib.Triggers;
 using HarmonyLib;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -31,6 +32,8 @@ namespace BroMakerLib
 
                 BroMakerStorage.Initialize();
                 PresetManager.Initialize();
+
+                RocketLib.CustomTriggers.CustomTriggerManager.RegisterCustomTrigger(typeof(ForceBroTriggerAction), typeof(ForceBroTriggerActionInfo), "Force Custom Bro");
 
                 _hasInit = true;
                 BMLogger.Log("Finish Initialization");

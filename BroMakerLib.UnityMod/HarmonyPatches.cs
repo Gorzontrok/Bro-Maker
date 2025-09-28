@@ -59,6 +59,21 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                     LoadHero.willReplaceBro[__instance.playerNum] = false;
                     return;
                 }
+
+                // Force custom bro this level if enabled
+                if (LoadHero.ForceCustomThisLevel)
+                {
+                    LoadHero.willReplaceBro[__instance.playerNum] = true;
+                    return;
+                }
+
+                // Don't replace forced bros
+                if (Map.MapData != null && (Map.MapData.forcedBro != HeroType.Random || (Map.MapData.forcedBros != null && Map.MapData.forcedBros.Count() > 0)))
+                {
+                    LoadHero.willReplaceBro[__instance.playerNum] = false;
+                    return;
+                }
+
                 if (GameModeController.IsHardcoreMode && BSett.instance.enabledBroCount > 0)
                 {
                     // Check if we're unlocking a bro or just normally spawning one
@@ -131,7 +146,12 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
                     LoadHero.spawningCustomBro[__instance.playerNum] = true;
                     LoadHero.anyCustomSpawning = true;
                     Storages.StoredHero choice;
-                    if (GameModeController.IsHardcoreMode)
+                    // Check if we're forcing custom bros and only use enabled ones
+                    if (LoadHero.ForceCustomThisLevel)
+                    {
+                        choice = LoadHero.ForcedCustoms[UnityEngine.Random.Range(0, LoadHero.ForcedCustoms.Count())];
+                    }
+                    else if (GameModeController.IsHardcoreMode)
                     {
                         choice = BSett.instance.GetRandomHardcoreBro(LoadHero.playCutscene);
                     }
@@ -663,6 +683,19 @@ namespace BroMakerLib.UnityMod.HarmonyPatches
             if (!Main.enabled)
             {
                 return;
+            }
+
+            // Accept forced custom trigger and apply it
+            if (LoadHero.StartForcingCustom)
+            {
+                LoadHero.StartForcingCustom = false;
+                LoadHero.ForceCustomThisLevel = true;
+                Map.MapData.forcedBro = HeroType.Rambro;
+            }
+            // Clear forced custom triggers
+            else
+            {
+                LoadHero.ForceCustomThisLevel = false;
             }
 
             LoadHero.customBroDeaths = new Dictionary<int, CustomBroDeath>();

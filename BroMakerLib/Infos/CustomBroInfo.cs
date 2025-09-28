@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using BroMakerLib.Cutscenes;
+using BroMakerLib.Unlocks;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -13,6 +14,8 @@ namespace BroMakerLib.Infos
 
         [JsonConverter(typeof(CutsceneConverter))]
         public List<CustomIntroCutscene> Cutscene = new List<CustomIntroCutscene> { new CustomIntroCutscene() };
+
+        public BroUnlockConfig UnlockConfig { get; set; } = new BroUnlockConfig();
 
         [JsonIgnore]
         public List<string> SpritePath = new List<string>();

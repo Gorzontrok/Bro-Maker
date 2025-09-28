@@ -56,8 +56,6 @@ namespace BroMakerLib.Storages
             if (this.info != null)
                 return this.info;
 
-            CustomBroInfo info = null;
-
             BMLogger.Debug($"Start Deserialization of '{path}'");
             string extension = Path.GetExtension(path).ToLower();
             if (extension == JSON_EXTENSION)

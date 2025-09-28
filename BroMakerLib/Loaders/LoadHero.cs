@@ -4,6 +4,7 @@ using BroMakerLib.CustomObjects;
 using BroMakerLib.CustomObjects.Bros;
 using BroMakerLib.Infos;
 using BroMakerLib.Loggers;
+using BroMakerLib.Storages;
 using HarmonyLib;
 using UnityEngine;
 using World.Generation.MapGenV4;
@@ -41,6 +42,11 @@ namespace BroMakerLib.Loaders
         public static Player.SpawnType[] previousSpawnInfo = new Player.SpawnType[] { Player.SpawnType.Unknown, Player.SpawnType.Unknown, Player.SpawnType.Unknown, Player.SpawnType.Unknown };
         public static bool[] wasFirstDeployment = new bool[] { false, false, false, false };
         public static Dictionary<int, CustomBroDeath> customBroDeaths;
+
+        // Variables for setting a specific custom bro to continually spawn on a certain level
+        public static bool StartForcingCustom = false;
+        public static bool ForceCustomThisLevel = false;
+        public static List<StoredHero> ForcedCustoms = new List<StoredHero>();
 
         public static TestVanDammeAnim WithCustomBroInfo(int selectedPlayerNum, CustomBroInfo customBroInfo, Type type)
         {
