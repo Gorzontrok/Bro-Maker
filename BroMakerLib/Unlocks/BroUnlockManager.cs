@@ -7,27 +7,51 @@ using Newtonsoft.Json;
 
 namespace BroMakerLib.Unlocks
 {
-    public class BroUnlockManager
+    public static class BroUnlockManager
     {
-        private static BroUnlockManager _instance;
-        public static BroUnlockManager Instance => _instance ?? (_instance = new BroUnlockManager());
+        private static BroUnlockProgressData progressData;
+        private static readonly Queue<string> pendingUnlockedBros = new Queue<string>();
+        private static readonly HashSet<string> unlockedBroNames = new HashSet<string>();
+        private static readonly List<StoredHero> unlockedBros = new List<StoredHero>();
+        private static readonly string saveFilePath = Path.Combine(Settings.directory, "BroMaker_UnlockProgress.json");
 
-        private BroUnlockProgressData progressData;
-        private readonly Queue<string> pendingUnlockedBros = new Queue<string>();
-        private readonly string saveFilePath;
+        public static List<StoredHero> UnlockedBros => unlockedBros;
+        public static HashSet<string> UnlockedBroNames => unlockedBroNames;
 
-        private BroUnlockManager()
-        {
-            saveFilePath = Path.Combine(Settings.directory, "BroMaker_UnlockProgress.json");
-        }
-
-        public void Initialize()
+        public static void Initialize()
         {
             LoadProgressData();
             ProcessNewlyInstalledBros();
+            UpdateUnlockedBrosLists();
         }
 
-        public bool IsBroUnlocked(string broName)
+        private static void UpdateUnlockedBrosLists()
+        {
+            unlockedBroNames.Clear();
+            unlockedBros.Clear();
+
+            if (progressData?.BroStates == null) return;
+
+            foreach (var kvp in progressData.BroStates)
+            {
+                if (kvp.Value.IsUnlocked)
+                {
+                    unlockedBroNames.Add(kvp.Key);
+                    var bro = BroMakerStorage.GetStoredHeroByName(kvp.Key);
+                    if (bro != null)
+                    {
+                        unlockedBros.Add(bro);
+                    }
+                }
+                // Disable all locked bros if they're enabled
+                else if (BroSpawnManager.IsBroEnabled(kvp.Key))
+                {
+                    BroSpawnManager.SetBroEnabled(kvp.Key, false, true);
+                }
+            }
+        }
+
+        public static bool IsBroUnlocked(string broName)
         {
             if (progressData?.BroStates == null || !progressData.BroStates.ContainsKey(broName))
             {
@@ -37,12 +61,12 @@ namespace BroMakerLib.Unlocks
             return progressData.BroStates[broName].IsUnlocked;
         }
 
-        public bool HasPendingUnlockedBro()
+        public static bool HasPendingUnlockedBro()
         {
             return pendingUnlockedBros.Count > 0;
         }
 
-        public string GetAndClearPendingUnlockedBro()
+        public static string GetAndClearPendingUnlockedBro()
         {
             if (pendingUnlockedBros.Count > 0)
             {
@@ -51,7 +75,7 @@ namespace BroMakerLib.Unlocks
             return null;
         }
 
-        public void CheckRescueUnlocks(int currentRescueCount)
+        public static void CheckRescueUnlocks(int currentRescueCount)
         {
             if (progressData?.BroStates == null) return;
 
@@ -79,7 +103,7 @@ namespace BroMakerLib.Unlocks
             progressData.LastKnownTotalRescues = currentRescueCount;
         }
 
-        public bool CheckLevelUnlocks(string levelName)
+        public static bool CheckLevelUnlocks(string levelName)
         {
             if (progressData?.BroStates == null || string.IsNullOrEmpty(levelName))
                 return false;
@@ -115,7 +139,7 @@ namespace BroMakerLib.Unlocks
             return anyUnlocked;
         }
 
-        public void UnlockBro(string broName, string reason = null)
+        public static void UnlockBro(string broName, string reason = null)
         {
             if (progressData?.BroStates == null || !progressData.BroStates.ContainsKey(broName))
                 return;
@@ -128,6 +152,14 @@ namespace BroMakerLib.Unlocks
 
             pendingUnlockedBros.Enqueue(broName);
 
+            // Update the unlocked lists
+            unlockedBroNames.Add(broName);
+            var bro = BroMakerStorage.GetStoredHeroByName(broName);
+            if (bro != null)
+            {
+                unlockedBros.Add(bro);
+            }
+
             string logMessage = $"Bro '{broName}' unlocked";
             if (!string.IsNullOrEmpty(reason))
             {
@@ -136,7 +168,7 @@ namespace BroMakerLib.Unlocks
             BMLogger.Log(logMessage);
         }
 
-        public void UnlockAllBros()
+        public static void UnlockAllBros()
         {
             if (progressData?.BroStates == null) return;
 
@@ -149,11 +181,12 @@ namespace BroMakerLib.Unlocks
                 }
             }
 
+            UpdateUnlockedBrosLists();
             SaveProgressData();
             BMLogger.Log("All bros have been unlocked via Developer Options");
         }
 
-        private void ProcessNewlyInstalledBros()
+        private static void ProcessNewlyInstalledBros()
         {
             if (progressData == null)
             {
@@ -213,7 +246,7 @@ namespace BroMakerLib.Unlocks
             }
         }
 
-        private int CalculateStaggeredRescueTarget(int baseRequirement)
+        private static int CalculateStaggeredRescueTarget(int baseRequirement)
         {
             if (progressData?.BroStates == null) return baseRequirement;
 
@@ -236,7 +269,7 @@ namespace BroMakerLib.Unlocks
             return highestTarget + baseRequirement;
         }
 
-        private bool ValidateUnlockLevel(StoredHero bro, string levelPath)
+        private static bool ValidateUnlockLevel(StoredHero bro, string levelPath)
         {
             if (string.IsNullOrEmpty(levelPath))
                 return false;
@@ -252,7 +285,7 @@ namespace BroMakerLib.Unlocks
             return exists;
         }
 
-        private void LoadProgressData()
+        private static void LoadProgressData()
         {
             try
             {
@@ -281,7 +314,7 @@ namespace BroMakerLib.Unlocks
             }
         }
 
-        private void SaveProgressData()
+        private static void SaveProgressData()
         {
             try
             {
@@ -297,7 +330,7 @@ namespace BroMakerLib.Unlocks
             }
         }
 
-        public void OnModUnload()
+        public static void OnModUnload()
         {
             SaveProgressData();
         }

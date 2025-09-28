@@ -321,7 +321,8 @@ namespace BroMakerLib.Menus
             }
 
             // Locked bros should always show as disabled
-            bool spawnEnabled = isLocked ? false : (Settings.instance?.GetBroEnabled(storedHero.name) ?? true);
+            //bool spawnEnabled = isLocked ? false : (Settings.instance?.GetBroEnabled(storedHero.name) ?? true);
+            bool spawnEnabled = false;
             spawnStatusText.Text = spawnEnabled ? "ENABLED" : "DISABLED";
             spawnStatusText.TextColor = spawnEnabled ? Color.green : Color.red;
 
@@ -399,8 +400,9 @@ namespace BroMakerLib.Menus
             bool isLocked = GetPlaceholderLockStatus(currentHero);
             if (isLocked) return;
 
-            bool currentState = Settings.instance?.GetBroEnabled(currentHero.name) ?? true;
-            Settings.instance?.SetBroEnabled(currentHero.name, !currentState);
+            //bool currentState = Settings.instance?.GetBroEnabled(currentHero.name) ?? true;
+            bool currentState = true;
+            //Settings.instance?.SetBroEnabled(currentHero.name, !currentState);
             Settings.instance?.Save();
 
             bool newState = !currentState;

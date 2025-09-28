@@ -7,14 +7,12 @@ using BroMakerLib.Unlocks;
 using HarmonyLib;
 using UnityModManagerNet;
 
-namespace BroMakerLib.UnityMod
+namespace BroMakerLib
 {
     static class Main
     {
         public static UnityModManager.ModEntry mod;
         public static bool enabled;
-        public static Settings settings;
-        public static int selectedPlayerNum = 0;
 
         static bool Load(UnityModManager.ModEntry modEntry)
         {
@@ -26,7 +24,6 @@ namespace BroMakerLib.UnityMod
             modEntry.OnSaveGUI = OnSaveGUI;
             modEntry.OnUnload = OnUnload;
             modEntry.Info.DisplayName = "<color=\"#d68c16\">BroMaker Unity</color>";
-            settings = Settings.Load<Settings>(modEntry);
             Harmony harmony = null;
             Assembly assembly = null;
 
@@ -47,9 +44,8 @@ namespace BroMakerLib.UnityMod
                 DirectoriesManager.StorageDirectory = Path.Combine(Directory.GetCurrentDirectory(), "BroMaker_Storage\\");
                 // Initialize BroMaker
                 BroMaker.Initialize();
-                BroMakerLib.Settings.instance.debugLogs = settings.debugLogs;
                 // Initialize Unlock Manager
-                BroUnlockManager.Instance.Initialize();
+                BroUnlockManager.Initialize();
                 // Apply all harmony patches if any bros have overridden the method
                 if (harmony != null)
                 {
@@ -117,7 +113,7 @@ namespace BroMakerLib.UnityMod
 
         static bool OnUnload(UnityModManager.ModEntry modEntry)
         {
-            BroUnlockManager.Instance.OnModUnload();
+            BroUnlockManager.OnModUnload();
             return true;
         }
 
@@ -134,17 +130,6 @@ namespace BroMakerLib.UnityMod
         {
             CustomHero.SaveAll();
             BroMakerLib.Settings.instance.Save();
-            settings.Save(modEntry);
-        }
-    }
-
-    public class Settings : UnityModManager.ModSettings
-    {
-        public bool debugLogs = false;
-
-        public override void Save(UnityModManager.ModEntry modEntry)
-        {
-            Save(this, modEntry);
         }
     }
 }

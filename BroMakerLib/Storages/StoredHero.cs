@@ -2,21 +2,12 @@
 using System.IO;
 using BroMakerLib.Infos;
 using BroMakerLib.Loggers;
-using BSett = BroMakerLib.Settings;
 
 namespace BroMakerLib.Storages
 {
-    public struct StoredHero : IStoredObject
+    public class StoredHero : IStoredObject
     {
         public const string JSON_EXTENSION = ".json";
-
-        public bool IsEmpty
-        {
-            get
-            {
-                return path.IsNullOrEmpty();
-            }
-        }
 
         public string path { get; set; }
         public string name { get; set; }
@@ -40,14 +31,14 @@ namespace BroMakerLib.Storages
                 BMLogger.ExceptionLog(e);
                 this.name = Path.GetFileNameWithoutExtension(this.path);
             }
-            BSett.instance.AddBroEnabled(this.name, true);
+            BroSpawnManager.AddBroEnabled(this.name, true);
         }
         public StoredHero(CustomBroInfo bInfo, BroMakerMod mod)
         {
             info = bInfo;
             path = bInfo.path;
             name = bInfo.name;
-            BSett.instance.AddBroEnabled(this.name, true);
+            BroSpawnManager.AddBroEnabled(this.name, true);
             this.mod = mod;
         }
 

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\BroMakerLib.UnityMod\LocalBroforcePath.props" Condition="Exists('..\BroMakerLib.UnityMod\LocalBroforcePath.props')" />
+  <Import Project="LocalBroforcePath.props" Condition="Exists('LocalBroforcePath.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -133,7 +133,10 @@
     <Compile Include="Cutscenes\CutsceneSpriteAnimatedJsonConverter.cs" />
     <Compile Include="Cutscenes\CutsceneConverter.cs" />
     <Compile Include="Cutscenes\CutsceneIntroExtra.cs" />
+    <Compile Include="HarmonyPatches.cs" />
     <Compile Include="Loaders\LoadBroforceObjects.cs" />
+    <Compile Include="Main.cs" />
+    <Compile Include="ModUI.cs" />
     <Compile Include="Storages\BroMakerMod.cs" />
     <Compile Include="Info.cs" />
     <Compile Include="CustomObjects\Bros\SwordHero.cs" />
@@ -150,6 +153,7 @@
     <Compile Include="Storages\PresetManager.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Storages\BroMakerStorage.cs" />
+    <Compile Include="Storages\BroSpawnManager.cs" />
     <Compile Include="Storages\DirectoriesManager.cs" />
     <Compile Include="CustomObjects\ICustomHero.cs" />
     <Compile Include="Infos\CustomBroInfo.cs" />
@@ -234,9 +238,11 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>XCOPY /Y /R "$(TargetPath)" "$(SolutionDir)\BroMakerLib.UnityMod\_Mod\$(ProjectName).dll*"
-XCOPY /Y /R "$(TargetDir)$(TargetName).xml" "$(SolutionDir)\BroMakerLib.UnityMod\_Mod\$(ProjectName).xml*"
-del "$(BroforcePath)\Mods\BroMaker\*.cache" 2&gt; nul || set errorlevel=0</PostBuildEvent>
+    <PostBuildEvent>XCOPY /Y /R "$(TargetPath)" "$(ProjectDir)\_Mod\$(ProjectName).dll*"
+XCOPY /Y /R "$(TargetDir)$(TargetName).xml" "$(ProjectDir)\_Mod\$(ProjectName).xml*"
+XCOPY /Y /I /E "$(ProjectDir)\_Mod\*.*" "$(BroforcePath)\Mods\BroMaker\"
+del "$(BroforcePath)\Mods\BroMaker\*.cache" 2&gt; nul || set errorlevel=0
+start steam://rungameid/274190</PostBuildEvent>
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
   <PropertyGroup>

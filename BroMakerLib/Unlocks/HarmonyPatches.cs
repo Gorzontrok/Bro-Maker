@@ -25,7 +25,7 @@ namespace BroMakerLib.Unlocks
                     {
                         BMLogger.Debug($"Level completed successfully: {currentLevelName}");
 
-                        if (BroUnlockManager.Instance.CheckLevelUnlocks(currentLevelName))
+                        if (BroUnlockManager.CheckLevelUnlocks(currentLevelName))
                         {
                             BMLogger.Log("Bros unlocked via level completion!");
                         }
@@ -50,7 +50,7 @@ namespace BroMakerLib.Unlocks
                 int currentRescueCount = PlayerProgress.Instance.freedBros;
                 BMLogger.Debug($"Rescue count increased to: {currentRescueCount}");
 
-                BroUnlockManager.Instance.CheckRescueUnlocks(currentRescueCount);
+                BroUnlockManager.CheckRescueUnlocks(currentRescueCount);
             }
             catch (Exception ex)
             {

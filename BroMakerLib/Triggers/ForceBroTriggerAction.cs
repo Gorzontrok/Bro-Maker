@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using BroMakerLib.Loaders;
 using BroMakerLib.Loggers;
 using BroMakerLib.Storages;
 using UnityEngine;
@@ -82,7 +81,7 @@ namespace BroMakerLib.Triggers
                     foreach (string broName in this.info.ForcedBros)
                     {
                         StoredHero hero = BroMakerStorage.GetStoredHeroByName(broName);
-                        if (!hero.IsEmpty)
+                        if (hero != null)
                         {
                             storedHeroes.Add(hero);
                         }
@@ -92,20 +91,20 @@ namespace BroMakerLib.Triggers
                         // Only set this value if we're running at level start, otherwise midlevel triggers could carry over into other levels
                         if (this.info.RunAtLevelStart)
                         {
-                            LoadHero.StartForcingCustom = true;
+                            BroSpawnManager.StartForcingCustom = true;
                         }
                         // Set this if not running at level start
                         else
                         {
-                            LoadHero.ForceCustomThisLevel = true;
+                            BroSpawnManager.ForceCustomThisLevel = true;
                         }
-                        LoadHero.ForcedCustoms = storedHeroes;
+                        BroSpawnManager.ForcedCustoms = storedHeroes;
                     }
                 }
                 else
                 {
                     Map.MapData.forcedBro = HeroType.Random;
-                    LoadHero.ForceCustomThisLevel = false;
+                    BroSpawnManager.ForceCustomThisLevel = false;
                 }
             }
             catch (Exception ex)

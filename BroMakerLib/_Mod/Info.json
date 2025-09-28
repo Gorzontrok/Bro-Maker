@@ -5,8 +5,8 @@
   "Version": "2.6.0",
   "Requirements": [ "RocketLib" ],
   "LoadAfter": [ "RocketLib" ],
-  "AssemblyName": "BroMakerLib.UnityMod.dll",
-  "EntryMethod": "BroMakerLib.UnityMod.Main.Load",
+  "AssemblyName": "BroMakerLib.dll",
+  "EntryMethod": "BroMakerLib.Main.Load",
   "Repository": "https://raw.githubusercontent.com/Gorzontrok/Bro-Maker/main/Repository.json"
 
 }

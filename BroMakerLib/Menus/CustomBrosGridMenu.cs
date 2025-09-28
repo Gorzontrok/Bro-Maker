@@ -270,8 +270,9 @@ namespace BroMakerLib.Menus
                 IsLocked = isLocked,
 
                 // Locked bros are always disabled, otherwise check settings
-                IsSpawnEnabled = isLocked ? false :
-                                (Settings.instance?.GetBroEnabled(storedHero.name) ?? true),
+                //IsSpawnEnabled = isLocked ? false :
+                //                (Settings.instance?.GetBroEnabled(storedHero.name) ?? true),
+                IsSpawnEnabled = false,
 
                 // Visual properties
                 LockedTintColor = new Color(0.15f, 0.15f, 0.15f, 1f),  // Much darker for locked
@@ -358,8 +359,9 @@ namespace BroMakerLib.Menus
                     bool isLocked = GetSharedPlaceholderLockStatus(storedHero.name);
 
                     // Locked bros are always disabled
-                    bool spawnEnabled = isLocked ? false :
-                                       (Settings.instance?.GetBroEnabled(storedHero.name) ?? true);
+                    //bool spawnEnabled = isLocked ? false :
+                    //                   (Settings.instance?.GetBroEnabled(storedHero.name) ?? true);
+                    bool spawnEnabled = false;
                     broCard.IsSpawnEnabled = spawnEnabled;
                 }
             }
