@@ -168,7 +168,8 @@
     <Compile Include="Storages\IStoredObject.cs" />
     <Compile Include="Storages\StoredHero.cs" />
     <Compile Include="Storages\StoredAbility.cs" />
-    <Compile Include="Triggers\ForceBroTriggerAction.cs" />
+    <Compile Include="Triggers\ForceBroAction.cs" />
+    <Compile Include="Triggers\HeroUnlockCutsceneAction.cs" />
     <Compile Include="Unlocks\UnlockMethod.cs" />
     <Compile Include="Unlocks\BroUnlockConfig.cs" />
     <Compile Include="Unlocks\BroUnlockState.cs" />

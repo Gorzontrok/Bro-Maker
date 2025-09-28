@@ -44,6 +44,11 @@ namespace BroMakerLib.Storages
             return BroUnlockManager.UnlockedBros;
         }
 
+        public static List<string> GetAllUnlockedBrosNames()
+        {
+            return BroUnlockManager.UnlockedBroNames;
+        }
+
         public static List<StoredHero> GetAllSpawnableBros()
         {
             // If in IronBro, only return available bros
@@ -76,6 +81,38 @@ namespace BroMakerLib.Storages
                     }
                 }
                 return enabledHeroes;
+            }
+        }
+
+        public static List<string> GetAllSpawnableBrosNames()
+        {
+            // If in IronBro, only return available bros
+            if (GameModeController.IsHardcoreMode)
+            {
+                return HardcoreAvailableBros;
+            }
+            // If forcing customs this level, only return allowed customs
+            else if (ForceCustomThisLevel)
+            {
+                List<string> names = new List<string>();
+                foreach (StoredHero hero in ForcedCustoms)
+                {
+                    names.Add(hero.name);
+                }
+                return names;
+            }
+            // Otherwise return all enabled bros
+            else
+            {
+                List<string> names = new List<string>();
+                foreach (KeyValuePair<string, bool> bro in BSett.instance.EnabledBros)
+                {
+                    if (bro.Value)
+                    {
+                        names.Add(bro.Key);
+                    }
+                }
+                return names;
             }
         }
 

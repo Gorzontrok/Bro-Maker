@@ -2,6 +2,7 @@ using BroMakerLib.Cutscenes;
 using BroMakerLib.Infos;
 using BroMakerLib.Loggers;
 using BroMakerLib.Storages;
+using BroMakerLib.Unlocks;
 using RocketLib.Menus.Core;
 using RocketLib.Menus.Elements;
 using RocketLib.Menus.Layout;
@@ -19,6 +20,7 @@ namespace BroMakerLib.Menus
         private TextElement statusText;
         private TextElement unlockLevelText;
         private TextElement rescueText;
+        private HorizontalLayoutContainer levelContainer;
         private HorizontalLayoutContainer rescueContainer;
         private TextElement authorText;
         private TextElement spawnStatusText;
@@ -147,9 +149,9 @@ namespace BroMakerLib.Menus
             statusText = (statusContainer.Children[1] as TextElement);
             infoPanel.AddChild(statusContainer);
 
-            var unlockContainer = CreateInfoRow("UNLOCK LEVEL:", "");
-            unlockLevelText = (unlockContainer.Children[1] as TextElement);
-            infoPanel.AddChild(unlockContainer);
+            levelContainer = CreateInfoRow("UNLOCK LEVEL:", "");
+            unlockLevelText = (levelContainer.Children[1] as TextElement);
+            infoPanel.AddChild(levelContainer);
 
             rescueContainer = CreateInfoRow("REQUIREMENT:", "");
             rescueText = (rescueContainer.Children[1] as TextElement);
@@ -291,21 +293,38 @@ namespace BroMakerLib.Menus
 
             GetCutsceneTexture(storedHero);
 
-            bool isLocked = GetPlaceholderLockStatus(storedHero);
+            bool isLocked = !BroUnlockManager.IsBroUnlocked(storedHero.name);
             statusText.Text = isLocked ? "LOCKED" : "UNLOCKED";
             statusText.TextColor = isLocked ? Color.red : Color.green;
 
-            if (isLocked)
+            var unlockState = BroUnlockManager.GetBroUnlockState(storedHero.name);
+            if (unlockState != null)
             {
-                unlockLevelText.Text = GetPlaceholderLevelName();
-                rescueText.Text = $"Rescue {UnityEngine.Random.Range(3, 10)} more bros";
-                rescueContainer.IsVisible = true;
-                playLevelButton.IsVisible = true;
-                playLevelButton.IsFocusable = true;
+                unlockLevelText.Text = !string.IsNullOrEmpty(unlockState.UnlockLevelName) ?
+                    unlockState.UnlockLevelName :
+                    (!string.IsNullOrEmpty(unlockState.UnlockLevelPath) ? "Custom Level" : "N/A");
+
+                if (unlockState.ConfiguredMethod == UnlockMethod.RescueCount ||
+                    unlockState.ConfiguredMethod == UnlockMethod.RescueOrLevel)
+                {
+                    int currentRescues = PlayerProgress.Instance != null ? PlayerProgress.Instance.freedBros : 0;
+                    int remaining = unlockState.TargetRescueCount - currentRescues;
+                    rescueText.Text = $"Rescue {remaining} more bros";
+                    rescueContainer.IsVisible = true;
+                }
+                else
+                {
+                    rescueContainer.IsVisible = false;
+                }
+
+                playLevelButton.IsVisible = (unlockState.ConfiguredMethod == UnlockMethod.UnlockLevel ||
+                                             unlockState.ConfiguredMethod == UnlockMethod.RescueOrLevel) &&
+                                            !string.IsNullOrEmpty(unlockState.UnlockLevelPath);
+                playLevelButton.IsFocusable = playLevelButton.IsVisible;
             }
             else
             {
-                unlockLevelText.Text = "N/A";
+                levelContainer.IsVisible = false;
                 rescueContainer.IsVisible = false;
                 playLevelButton.IsVisible = false;
                 playLevelButton.IsFocusable = false;
@@ -420,9 +439,10 @@ namespace BroMakerLib.Menus
 
         private void PlayUnlockLevel()
         {
-            BMLogger.Log($"[BroMaker] Would play unlock level for {currentHero.name}");
-
-            GoBack();
+            if (!BroUnlockManager.LoadUnlockLevel(currentHero.name))
+            {
+                BMLogger.Error($"Failed to load unlock level for {currentHero.name}");
+            }
         }
 
         protected override void OnDestroy()

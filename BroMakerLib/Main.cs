@@ -1,10 +1,8 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
 using BroMakerLib.CustomObjects.Bros;
 using BroMakerLib.Loggers;
 using BroMakerLib.Unlocks;
-using HarmonyLib;
 using UnityModManagerNet;
 
 namespace BroMakerLib
@@ -24,20 +22,7 @@ namespace BroMakerLib
             modEntry.OnSaveGUI = OnSaveGUI;
             modEntry.OnUnload = OnUnload;
             modEntry.Info.DisplayName = "<color=\"#d68c16\">BroMaker Unity</color>";
-            Harmony harmony = null;
-            Assembly assembly = null;
 
-            // Initialize Harmony Instance
-            try
-            {
-                harmony = new Harmony(modEntry.Info.Id);
-                assembly = Assembly.GetExecutingAssembly();
-                harmony.PatchAll(assembly);
-            }
-            catch (Exception ex)
-            {
-                Main.Log(ex);
-            }
             try
             {
                 // Set BroMaker Path
@@ -46,11 +31,6 @@ namespace BroMakerLib
                 BroMaker.Initialize();
                 // Initialize Unlock Manager
                 BroUnlockManager.Initialize();
-                // Apply all harmony patches if any bros have overridden the method
-                if (harmony != null)
-                {
-                    BroMaker.ApplyBroPatches(harmony);
-                }
                 // Preload all bro assets
                 BroMaker.PreloadBroAssets();
             }

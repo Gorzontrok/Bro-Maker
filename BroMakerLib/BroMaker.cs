@@ -33,7 +33,14 @@ namespace BroMakerLib
                 BroMakerStorage.Initialize();
                 PresetManager.Initialize();
 
-                RocketLib.CustomTriggers.CustomTriggerManager.RegisterCustomTrigger(typeof(ForceBroTriggerAction), typeof(ForceBroTriggerActionInfo), "Force Custom Bro");
+                // Apply all harmony patches if any bros have overridden the method
+                if (harmony != null)
+                {
+                    BroMaker.ApplyBroPatches(harmony);
+                }
+
+                RocketLib.CustomTriggers.CustomTriggerManager.RegisterCustomTrigger(typeof(ForceBroAction), typeof(ForceBroActionInfo), "Force Custom Bro");
+                RocketLib.CustomTriggers.CustomTriggerManager.RegisterCustomTrigger(typeof(HeroUnlockCutsceneAction), typeof(HeroUnlockCutsceneActionInfo), "Play Custom Bro Cutscene");
 
                 _hasInit = true;
                 BMLogger.Log("Finish Initialization");

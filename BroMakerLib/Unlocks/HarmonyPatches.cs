@@ -25,10 +25,7 @@ namespace BroMakerLib.Unlocks
                     {
                         BMLogger.Debug($"Level completed successfully: {currentLevelName}");
 
-                        if (BroUnlockManager.CheckLevelUnlocks(currentLevelName))
-                        {
-                            BMLogger.Log("Bros unlocked via level completion!");
-                        }
+                        BroUnlockManager.CheckLevelUnlocks(currentLevelName);
                     }
                 }
             }

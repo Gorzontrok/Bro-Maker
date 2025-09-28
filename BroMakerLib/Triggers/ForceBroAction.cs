@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Triggers
 {
-    class ForceBroTriggerActionInfo : RocketLib.CustomTriggers.CustomTriggerActionInfo
+    class ForceBroActionInfo : RocketLib.CustomTriggers.CustomTriggerActionInfo
     {
         public List<string> ForcedBros = new List<string>();
         public bool RunAtLevelStart = true;
@@ -36,9 +36,9 @@ namespace BroMakerLib.Triggers
         }
     }
 
-    public class ForceBroTriggerAction : RocketLib.CustomTriggers.CustomTriggerAction
+    public class ForceBroAction : RocketLib.CustomTriggers.CustomTriggerAction
     {
-        ForceBroTriggerActionInfo info;
+        ForceBroActionInfo info;
 
         public override TriggerActionInfo Info
         {
@@ -48,7 +48,7 @@ namespace BroMakerLib.Triggers
             }
             set
             {
-                this.info = (ForceBroTriggerActionInfo)value;
+                this.info = (ForceBroActionInfo)value;
                 if (this.info.RunAtLevelStart)
                 {
                     this.RunAction();

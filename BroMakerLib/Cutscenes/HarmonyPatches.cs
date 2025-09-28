@@ -189,4 +189,22 @@ namespace BroMakerLib.Cutscenes
             }
         }
     }
+
+    [HarmonyPatch(typeof(Cutscene), "OnEnable")]
+    static class Cutscene_OnEnable_Patch
+    {
+        public static void Postfix(Cutscene __instance)
+        {
+            if (!Main.enabled)
+            {
+                return;
+            }
+
+            if (CustomCutsceneController.finishCampaignAfterCutscene)
+            {
+                CustomCutsceneController.finishCampaignAfterCutscene = false;
+                __instance.gameObject.AddComponent<CutsceneFinishCampaign>();
+            }
+        }
+    }
 }

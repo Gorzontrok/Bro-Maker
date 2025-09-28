@@ -11,12 +11,12 @@ namespace BroMakerLib.Unlocks
     {
         private static BroUnlockProgressData progressData;
         private static readonly Queue<string> pendingUnlockedBros = new Queue<string>();
-        private static readonly HashSet<string> unlockedBroNames = new HashSet<string>();
+        private static readonly List<string> unlockedBroNames = new List<string>();
         private static readonly List<StoredHero> unlockedBros = new List<StoredHero>();
         private static readonly string saveFilePath = Path.Combine(Settings.directory, "BroMaker_UnlockProgress.json");
 
         public static List<StoredHero> UnlockedBros => unlockedBros;
-        public static HashSet<string> UnlockedBroNames => unlockedBroNames;
+        public static List<string> UnlockedBroNames => unlockedBroNames;
 
         public static void Initialize()
         {
@@ -59,6 +59,14 @@ namespace BroMakerLib.Unlocks
             }
 
             return progressData.BroStates[broName].IsUnlocked;
+        }
+
+        public static BroUnlockState GetBroUnlockState(string broName)
+        {
+            if (progressData?.BroStates == null || !progressData.BroStates.ContainsKey(broName))
+                return null;
+
+            return progressData.BroStates[broName];
         }
 
         public static bool HasPendingUnlockedBro()
@@ -183,7 +191,6 @@ namespace BroMakerLib.Unlocks
 
             UpdateUnlockedBrosLists();
             SaveProgressData();
-            BMLogger.Log("All bros have been unlocked via Developer Options");
         }
 
         private static void ProcessNewlyInstalledBros()
@@ -333,6 +340,101 @@ namespace BroMakerLib.Unlocks
         public static void OnModUnload()
         {
             SaveProgressData();
+        }
+
+        public static bool LoadUnlockLevel(string broName)
+        {
+            if (progressData?.BroStates == null || !progressData.BroStates.ContainsKey(broName))
+            {
+                BMLogger.Error($"Cannot load unlock level - bro '{broName}' not found");
+                return false;
+            }
+
+            var state = progressData.BroStates[broName];
+            if (string.IsNullOrEmpty(state.UnlockLevelPath))
+            {
+                BMLogger.Error($"Bro '{broName}' has no unlock level configured");
+                return false;
+            }
+
+            var bro = BroMakerStorage.GetStoredHeroByName(broName);
+            if (bro == null)
+            {
+                BMLogger.Error($"Cannot find bro '{broName}' in storage");
+                return false;
+            }
+
+            string fullLevelPath = System.IO.Path.Combine(bro.GetInfo().path, state.UnlockLevelPath);
+
+            if (!fullLevelPath.EndsWith(".bfc"))
+            {
+                fullLevelPath += ".bfc";
+            }
+
+            if (!File.Exists(fullLevelPath))
+            {
+                BMLogger.Error($"Unlock level file not found: {fullLevelPath}");
+                return false;
+            }
+
+            try
+            {
+                byte[] campaignBytes = File.ReadAllBytes(fullLevelPath);
+                Campaign campaign = FileIO.LoadCampaignBytes(campaignBytes, false, true);
+
+                if (campaign != null && campaign.levels != null && campaign.levels.Length > 0)
+                {
+                    LevelSelectionController.ResetLevelAndGameModeToDefault();
+
+                    LevelSelectionController.campaignToLoad = campaign.name;
+                    LevelSelectionController.loadCustomCampaign = true;
+                    LevelSelectionController.loadPublishedCampaign = false;
+                    LevelSelectionController.CurrentLevelNum = 0;
+                    LevelSelectionController.VictoryScene = "MainMenu";
+
+                    LevelSelectionController.currentCampaign = campaign;
+
+                    GameModeController.GameMode = campaign.header != null ? campaign.header.gameMode : GameMode.Campaign;
+
+                    GameState.Instance.loadMode = MapLoadMode.Campaign;
+
+                    LevelEditorGUI.levelEditorActive = false;
+
+                    UnityEngine.SceneManagement.SceneManager.LoadScene("newJoin", UnityEngine.SceneManagement.LoadSceneMode.Single);
+
+                    return true;
+                }
+                else
+                {
+                    BMLogger.Error($"Invalid campaign file or no levels found: {fullLevelPath}");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                BMLogger.Error($"Error loading unlock level for '{broName}': {ex.Message}");
+                return false;
+            }
+        }
+
+        public static List<string> GetBrosWithUnlockLevels()
+        {
+            var result = new List<string>();
+            if (progressData?.BroStates == null) return result;
+
+            foreach (var kvp in progressData.BroStates)
+            {
+                var state = kvp.Value;
+                if (!state.IsUnlocked &&
+                    (state.ConfiguredMethod == UnlockMethod.UnlockLevel ||
+                     state.ConfiguredMethod == UnlockMethod.RescueOrLevel) &&
+                    !string.IsNullOrEmpty(state.UnlockLevelPath))
+                {
+                    result.Add(kvp.Key);
+                }
+            }
+
+            return result;
         }
     }
 }

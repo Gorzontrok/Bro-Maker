@@ -6,6 +6,7 @@ using BroMakerLib.Infos;
 using BroMakerLib.Loaders;
 using BroMakerLib.Loggers;
 using BroMakerLib.Storages;
+using BroMakerLib.Unlocks;
 using RocketLib;
 using UnityEngine;
 using BSett = BroMakerLib.Settings;
