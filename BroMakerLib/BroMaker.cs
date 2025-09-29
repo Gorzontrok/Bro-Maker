@@ -58,6 +58,7 @@ namespace BroMakerLib
                 {
                     CustomHero bro = heroHolder.AddComponent(kvp.Value) as CustomHero;
                     bro.HarmonyPatches(harmony);
+                    bro.RegisterCustomTriggers();
                 }
             }
         }

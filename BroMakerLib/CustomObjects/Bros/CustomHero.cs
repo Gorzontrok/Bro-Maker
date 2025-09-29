@@ -353,6 +353,13 @@ namespace BroMakerLib.CustomObjects.Bros
         }
 
         /// <summary>
+        /// Override this method to add any custom trigger actions via RocketLib's Custom Trigger system
+        /// </summary>
+        public virtual void RegisterCustomTriggers()
+        {
+        }
+
+        /// <summary>
         /// Override this method to add your own assets to be preloaded when the game starts, to avoid lag when spawning as custom characters.
         /// </summary>
         public virtual void PreloadAssets()
