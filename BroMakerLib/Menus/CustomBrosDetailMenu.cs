@@ -55,138 +55,122 @@ namespace BroMakerLib.Menus
                 Name = "DetailView_MainContainer",
                 WidthMode = SizeMode.Fill,
                 HeightMode = SizeMode.Fill,
-                Padding = 10f,
+                Padding = 0f,
                 Spacing = 5f
             };
+
+            RootContainer.AddChild(mainContainer);
 
             titleText = new TextElement("DetailTitle")
             {
                 Text = "BRO NAME",
                 TextColor = Color.white,
-                FontSize = 8f,
+                FontSize = 10f,
                 WidthMode = SizeMode.Fill,
-                HeightMode = SizeMode.Fixed,
-                Height = 30f
+                HeightMode = SizeMode.Auto,
             };
             mainContainer.AddChild(titleText);
 
-            var contentArea = new VerticalLayoutContainer
+            var mainRow = new HorizontalLayoutContainer
             {
-                Name = "ContentArea",
-                WidthMode = SizeMode.Fixed,
-                Width = 450f,
-                HeightMode = SizeMode.Fill,
-                Spacing = 0f
-            };
-
-            var topSpacer = new SpacerElement("TopSpacer")
-            {
-                HeightMode = SizeMode.Fixed,
-                Height = -55f
-            };
-            contentArea.AddChild(topSpacer);
-
-            var topRow = new HorizontalLayoutContainer
-            {
-                Name = "TopRow",
+                Name = "Main Row",
                 WidthMode = SizeMode.Fill,
                 HeightMode = SizeMode.Fixed,
                 Height = 210f,
-                Spacing = -60f
+                Padding = 0f,
+                HorizontalAlignmentOverride = HorizontalAlignment.Center
             };
 
-            var avatarPanel = new VerticalLayoutContainer
+            mainContainer.AddChild(mainRow);
+
+            var leftMainRowSpacer = new SpacerElement
             {
-                Name = "AvatarPanel",
-                WidthMode = SizeMode.Fixed,
-                Width = 210f,
-                HeightMode = SizeMode.Fixed,
-                Height = 210f,
-                Padding = 2f
+                WidthMode = SizeMode.Percentage,
+                Width = 5
             };
+
+            mainRow.AddChild(leftMainRowSpacer);
+
+            var avatarContainer = new VerticalLayoutContainer
+            {
+                Name = "Avatar Panel",
+                WidthMode = SizeMode.Fill,
+                HeightMode = SizeMode.Fill
+            };
+
+            mainRow.AddChild(avatarContainer);
+
+            var avatarSpacer = new SpacerElement
+            {
+                HeightMode = SizeMode.Fixed,
+                Height = -40
+            };
+
+            avatarContainer.AddChild(avatarSpacer);
 
             avatarImage = new ImageElement("AvatarImage")
             {
                 WidthMode = SizeMode.Fixed,
-                Width = 200f,
+                Width = 240,
                 HeightMode = SizeMode.Fixed,
-                Height = 200f
-            };
-            avatarPanel.AddChild(avatarImage);
-            topRow.AddChild(avatarPanel);
-
-            var infoPanelWrapper = new VerticalLayoutContainer
-            {
-                Name = "InfoPanelWrapper",
-                WidthMode = SizeMode.Fixed,
-                Width = 175f,
-                HeightMode = SizeMode.Fill,
-                Padding = 0f
+                Height = 240,
+                VerticalAlignmentOverride = VerticalAlignment.Top
             };
 
-            var infoPanelSpacer = new SpacerElement
+            avatarContainer.AddChild(avatarImage);
+
+            var middleSpacerMainRow = new SpacerElement
             {
-                HeightMode = SizeMode.Fixed,
-                Height = 45f
+                WidthMode = SizeMode.Percentage,
+                Width = 10
             };
-            infoPanelWrapper.AddChild(infoPanelSpacer);
 
             var infoPanel = new VerticalLayoutContainer
             {
                 Name = "InfoPanel",
                 WidthMode = SizeMode.Fill,
-                HeightMode = SizeMode.Fixed,
-                Height = 180f,
+                HeightMode = SizeMode.Fill,
                 Spacing = 5f,
                 Padding = 0f
             };
 
+            mainRow.AddChild(infoPanel);
+
+            var infoPanelTopSpacer = new SpacerElement
+            {
+                HeightMode = SizeMode.Percentage,
+                Height = 18
+            };
+
+            infoPanel.AddChild(infoPanelTopSpacer);
+
             var spawnContainer = CreateInfoRow("SPAWNING:", "");
-            spawnStatusText = (spawnContainer.Children[1] as TextElement);
+            spawnStatusText = (spawnContainer.Children[2] as TextElement);
             infoPanel.AddChild(spawnContainer);
 
             var statusContainer = CreateInfoRow("STATUS:", "");
-            statusText = (statusContainer.Children[1] as TextElement);
+            statusText = (statusContainer.Children[2] as TextElement);
             infoPanel.AddChild(statusContainer);
 
-            levelContainer = CreateInfoRow("UNLOCK LEVEL:", "");
-            unlockLevelText = (levelContainer.Children[1] as TextElement);
+            levelContainer = CreateInfoRow("LEVEL:", "");
+            unlockLevelText = (levelContainer.Children[2] as TextElement);
             infoPanel.AddChild(levelContainer);
 
-            rescueContainer = CreateInfoRow("REQUIREMENT:", "");
-            rescueText = (rescueContainer.Children[1] as TextElement);
+            rescueContainer = CreateInfoRow("REQUIRES:", "");
+            rescueText = (rescueContainer.Children[2] as TextElement);
             infoPanel.AddChild(rescueContainer);
 
             var authorContainer = CreateInfoRow("AUTHOR:", "");
-            authorText = (authorContainer.Children[1] as TextElement);
+            authorText = (authorContainer.Children[2] as TextElement);
             infoPanel.AddChild(authorContainer);
 
-            infoPanelWrapper.AddChild(infoPanel);
-            topRow.AddChild(infoPanelWrapper);
-            contentArea.AddChild(topRow);
-
-            var centeringContainer = new HorizontalLayoutContainer
+            var bottomSpacer = new SpacerElement
             {
-                Name = "CenteringContainer",
-                WidthMode = SizeMode.Fill,
-                HeightMode = SizeMode.Fill
+                HeightMode = SizeMode.Percentage,
+                Height = 5
             };
 
-            var leftSpacer = new SpacerElement
-            {
-                WidthMode = SizeMode.Fill
-            };
-            centeringContainer.AddChild(leftSpacer);
-
-            centeringContainer.AddChild(contentArea);
-
-            var rightSpacer = new SpacerElement
-            {
-                WidthMode = SizeMode.Fill
-            };
-            centeringContainer.AddChild(rightSpacer);
-
-            mainContainer.AddChild(centeringContainer);
+            mainContainer.AddChild(bottomSpacer);
 
             var buttonContainer = new HorizontalLayoutContainer
             {
@@ -197,6 +181,8 @@ namespace BroMakerLib.Menus
                 Spacing = 15f,
                 ChildVerticalAlignment = VerticalAlignment.Center
             };
+
+            mainContainer.AddChild(buttonContainer);
 
             spawnButton = new ActionButton("SpawnToggleButton")
             {
@@ -242,9 +228,6 @@ namespace BroMakerLib.Menus
                 OnClick = () => GoBack()
             };
             buttonContainer.AddChild(backButton);
-
-            mainContainer.AddChild(buttonContainer);
-            RootContainer.AddChild(mainContainer);
         }
 
         private HorizontalLayoutContainer CreateInfoRow(string label, string value)
@@ -254,7 +237,7 @@ namespace BroMakerLib.Menus
                 HeightMode = SizeMode.Fixed,
                 Height = 25f,
                 WidthMode = SizeMode.Fill,
-                Spacing = 5f
+                Spacing = 3f
             };
 
             var labelText = new TextElement($"Label_{label}")
@@ -262,9 +245,13 @@ namespace BroMakerLib.Menus
                 Text = label,
                 TextColor = Color.gray,
                 FontSize = 4f,
-                WidthMode = SizeMode.Fixed,
-                Width = 150f,
+                WidthMode = SizeMode.Auto,
                 HeightMode = SizeMode.Fill
+            };
+
+            var middleSpacer = new SpacerElement
+            {
+                WidthMode = SizeMode.Fill
             };
 
             var valueText = new TextElement($"Value_{label}")
@@ -272,12 +259,20 @@ namespace BroMakerLib.Menus
                 Text = value,
                 TextColor = Color.white,
                 FontSize = 4f,
-                WidthMode = SizeMode.Fill,
+                WidthMode = SizeMode.Auto,
                 HeightMode = SizeMode.Fill
             };
 
+            var rightSpacer = new SpacerElement
+            {
+                WidthMode = SizeMode.Percentage,
+                Width = 25
+            };
+
             row.AddChild(labelText);
+            row.AddChild(middleSpacer);
             row.AddChild(valueText);
+            row.AddChild(rightSpacer);
             return row;
         }
 
@@ -300,32 +295,58 @@ namespace BroMakerLib.Menus
             var unlockState = BroUnlockManager.GetBroUnlockState(storedHero.name);
             if (unlockState != null)
             {
-                unlockLevelText.Text = !string.IsNullOrEmpty(unlockState.UnlockLevelName) ?
-                    unlockState.UnlockLevelName :
-                    (!string.IsNullOrEmpty(unlockState.UnlockLevelPath) ? "Custom Level" : "N/A");
+                // Show unlock level if the bro has an unlock level, regardless of lock status
+                bool hasUnlockLevel = (unlockState.ConfiguredMethod == UnlockMethod.UnlockLevel ||
+                                      unlockState.ConfiguredMethod == UnlockMethod.RescueOrLevel) &&
+                                      (!string.IsNullOrEmpty(unlockState.UnlockLevelName) ||
+                                       !string.IsNullOrEmpty(unlockState.UnlockLevelPath));
 
-                if (unlockState.ConfiguredMethod == UnlockMethod.RescueCount ||
-                    unlockState.ConfiguredMethod == UnlockMethod.RescueOrLevel)
+                if (hasUnlockLevel)
                 {
-                    int currentRescues = PlayerProgress.Instance != null ? PlayerProgress.Instance.freedBros : 0;
-                    int remaining = unlockState.TargetRescueCount - currentRescues;
-                    rescueText.Text = $"Rescue {remaining} more bros";
-                    rescueContainer.IsVisible = true;
+                    unlockLevelText.Text = !string.IsNullOrEmpty(unlockState.UnlockLevelName) ?
+                        unlockState.UnlockLevelName : "Custom Level";
+                    levelContainer.IsVisibleAndPositioned = true;
                 }
                 else
                 {
-                    rescueContainer.IsVisible = false;
+                    levelContainer.IsVisibleAndPositioned = false;
                 }
 
-                playLevelButton.IsVisible = (unlockState.ConfiguredMethod == UnlockMethod.UnlockLevel ||
-                                             unlockState.ConfiguredMethod == UnlockMethod.RescueOrLevel) &&
-                                            !string.IsNullOrEmpty(unlockState.UnlockLevelPath);
+                // Only show requirements if bro is locked and has rescue requirements with more than 0 rescues remaining
+                if (isLocked &&
+                    (unlockState.ConfiguredMethod == UnlockMethod.RescueCount ||
+                     unlockState.ConfiguredMethod == UnlockMethod.RescueOrLevel))
+                {
+                    int currentRescues = PlayerProgress.Instance != null ? PlayerProgress.Instance.freedBros : 0;
+                    int remaining = unlockState.TargetRescueCount - currentRescues;
+                    if (remaining > 1)
+                    {
+                        rescueText.Text = $"Rescue {remaining} more bros";
+                        rescueContainer.IsVisibleAndPositioned = true;
+                    }
+                    else if (remaining == 1)
+                    {
+                        rescueText.Text = "Rescue 1 more bro";
+                        rescueContainer.IsVisibleAndPositioned = true;
+                    }
+                    else
+                    {
+                        rescueContainer.IsVisibleAndPositioned = false;
+                    }
+                }
+                else
+                {
+                    rescueContainer.IsVisibleAndPositioned = false;
+                }
+
+                // Show play button only if locked and has unlock level
+                playLevelButton.IsVisible = isLocked && hasUnlockLevel;
                 playLevelButton.IsFocusable = playLevelButton.IsVisible;
             }
             else
             {
-                levelContainer.IsVisible = false;
-                rescueContainer.IsVisible = false;
+                levelContainer.IsVisibleAndPositioned = false;
+                rescueContainer.IsVisibleAndPositioned = false;
                 playLevelButton.IsVisible = false;
                 playLevelButton.IsFocusable = false;
             }
@@ -366,14 +387,6 @@ namespace BroMakerLib.Menus
             return CustomBrosGridMenu.GetSharedPlaceholderLockStatus(storedHero.name);
         }
 
-        private string GetPlaceholderLevelName()
-        {
-            string[] levelNames = { "City Streets", "Jungle Run", "Mountain Pass", "Desert Storm", "Arctic Base" };
-            return levelNames[UnityEngine.Random.Range(0, levelNames.Length)];
-        }
-
-
-
         private void GetCutsceneTexture(StoredHero storedHero)
         {
             CustomBroInfo broInfo = storedHero.GetInfo() as CustomBroInfo;
@@ -390,8 +403,6 @@ namespace BroMakerLib.Menus
 
                 if (tex != null)
                 {
-                    avatarImage.Texture = tex;
-
                     // If this is an animated cutscene, configure the ImageElement to show just one frame
                     if (cutscene.isAnimated)
                     {
@@ -407,6 +418,10 @@ namespace BroMakerLib.Menus
                         avatarImage.PixelDimensions = null;
                         avatarImage.LowerLeftPixel = null;
                     }
+
+                    avatarImage.SpriteOffset = cutscene.spriteMenuOffset;
+
+                    avatarImage.Texture = tex;
                 }
             }
         }

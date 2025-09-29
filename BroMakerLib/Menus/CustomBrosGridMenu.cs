@@ -279,9 +279,9 @@ namespace BroMakerLib.Menus
 
                 // Size in grid - make cards bigger
                 WidthMode = SizeMode.Percentage,
-                Width = 1.0f,  // Use full cell width
+                Width = 100f,  // Use full cell width
                 HeightMode = SizeMode.Percentage,
-                Height = 1.0f,  // Use full cell height
+                Height = 100f,  // Use full cell height
 
                 // Click handler - opens detail view
                 OnClick = () => OpenDetailView(storedHero),

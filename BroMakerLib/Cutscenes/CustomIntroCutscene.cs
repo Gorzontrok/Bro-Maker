@@ -57,6 +57,10 @@ namespace BroMakerLib.Cutscenes
         [JsonConverter(typeof(CutsceneSpriteAnimatedJsonConverter))]
         public Vector3 spriteAnimRateFramesWidth = Vector3.zero;
 
+        // Menu Positioning
+        [JsonConverter(typeof(Vector2Converter))]
+        public Vector2 spriteMenuOffset = Vector2.zero;
+
         public string barkPath = string.Empty;
         public bool playDefaultFanfare = true;
         public string fanfarePath = string.Empty;
