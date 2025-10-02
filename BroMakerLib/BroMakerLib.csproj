@@ -243,7 +243,9 @@
 XCOPY /Y /R "$(TargetDir)$(TargetName).xml" "$(ProjectDir)\_Mod\$(ProjectName).xml*"
 XCOPY /Y /I /E "$(ProjectDir)\_Mod\*.*" "$(BroforcePath)\Mods\BroMaker\"
 del "$(BroforcePath)\Mods\BroMaker\*.cache" 2&gt; nul || set errorlevel=0
-start steam://rungameid/274190</PostBuildEvent>
+if "$(LaunchBroforceOnBuild)" == "true" (
+start steam://rungameid/274190
+)</PostBuildEvent>
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
   <PropertyGroup>
