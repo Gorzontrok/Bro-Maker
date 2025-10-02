@@ -5,4 +5,4 @@
 wiki/
 BroMaker/src/BroMaker/NewFolder1/
 **/_Mod/*.dll
-BroMakerLib.UnityMod/LocalBroforcePath.props
+BroMakerLib/LocalBroforcePath.props
