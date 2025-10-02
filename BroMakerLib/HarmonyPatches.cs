@@ -125,10 +125,15 @@ namespace BroMakerLib.HarmonyPatches
                         ((float)BroSpawnManager.HardcoreAvailableBros.Count() + GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count()));
                     }
                 }
+                // Check if we just unlocked a custom bro
+                else if (BroUnlockManager.HasPendingUnlockedBro())
+                {
+                    LoadHero.willReplaceBro[__instance.playerNum] = true;
+                }
                 // Handle normal spawning
                 else if (BSett.instance.automaticSpawn && BroSpawnManager.EnabledBros.Count > 0)
                 {
-                    LoadHero.willReplaceBro[__instance.playerNum] = UnityEngine.Random.value <= (BSett.instance.automaticSpawnProbabilty / 100.0f);
+                    LoadHero.willReplaceBro[__instance.playerNum] = UnityEngine.Random.value <= (BroSpawnManager.CalculateSpawnProbability() / 100.0f);
                 }
 
                 if (LoadHero.willReplaceBro[__instance.playerNum])

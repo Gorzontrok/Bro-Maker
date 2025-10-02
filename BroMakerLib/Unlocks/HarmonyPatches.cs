@@ -7,8 +7,7 @@ namespace BroMakerLib.Unlocks
     [HarmonyPatch(typeof(PlayerProgress), "FreeBro")]
     public static class PlayerProgress_FreeBro_Patch
     {
-        [HarmonyPostfix]
-        static void Postfix()
+        public static void Postfix()
         {
             try
             {

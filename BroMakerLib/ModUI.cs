@@ -493,10 +493,6 @@ namespace BroMakerLib
                 if (GUILayout.Button(new GUIContent((broEnabled ? "Autospawn Enabled" : "Autospawn Disabled"), "Toggle whether this bro is part of the spawn rotation"), ScaledWidth(300)))
                 {
                     BroSpawnManager.SetBroEnabled(bro.name, !broEnabled);
-                    if (BSett.instance.equalSpawnProbability)
-                    {
-                        BSett.instance.automaticSpawnProbabilty = BroSpawnManager.CalculateSpawnProbability();
-                    }
                 }
             }
             if (GUILayout.Button(new GUIContent("Play Unlock Cutscene", "Play this bro's unlock cutscene if in-game"), ScaledWidth(300)))
@@ -650,18 +646,25 @@ namespace BroMakerLib
             BSett.instance.automaticSpawn = GUILayout.Toggle(BSett.instance.automaticSpawn, new GUIContent("Automatic Spawn", "Enable automatic spawning of custom bros"));
             if (BSett.instance.equalSpawnProbability != (BSett.instance.equalSpawnProbability = GUILayout.Toggle(BSett.instance.equalSpawnProbability, new GUIContent("Custom bros have an equal chance of spawning as vanilla bros", "Automatically adjusts spawn probability so that custom bros have the same probability of spawning as vanilla bros"))))
             {
-                if (BSett.instance.equalSpawnProbability)
-                {
-                    BSett.instance.automaticSpawnProbabilty = BroSpawnManager.CalculateSpawnProbability();
-                }
             }
             GUILayout.EndHorizontal();
             GUILayout.Space(15);
 
-            if (BSett.instance.automaticSpawnProbabilty != (BSett.instance.automaticSpawnProbabilty = RGUI.HorizontalSlider("Spawn Probability: ", "Probability of a custom bro spawning. The probability of any given custom bro spawning is equal to this divided by however many bros you have installed and enabled, which is " + (BSett.instance.automaticSpawnProbabilty / BroSpawnManager.EnabledBros.Count) + "%", BSett.instance.automaticSpawnProbabilty, 0f, 100f)))
+            if (BSett.instance.equalSpawnProbability)
             {
-                BSett.instance.equalSpawnProbability = false;
+                float current = BroSpawnManager.CalculateSpawnProbability();
+                float now = RGUI.HorizontalSlider("Spawn Probability: ", "Probability of a custom bro spawning. The probability of any given custom bro spawning is equal to this divided by however many bros you have installed and enabled, which is " + (BroSpawnManager.CalculateSpawnProbability() / BroSpawnManager.EnabledBros.Count) + "%", BroSpawnManager.CalculateSpawnProbability(), 0f, 100f);
+                if (current != now)
+                {
+                    BSett.instance.automaticSpawnProbabilty = now;
+                    BSett.instance.equalSpawnProbability = false;
+                }
             }
+            else
+            {
+                BSett.instance.automaticSpawnProbabilty = RGUI.HorizontalSlider("Spawn Probability: ", "Probability of a custom bro spawning. The probability of any given custom bro spawning is equal to this divided by however many bros you have installed and enabled, which is " + (BroSpawnManager.CalculateSpawnProbability() / BroSpawnManager.EnabledBros.Count) + "%", BroSpawnManager.CalculateSpawnProbability(), 0f, 100f);
+            }
+
             GUILayout.Space(15);
             BSett.instance.onlyCustomInHardcore = GUILayout.Toggle(BSett.instance.onlyCustomInHardcore, new GUIContent("Only custom characters will spawn in IronBro mode", "Only custom bros will be unlockable in IronBro, once you have unlocked them all you will be unable to gain more lives"));
             GUILayout.Space(15);
