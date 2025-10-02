@@ -10,6 +10,7 @@ using BroMakerLib.Infos;
 using BroMakerLib.Loaders;
 using BroMakerLib.Loggers;
 using BroMakerLib.Storages;
+using BroMakerLib.Unlocks;
 using HarmonyLib;
 using UnityEngine;
 using BSett = BroMakerLib.Settings;
@@ -65,17 +66,14 @@ namespace BroMakerLib.HarmonyPatches
                 if (BroSpawnManager.ForceCustomThisLevel)
                 {
                     LoadHero.willReplaceBro[__instance.playerNum] = true;
-                    return;
                 }
-
                 // Don't replace forced bros
-                if (Map.MapData != null && (Map.MapData.forcedBro != HeroType.Random || (Map.MapData.forcedBros != null && Map.MapData.forcedBros.Count() > 0)))
+                else if (Map.MapData != null && (Map.MapData.forcedBro != HeroType.Random || (Map.MapData.forcedBros != null && Map.MapData.forcedBros.Count() > 0)))
                 {
                     LoadHero.willReplaceBro[__instance.playerNum] = false;
-                    return;
                 }
-
-                if (GameModeController.IsHardcoreMode && BSett.instance.enabledBroCount > 0)
+                // Handle IronBro spawning
+                else if (GameModeController.IsHardcoreMode && BroSpawnManager.EnabledBros.Count > 0)
                 {
                     // Check if we're unlocking a bro
                     if (PlayerProgress.Instance.yetToBePlayedUnlockedHeroes.Count() > 0)
@@ -127,10 +125,12 @@ namespace BroMakerLib.HarmonyPatches
                         ((float)BroSpawnManager.HardcoreAvailableBros.Count() + GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count()));
                     }
                 }
-                else if (BSett.instance.automaticSpawn && BSett.instance.enabledBroCount > 0)
+                // Handle normal spawning
+                else if (BSett.instance.automaticSpawn && BroSpawnManager.EnabledBros.Count > 0)
                 {
                     LoadHero.willReplaceBro[__instance.playerNum] = UnityEngine.Random.value <= (BSett.instance.automaticSpawnProbabilty / 100.0f);
                 }
+
                 if (LoadHero.willReplaceBro[__instance.playerNum])
                 {
                     // Ensure player doesn't spawn as boondock bros
@@ -150,11 +150,19 @@ namespace BroMakerLib.HarmonyPatches
                     LoadHero.spawningCustomBro[__instance.playerNum] = true;
                     LoadHero.anyCustomSpawning = true;
                     Storages.StoredHero choice;
-                    choice = BroSpawnManager.GetRandomSpawnableBro();
-                    if (LoadHero.playCutscene = !BSett.instance.seenBros.Contains(choice.name) && choice.GetInfo().Cutscene.Count > 0 && choice.GetInfo().Cutscene[0].playCutsceneOnFirstSpawn)
+                    choice = BroSpawnManager.GetRandomSpawnableBro(true);
+
+                    if (BroSpawnManager.LastSpawnWasUnlock)
                     {
-                        BSett.instance.seenBros.Add(choice.name);
+                        var info = choice.GetInfo();
+                        var unlockConfig = info?.UnlockConfig;
+
+                        if (info.Cutscene.Count > 0 && info.Cutscene[0].playCutsceneOnFirstSpawn)
+                        {
+                            LoadHero.playCutscene = true;
+                        }
                     }
+
                     LoadHero.spawnFromPlayer = (__instance.rescuingThisBro != null);
 
                     TestVanDammeAnim bro = choice.LoadBro(__instance.playerNum);
@@ -404,15 +412,7 @@ namespace BroMakerLib.HarmonyPatches
                 try
                 {
                     // If a new save is being created, remake IronBro lists
-                    BSett.instance._notUnlockedBros[slot] = new List<string>();
-                    BSett.instance._availableBros[slot] = new List<string>();
-                    foreach (KeyValuePair<string, bool> bro in BSett.instance.EnabledBros)
-                    {
-                        if (bro.Value)
-                        {
-                            BSett.instance._notUnlockedBros[slot].Add(bro.Key);
-                        }
-                    }
+                    BroSpawnManager.CreateHardcoreLists(slot);
                 }
                 catch (Exception e)
                 {
@@ -972,6 +972,24 @@ namespace BroMakerLib.HarmonyPatches
             }
 
             return true;
+        }
+    }
+
+    [HarmonyPatch(typeof(PlayerProgress), "PostLoadProcess")]
+    static class PlayerProgress_PostLoadProcess_Patch
+    {
+        public static void Postfix()
+        {
+            // If not initialized, get current rescue count and create new save file
+            try
+            {
+                BroUnlockManager.SetupProgressData(PlayerProgress.Instance.freedBros);
+                BroUnlockManager.Initialize();
+            }
+            catch (Exception ex)
+            {
+                BMLogger.Log("Exception loading current freed bro count: " + ex.ToString());
+            }
         }
     }
 }

@@ -28,6 +28,10 @@ namespace BroMakerLib.Menus
         private ActionButton playLevelButton;
         private ActionButton backButton;
 
+        protected bool isEnabled;
+        protected bool isLocked;
+        protected int lastSeenStatusCount = 0;
+
         public override string MenuId => "BroMaker_CustomBrosDetail";
         public override string MenuTitle => "";
 
@@ -41,7 +45,7 @@ namespace BroMakerLib.Menus
 
             detailMenu.currentHero = hero;
             detailMenu.parentGridMenu = gridMenu;
-            detailMenu.LoadBroDetails(hero);
+            detailMenu.LoadBroDetails();
 
             return detailMenu;
         }
@@ -276,8 +280,9 @@ namespace BroMakerLib.Menus
             return row;
         }
 
-        private void LoadBroDetails(StoredHero storedHero)
+        private void LoadBroDetails()
         {
+            StoredHero storedHero = currentHero;
             if (storedHero.name == null)
             {
                 BMLogger.Log("Error: StoredHero is null in LoadBroDetails");
@@ -288,7 +293,7 @@ namespace BroMakerLib.Menus
 
             GetCutsceneTexture(storedHero);
 
-            bool isLocked = !BroUnlockManager.IsBroUnlocked(storedHero.name);
+            isLocked = !BroUnlockManager.IsBroUnlocked(storedHero.name);
             statusText.Text = isLocked ? "LOCKED" : "UNLOCKED";
             statusText.TextColor = isLocked ? Color.red : Color.green;
 
@@ -339,8 +344,7 @@ namespace BroMakerLib.Menus
                     rescueContainer.IsVisibleAndPositioned = false;
                 }
 
-                // Show play button only if locked and has unlock level
-                playLevelButton.IsVisible = isLocked && hasUnlockLevel;
+                playLevelButton.IsVisible = hasUnlockLevel;
                 playLevelButton.IsFocusable = playLevelButton.IsVisible;
             }
             else
@@ -357,14 +361,12 @@ namespace BroMakerLib.Menus
             }
             else
             {
-                authorText.Text = "BroMaker";
+                authorText.Text = "Unknown";
             }
 
-            // Locked bros should always show as disabled
-            //bool spawnEnabled = isLocked ? false : (Settings.instance?.GetBroEnabled(storedHero.name) ?? true);
-            bool spawnEnabled = false;
-            spawnStatusText.Text = spawnEnabled ? "ENABLED" : "DISABLED";
-            spawnStatusText.TextColor = spawnEnabled ? Color.green : Color.red;
+            isEnabled = BroSpawnManager.IsBroEnabled(storedHero.name);
+            spawnStatusText.Text = isEnabled ? "ENABLED" : "DISABLED";
+            spawnStatusText.TextColor = isEnabled ? Color.green : Color.red;
 
             // Update button text and state based on lock status
             if (isLocked)
@@ -375,16 +377,12 @@ namespace BroMakerLib.Menus
             }
             else
             {
-                spawnButton.Text = spawnEnabled ? "DISABLE SPAWN" : "ENABLE SPAWN";
+                spawnButton.Text = isEnabled ? "DISABLE SPAWN" : "ENABLE SPAWN";
                 spawnButton.IsEnabled = true;
                 spawnButton.IsFocusable = true;
             }
-        }
 
-        private bool GetPlaceholderLockStatus(StoredHero storedHero)
-        {
-            // Use the shared static dictionary from CustomBrosGridMenu
-            return CustomBrosGridMenu.GetSharedPlaceholderLockStatus(storedHero.name);
+            lastSeenStatusCount = BroSpawnManager.BroStatusCount;
         }
 
         private void GetCutsceneTexture(StoredHero storedHero)
@@ -426,30 +424,126 @@ namespace BroMakerLib.Menus
             }
         }
 
+        protected override void Update()
+        {
+            base.Update();
+
+            // Check if an bro status has changed
+            if (lastSeenStatusCount != BroSpawnManager.BroStatusCount)
+            {
+                RefreshBroDetails();
+            }
+        }
+
         private void ToggleSpawn()
         {
             if (currentHero.name == null) return;
 
             // Don't allow toggling for locked bros
-            bool isLocked = GetPlaceholderLockStatus(currentHero);
             if (isLocked) return;
 
-            //bool currentState = Settings.instance?.GetBroEnabled(currentHero.name) ?? true;
-            bool currentState = true;
-            //Settings.instance?.SetBroEnabled(currentHero.name, !currentState);
+            isEnabled = !isEnabled;
+            BroSpawnManager.SetBroEnabled(currentHero.name, isEnabled);
             Settings.instance?.Save();
 
-            bool newState = !currentState;
-            spawnStatusText.Text = newState ? "ENABLED" : "DISABLED";
-            spawnStatusText.TextColor = newState ? Color.green : Color.red;
-            spawnButton.Text = newState ? "DISABLE SPAWN" : "ENABLE SPAWN";
+            spawnStatusText.Text = isEnabled ? "ENABLED" : "DISABLED";
+            spawnStatusText.TextColor = isEnabled ? Color.green : Color.red;
+            spawnButton.Text = isEnabled ? "DISABLE SPAWN" : "ENABLE SPAWN";
+        }
 
-            BMLogger.Log($"[BroMaker] Spawn toggled for {currentHero.name}: {newState}");
-
-            if (parentGridMenu != null)
+        private void RefreshBroDetails()
+        {
+            StoredHero storedHero = currentHero;
+            bool previousUnlocked = isLocked;
+            bool previousEnabled = isEnabled;
+            isLocked = !BroUnlockManager.IsBroUnlocked(storedHero.name);
+            isEnabled = BroSpawnManager.IsBroEnabled(storedHero.name);
+            if (previousUnlocked != isLocked || previousEnabled != isEnabled)
             {
-                parentGridMenu.MarkForRefresh();
+                statusText.Text = isLocked ? "LOCKED" : "UNLOCKED";
+                statusText.TextColor = isLocked ? Color.red : Color.green;
+
+                var unlockState = BroUnlockManager.GetBroUnlockState(storedHero.name);
+                if (unlockState != null)
+                {
+                    // Show unlock level if the bro has an unlock level, regardless of lock status
+                    bool hasUnlockLevel = (unlockState.ConfiguredMethod == UnlockMethod.UnlockLevel ||
+                                          unlockState.ConfiguredMethod == UnlockMethod.RescueOrLevel) &&
+                                          (!string.IsNullOrEmpty(unlockState.UnlockLevelName) ||
+                                           !string.IsNullOrEmpty(unlockState.UnlockLevelPath));
+
+                    if (hasUnlockLevel)
+                    {
+                        unlockLevelText.Text = !string.IsNullOrEmpty(unlockState.UnlockLevelName) ?
+                            unlockState.UnlockLevelName : "Custom Level";
+                        levelContainer.IsVisibleAndPositioned = true;
+                    }
+                    else
+                    {
+                        levelContainer.IsVisibleAndPositioned = false;
+                    }
+
+                    // Only show requirements if bro is locked and has rescue requirements with more than 0 rescues remaining
+                    if (isLocked &&
+                        (unlockState.ConfiguredMethod == UnlockMethod.RescueCount ||
+                         unlockState.ConfiguredMethod == UnlockMethod.RescueOrLevel))
+                    {
+                        int currentRescues = PlayerProgress.Instance != null ? PlayerProgress.Instance.freedBros : 0;
+                        int remaining = unlockState.TargetRescueCount - currentRescues;
+                        if (remaining > 1)
+                        {
+                            rescueText.Text = $"Rescue {remaining} more bros";
+                            rescueContainer.IsVisibleAndPositioned = true;
+                        }
+                        else if (remaining == 1)
+                        {
+                            rescueText.Text = "Rescue 1 more bro";
+                            rescueContainer.IsVisibleAndPositioned = true;
+                        }
+                        else
+                        {
+                            rescueContainer.IsVisibleAndPositioned = false;
+                        }
+                    }
+                    else
+                    {
+                        rescueContainer.IsVisibleAndPositioned = false;
+                    }
+
+                    // Show play button only if locked and has unlock level
+                    playLevelButton.IsVisible = isLocked && hasUnlockLevel;
+                    playLevelButton.IsFocusable = playLevelButton.IsVisible;
+                }
+                else
+                {
+                    levelContainer.IsVisibleAndPositioned = false;
+                    rescueContainer.IsVisibleAndPositioned = false;
+                    playLevelButton.IsVisible = false;
+                    playLevelButton.IsFocusable = false;
+                }
+
+                isEnabled = BroSpawnManager.IsBroEnabled(storedHero.name);
+                spawnStatusText.Text = isEnabled ? "ENABLED" : "DISABLED";
+                spawnStatusText.TextColor = isEnabled ? Color.green : Color.red;
+
+                // Update button text and state based on lock status
+                if (isLocked)
+                {
+                    spawnButton.Text = "LOCKED";
+                    spawnButton.IsEnabled = false;
+                    spawnButton.IsFocusable = false;
+                }
+                else
+                {
+                    spawnButton.Text = isEnabled ? "DISABLE SPAWN" : "ENABLE SPAWN";
+                    spawnButton.IsEnabled = true;
+                    spawnButton.IsFocusable = true;
+                }
+
+                this.RefreshLayout();
             }
+
+            lastSeenStatusCount = BroSpawnManager.BroStatusCount;
         }
 
         private void PlayUnlockLevel()

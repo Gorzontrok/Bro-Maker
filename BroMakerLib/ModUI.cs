@@ -79,12 +79,6 @@ namespace BroMakerLib
             _toolTipStyle.normal.textColor = Color.white;
 
             BroSpawnManager.CheckForDeletedBros();
-            BroSpawnManager.CountEnabledBros();
-
-            if (BSett.instance.equalSpawnProbability)
-            {
-                BSett.instance.automaticSpawnProbabilty = BroSpawnManager.CalculateSpawnProbability();
-            }
         }
 
         public static void UI()
@@ -200,11 +194,6 @@ namespace BroMakerLib
                     PresetManager.Initialize();
                     PresetManager.disableWarnings = false;
                     BroSpawnManager.CheckForDeletedBros();
-                    BroSpawnManager.CountEnabledBros();
-                    if (BSett.instance.equalSpawnProbability)
-                    {
-                        BSett.instance.automaticSpawnProbabilty = BroSpawnManager.CalculateSpawnProbability();
-                    }
                 }
                 if (GUILayout.Button(new GUIContent("Reload Preset", "Reloads custom bro presets"), GUILayout.ExpandWidth(false)))
                     PresetManager.Initialize();
@@ -406,7 +395,6 @@ namespace BroMakerLib
                             BroSpawnManager.SetBroEnabled(hero.name, true);
                         }
                     }
-                    BroSpawnManager.CountEnabledBros();
                 }
                 GUILayout.Space(5);
                 if (GUILayout.Button(new GUIContent("Disable All", "Disable autospawn for all custom bros"), ScaledWidth(100)))
@@ -418,7 +406,6 @@ namespace BroMakerLib
                             BroSpawnManager.SetBroEnabled(hero.name, false);
                         }
                     }
-                    BroSpawnManager.CountEnabledBros();
                 }
                 GUILayout.EndHorizontal();
                 GUILayout.EndVertical();
@@ -671,7 +658,7 @@ namespace BroMakerLib
             GUILayout.EndHorizontal();
             GUILayout.Space(15);
 
-            if (BSett.instance.automaticSpawnProbabilty != (BSett.instance.automaticSpawnProbabilty = RGUI.HorizontalSlider("Spawn Probability: ", "Probability of a custom bro spawning. The probability of any given custom bro spawning is equal to this divided by however many bros you have installed and enabled, which is " + (BSett.instance.automaticSpawnProbabilty / BSett.instance.enabledBroCount) + "%", BSett.instance.automaticSpawnProbabilty, 0f, 100f)))
+            if (BSett.instance.automaticSpawnProbabilty != (BSett.instance.automaticSpawnProbabilty = RGUI.HorizontalSlider("Spawn Probability: ", "Probability of a custom bro spawning. The probability of any given custom bro spawning is equal to this divided by however many bros you have installed and enabled, which is " + (BSett.instance.automaticSpawnProbabilty / BroSpawnManager.EnabledBros.Count) + "%", BSett.instance.automaticSpawnProbabilty, 0f, 100f)))
             {
                 BSett.instance.equalSpawnProbability = false;
             }
@@ -701,6 +688,16 @@ namespace BroMakerLib
             BSett.instance.debugLogs = GUILayout.Toggle(BSett.instance.debugLogs, new GUIContent("Debug Logs", "Enables debug logging which can be viewed in the UnityModManager log"));
             BSett.instance.developerMode = GUILayout.Toggle(BSett.instance.developerMode, new GUIContent("Developer Mode", "Enables more options in the BroMakerSettings window for bro developers"));
             GUILayout.Space(10);
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Unlock All Bros"))
+            {
+                BroUnlockManager.UnlockAllBros();
+            }
+            if (GUILayout.Button("Lock All Bros"))
+            {
+                BroUnlockManager.LockAllBros();
+            }
+            GUILayout.EndHorizontal();
         }
 
         private static void ReloadFiles()

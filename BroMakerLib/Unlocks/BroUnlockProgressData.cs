@@ -6,6 +6,7 @@ namespace BroMakerLib.Unlocks
     public class BroUnlockProgressData
     {
         public Dictionary<string, BroUnlockState> BroStates { get; set; } = new Dictionary<string, BroUnlockState>();
+        public List<string> PendingUnlocks { get; set; } = new List<string>();
         public int LastKnownTotalRescues { get; set; }
         public int Version { get; set; } = 1;
 

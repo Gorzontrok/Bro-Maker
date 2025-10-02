@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using BroMakerLib.Infos;
 using BroMakerLib.Storages;
+using BroMakerLib.Unlocks;
 using Newtonsoft.Json.Linq;
 using RocketLib.Menus.Core;
 using RocketLib.Menus.Elements;
@@ -18,21 +19,10 @@ namespace BroMakerLib.Menus
         private ActionButton nextButton;
         private readonly List<BroCard> broCards = new List<BroCard>();
 
-        // Static shared placeholder lock states for consistency across menus
-        private static readonly Dictionary<string, bool> placeholderLockStates = new Dictionary<string, bool>();
+        protected int lastSeenStatusCount = 0;
 
         public override string MenuId => "BroMaker_CustomBrosGrid";
         public override string MenuTitle => "CUSTOM BROS";
-
-        // Public accessor for shared placeholder lock states
-        public static bool GetSharedPlaceholderLockStatus(string broName)
-        {
-            if (!placeholderLockStates.ContainsKey(broName))
-            {
-                placeholderLockStates[broName] = UnityEngine.Random.value > 0.5f;
-            }
-            return placeholderLockStates[broName];
-        }
 
         public static CustomBrosGridMenu Show(Menu parentMenu = null)
         {
@@ -241,24 +231,17 @@ namespace BroMakerLib.Menus
                 }
             }
 
-
-
             // Set items in paginated grid container
             paginatedGrid.SetItems(cardElements);
 
             // Focus first element on the first page
             paginatedGrid.FocusFirstElement();
-        }
 
+            lastSeenStatusCount = BroSpawnManager.BroStatusCount;
+        }
 
         private BroCard CreateBroCard(StoredHero storedHero)
         {
-            // Get bro info
-            CustomBroInfo broInfo = storedHero.GetInfo() as CustomBroInfo;
-
-            // Get shared placeholder lock state for this bro
-            bool isLocked = GetSharedPlaceholderLockStatus(storedHero.name);
-
             var card = new BroCard(storedHero.name)
             {
                 BroName = storedHero.name,
@@ -266,13 +249,9 @@ namespace BroMakerLib.Menus
                 // Load avatar texture using BroMaker's ResourcesController
                 AvatarTexture = GetAvatarTexture(storedHero),
 
-                // Use placeholder lock status for now
-                IsLocked = isLocked,
+                IsLocked = !BroUnlockManager.IsBroUnlocked(storedHero.name),
 
-                // Locked bros are always disabled, otherwise check settings
-                //IsSpawnEnabled = isLocked ? false :
-                //                (Settings.instance?.GetBroEnabled(storedHero.name) ?? true),
-                IsSpawnEnabled = false,
+                IsSpawnEnabled = BroSpawnManager.IsBroEnabled(storedHero.name),
 
                 // Visual properties
                 LockedTintColor = new Color(0.15f, 0.15f, 0.15f, 1f),  // Much darker for locked
@@ -325,28 +304,26 @@ namespace BroMakerLib.Menus
             return null;
         }
 
+        protected override void Update()
+        {
+            base.Update();
+
+            if (lastSeenStatusCount != BroSpawnManager.BroStatusCount)
+            {
+                this.RefreshBroCards();
+            }
+        }
 
         private void OpenDetailView(StoredHero storedHero)
         {
             CustomBrosDetailMenu.Show(storedHero, this);
         }
 
-        private bool needsRefresh = false;
-
-        public void MarkForRefresh()
-        {
-            needsRefresh = true;
-        }
-
         protected override void OnEnable()
         {
             base.OnEnable();
 
-            if (needsRefresh)
-            {
-                RefreshBroCards();
-                needsRefresh = false;
-            }
+            RefreshBroCards();
         }
 
         private void RefreshBroCards()
@@ -355,14 +332,8 @@ namespace BroMakerLib.Menus
             {
                 if (broCard.Tag is StoredHero storedHero)
                 {
-                    // Check if locked (using shared placeholder system)
-                    bool isLocked = GetSharedPlaceholderLockStatus(storedHero.name);
-
-                    // Locked bros are always disabled
-                    //bool spawnEnabled = isLocked ? false :
-                    //                   (Settings.instance?.GetBroEnabled(storedHero.name) ?? true);
-                    bool spawnEnabled = false;
-                    broCard.IsSpawnEnabled = spawnEnabled;
+                    broCard.IsLocked = !BroUnlockManager.IsBroUnlocked(storedHero.name);
+                    broCard.IsSpawnEnabled = BroSpawnManager.IsBroEnabled(storedHero.name);
                 }
             }
         }
@@ -370,8 +341,6 @@ namespace BroMakerLib.Menus
         protected override void OnDestroy()
         {
             broCards.Clear();
-            // Don't clear static placeholderLockStates - it's shared across menu instances
-
             base.OnDestroy();
         }
     }

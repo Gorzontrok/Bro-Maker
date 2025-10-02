@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using BroMakerLib.Loggers;
 using BroMakerLib.Unlocks;
 using BSett = BroMakerLib.Settings;
 
@@ -14,7 +15,12 @@ namespace BroMakerLib.Storages
             Disabled,
             Available
         }
-
+        public static List<string> EnabledBrosNames
+        {
+            get => BSett.instance._enabledBros;
+            set => BSett.instance._enabledBros = value;
+        }
+        public static List<StoredHero> EnabledBros { get; set; } = new List<StoredHero>();
         public static List<string> HardcoreBrosNotYetUnlocked
         {
             get => BSett.instance._notUnlockedBros[PlayerProgress.currentWorldMapSaveSlot];
@@ -34,6 +40,9 @@ namespace BroMakerLib.Storages
 
         public static bool RescuingHardcoreBro = false;
 
+        public static bool LastSpawnWasUnlock { get; private set; }
+        public static int BroStatusCount = int.MinValue;
+
         public static List<StoredHero> GetAllBros()
         {
             return BroMakerStorage._bros;
@@ -47,6 +56,11 @@ namespace BroMakerLib.Storages
         public static List<string> GetAllUnlockedBrosNames()
         {
             return BroUnlockManager.UnlockedBroNames;
+        }
+
+        public static List<StoredHero> GetAllEnabledBros()
+        {
+            return EnabledBros;
         }
 
         public static List<StoredHero> GetAllSpawnableBros()
@@ -72,15 +86,7 @@ namespace BroMakerLib.Storages
             // Otherwise return all enabled bros
             else
             {
-                List<StoredHero> enabledHeroes = new List<StoredHero>();
-                foreach (KeyValuePair<string, bool> bro in BSett.instance.EnabledBros)
-                {
-                    if (bro.Value && BroMakerStorage.GetStoredHeroByName(bro.Key, out StoredHero hero))
-                    {
-                        enabledHeroes.Add(hero);
-                    }
-                }
-                return enabledHeroes;
+                return GetAllEnabledBros();
             }
         }
 
@@ -104,75 +110,78 @@ namespace BroMakerLib.Storages
             // Otherwise return all enabled bros
             else
             {
-                List<string> names = new List<string>();
-                foreach (KeyValuePair<string, bool> bro in BSett.instance.EnabledBros)
-                {
-                    if (bro.Value)
-                    {
-                        names.Add(bro.Key);
-                    }
-                }
-                return names;
+                return EnabledBrosNames;
             }
         }
 
-        public static StoredHero GetRandomSpawnableBro()
+        public static StoredHero GetRandomSpawnableBro(bool allowPendingUnlocks = false)
         {
+            LastSpawnWasUnlock = false;
+
+            StoredHero chosenBro = null;
+
             if (BSett.instance.overrideNextBroSpawn)
             {
                 BSett.instance.overrideNextBroSpawn = false;
-                return BroMakerStorage.GetStoredHeroByName(BSett.instance.nextBroSpawn);
+                chosenBro = BroMakerStorage.GetStoredHeroByName(BSett.instance.nextBroSpawn);
             }
-
-            string chosenName = "";
             // If in ironbro, only return unlocked bros
-            if (GameModeController.IsHardcoreMode)
+            else if (GameModeController.IsHardcoreMode)
             {
                 // Unlock additional bro if more are left to unlock
                 if (RescuingHardcoreBro && HardcoreBrosNotYetUnlocked.Count > 0)
                 {
                     int chosen = UnityEngine.Random.Range(0, HardcoreBrosNotYetUnlocked.Count);
+                    string chosenName = HardcoreBrosNotYetUnlocked[chosen];
                     HardcoreAvailableBros.Add(HardcoreBrosNotYetUnlocked[chosen]);
                     HardcoreBrosNotYetUnlocked.RemoveAt(chosen);
                     RescuingHardcoreBro = false;
 
-                    return BroMakerStorage.GetStoredHeroByName(chosenName);
+                    chosenBro = BroMakerStorage.GetStoredHeroByName(chosenName);
                 }
                 // No more bros to unlock or not rescuing
                 else
                 {
                     int chosen = UnityEngine.Random.Range(0, HardcoreAvailableBros.Count);
-                    chosenName = HardcoreAvailableBros[chosen];
+                    string chosenName = HardcoreAvailableBros[chosen];
                     RescuingHardcoreBro = false;
 
-                    return BroMakerStorage.GetStoredHeroByName(chosenName);
+                    chosenBro = BroMakerStorage.GetStoredHeroByName(chosenName);
                 }
             }
             // If forcing customs, only return allowed bros
             else if (BroSpawnManager.ForceCustomThisLevel)
             {
-                return ForcedCustoms[UnityEngine.Random.Range(0, BroSpawnManager.ForcedCustoms.Count())];
+                chosenBro = ForcedCustoms[UnityEngine.Random.Range(0, BroSpawnManager.ForcedCustoms.Count())];
+            }
+            else if (allowPendingUnlocks && BroUnlockManager.HasPendingUnlockedBro())
+            {
+                string pendingBro = BroUnlockManager.GetAndClearPendingUnlockedBro();
+                LastSpawnWasUnlock = true;
+                chosenBro = BroMakerStorage.GetStoredHeroByName(pendingBro);
             }
             // Return any enabled bro
             else
             {
-                int chosen = UnityEngine.Random.Range(0, BSett.instance.enabledBroCount);
-
-                foreach (KeyValuePair<string, bool> bro in BSett.instance.EnabledBros)
+                if (EnabledBros.Count > 0)
                 {
-                    if (bro.Value)
-                    {
-                        if (chosen == 0)
-                        {
-                            chosenName = bro.Key;
-                            break;
-                        }
-                        --chosen;
-                    }
+                    chosenBro = EnabledBros[UnityEngine.Random.Range(0, EnabledBros.Count)];
+                }
+                else
+                {
+                    BMLogger.Error("Trying to spawn with no enabled bros");
+                    chosenBro = GetAllBros()[0];
                 }
             }
 
-            return BroMakerStorage.GetStoredHeroByName(chosenName);
+            // Check if chosen bro is in pending unlock queue
+            if (allowPendingUnlocks && !LastSpawnWasUnlock && BroUnlockManager.IsBroPendingUnlock(chosenBro.name))
+            {
+                BroUnlockManager.ClearPendingUnlock(chosenBro.name);
+                LastSpawnWasUnlock = true;
+            }
+
+            return chosenBro;
         }
 
         public static bool IsBroSpawnable(string broName)
@@ -196,61 +205,69 @@ namespace BroMakerLib.Storages
                 return false;
             }
 
-            return BSett.instance.EnabledBros.ContainsKey(broName) && BSett.instance.EnabledBros[broName];
+            return EnabledBrosNames.Contains(broName);
         }
 
-        public static void AddBroEnabled(string name, bool enabled)
+        public static void AddBroEnabled(StoredHero bro, bool enabled)
         {
-            if (!BSett.instance.EnabledBros.ContainsKey(name))
+            if (enabled)
             {
-                BSett.instance.EnabledBros.Add(name, enabled);
-                if (enabled)
-                {
-                    ++BSett.instance.enabledBroCount;
-                }
+                EnabledBros.Add(bro);
+                EnabledBrosNames.Add(bro.name);
             }
         }
 
         public static void SetBroEnabled(string broName, bool enabled, bool forced = false)
         {
-            if (BSett.instance.EnabledBros.ContainsKey(broName))
+            // Don't allow enabling locked bros
+            if (!forced && enabled && !BroUnlockManager.IsBroUnlocked(broName))
             {
-                // Don't allow enabling locked bros
-                if (!forced && enabled && !BroUnlockManager.IsBroUnlocked(broName))
+                return;
+            }
+            bool wasEnabled = EnabledBrosNames.Contains(broName);
+            if (wasEnabled != enabled)
+            {
+                if (enabled)
                 {
-                    return;
+                    EnabledBrosNames.Add(broName);
+                    EnabledBros.Add(BroMakerStorage.GetStoredHeroByName(broName));
                 }
-                bool wasEnabled = BSett.instance.EnabledBros[broName];
-                BSett.instance.EnabledBros[broName] = enabled;
-
-                if (wasEnabled != enabled)
+                else
                 {
-                    if (enabled)
-                    {
-                        ++BSett.instance.enabledBroCount;
-                    }
-                    else
-                    {
-                        --BSett.instance.enabledBroCount;
-                    }
+                    EnabledBros.Remove(BroMakerStorage.GetStoredHeroByName(broName));
+                    EnabledBrosNames.Remove(broName);
+                }
+                BroStatusChanged();
+            }
+        }
+
+        public static bool IsBroEnabled(string broName)
+        {
+            return EnabledBrosNames.Contains(broName);
+        }
+
+        public static void CreateHardcoreLists(int slot)
+        {
+            BSett.instance._notUnlockedBros[slot] = new List<string>();
+            BSett.instance._availableBros[slot] = new List<string>();
+            foreach (StoredHero bro in GetAllBros())
+            {
+                if (BroUnlockManager.IsBroUnlocked(bro.name) && IsBroEnabled(bro.name))
+                {
+                    BSett.instance._notUnlockedBros[slot].Add(bro.name);
                 }
             }
         }
 
-        public static bool IsBroEnabled(string name)
-        {
-            return BSett.instance.EnabledBros.ContainsKey(name) && BSett.instance.EnabledBros[name];
-        }
-
         public static void CheckForDeletedBros()
         {
-            List<string> toBeRemoved = new List<string>();
-            foreach (KeyValuePair<string, bool> bro in BSett.instance.EnabledBros)
+            List<StoredHero> toBeRemoved = new List<StoredHero>();
+            foreach (StoredHero bro in EnabledBros)
             {
                 bool found = false;
                 for (int i = 0; i < BroMakerStorage.Bros.Length; ++i)
                 {
-                    if (BroMakerStorage.Bros[i].name == bro.Key)
+                    if (BroMakerStorage.Bros[i].name == bro.name)
                     {
                         found = true;
                         break;
@@ -258,12 +275,13 @@ namespace BroMakerLib.Storages
                 }
                 if (!found)
                 {
-                    toBeRemoved.Add(bro.Key);
+                    toBeRemoved.Add(bro);
                 }
             }
-            foreach (string remove in toBeRemoved)
+            foreach (StoredHero remove in toBeRemoved)
             {
-                BSett.instance.EnabledBros.Remove(remove);
+                EnabledBros.Remove(remove);
+                EnabledBrosNames.Remove(remove.name);
             }
 
             if (GameModeController.IsHardcoreMode)
@@ -282,30 +300,17 @@ namespace BroMakerLib.Storages
             }
         }
 
-        public static void CountEnabledBros()
-        {
-            int count = 0;
-            foreach (var kvp in BSett.instance.EnabledBros)
-            {
-                if (kvp.Value)
-                {
-                    ++count;
-                }
-            }
-            BSett.instance.enabledBroCount = count;
-        }
-
         public static float CalculateSpawnProbability()
         {
-            int enabledBroCount = 0;
-            foreach (var kvp in BSett.instance.EnabledBros)
+            if (BSett.instance.equalSpawnProbability)
             {
-                if (kvp.Value)
-                {
-                    ++enabledBroCount;
-                }
+                int enabledBroCount = EnabledBrosNames.Count();
+                return (enabledBroCount / (41.0f + enabledBroCount)) * 100.0f;
             }
-            return (enabledBroCount / (41.0f + enabledBroCount)) * 100.0f;
+            else
+            {
+                return BSett.instance.automaticSpawnProbabilty;
+            }
         }
 
         public static BroState GetBroState(string broName)
@@ -324,10 +329,18 @@ namespace BroMakerLib.Storages
                     : BroState.Disabled;
             }
 
-            bool isEnabled = BSett.instance.EnabledBros.ContainsKey(broName) &&
-                           BSett.instance.EnabledBros[broName];
+            bool isEnabled = EnabledBrosNames.Contains(broName);
 
             return isEnabled ? BroState.Available : BroState.Disabled;
+        }
+
+        public static void BroStatusChanged()
+        {
+            if (BroStatusCount == int.MaxValue)
+            {
+                BroStatusCount = int.MinValue;
+            }
+            ++BroStatusCount;
         }
     }
 }

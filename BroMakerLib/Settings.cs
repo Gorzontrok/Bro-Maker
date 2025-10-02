@@ -39,9 +39,7 @@ namespace BroMakerLib
         public bool scaleUIHeight = false;
         public bool debugLogs = false;
 
-        public Dictionary<string, bool> EnabledBros = new Dictionary<string, bool>();
-        public int enabledBroCount = 0;
-        public List<string> seenBros;
+        public List<string> _enabledBros = new List<string>();
         // These lists are for tracking bro unlocks in IronBro
         public List<List<string>> _notUnlockedBros;
         public List<List<string>> _availableBros;
@@ -57,10 +55,6 @@ namespace BroMakerLib
                 instance = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(FilePath));
             if (instance == null)
                 instance = new Settings();
-            if (instance.seenBros == null)
-            {
-                instance.seenBros = new List<string>();
-            }
             if (instance._notUnlockedBros == null)
             {
                 instance._notUnlockedBros = new List<List<string>> { new List<string>(), new List<string>(), new List<string>(), new List<string>(), new List<string>() };
