@@ -3,6 +3,7 @@ using System.IO;
 using BroMakerLib.Infos;
 using BroMakerLib.Loggers;
 using BroMakerLib.Storages;
+using HarmonyLib;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -15,6 +16,7 @@ namespace BroMakerLib
         public string BroMakerVersion = "0.0.0";
         public string Author = string.Empty;
         public string ErrorMessage = string.Empty;
+        public bool HasHarmonyPatch = false;
         // The custom objects
 
         public string[] Assemblies = new string[0];
@@ -31,7 +33,8 @@ namespace BroMakerLib
         public StoredHero[] StoredHeroes { get; set; }
         [JsonIgnore]
         public StoredAbility[] StoredAbilities { get; set; }
-
+        [JsonIgnore]
+        public Harmony Harmony = null;
         public static BroMakerMod TryLoad(string path)
         {
             BroMakerMod mod = JsonConvert.DeserializeObject<BroMakerMod>(File.ReadAllText(path));

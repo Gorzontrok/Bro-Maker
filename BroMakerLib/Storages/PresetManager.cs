@@ -6,6 +6,7 @@ using System.Reflection;
 using BroMakerLib.Attributes;
 using BroMakerLib.Loggers;
 using BroMakerLib.Storages;
+using HarmonyLib;
 
 namespace BroMakerLib
 {
@@ -35,26 +36,33 @@ namespace BroMakerLib
             // Load assemblies of mods
             foreach (BroMakerMod mod in BroMakerStorage.mods)
             {
+                if (mod.HasHarmonyPatch)
+                    mod.Harmony = new Harmony(mod.Name);
                 foreach (string assemblyPath in mod.Assemblies)
                 {
-                    try
+                    var path = Path.Combine(mod.Path, assemblyPath);
+                    if (!File.Exists(path))
+                        continue;
+
+                    string destFileName = path + ".cache";
+                    if (!File.Exists(destFileName))
                     {
-                        var path = Path.Combine(mod.Path, assemblyPath);
-                        if (File.Exists(path))
-                        {
-                            string destFileName = path + ".cache";
-                            if (!File.Exists(destFileName))
-                            {
-                                //File.Delete(destFileName);
-                                File.Copy(path, destFileName);
-                            }
-                            Assembly assembly = Assembly.LoadFile(path);
-                            CheckAssembly(assembly);
-                        }
+                        //File.Delete(destFileName);
+                        File.Copy(path, destFileName);
                     }
-                    catch (Exception ex)
+                    Assembly assembly = Assembly.LoadFile(path);
+                    bool flag = CheckAssembly(assembly);
+                    if (flag && mod.Harmony != null)
                     {
-                        BMLogger.ExceptionLog(assemblyPath, ex);
+                        try
+                        {
+                            mod.Harmony.PatchAll(assembly);
+                            BMLogger.Log($"{assemblyPath} patched!");
+                        }
+                        catch (Exception ex)
+                        {
+                            BMLogger.ExceptionLog($"Error patching {assemblyPath}", ex);
+                        }
                     }
                 }
             }
@@ -94,10 +102,10 @@ namespace BroMakerLib
             return parameters[name];
         }
 
-        public static void CheckAssembly(Assembly assembly)
+        public static bool CheckAssembly(Assembly assembly)
         {
             if (assembly == null)
-                throw new NullReferenceException(nameof(assembly));
+                return false;
 
             try
             {
@@ -105,8 +113,9 @@ namespace BroMakerLib
                 if (types.Length == 0)
                 {
                     BMLogger.Warning($"Assembly '{assembly.GetName().Name}' is somehow empty ( ͠° ͟ʖ ͡°)");
-                    return;
+                    return false;
                 }
+
 
                 RetrieveParameters(types);
                 Type[] presets = FindPresets(types);
@@ -115,7 +124,9 @@ namespace BroMakerLib
             catch (Exception ex)
             {
                 BMLogger.ExceptionLog($"{assembly.FullName} - " + ex);
+                return false;
             }
+            return true;
         }
 
         private static void RetrieveParameters(Type[] types)
