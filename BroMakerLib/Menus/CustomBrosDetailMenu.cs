@@ -90,7 +90,7 @@ namespace BroMakerLib.Menus
             var leftMainRowSpacer = new SpacerElement
             {
                 WidthMode = SizeMode.Percentage,
-                Width = 5
+                Width = 3
             };
 
             mainRow.AddChild(leftMainRowSpacer);
@@ -123,11 +123,13 @@ namespace BroMakerLib.Menus
 
             avatarContainer.AddChild(avatarImage);
 
-            var middleSpacerMainRow = new SpacerElement
+            var mainRowMiddleSpacer = new SpacerElement
             {
-                WidthMode = SizeMode.Percentage,
-                Width = 10
+                WidthMode = SizeMode.Fixed,
+                Width = -20
             };
+
+            mainRow.AddChild(mainRowMiddleSpacer);
 
             var infoPanel = new VerticalLayoutContainer
             {
@@ -143,7 +145,7 @@ namespace BroMakerLib.Menus
             var infoPanelTopSpacer = new SpacerElement
             {
                 HeightMode = SizeMode.Percentage,
-                Height = 18
+                Height = 14
             };
 
             infoPanel.AddChild(infoPanelTopSpacer);
@@ -156,11 +158,11 @@ namespace BroMakerLib.Menus
             statusText = (statusContainer.Children[2] as TextElement);
             infoPanel.AddChild(statusContainer);
 
-            levelContainer = CreateInfoRow("LEVEL:", "");
+            levelContainer = CreateInfoRow("UNLOCK LEVEL:", "");
             unlockLevelText = (levelContainer.Children[2] as TextElement);
             infoPanel.AddChild(levelContainer);
 
-            rescueContainer = CreateInfoRow("REQUIRES:", "");
+            rescueContainer = CreateInfoRow("UNLOCK REQUIREMENT:", "");
             rescueText = (rescueContainer.Children[2] as TextElement);
             infoPanel.AddChild(rescueContainer);
 
@@ -239,7 +241,7 @@ namespace BroMakerLib.Menus
             var row = new HorizontalLayoutContainer
             {
                 HeightMode = SizeMode.Fixed,
-                Height = 25f,
+                Height = 30f,
                 WidthMode = SizeMode.Fill,
                 Spacing = 3f
             };
@@ -270,7 +272,7 @@ namespace BroMakerLib.Menus
             var rightSpacer = new SpacerElement
             {
                 WidthMode = SizeMode.Percentage,
-                Width = 25
+                Width = 8
             };
 
             row.AddChild(labelText);
@@ -326,12 +328,12 @@ namespace BroMakerLib.Menus
                     int remaining = unlockState.TargetRescueCount - currentRescues;
                     if (remaining > 1)
                     {
-                        rescueText.Text = $"Rescue {remaining} more bros";
+                        rescueText.Text = $"Rescue {remaining} more bros"; // + (unlockState.ConfiguredMethod == UnlockMethod.RescueOrLevel ? "\nOr beat the unlock level" : "");
                         rescueContainer.IsVisibleAndPositioned = true;
                     }
                     else if (remaining == 1)
                     {
-                        rescueText.Text = "Rescue 1 more bro";
+                        rescueText.Text = "Rescue 1 more bro"; // + (unlockState.ConfiguredMethod == UnlockMethod.RescueOrLevel ? "\nOr beat the unlock level" : "");
                         rescueContainer.IsVisibleAndPositioned = true;
                     }
                     else
@@ -492,12 +494,12 @@ namespace BroMakerLib.Menus
                         int remaining = unlockState.TargetRescueCount - currentRescues;
                         if (remaining > 1)
                         {
-                            rescueText.Text = $"Rescue {remaining} more bros";
+                            rescueText.Text = $"Rescue {remaining} more bros";// + (unlockState.ConfiguredMethod == UnlockMethod.RescueOrLevel ? "\nOr beat the unlock level" : "");
                             rescueContainer.IsVisibleAndPositioned = true;
                         }
                         else if (remaining == 1)
                         {
-                            rescueText.Text = "Rescue 1 more bro";
+                            rescueText.Text = "Rescue 1 more bro";// + (unlockState.ConfiguredMethod == UnlockMethod.RescueOrLevel ? "\nOr beat the unlock level" : "");
                             rescueContainer.IsVisibleAndPositioned = true;
                         }
                         else
