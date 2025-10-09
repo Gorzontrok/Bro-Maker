@@ -208,6 +208,14 @@ namespace BroMakerLib.Storages
             return EnabledBrosNames.Contains(broName);
         }
 
+        public static void AddBroIfEnabled(StoredHero bro)
+        {
+            if (EnabledBrosNames.Contains(bro.name) && !EnabledBros.Contains(bro))
+            {
+                EnabledBros.Add(bro);
+            }
+        }
+
         public static void AddBroEnabled(StoredHero bro, bool enabled)
         {
             if (enabled)
@@ -227,7 +235,7 @@ namespace BroMakerLib.Storages
             bool wasEnabled = EnabledBrosNames.Contains(broName);
             if (wasEnabled != enabled)
             {
-                if (enabled)
+                if (enabled && !EnabledBrosNames.Contains(broName))
                 {
                     EnabledBrosNames.Add(broName);
                     EnabledBros.Add(BroMakerStorage.GetStoredHeroByName(broName));
