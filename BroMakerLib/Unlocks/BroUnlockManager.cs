@@ -183,12 +183,17 @@ namespace BroMakerLib.Unlocks
 
         public static string GetAndClearPendingUnlockedBro()
         {
-            if (progressData?.PendingUnlocks != null && progressData.PendingUnlocks.Count > 0)
+            if (progressData?.PendingUnlocks == null || progressData.PendingUnlocks.Count < 0)
+                return null;
+            for (int i = 0; i < progressData.PendingUnlocks.Count; i++)
             {
-                string broName = progressData.PendingUnlocks[0];
-                progressData.PendingUnlocks.RemoveAt(0);
-                SaveProgressData();
-                return broName;
+                string broName = progressData.PendingUnlocks[i];
+                if (BroSpawnManager.IsBroSpawnable(broName))
+                {
+                    progressData.PendingUnlocks.RemoveAt(i);
+                    SaveProgressData();
+                    return broName;
+                }
             }
             return null;
         }

@@ -157,8 +157,23 @@ namespace BroMakerLib.Storages
             else if (allowPendingUnlocks && BroUnlockManager.HasPendingUnlockedBro())
             {
                 string pendingBro = BroUnlockManager.GetAndClearPendingUnlockedBro();
-                LastSpawnWasUnlock = true;
-                chosenBro = BroMakerStorage.GetStoredHeroByName(pendingBro);
+                if (pendingBro != null)
+                {
+                    LastSpawnWasUnlock = true;
+                    chosenBro = BroMakerStorage.GetStoredHeroByName(pendingBro);
+                }
+                else
+                {
+                    if (EnabledBros.Count > 0)
+                    {
+                        chosenBro = EnabledBros[UnityEngine.Random.Range(0, EnabledBros.Count)];
+                    }
+                    else
+                    {
+                        BMLogger.Error("Trying to spawn with no enabled bros");
+                        chosenBro = GetAllBros()[0];
+                    }
+                }
             }
             // Return any enabled bro
             else
@@ -175,7 +190,7 @@ namespace BroMakerLib.Storages
             }
 
             // Check if chosen bro is in pending unlock queue
-            if (allowPendingUnlocks && !LastSpawnWasUnlock && BroUnlockManager.IsBroPendingUnlock(chosenBro.name))
+            if (chosenBro!= null && allowPendingUnlocks && !LastSpawnWasUnlock && BroUnlockManager.IsBroPendingUnlock(chosenBro.name))
             {
                 BroUnlockManager.ClearPendingUnlock(chosenBro.name);
                 LastSpawnWasUnlock = true;
