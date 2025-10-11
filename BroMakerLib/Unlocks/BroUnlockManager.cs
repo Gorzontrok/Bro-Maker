@@ -234,7 +234,7 @@ namespace BroMakerLib.Unlocks
 
             if (anyUnlocked)
             {
-                SaveProgressData();
+                Main.SaveAll();
             }
 
             progressData.LastKnownTotalRescues = currentRescueCount;
@@ -266,7 +266,7 @@ namespace BroMakerLib.Unlocks
 
             if (anyUnlocked)
             {
-                SaveProgressData();
+                Main.SaveAll();
             }
 
             return anyUnlocked;

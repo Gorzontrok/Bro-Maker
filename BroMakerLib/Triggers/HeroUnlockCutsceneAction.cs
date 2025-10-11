@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Triggers
 {
-    class HeroUnlockCutsceneActionInfo : RocketLib.CustomTriggers.CustomTriggerActionInfo
+    public class HeroUnlockCutsceneActionInfo : RocketLib.CustomTriggers.CustomTriggerActionInfo
     {
         public bool finishCampaignAfterCutscene = true;
         public string broName = string.Empty;
@@ -36,23 +36,10 @@ namespace BroMakerLib.Triggers
         }
     }
 
-    public class HeroUnlockCutsceneAction : RocketLib.CustomTriggers.CustomTriggerAction
+    public class HeroUnlockCutsceneAction : RocketLib.CustomTriggers.CustomTriggerAction<HeroUnlockCutsceneActionInfo>
     {
-        HeroUnlockCutsceneActionInfo info;
         public float timer = 0f;
         StoredHero hero;
-
-        public override TriggerActionInfo Info
-        {
-            get
-            {
-                return this.info;
-            }
-            set
-            {
-                this.info = (HeroUnlockCutsceneActionInfo)value;
-            }
-        }
 
         public override void Start()
         {

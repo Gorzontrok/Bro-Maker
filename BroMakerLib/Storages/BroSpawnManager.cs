@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BroMakerLib.Loggers;
 using BroMakerLib.Unlocks;
+using RocketLib.CustomTriggers;
 using BSett = BroMakerLib.Settings;
 
 namespace BroMakerLib.Storages
@@ -33,10 +34,8 @@ namespace BroMakerLib.Storages
             set => BSett.instance._availableBros[PlayerProgress.currentWorldMapSaveSlot] = value;
         }
 
-        // Variables for setting a specific custom bro to continually spawn on a certain level
-        public static bool StartForcingCustom = false;
-        public static bool ForceCustomThisLevel = false;
-        public static List<StoredHero> ForcedCustoms = new List<StoredHero>();
+        internal static bool ForceCustomThisLevel => CustomTriggerStateManager.Get<bool>("forceCustomBros");
+        internal static List<StoredHero> ForcedCustoms => CustomTriggerStateManager.Get<List<StoredHero>>("forcedCustomBroList", new List<StoredHero>());
 
         public static bool RescuingHardcoreBro = false;
 

@@ -142,7 +142,7 @@
     <Compile Include="CustomObjects\Bros\SwordHero.cs" />
     <Compile Include="Cutscenes\CustomCutsceneController.cs" />
     <Compile Include="Cutscenes\CustomIntroCutscene.cs" />
-    <Compile Include="Cutscenes\HarmonyPatches.cs" />
+    <Compile Include="Cutscenes\CutscenePatches.cs" />
     <Compile Include="Attributes\EditorIgnoreAttribute.cs" />
     <Compile Include="Extensions\ICustomHeroExtensions.cs" />
     <Compile Include="Extensions\InvulnerabilityFlashExtensions.cs" />
@@ -175,7 +175,7 @@
     <Compile Include="Unlocks\BroUnlockState.cs" />
     <Compile Include="Unlocks\BroUnlockProgressData.cs" />
     <Compile Include="Unlocks\BroUnlockManager.cs" />
-    <Compile Include="Unlocks\HarmonyPatches.cs" />
+    <Compile Include="Unlocks\UnlockPatches.cs" />
     <Compile Include="Vanilla\Bros\AshBrolliamsM.cs" />
     <Compile Include="Vanilla\Bros\BaBroracusM.cs" />
     <Compile Include="Vanilla\Bros\BillyConnollyM.cs" />

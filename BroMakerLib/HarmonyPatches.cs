@@ -682,22 +682,7 @@ namespace BroMakerLib.HarmonyPatches
                 return;
             }
 
-            // Accept forced custom trigger and apply it
-            if (BroSpawnManager.StartForcingCustom)
-            {
-                BroSpawnManager.StartForcingCustom = false;
-                BroSpawnManager.ForceCustomThisLevel = true;
-                Map.MapData.forcedBro = HeroType.Rambro;
-            }
-            // Clear forced custom triggers
-            else
-            {
-                BroSpawnManager.ForceCustomThisLevel = false;
-            }
-
             LoadHero.customBroDeaths = new Dictionary<int, CustomBroDeath>();
-
-            return;
         }
     }
 

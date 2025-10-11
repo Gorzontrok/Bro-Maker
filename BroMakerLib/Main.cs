@@ -108,8 +108,14 @@ namespace BroMakerLib
 
         static void OnSaveGUI(UnityModManager.ModEntry modEntry)
         {
+            SaveAll();
+        }
+
+        public static void SaveAll()
+        {
             CustomHero.SaveAll();
             BroMakerLib.Settings.instance.Save();
+            BroUnlockManager.SaveProgressData();
         }
     }
 }
