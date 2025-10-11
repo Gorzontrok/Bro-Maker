@@ -169,12 +169,21 @@ namespace BroMakerLib
 
         private static GUILayoutOption ScaledWidth(float width)
         {
+            return GUILayout.Width(width * CalculateWidthScaleFactor());
+        }
+
+        private static void ScaledWidthSpace(float width)
+        {
+            GUILayout.Space(width * CalculateWidthScaleFactor());
+        }
+
+        private static float CalculateWidthScaleFactor()
+        {
             if (BSett.instance.scaleUIWithWindowWidth && _windowWidth > 0)
             {
-                float scaleFactor = _windowWidth / 1200f;
-                return GUILayout.Width(width * scaleFactor);
+                return _windowWidth / 1200f;
             }
-            return GUILayout.Width(width);
+            return 1.0f;
         }
 
         public static void Spawner()
@@ -212,11 +221,12 @@ namespace BroMakerLib
 
             GUILayout.BeginHorizontal("box");
             GUILayout.Label("Name", ScaledWidth(150));
-            GUILayout.Space(50);
+            ScaledWidthSpace(50);
             GUILayout.Label("Author", ScaledWidth(200));
             GUILayout.Label("Version", ScaledWidth(200));
             GUILayout.Label("BroMaker Version", ScaledWidth(200));
             GUILayout.Label("Autospawn Enabled", ScaledWidth(200));
+            GUILayout.Label("Unlock Status", ScaledWidth(200));
             GUILayout.EndHorizontal();
             GUILayout.Space(15);
             if (Mods.Count > 8 && !BSett.instance.scaleUIHeight)
@@ -259,7 +269,7 @@ namespace BroMakerLib
                                 _selectedModIndex = modCount;
                             }
                         }
-                        GUILayout.Space(50);
+                        ScaledWidthSpace(50);
                         GUILayout.Label(mod.Author, ScaledWidth(200));
                         GUILayout.Label(mod.Version, ScaledWidth(200));
                         if (mod.ErrorMessage == string.Empty)
@@ -363,7 +373,7 @@ namespace BroMakerLib
                             _selectedModIndex = modCount;
                         }
                     }
-                    GUILayout.Space(50);
+                    ScaledWidthSpace(50);
 
                     GUILayout.Label(mod.Author, ScaledWidth(200));
                     GUILayout.Label(mod.Version, ScaledWidth(200));
@@ -488,13 +498,8 @@ namespace BroMakerLib
                 bro.LoadBro(selectedPlayerNum);
             }
             bool broEnabled = BroSpawnManager.IsBroEnabled(bro.name);
-            if (mod.StoredHeroes.Count() > 1)
-            {
-                if (GUILayout.Button(new GUIContent((broEnabled ? "Autospawn Enabled" : "Autospawn Disabled"), "Toggle whether this bro is part of the spawn rotation"), ScaledWidth(300)))
-                {
-                    BroSpawnManager.SetBroEnabled(bro.name, !broEnabled);
-                }
-            }
+            bool broUnlocked = BroUnlockManager.IsBroUnlocked(bro.name);
+
             if (GUILayout.Button(new GUIContent("Play Unlock Cutscene", "Play this bro's unlock cutscene if in-game"), ScaledWidth(300)))
             {
                 try
@@ -519,6 +524,48 @@ namespace BroMakerLib
                 {
                     BMLogger.ExceptionLog(ex);
                 }
+            }
+
+            ScaledWidthSpace(200);
+            // Show disabled in settings for enable / disable toggle
+            if (!BSett.instance.automaticSpawn)
+            {
+                GUILayout.Button(new GUIContent("Disabled in Settings", "Automatic spawning of bros is disabled in Spawn Options in the Settings tab"), _disabledStyleButton, ScaledWidth(130));
+                ScaledWidthSpace(70);
+            }
+            // Show locked for enable / disable toggle
+            else if (!broUnlocked)
+            {
+                GUILayout.Button(new GUIContent("Locked", "Bro is not unlocked yet"), _disabledStyleButton, ScaledWidth(110));
+                ScaledWidthSpace(90);
+            }
+            // Show Enabled for enable / disable toggle
+            else if (broEnabled)
+            {
+                if (GUILayout.Button(new GUIContent("Enabled", "Click to disable autospawn for this bro"), _enabledStyleButton, ScaledWidth(110)))
+                {
+                    BroSpawnManager.SetBroEnabled(bro.name, false);
+                }
+                ScaledWidthSpace(90);
+            }
+            // Show Disabled for enable / disable toggle
+            else
+            {
+                if (GUILayout.Button(new GUIContent("Disabled", "Click to enable autospawn for this bro"), _disabledStyleButton, ScaledWidth(110)))
+                {
+                    BroSpawnManager.SetBroEnabled(bro.name, true);
+                }
+                ScaledWidthSpace(90);
+            }
+
+            // Show locked status
+            if (broUnlocked)
+            {
+                GUILayout.Label(new GUIContent("Unlocked", "Bro is unlocked"), _enabledStyle, ScaledWidth(200));
+            }
+            else
+            {
+                GUILayout.Label(new GUIContent("Locked", "Bro is locked, rescue more lives or play their unlock level to unlock them"), _disabledStyle, ScaledWidth(200));
             }
             GUILayout.EndHorizontal();
 
@@ -560,7 +607,7 @@ namespace BroMakerLib
                     CreateSelectedBro();
                 }
             }
-            GUILayout.Space(50);
+            ScaledWidthSpace(50);
             GUILayout.Label(mod.Author, ScaledWidth(200));
             GUILayout.Label(mod.Version, ScaledWidth(200));
             if (mod.ErrorMessage == string.Empty)
@@ -571,24 +618,51 @@ namespace BroMakerLib
             {
                 GUILayout.Label(mod.BroMakerVersion, _warningStyle, ScaledWidth(200));
             }
+
+            bool broEnabled = BroSpawnManager.IsBroEnabled(mod.StoredHeroes[0].name);
+            bool broUnlocked = BroUnlockManager.IsBroUnlocked(mod.StoredHeroes[0].name);
+
+            // Show disabled in settings for enable / disable toggle
             if (!BSett.instance.automaticSpawn)
             {
                 GUILayout.Button(new GUIContent("Disabled in Settings", "Automatic spawning of bros is disabled in Spawn Options in the Settings tab"), _disabledStyleButton, ScaledWidth(130));
+                ScaledWidthSpace(70);
             }
-            else if (BroSpawnManager.IsBroEnabled(mod.StoredHeroes[0].name))
+            // Show locked for enable / disable toggle
+            else if (!broUnlocked)
+            {
+                GUILayout.Button(new GUIContent("Locked", "Bro is not unlocked yet"), _disabledStyleButton, ScaledWidth(110));
+                ScaledWidthSpace(90);
+            }
+            // Show Enabled for enable / disable toggle
+            else if (broEnabled)
             {
                 if (GUILayout.Button(new GUIContent("Enabled", "Click to disable autospawn for this bro"), _enabledStyleButton, ScaledWidth(110)))
                 {
                     BroSpawnManager.SetBroEnabled(mod.StoredHeroes[0].name, false);
                 }
+                ScaledWidthSpace(90);
             }
+            // Show Disabled for enable / disable toggle
             else
             {
                 if (GUILayout.Button(new GUIContent("Disabled", "Click to enable autospawn for this bro"), _disabledStyleButton, ScaledWidth(110)))
                 {
                     BroSpawnManager.SetBroEnabled(mod.StoredHeroes[0].name, true);
                 }
+                ScaledWidthSpace(90);
             }
+
+            // Show locked status
+            if (broUnlocked)
+            {
+                GUILayout.Label(new GUIContent("Unlocked", "Bro is unlocked"), _enabledStyle, ScaledWidth(200));
+            }
+            else
+            {
+                GUILayout.Label(new GUIContent("Locked", "Bro is locked, rescue more lives or play their unlock level to unlock them"), _disabledStyle, ScaledWidth(200));
+            }
+
             GUILayout.EndHorizontal();
 
             // Show bros
