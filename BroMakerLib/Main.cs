@@ -25,8 +25,6 @@ namespace BroMakerLib
 
             try
             {
-                // Set BroMaker Path
-                DirectoriesManager.StorageDirectory = Path.Combine(Directory.GetCurrentDirectory(), "BroMaker_Storage\\");
                 // Initialize BroMaker
                 BroMaker.Initialize();
                 // Initialize Unlock Manager
