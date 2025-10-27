@@ -550,6 +550,8 @@ namespace BroMakerLib.Menus
 
         private void PlayUnlockLevel()
         {
+            FlexMenu.SetReturnTarget(parentGridMenu);
+
             if (!BroUnlockManager.LoadUnlockLevel(currentHero.name))
             {
                 BMLogger.Error($"Failed to load unlock level for {currentHero.name}");
