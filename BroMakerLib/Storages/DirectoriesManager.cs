@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using BroMakerLib.Loggers;
+using RocketLib.Utils;
 
 namespace BroMakerLib
 {
@@ -10,12 +11,6 @@ namespace BroMakerLib
         public static string StorageDirectory
         {
             get { return _storageDirectory; }
-            set
-            {
-                _storageDirectory = value;
-                UpdateDirectories();
-                CheckDirectories();
-            }
         }
         public static string BrosDirectory { get; private set; }
         public static string WeaponsDirectory { get; private set; }
@@ -36,7 +31,10 @@ namespace BroMakerLib
         public static void UpdateDirectories()
         {
             if (string.IsNullOrEmpty(_storageDirectory))
-                _storageDirectory = Path.Combine(Directory.GetCurrentDirectory(), "BroMaker_Storage\\");
+            {
+                _storageDirectory = Path.Combine(RocketLibUtils.GetRootDirectory(), "BroMaker_Storage\\");
+            }
+                
 
             BrosDirectory = Path.Combine(StorageDirectory, "Bros\\");
             AbilitiesDirectory = Path.Combine(StorageDirectory, "Abilities\\");

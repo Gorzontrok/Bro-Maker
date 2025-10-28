@@ -33,6 +33,8 @@ namespace BroMakerLib.Menus
         {
             base.InitializeContainer();
 
+            EnableTransition = true;
+
             // Use LastFocused mode to remember position including navigation buttons
             FocusRestoreMode = FocusRestoreMode.LastFocused;
 
