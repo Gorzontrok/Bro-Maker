@@ -102,11 +102,6 @@ namespace BroMakerLib.Unlocks
                     var unlockConfig = bro.GetInfo()?.UnlockConfig ?? new BroUnlockConfig();
                     var state = CreateNewBroUnlockState(bro, unlockConfig);
 
-                    if (state.IsUnlocked)
-                    {
-                        BroSpawnManager.AddBroEnabled(bro, true);
-                    }
-
                     progressData.BroStates[bro.name] = state;
                     anyNewBros = true;
                 }

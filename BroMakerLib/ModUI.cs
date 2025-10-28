@@ -526,47 +526,51 @@ namespace BroMakerLib
                 }
             }
 
-            ScaledWidthSpace(200);
-            // Show disabled in settings for enable / disable toggle
-            if (!BSett.instance.automaticSpawn)
+            // Only displaly spawn options for mods with multiple bros
+            if ( mod.StoredHeroes.Length > 1 )
             {
-                GUILayout.Button(new GUIContent("Disabled in Settings", "Automatic spawning of bros is disabled in Spawn Options in the Settings tab"), _disabledStyleButton, ScaledWidth(130));
-                ScaledWidthSpace(70);
-            }
-            // Show locked for enable / disable toggle
-            else if (!broUnlocked)
-            {
-                GUILayout.Button(new GUIContent("Locked", "Bro is not unlocked yet"), _disabledStyleButton, ScaledWidth(110));
-                ScaledWidthSpace(90);
-            }
-            // Show Enabled for enable / disable toggle
-            else if (broEnabled)
-            {
-                if (GUILayout.Button(new GUIContent("Enabled", "Click to disable autospawn for this bro"), _enabledStyleButton, ScaledWidth(110)))
+                ScaledWidthSpace(200);
+                // Show disabled in settings for enable / disable toggle
+                if (!BSett.instance.automaticSpawn)
                 {
-                    BroSpawnManager.SetBroEnabled(bro.name, false);
+                    GUILayout.Button(new GUIContent("Disabled in Settings", "Automatic spawning of bros is disabled in Spawn Options in the Settings tab"), _disabledStyleButton, ScaledWidth(130));
+                    ScaledWidthSpace(70);
                 }
-                ScaledWidthSpace(90);
-            }
-            // Show Disabled for enable / disable toggle
-            else
-            {
-                if (GUILayout.Button(new GUIContent("Disabled", "Click to enable autospawn for this bro"), _disabledStyleButton, ScaledWidth(110)))
+                // Show locked for enable / disable toggle
+                else if (!broUnlocked)
                 {
-                    BroSpawnManager.SetBroEnabled(bro.name, true);
+                    GUILayout.Button(new GUIContent("Locked", "Bro is not unlocked yet"), _disabledStyleButton, ScaledWidth(110));
+                    ScaledWidthSpace(90);
                 }
-                ScaledWidthSpace(90);
+                // Show Enabled for enable / disable toggle
+                else if (broEnabled)
+                {
+                    if (GUILayout.Button(new GUIContent("Enabled", "Click to disable autospawn for this bro"), _enabledStyleButton, ScaledWidth(110)))
+                    {
+                        BroSpawnManager.SetBroEnabled(bro.name, false);
+                    }
+                    ScaledWidthSpace(90);
+                }
+                // Show Disabled for enable / disable toggle
+                else
+                {
+                    if (GUILayout.Button(new GUIContent("Disabled", "Click to enable autospawn for this bro"), _disabledStyleButton, ScaledWidth(110)))
+                    {
+                        BroSpawnManager.SetBroEnabled(bro.name, true);
+                    }
+                    ScaledWidthSpace(90);
+                }
+                // Show locked status
+                if (broUnlocked)
+                {
+                    GUILayout.Label(new GUIContent("Unlocked", "Bro is unlocked"), _enabledStyle, ScaledWidth(200));
+                }
+                else
+                {
+                    GUILayout.Label(new GUIContent("Locked", "Bro is locked, rescue more lives or play their unlock level to unlock them"), _disabledStyle, ScaledWidth(200));
+                }
             }
-
-            // Show locked status
-            if (broUnlocked)
-            {
-                GUILayout.Label(new GUIContent("Unlocked", "Bro is unlocked"), _enabledStyle, ScaledWidth(200));
-            }
-            else
-            {
-                GUILayout.Label(new GUIContent("Locked", "Bro is locked, rescue more lives or play their unlock level to unlock them"), _disabledStyle, ScaledWidth(200));
-            }
+            
             GUILayout.EndHorizontal();
 
             // Display any UI options the bro developer added

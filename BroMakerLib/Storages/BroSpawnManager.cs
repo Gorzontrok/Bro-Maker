@@ -230,15 +230,6 @@ namespace BroMakerLib.Storages
             }
         }
 
-        public static void AddBroEnabled(StoredHero bro, bool enabled)
-        {
-            if (enabled)
-            {
-                EnabledBros.Add(bro);
-                EnabledBrosNames.Add(bro.name);
-            }
-        }
-
         public static void SetBroEnabled(string broName, bool enabled, bool forced = false)
         {
             // Don't allow enabling locked bros
