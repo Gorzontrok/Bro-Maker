@@ -36,6 +36,34 @@ namespace BroMakerLib
         }
 
         /// <summary>
+        /// Determines if the specified GameObject is a boss
+        /// </summary>
+        /// <param name="obj">Object with the boss component</param>
+        /// <returns>True if GameObject has a boss component attached</returns>
+        public static bool IsBoss(GameObject obj)
+        {
+            Unit unit = obj.GetComponent<Unit>();
+            if (unit != null)
+            {
+                return IsBoss(unit);
+            }
+            else
+            {
+                if (obj.GetComponent<BossSlugMover>() != null || obj.GetComponent<BossSlugFace>() != null || obj.GetComponent<BossSlugHeart>() != null)
+                {
+                    return true;
+                }
+
+                if (obj.transform.parent != null)
+                {
+                    return IsBoss(obj.transform.parent.gameObject);
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Changes the specified players special materials
         /// </summary>
         /// <param name="playerNum"></param>

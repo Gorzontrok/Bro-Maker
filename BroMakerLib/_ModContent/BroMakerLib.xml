@@ -46,6 +46,13 @@
             <param name="unit">Unit to check</param>
             <returns>True if unit is a boss</returns>
         </member>
+        <member name="M:BroMakerLib.BroMakerUtilities.IsBoss(UnityEngine.GameObject)">
+            <summary>
+            Determines if the specified GameObject is a boss
+            </summary>
+            <param name="obj">Object with the boss component</param>
+            <returns>True if GameObject has a boss component attached</returns>
+        </member>
         <member name="M:BroMakerLib.BroMakerUtilities.SetSpecialMaterials(System.Int32,System.Collections.Generic.List{UnityEngine.Material},UnityEngine.Vector2,System.Single)">
             <summary>
             Changes the specified players special materials
