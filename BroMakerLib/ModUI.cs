@@ -527,7 +527,7 @@ namespace BroMakerLib
             }
 
             // Only displaly spawn options for mods with multiple bros
-            if ( mod.StoredHeroes.Length > 1 )
+            if (mod.StoredHeroes.Length > 1)
             {
                 ScaledWidthSpace(200);
                 // Show disabled in settings for enable / disable toggle
@@ -570,7 +570,7 @@ namespace BroMakerLib
                     GUILayout.Label(new GUIContent("Locked", "Bro is locked, rescue more lives or play their unlock level to unlock them"), _disabledStyle, ScaledWidth(200));
                 }
             }
-            
+
             GUILayout.EndHorizontal();
 
             // Display any UI options the bro developer added

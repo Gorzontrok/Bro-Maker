@@ -1,5 +1,3 @@
-using System;
-
 namespace BroMakerLib.Unlocks
 {
     public enum UnlockMethod

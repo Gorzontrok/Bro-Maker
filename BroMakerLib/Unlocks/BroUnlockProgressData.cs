@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace BroMakerLib.Unlocks
@@ -12,7 +11,7 @@ namespace BroMakerLib.Unlocks
 
         public static BroUnlockProgressData MigrateData(BroUnlockProgressData oldData)
         {
-            switch(oldData.Version)
+            switch (oldData.Version)
             {
                 case 1:
                     return oldData;

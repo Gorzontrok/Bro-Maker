@@ -189,7 +189,7 @@ namespace BroMakerLib.Storages
             }
 
             // Check if chosen bro is in pending unlock queue
-            if (chosenBro!= null && allowPendingUnlocks && !LastSpawnWasUnlock && BroUnlockManager.IsBroPendingUnlock(chosenBro.name))
+            if (chosenBro != null && allowPendingUnlocks && !LastSpawnWasUnlock && BroUnlockManager.IsBroPendingUnlock(chosenBro.name))
             {
                 BroUnlockManager.ClearPendingUnlock(chosenBro.name);
                 LastSpawnWasUnlock = true;

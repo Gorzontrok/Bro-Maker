@@ -34,7 +34,7 @@ namespace BroMakerLib
             {
                 _storageDirectory = Path.Combine(RocketLibUtils.GetRootDirectory(), "BroMaker_Storage\\");
             }
-                
+
 
             BrosDirectory = Path.Combine(StorageDirectory, "Bros\\");
             AbilitiesDirectory = Path.Combine(StorageDirectory, "Abilities\\");
