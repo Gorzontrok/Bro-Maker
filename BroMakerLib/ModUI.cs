@@ -477,97 +477,111 @@ namespace BroMakerLib
                 GUILayout.Label(mod.ErrorMessage, _warningStyle);
             }
 
-            // Player Selector
-            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false), ScaledWidth(500));
-            for (int i = 0; i < 4; ++i)
+            bool broEnabled = BroSpawnManager.IsBroEnabled(bro.name);
+            bool broUnlocked = BroUnlockManager.IsBroUnlocked(bro.name);
+
+            if (broUnlocked)
             {
-                if ((selectedPlayerNum == i) != GUILayout.Toggle(selectedPlayerNum == i, new GUIContent("Player " + (i + 1), "Select which player to switch to this custom bro when you press switch to bro"), _buttonStyle))
+                // Player Selector
+                GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false), ScaledWidth(500));
+                for (int i = 0; i < 4; ++i)
                 {
-                    selectedPlayerNum = i;
+                    if ((selectedPlayerNum == i) != GUILayout.Toggle(selectedPlayerNum == i, new GUIContent("Player " + (i + 1), "Select which player to switch to this custom bro when you press switch to bro"), _buttonStyle))
+                    {
+                        selectedPlayerNum = i;
+                    }
                 }
+                GUILayout.EndHorizontal();
             }
-            GUILayout.EndHorizontal();
 
 
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
 
-            if (GUILayout.Button(new GUIContent("Switch to Bro", "Switch selected player to this custom bro"), ScaledWidth(300)))
+            if (broUnlocked)
             {
-                LoadHero.previousSpawnInfo[selectedPlayerNum] = Player.SpawnType.TriggerSwapBro;
-                LoadHero.wasFirstDeployment[selectedPlayerNum] = false;
-                bro.LoadBro(selectedPlayerNum);
-            }
-            bool broEnabled = BroSpawnManager.IsBroEnabled(bro.name);
-            bool broUnlocked = BroUnlockManager.IsBroUnlocked(bro.name);
+                if (GUILayout.Button(new GUIContent("Switch to Bro", "Switch selected player to this custom bro"), ScaledWidth(300)))
+                {
+                    LoadHero.previousSpawnInfo[selectedPlayerNum] = Player.SpawnType.TriggerSwapBro;
+                    LoadHero.wasFirstDeployment[selectedPlayerNum] = false;
+                    bro.LoadBro(selectedPlayerNum);
+                }
 
-            if (GUILayout.Button(new GUIContent("Play Unlock Cutscene", "Play this bro's unlock cutscene if in-game"), ScaledWidth(300)))
-            {
-                try
+                if (GUILayout.Button(new GUIContent("Play Unlock Cutscene", "Play this bro's unlock cutscene if in-game"), ScaledWidth(300)))
                 {
-                    var cutscenes = bro.GetInfo().Cutscene;
-                    if (cutscenes.Count > 0)
+                    try
                     {
-                        // Choose a random cutscene variant
-                        int randomIndex = UnityEngine.Random.Range(0, cutscenes.Count);
-                        Cutscenes.CustomCutsceneController.LoadHeroCutscene(cutscenes[randomIndex]);
+                        var cutscenes = bro.GetInfo().Cutscene;
+                        if (cutscenes.Count > 0)
+                        {
+                            // Choose a random cutscene variant
+                            int randomIndex = UnityEngine.Random.Range(0, cutscenes.Count);
+                            Cutscenes.CustomCutsceneController.LoadHeroCutscene(cutscenes[randomIndex]);
+                        }
+                        else
+                        {
+                            throw new ArgumentNullException("The bro has no cutscene");
+                        }
                     }
-                    else
+                    catch (ArgumentNullException ex)
                     {
-                        throw new ArgumentNullException("The bro has no cutscene");
+                        BMLogger.ExceptionLog("The bro has no cutscene: " + ex.ToString());
                     }
-                }
-                catch (ArgumentNullException ex)
-                {
-                    BMLogger.ExceptionLog("The bro has no cutscene: " + ex.ToString());
-                }
-                catch (Exception ex)
-                {
-                    BMLogger.ExceptionLog(ex);
+                    catch (Exception ex)
+                    {
+                        BMLogger.ExceptionLog(ex);
+                    }
                 }
             }
 
             // Only displaly spawn options for mods with multiple bros
             if (mod.StoredHeroes.Length > 1)
             {
-                ScaledWidthSpace(200);
-                // Show disabled in settings for enable / disable toggle
-                if (!BSett.instance.automaticSpawn)
-                {
-                    GUILayout.Button(new GUIContent("Disabled in Settings", "Automatic spawning of bros is disabled in Spawn Options in the Settings tab"), _disabledStyleButton, ScaledWidth(130));
-                    ScaledWidthSpace(70);
-                }
-                // Show locked for enable / disable toggle
-                else if (!broUnlocked)
-                {
-                    GUILayout.Button(new GUIContent("Locked", "Bro is not unlocked yet"), _disabledStyleButton, ScaledWidth(110));
-                    ScaledWidthSpace(90);
-                }
-                // Show Enabled for enable / disable toggle
-                else if (broEnabled)
-                {
-                    if (GUILayout.Button(new GUIContent("Enabled", "Click to disable autospawn for this bro"), _enabledStyleButton, ScaledWidth(110)))
-                    {
-                        BroSpawnManager.SetBroEnabled(bro.name, false);
-                    }
-                    ScaledWidthSpace(90);
-                }
-                // Show Disabled for enable / disable toggle
-                else
-                {
-                    if (GUILayout.Button(new GUIContent("Disabled", "Click to enable autospawn for this bro"), _disabledStyleButton, ScaledWidth(110)))
-                    {
-                        BroSpawnManager.SetBroEnabled(bro.name, true);
-                    }
-                    ScaledWidthSpace(90);
-                }
-                // Show locked status
                 if (broUnlocked)
                 {
-                    GUILayout.Label(new GUIContent("Unlocked", "Bro is unlocked"), _enabledStyle, ScaledWidth(200));
+                    ScaledWidthSpace(200);
+                    // Show disabled in settings for enable / disable toggle
+                    if (!BSett.instance.automaticSpawn)
+                    {
+                        GUILayout.Button(new GUIContent("Disabled in Settings", "Automatic spawning of bros is disabled in Spawn Options in the Settings tab"), _disabledStyleButton, ScaledWidth(130));
+                        ScaledWidthSpace(70);
+                    }
+                    // Show locked for enable / disable toggle
+                    else if (!broUnlocked)
+                    {
+                        GUILayout.Button(new GUIContent("Locked", "Bro is locked, rescue more lives or play their unlock level to unlock them. The unlock level can be accessed from the Custom Bros menu on the main menu."), _disabledStyleButton, ScaledWidth(110));
+                        ScaledWidthSpace(90);
+                    }
+                    // Show Enabled for enable / disable toggle
+                    else if (broEnabled)
+                    {
+                        if (GUILayout.Button(new GUIContent("Enabled", "Click to disable autospawn for this bro"), _enabledStyleButton, ScaledWidth(110)))
+                        {
+                            BroSpawnManager.SetBroEnabled(bro.name, false);
+                        }
+                        ScaledWidthSpace(90);
+                    }
+                    // Show Disabled for enable / disable toggle
+                    else
+                    {
+                        if (GUILayout.Button(new GUIContent("Disabled", "Click to enable autospawn for this bro"), _disabledStyleButton, ScaledWidth(110)))
+                        {
+                            BroSpawnManager.SetBroEnabled(bro.name, true);
+                        }
+                        ScaledWidthSpace(90);
+                    }
+                    // Show locked status
+                    if (broUnlocked)
+                    {
+                        GUILayout.Label(new GUIContent("Unlocked", "Bro is unlocked"), _enabledStyle, ScaledWidth(200));
+                    }
+                    else
+                    {
+                        GUILayout.Label(new GUIContent("Locked", "Bro is locked, rescue more lives or play their unlock level to unlock them. The unlock level can be accessed from the Custom Bros menu on the main menu."), _disabledStyle, ScaledWidth(200));
+                    }
                 }
                 else
                 {
-                    GUILayout.Label(new GUIContent("Locked", "Bro is locked, rescue more lives or play their unlock level to unlock them"), _disabledStyle, ScaledWidth(200));
+                    GUILayout.Button(new GUIContent("Locked", "Bro is locked, rescue more lives or play their unlock level to unlock them. The unlock level can be accessed from the Custom Bros menu on the main menu."), _disabledStyleButton, ScaledWidth(110));
                 }
             }
 
@@ -635,7 +649,7 @@ namespace BroMakerLib
             // Show locked for enable / disable toggle
             else if (!broUnlocked)
             {
-                GUILayout.Button(new GUIContent("Locked", "Bro is not unlocked yet"), _disabledStyleButton, ScaledWidth(110));
+                GUILayout.Button(new GUIContent("Locked", "Bro is locked, rescue more lives or play their unlock level to unlock them. The unlock level can be accessed from the Custom Bros menu on the main menu."), _disabledStyleButton, ScaledWidth(110));
                 ScaledWidthSpace(90);
             }
             // Show Enabled for enable / disable toggle
@@ -664,7 +678,7 @@ namespace BroMakerLib
             }
             else
             {
-                GUILayout.Label(new GUIContent("Locked", "Bro is locked, rescue more lives or play their unlock level to unlock them"), _disabledStyle, ScaledWidth(200));
+                GUILayout.Label(new GUIContent("Locked", "Bro is locked, rescue more lives or play their unlock level to unlock them. The unlock level can be accessed from the Custom Bros menu on the main menu."), _disabledStyle, ScaledWidth(200));
             }
 
             GUILayout.EndHorizontal();
