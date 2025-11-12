@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using BroMakerLib.CustomObjects.Bros;
 using BroMakerLib.Infos;
 using BroMakerLib.Loggers;
@@ -18,13 +18,22 @@ namespace BroMakerLib.Storages
         {
             get { return _abilities.ToArray(); }
         }
-        public static StoredHero[] Bros
+        public static ReadOnlyCollection<StoredHero> Bros
         {
-            get { return _bros.ToArray(); }
+            get { return _brosReadOnly; }
+        }
+        public static ReadOnlyCollection<string> BroNames
+        {
+            get { return _broNamesReadOnly; }
         }
 
         private static List<StoredAbility> _abilities = new List<StoredAbility>();
-        internal static List<StoredHero> _bros = new List<StoredHero>();
+        private static List<StoredHero> _bros = new List<StoredHero>();
+        private static ReadOnlyCollection<StoredHero> _brosReadOnly;
+        private static Dictionary<string, StoredHero> _brosByName = new Dictionary<string, StoredHero>();
+        private static Dictionary<Type, StoredHero> _brosByType = new Dictionary<Type, StoredHero>();
+        private static List<string> _broNames = new List<string>();
+        private static ReadOnlyCollection<string> _broNamesReadOnly;
 
         public static void Initialize()
         {
@@ -33,6 +42,9 @@ namespace BroMakerLib.Storages
 
             _bros = new List<StoredHero>();
             _abilities = new List<StoredAbility>();
+            _brosByName = new Dictionary<string, StoredHero>();
+            _brosByType = new Dictionary<Type, StoredHero>();
+            _broNames = new List<string>();
 
             foreach (BroMakerMod mod in mods)
             {
@@ -40,7 +52,11 @@ namespace BroMakerLib.Storages
                 StoreAbilitiesFromMod(mod);
             }
 
-            BMLogger.Debug("MakerObjectStorage Initialized.");
+            _broNames.Sort();
+            _brosReadOnly = _bros.AsReadOnly();
+            _broNamesReadOnly = _broNames.AsReadOnly();
+
+            BMLogger.Debug("BroMakerStorage Initialized.");
         }
 
         private static void LoadMods()
@@ -94,147 +110,43 @@ namespace BroMakerLib.Storages
             BMLogger.Debug("Finish Loading Mods");
         }
 
-        public static StoredAbility GetAbilityByName(string name)
+        public static void PopulateTypesDictionary()
         {
-            if (_abilities.IsNullOrEmpty())
-                return new StoredAbility();
-            return _abilities.FirstOrDefault(s => s.name == name);
-        }
+            _brosByType.Clear();
 
-        public static bool GetAbilityByName(string name, out StoredAbility ability)
-        {
-            if (_abilities.IsNullOrEmpty())
+            foreach (StoredHero hero in _bros)
             {
-                ability = new StoredAbility();
-                return false;
-            }
-
-            ability = _abilities.FirstOrDefault(s => s.name == name);
-            return true;
-        }
-
-        public static StoredHero GetStoredHeroByName(string name, BroMakerMod mod)
-        {
-            if (_bros.IsNullOrEmpty() || name.IsNullOrEmpty())
-                return null;
-            foreach (StoredHero storedHero in _bros)
-            {
-                if (storedHero.mod == mod && storedHero.name == name)
-                    return storedHero;
-            }
-            return null;
-        }
-
-        public static bool GetStoredHeroByName(string name, BroMakerMod mod, out StoredHero hero)
-        {
-            hero = null;
-
-            if (_bros.IsNullOrEmpty() || name.IsNullOrEmpty())
-                return false;
-
-            foreach (StoredHero storedHero in _bros)
-            {
-                if (storedHero.mod == mod && storedHero.name == name)
+                Type heroType = PresetManager.GetHeroPreset(hero.GetInfo().CharacterPreset);
+                if (heroType != null)
                 {
-                    hero = storedHero;
-                    return true;
+                    _brosByType[heroType] = hero;
                 }
             }
-            return false;
-        }
-
-        public static StoredHero GetStoredHeroByName(string name)
-        {
-            if (_bros.IsNullOrEmpty() || name.IsNullOrEmpty())
-                return null;
-            foreach (StoredHero storedHero in _bros)
-            {
-                if (storedHero.name == name)
-                    return storedHero;
-            }
-            return null;
         }
 
         public static bool GetStoredHeroByName(string name, out StoredHero hero)
         {
             hero = null;
 
-            if (_bros.IsNullOrEmpty() || name.IsNullOrEmpty())
+            if (name.IsNullOrEmpty())
                 return false;
 
-            foreach (StoredHero storedHero in _bros)
-            {
-                if (storedHero.name == name)
-                {
-                    hero = storedHero;
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public static StoredHero GetStoredHeroByCustomHeroType<T>() where T : CustomHero
-        {
-            if (_bros.IsNullOrEmpty())
-                return null;
-            foreach (StoredHero storedHero in _bros)
-            {
-                if (PresetManager.GetHeroPreset(storedHero.GetInfo().CharacterPreset) == typeof(T))
-                {
-                    return storedHero;
-                }
-            }
-            return null;
+            return _brosByName.TryGetValue(name, out hero);
         }
 
         public static bool GetStoredHeroByCustomHeroType<T>(out StoredHero hero) where T : CustomHero
         {
-            hero = null;
-
-            if (_bros.IsNullOrEmpty())
-                return false;
-
-            foreach (StoredHero storedHero in _bros)
-            {
-                if (PresetManager.GetHeroPreset(storedHero.GetInfo().CharacterPreset) == typeof(T))
-                {
-                    hero = storedHero;
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public static StoredHero GetStoredHeroByCustomHeroType(Type customHeroType)
-        {
-            if (_bros.IsNullOrEmpty() || !typeof(CustomHero).IsAssignableFrom(customHeroType))
-                return null;
-            foreach (StoredHero storedHero in _bros)
-            {
-                if (PresetManager.GetHeroPreset(storedHero.GetInfo().CharacterPreset) == customHeroType)
-                {
-                    return storedHero;
-                }
-            }
-            return null;
+            return _brosByType.TryGetValue(typeof(T), out hero);
         }
 
         public static bool GetStoredHeroByCustomHeroType(Type customHeroType, out StoredHero hero)
         {
             hero = null;
 
-            if (_bros.IsNullOrEmpty() || !typeof(CustomHero).IsAssignableFrom(customHeroType))
+            if (customHeroType == null || !typeof(CustomHero).IsAssignableFrom(customHeroType))
                 return false;
 
-            foreach (StoredHero storedHero in _bros)
-            {
-                if (PresetManager.GetHeroPreset(storedHero.GetInfo().CharacterPreset) == customHeroType)
-                {
-                    hero = storedHero;
-                    return true;
-                }
-            }
-            return false;
+            return _brosByType.TryGetValue(customHeroType, out hero);
         }
 
         public static void StoreCharactersFromMod(BroMakerMod mod)
@@ -253,6 +165,8 @@ namespace BroMakerLib.Storages
                         var hero = new StoredHero(path, mod);
                         temp.Add(hero);
                         _bros.Add(hero);
+                        _brosByName[hero.name] = hero;
+                        _broNames.Add(hero.name);
                         BMLogger.Debug($"Found file: '{path}'");
                     }
                 }
@@ -267,6 +181,8 @@ namespace BroMakerLib.Storages
                     var hero = new StoredHero(info, mod);
                     temp.Add(hero);
                     _bros.Add(hero);
+                    _brosByName[hero.name] = hero;
+                    _broNames.Add(hero.name);
                 }
             }
             mod.StoredHeroes = temp.ToArray();

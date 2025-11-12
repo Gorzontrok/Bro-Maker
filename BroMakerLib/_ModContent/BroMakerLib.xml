@@ -821,14 +821,6 @@
             Name of the Custom Object
             </summary>
         </member>
-        <member name="M:BroMakerLib.PresetManager.GetHeroPreset(System.String)">
-            <summary>
-            Return hero Preset
-            </summary>
-            <param name="presetName"></param>
-            <returns></returns>
-            <exception cref="T:System.Exception"></exception>
-        </member>
         <member name="P:BroMakerLib.ResourcesController.Particle_AlphaBlend">
             <summary>
             Particles/Alpha Blended

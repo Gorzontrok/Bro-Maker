@@ -5,7 +5,6 @@ using System.Reflection;
 using BroMakerLib.CustomObjects;
 using BroMakerLib.CustomObjects.Bros;
 using BroMakerLib.CustomObjects.Projectiles;
-using BroMakerLib.Cutscenes;
 using BroMakerLib.Infos;
 using BroMakerLib.Loaders;
 using BroMakerLib.Loggers;
@@ -73,56 +72,59 @@ namespace BroMakerLib.HarmonyPatches
                     LoadHero.willReplaceBro[__instance.playerNum] = false;
                 }
                 // Handle IronBro spawning
-                else if (GameModeController.IsHardcoreMode && BroSpawnManager.EnabledBros.Count > 0)
+                else if (GameModeController.IsHardcoreMode)
                 {
-                    // Check if we're unlocking a bro
-                    if (PlayerProgress.Instance.yetToBePlayedUnlockedHeroes.Count() > 0)
+                    if (BSett.instance.automaticSpawn && BroSpawnManager.EnabledBros.Count > 0)
                     {
-                        if (BSett.instance.onlyCustomInHardcore)
+                        // Check if we're unlocking a bro
+                        if (PlayerProgress.Instance.yetToBePlayedUnlockedHeroes.Count() > 0)
                         {
-                            LoadHero.willReplaceBro[__instance.playerNum] = true;
-
-                            PlayerProgress.Instance.yetToBePlayedUnlockedHeroes.Remove(nextHeroType);
-                            GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Remove(nextHeroType);
-                            if (BroSpawnManager.HardcoreBrosNotYetUnlocked.Count() > 0)
+                            if (BSett.instance.onlyCustomInHardcore)
                             {
-                                BroSpawnManager.RescuingHardcoreBro = true;
-                                LoadHero.playCutscene = true;
-                            }
-                        }
-                        else
-                        {
-                            // Probability of a custom bro being unlocked should be the number of custom bros / (number of custom bros + notUnlocked vanilla bros + dead vanilla bros)
-                            // We add 1 because the chosen bro will have already been added to the available bros
-                            LoadHero.willReplaceBro[__instance.playerNum] = UnityEngine.Random.value <= (BroSpawnManager.HardcoreBrosNotYetUnlocked.Count() /
-                                (BroSpawnManager.HardcoreBrosNotYetUnlocked.Count() + PlayerProgress.Instance.unlockedHeroes.Count() -
-                                GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count() - GameState.Instance.currentWorldmapSave.hardcoreModeDeadBros.Count() + 1.0f));
+                                LoadHero.willReplaceBro[__instance.playerNum] = true;
 
-                            // If replacing hero, remove previously unlocked one from available bros
-                            if (LoadHero.willReplaceBro[__instance.playerNum])
-                            {
                                 PlayerProgress.Instance.yetToBePlayedUnlockedHeroes.Remove(nextHeroType);
                                 GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Remove(nextHeroType);
-                                BroSpawnManager.RescuingHardcoreBro = true;
-                                LoadHero.playCutscene = true;
+                                if (BroSpawnManager.HardcoreBrosNotYetUnlocked.Count() > 0)
+                                {
+                                    BroSpawnManager.RescuingHardcoreBro = true;
+                                    LoadHero.playCutscene = true;
+                                }
+                            }
+                            else
+                            {
+                                // Probability of a custom bro being unlocked should be the number of custom bros / (number of custom bros + notUnlocked vanilla bros + dead vanilla bros)
+                                // We add 1 because the chosen bro will have already been added to the available bros
+                                LoadHero.willReplaceBro[__instance.playerNum] = UnityEngine.Random.value <= (BroSpawnManager.HardcoreBrosNotYetUnlocked.Count() /
+                                    (BroSpawnManager.HardcoreBrosNotYetUnlocked.Count() + PlayerProgress.Instance.unlockedHeroes.Count() -
+                                    GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count() - GameState.Instance.currentWorldmapSave.hardcoreModeDeadBros.Count() + 1.0f));
+
+                                // If replacing hero, remove previously unlocked one from available bros
+                                if (LoadHero.willReplaceBro[__instance.playerNum])
+                                {
+                                    PlayerProgress.Instance.yetToBePlayedUnlockedHeroes.Remove(nextHeroType);
+                                    GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Remove(nextHeroType);
+                                    BroSpawnManager.RescuingHardcoreBro = true;
+                                    LoadHero.playCutscene = true;
+                                }
                             }
                         }
-                    }
-                    else if (BSett.instance.onlyCustomInHardcore)
-                    {
-                        // Check if this is the first character being spawned
-                        if (BroSpawnManager.HardcoreAvailableBros.Count() == 0)
+                        else if (BSett.instance.onlyCustomInHardcore)
                         {
-                            // We use this function to add a character to the pool to start with
-                            BroSpawnManager.RescuingHardcoreBro = true;
-                            BroSpawnManager.GetRandomSpawnableBro();
+                            // Check if this is the first character being spawned
+                            if (BroSpawnManager.HardcoreAvailableBros.Count() == 0)
+                            {
+                                // We use this function to add a character to the pool to start with
+                                BroSpawnManager.RescuingHardcoreBro = true;
+                                BroSpawnManager.GetRandomSpawnableBro();
+                            }
+                            LoadHero.willReplaceBro[__instance.playerNum] = true;
                         }
-                        LoadHero.willReplaceBro[__instance.playerNum] = true;
-                    }
-                    else if (BroSpawnManager.HardcoreAvailableBros.Count() > 0)
-                    {
-                        LoadHero.willReplaceBro[__instance.playerNum] = UnityEngine.Random.value <= (BroSpawnManager.HardcoreAvailableBros.Count() /
-                        ((float)BroSpawnManager.HardcoreAvailableBros.Count() + GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count()));
+                        else if (BroSpawnManager.HardcoreAvailableBros.Count() > 0)
+                        {
+                            LoadHero.willReplaceBro[__instance.playerNum] = UnityEngine.Random.value <= (BroSpawnManager.HardcoreAvailableBros.Count() /
+                            ((float)BroSpawnManager.HardcoreAvailableBros.Count() + GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count()));
+                        }
                     }
                 }
                 // Check if we just unlocked a custom bro
@@ -326,58 +328,6 @@ namespace BroMakerLib.HarmonyPatches
                 }
             }
             return true;
-        }
-    }
-
-    [HarmonyPatch(typeof(CutsceneIntroRoot), "OnLoadComplete")]
-    static class CutsceneIntroRoot_OnLoadComplete_Patch
-    {
-        public static void Prefix(CutsceneIntroRoot __instance, ref string resourceName, ref object asset, ref string ____curIntroResourceName)
-        {
-            if (!Main.enabled || !CustomCutsceneController.willLoadCustomCutscene)
-            {
-                return;
-            }
-
-            ____curIntroResourceName = string.Format("{0}:{1}", "cutscenes", "Intro_Bro_Rambro");
-
-            CutsceneIntroData data = CustomCutsceneController.cutsceneToLoad.ToCutsceneIntroData(__instance);
-
-            if (CustomCutsceneController.cutsceneToLoad.fanfarePath.IsNotNullOrEmpty())
-            {
-                __instance.fanfareSource = __instance.gameObject.AddComponent<AudioSource>();
-            }
-
-            asset = data;
-        }
-
-        public static void Postfix(CutsceneIntroRoot __instance)
-        {
-            if (!Main.enabled || !CustomCutsceneController.willLoadCustomCutscene)
-            {
-                return;
-            }
-
-            if (CustomCutsceneController.cutsceneToLoad.fanfarePath.IsNotNullOrEmpty())
-            {
-                __instance.fanfareSource.Play();
-            }
-
-            if (!CustomCutsceneController.cutsceneToLoad.playDefaultFanfare)
-            {
-                AudioSource[] allSources = UnityEngine.Object.FindObjectsOfType<AudioSource>();
-                for (int i = 0; i < allSources.Length; ++i)
-                {
-                    if (allSources[i].isPlaying && allSources[i].name == "camShake")
-                    {
-                        // For whatever reason the default bro fanfare isn't passed to the fanfare source to be played,
-                        // instead it is played by an AudioSource called camShake.
-                        allSources[i].Pause();
-                    }
-                }
-            }
-
-            CustomCutsceneController.willLoadCustomCutscene = false;
         }
     }
 
@@ -769,6 +719,11 @@ namespace BroMakerLib.HarmonyPatches
                 return true;
             }
 
+            if (playerNum < 0 || playerNum > 0 || HeroController.players[playerNum] == null)
+            {
+                return true;
+            }
+
             return !(HeroController.players[playerNum].character is ICustomHero);
         }
     }
@@ -978,7 +933,7 @@ namespace BroMakerLib.HarmonyPatches
             }
             catch (Exception ex)
             {
-                BMLogger.Log("Exception loading current freed bro count: " + ex.ToString());
+                BMLogger.ExceptionLog("Exception loading current freed bro count: " + ex.ToString());
             }
         }
     }

@@ -26,39 +26,10 @@ namespace BroMakerLib
             {
                 // Initialize BroMaker
                 BroMaker.Initialize();
-                // Initialize Unlock Manager
-                BroUnlockManager.Initialize();
-                // Preload all bro assets
-                BroMaker.PreloadBroAssets();
             }
             catch (Exception ex)
             {
                 Main.Log("Error while loading BroMaker.\n" + ex);
-            }
-
-            try
-            {
-                ModUI.Initialize();
-            }
-            catch (Exception ex)
-            {
-                Main.Log("Error while intializing the GUI.\n" + ex);
-            }
-
-            // Register Custom Bros menu with MainMenu
-            try
-            {
-                RocketLib.Menus.Core.MenuRegistry.RegisterAction(
-                    displayText: "CUSTOM BROS",
-                    onSelect: (menu) => BroMakerLib.Menus.CustomBrosGridMenu.Show(menu),
-                    targetMenu: RocketLib.Menus.Core.TargetMenu.MainMenu,
-                    position: RocketLib.Menus.Core.PositionMode.After,
-                    positionReference: "START"
-                );
-            }
-            catch (Exception ex)
-            {
-                Main.Log("Error while registering Custom Bros menu.\n" + ex);
             }
 
             // Log missed messages

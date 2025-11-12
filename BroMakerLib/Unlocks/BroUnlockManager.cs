@@ -25,6 +25,7 @@ namespace BroMakerLib.Unlocks
             if (progressData != null || LoadProgressData())
             {
                 ProcessNewlyInstalledBros();
+                CheckForDeletedBros();
                 UpdateUnlockedBrosLists();
                 Initialized = true;
             }
@@ -127,6 +128,46 @@ namespace BroMakerLib.Unlocks
             }
         }
 
+        // Determine if progress data or pending unlocks contains any bros that are no longer installed
+        private static void CheckForDeletedBros()
+        {
+            if (progressData == null) return;
+
+            bool anyBrosRemoved = false;
+
+            // Check BroStates for deleted bros
+            var broStatesToRemove = new List<string>();
+            foreach (var kvp in progressData.BroStates)
+            {
+                if (!BroMakerStorage.GetStoredHeroByName(kvp.Key, out _))
+                {
+                    broStatesToRemove.Add(kvp.Key);
+                    anyBrosRemoved = true;
+                }
+            }
+
+            foreach (var broName in broStatesToRemove)
+            {
+                progressData.BroStates.Remove(broName);
+            }
+
+            // Check PendingUnlocks for deleted bros
+            if (progressData.PendingUnlocks != null)
+            {
+                int beforeCount = progressData.PendingUnlocks.Count;
+                progressData.PendingUnlocks.RemoveAll(broName => !BroMakerStorage.GetStoredHeroByName(broName, out _));
+                if (progressData.PendingUnlocks.Count < beforeCount)
+                {
+                    anyBrosRemoved = true;
+                }
+            }
+
+            if (anyBrosRemoved)
+            {
+                SaveProgressData();
+            }
+        }
+
         private static void UpdateUnlockedBrosLists()
         {
             unlockedBroNames.Clear();
@@ -139,8 +180,7 @@ namespace BroMakerLib.Unlocks
                 if (kvp.Value.IsUnlocked)
                 {
                     unlockedBroNames.Add(kvp.Key);
-                    var bro = BroMakerStorage.GetStoredHeroByName(kvp.Key);
-                    if (bro != null)
+                    if (BroMakerStorage.GetStoredHeroByName(kvp.Key, out StoredHero bro))
                     {
                         unlockedBros.Add(bro);
                     }
@@ -285,8 +325,7 @@ namespace BroMakerLib.Unlocks
 
             // Update the unlocked lists
             unlockedBroNames.Add(state.BroName);
-            var bro = BroMakerStorage.GetStoredHeroByName(state.BroName);
-            if (bro != null)
+            if (BroMakerStorage.GetStoredHeroByName(state.BroName, out StoredHero bro))
             {
                 unlockedBros.Add(bro);
             }
@@ -419,8 +458,7 @@ namespace BroMakerLib.Unlocks
                 return false;
             }
 
-            var bro = BroMakerStorage.GetStoredHeroByName(broName);
-            if (bro == null)
+            if (!BroMakerStorage.GetStoredHeroByName(broName, out StoredHero bro))
             {
                 BMLogger.Error($"Cannot find bro '{broName}' in storage");
                 return false;

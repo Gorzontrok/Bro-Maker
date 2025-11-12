@@ -38,9 +38,8 @@ namespace BroMakerLib
 
         private static int selectedPlayerNum = 0;
         private static object _objectToEdit = null;
-        private static GUIStyle _toolTipStyle = new GUIStyle();
+        private static GUIStyle _toolTipStyle = null;
         private static int _tabSelected = 0;
-        private static readonly GUIStyle _errorSwapingMessageStyle = new GUIStyle();
         private static Rect _toolTipRect = Rect.zero;
         private static int _selectedCustomBrosIndex = -1;
         private static int _selectedModIndex = -1;
@@ -65,22 +64,6 @@ namespace BroMakerLib
 
         private static float _windowWidth = -1f;
 
-        public static void Initialize()
-        {
-            // Create style
-            _errorSwapingMessageStyle.normal.textColor = Color.yellow;
-            _errorSwapingMessageStyle.alignment = TextAnchor.MiddleCenter;
-
-            _toolTipStyle = new GUIStyle
-            {
-                fontStyle = FontStyle.Bold,
-                fontSize = 15,
-            };
-            _toolTipStyle.normal.textColor = Color.white;
-
-            BroSpawnManager.CheckForDeletedBros();
-        }
-
         public static void UI()
         {
             if (_windowWidth < 0)
@@ -103,6 +86,17 @@ namespace BroMakerLib
                 {
                 }
                 return;
+            }
+
+
+            if (_toolTipStyle == null)
+            {
+                _toolTipStyle = new GUIStyle
+                {
+                    fontStyle = FontStyle.Bold,
+                    fontSize = 15,
+                };
+                _toolTipStyle.normal.textColor = Color.white;
             }
 
             if (_buttonStyle == null)
@@ -188,29 +182,6 @@ namespace BroMakerLib
 
         public static void Spawner()
         {
-            GUILayout.Label(BMLogger.errorSwapingMessage, _errorSwapingMessageStyle);
-            if (BSett.instance.developerMode)
-            {
-                GUILayout.BeginHorizontal();
-                if (GUILayout.Button(new GUIContent("Reload Mods", "Reloads all BroMaker mods"), GUILayout.ExpandWidth(false)))
-                {
-                    BroMakerStorage.Initialize();
-                }
-                if (GUILayout.Button(new GUIContent("Reload Bros", "Reloads all custom bros in the currently loaded BroMaker mods"), GUILayout.ExpandWidth(false)))
-                {
-                    ReloadFiles();
-                    PresetManager.disableWarnings = true;
-                    PresetManager.Initialize();
-                    PresetManager.disableWarnings = false;
-                    BroSpawnManager.CheckForDeletedBros();
-                }
-                if (GUILayout.Button(new GUIContent("Reload Preset", "Reloads custom bro presets"), GUILayout.ExpandWidth(false)))
-                    PresetManager.Initialize();
-                GUILayout.EndHorizontal();
-                GUILayout.Space(15);
-            }
-
-            // New UI
             GUILayout.BeginVertical();
             if (Mods.Count <= 0 && IncompatibleMods.Count <= 0)
             {
@@ -793,12 +764,6 @@ namespace BroMakerLib
                 BroUnlockManager.LockAllBros();
             }
             GUILayout.EndHorizontal();
-        }
-
-        private static void ReloadFiles()
-        {
-            BroMaker.ReloadFiles();
-            _selectedCustomBrosIndex = -1;
         }
     }
 }

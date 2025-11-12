@@ -10,20 +10,6 @@ namespace BroMakerLib.Loggers
     {
         public static List<Log> logs = new List<Log>();
         public static List<Log> debugLogs = new List<Log>();
-        public static string errorSwapingMessage
-        {
-            get
-            {
-                return _errorSwapingMessage;
-            }
-            set
-            {
-                _errorSwapingMessage = value;
-                Log(value.ToString(), LogType.Warning);
-            }
-        }
-
-        private static string _errorSwapingMessage = string.Empty;
 
         public static void Warning(string message)
         {

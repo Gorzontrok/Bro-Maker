@@ -62,7 +62,7 @@ namespace BroMakerLib.Menus
 
             // Check if we have any bros first
             var bros = BroMakerStorage.Bros;
-            bool hasBros = bros != null && bros.Length > 0;
+            bool hasBros = bros != null && bros.Count > 0;
 
             if (hasBros)
             {
@@ -222,7 +222,7 @@ namespace BroMakerLib.Menus
             // Create list of layout elements for the paginated grid
             var cardElements = new List<LayoutElement>();
 
-            if (bros != null && bros.Length > 0)
+            if (bros != null && bros.Count > 0)
             {
                 // Create a BroCard for each actual bro
                 foreach (var storedHero in bros)

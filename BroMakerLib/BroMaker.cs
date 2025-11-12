@@ -6,6 +6,7 @@ using BroMakerLib.Infos;
 using BroMakerLib.Loggers;
 using BroMakerLib.Storages;
 using BroMakerLib.Triggers;
+using BroMakerLib.Unlocks;
 using HarmonyLib;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -43,6 +44,31 @@ namespace BroMakerLib
                 RocketLib.CustomTriggers.CustomTriggerManager.RegisterCustomTrigger(typeof(HeroUnlockCutsceneAction), typeof(HeroUnlockCutsceneActionInfo), "BroMaker - Play Custom Bro Cutscene", "Custom Bros", 9);
 
                 _hasInit = true;
+
+                // Initialize Unlock Manager
+                BroUnlockManager.Initialize();
+
+                // Preload all bro assets
+                PreloadBroAssets();
+
+                BroSpawnManager.CheckForDeletedBros();
+
+                // Register Custom Bros menu with MainMenu
+                try
+                {
+                    RocketLib.Menus.Core.MenuRegistry.RegisterAction(
+                        displayText: "CUSTOM BROS",
+                        onSelect: (menu) => BroMakerLib.Menus.CustomBrosGridMenu.Show(menu),
+                        targetMenu: RocketLib.Menus.Core.TargetMenu.MainMenu,
+                        position: RocketLib.Menus.Core.PositionMode.After,
+                        positionReference: "START"
+                    );
+                }
+                catch (Exception ex)
+                {
+                    Main.Log("Error while registering Custom Bros menu.\n" + ex);
+                }
+
                 BMLogger.Log("Finish Initialization");
             }
         }
@@ -66,7 +92,7 @@ namespace BroMakerLib
         public static void PreloadBroAssets()
         {
             // Preload all assets listed in the JSON file
-            for (int i = 0; i < BroMakerStorage.Bros.Length; ++i)
+            for (int i = 0; i < BroMakerStorage.Bros.Count; ++i)
             {
                 CustomBroInfo info = BroMakerStorage.Bros[i].GetInfo();
                 List<string> spritePaths = new List<string>();
@@ -231,22 +257,20 @@ namespace BroMakerLib
                         CustomHero bro = heroHolder.AddComponent(kvp.Value) as CustomHero;
                         try
                         {
-                            bro.AssignDirectoryPaths(BroMakerStorage.GetStoredHeroByCustomHeroType(kvp.Value).GetInfo().path);
+                            if (BroMakerStorage.GetStoredHeroByCustomHeroType(kvp.Value, out StoredHero storedHero))
+                            {
+                                bro.AssignDirectoryPaths(storedHero.GetInfo().path);
+                                bro.PreloadAssets();
+                            }
                         }
                         catch { }
-                        bro.PreloadAssets();
                     }
                     catch (Exception ex)
                     {
-                        BMLogger.ExceptionLog("Exception occurred while preloading " + kvp.Key + "'s assets:", ex);
+                        BMLogger.ExceptionLog($"Exception occurred while preloading {kvp.Key}'s assets:", ex);
                     }
                 }
             }
-        }
-
-        public static void ReloadFiles()
-        {
-            BroMakerStorage.Initialize();
         }
     }
 }

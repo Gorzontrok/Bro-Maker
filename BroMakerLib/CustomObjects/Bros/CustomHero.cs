@@ -6,6 +6,7 @@ using System.Reflection;
 using BroMakerLib.Infos;
 using BroMakerLib.Loaders;
 using BroMakerLib.Loggers;
+using BroMakerLib.Storages;
 using HarmonyLib;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -672,7 +673,7 @@ namespace BroMakerLib.CustomObjects.Bros
                             }
                             catch (Exception ex)
                             {
-                                Console.WriteLine($"Error loading {key}: {ex.Message}");
+                                BMLogger.Error($"Error loading {key}: {ex.Message}");
                             }
                         }
                     }
@@ -694,7 +695,7 @@ namespace BroMakerLib.CustomObjects.Bros
                                 }
                                 catch (Exception ex)
                                 {
-                                    Console.WriteLine($"Error loading {key}: {ex.Message}");
+                                    BMLogger.Error($"Error loading {key}: {ex.Message}");
                                 }
                             }
                         }
@@ -703,7 +704,7 @@ namespace BroMakerLib.CustomObjects.Bros
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error loading settings from {fileName}: {ex.Message}");
+                BMLogger.Error($"Error loading settings from {fileName}: {ex.Message}");
             }
         }
 
@@ -724,10 +725,15 @@ namespace BroMakerLib.CustomObjects.Bros
             string directoryPath;
             if (!_typeDirectoryCache.TryGetValue(type, out directoryPath))
             {
-                directoryPath = Storages.BroMakerStorage.GetStoredHeroByCustomHeroType<T>().GetInfo().path;
+                if (!Storages.BroMakerStorage.GetStoredHeroByCustomHeroType<T>(out StoredHero storedHero))
+                {
+                    BMLogger.Error($"Error: Could not find stored hero for custom bro {type.Name}");
+                    return;
+                }
+                directoryPath = storedHero.GetInfo().path;
                 if (string.IsNullOrEmpty(directoryPath))
                 {
-                    Console.WriteLine($"Error: Could not determine directory path for custom bro {type.Name}");
+                    BMLogger.Error($"Error: Could not determine directory path for custom bro {type.Name}");
                     return;
                 }
                 _typeDirectoryCache[type] = directoryPath;
@@ -789,10 +795,15 @@ namespace BroMakerLib.CustomObjects.Bros
             string directoryPath;
             if (!_typeDirectoryCache.TryGetValue(type, out directoryPath))
             {
-                directoryPath = Storages.BroMakerStorage.GetStoredHeroByCustomHeroType<T>().GetInfo().path;
+                if (!Storages.BroMakerStorage.GetStoredHeroByCustomHeroType<T>(out StoredHero storedHero))
+                {
+                    BMLogger.Error($"Error: Could not find stored hero for custom bro {type.Name}");
+                    return;
+                }
+                directoryPath = storedHero.GetInfo().path;
                 if (string.IsNullOrEmpty(directoryPath))
                 {
-                    Console.WriteLine($"Error: Could not determine directory path for custom bro {type.Name}");
+                    BMLogger.Error($"Error: Could not determine directory path for custom bro {type.Name}");
                     return;
                 }
                 _typeDirectoryCache[type] = directoryPath;
@@ -833,7 +844,7 @@ namespace BroMakerLib.CustomObjects.Bros
                             }
                             catch (Exception ex)
                             {
-                                Console.WriteLine($"Error loading {key}: {ex.Message}");
+                                BMLogger.Error($"Error loading {key}: {ex.Message}");
                             }
                         }
                     }
@@ -855,7 +866,7 @@ namespace BroMakerLib.CustomObjects.Bros
                                 }
                                 catch (Exception ex)
                                 {
-                                    Console.WriteLine($"Error loading {key}: {ex.Message}");
+                                    BMLogger.Error($"Error loading {key}: {ex.Message}");
                                 }
                             }
                         }
@@ -864,7 +875,7 @@ namespace BroMakerLib.CustomObjects.Bros
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error loading settings from {fileName}: {ex.Message}");
+                BMLogger.Error($"Error loading settings from {fileName}: {ex.Message}");
             }
         }
 
@@ -889,7 +900,7 @@ namespace BroMakerLib.CustomObjects.Bros
                 // Skip if we don't have a directory path cached for this custom bro
                 if (!_typeDirectoryCache.TryGetValue(type, out string cachedDirectoryPath))
                 {
-                    Console.WriteLine($"Warning: No directory path cached for custom bro {type.Name}, skipping...");
+                    BMLogger.Warning($"Warning: No directory path cached for custom bro {type.Name}, skipping...");
                     continue;
                 }
 
@@ -929,11 +940,10 @@ namespace BroMakerLib.CustomObjects.Bros
                         var fileName = $"{type.Name}settings.json";
                         string json = JsonConvert.SerializeObject(data, Formatting.Indented);
                         File.WriteAllText(Path.Combine(cachedDirectoryPath, fileName), json);
-                        Console.WriteLine($"Saved settings for custom bro {type.Name}");
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Error saving settings for custom bro {type.Name}: {ex.Message}");
+                        BMLogger.Error($"Error saving settings for custom bro {type.Name}: {ex.Message}");
                     }
                 }
             }

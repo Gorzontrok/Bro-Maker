@@ -66,14 +66,10 @@ namespace BroMakerLib
                     }
                 }
             }
+
+            BroMakerStorage.PopulateTypesDictionary();
         }
 
-        /// <summary>
-        /// Return hero Preset
-        /// </summary>
-        /// <param name="presetName"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
         public static Type GetHeroPreset(string presetName)
         {
             if (!heroesPreset.ContainsKey(presetName))

@@ -48,8 +48,7 @@ namespace BroMakerLib.Triggers
                     List<StoredHero> storedHeroes = new List<StoredHero>();
                     foreach (string broName in info.ForcedBros)
                     {
-                        StoredHero hero = BroMakerStorage.GetStoredHeroByName(broName);
-                        if (hero != null)
+                        if (BroMakerStorage.GetStoredHeroByName(broName, out StoredHero hero))
                         {
                             storedHeroes.Add(hero);
                         }
