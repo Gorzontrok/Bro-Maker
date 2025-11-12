@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using BroMakerLib.Loggers;
 using HarmonyLib;
 using RocketLib;
@@ -9,17 +9,24 @@ namespace BroMakerLib.Cutscenes
     [HarmonyPatch(typeof(CutsceneIntroRoot), "OnLoadComplete", typeof(string), typeof(object))]
     static class CutsceneIntroRoot_StartCutscene_Patch
     {
-
-        static bool Prefix(CutsceneIntroRoot __instance, ref string resourceName, ref object asset, ref CutsceneIntroData ____curIntroData, ref Texture2D ____oldTex)
+        public static bool Prefix(CutsceneIntroRoot __instance, string resourceName, object asset, ref CutsceneIntroData ____curIntroData, ref Texture2D ____oldTex, ref string ____curIntroResourceName)
         {
             try
             {
-                if (!CustomCutsceneController.willLoadCustomCutscene)
+                if (!Main.enabled || !CustomCutsceneController.willLoadCustomCutscene)
+                {
                     return true;
+                }
 
-                asset = CustomCutsceneController.cutsceneToLoad.ToCutsceneIntroData(__instance);
+                ____curIntroResourceName = string.Format("{0}:{1}", "cutscenes", "Intro_Bro_Rambro");
 
-                CutsceneIntroData _curIntroData = (CutsceneIntroData)asset;
+                CutsceneIntroData _curIntroData = CustomCutsceneController.cutsceneToLoad.ToCutsceneIntroData(__instance);
+
+                if (CustomCutsceneController.cutsceneToLoad.fanfarePath.IsNotNullOrEmpty())
+                {
+                    __instance.fanfareSource = __instance.gameObject.AddComponent<AudioSource>();
+                }
+
                 ____curIntroData = _curIntroData;
 
                 CutsceneIntroDataExtra dataExtra = _curIntroData as CutsceneIntroDataExtra;
@@ -37,11 +44,13 @@ namespace BroMakerLib.Cutscenes
                 );
 
                 // Subtitle 1
+                string subtitle1Text = _curIntroData.subtitle1.IsNullOrEmpty() ? CustomIntroCutscene.Subtitle1DefaultText : _curIntroData.subtitle1;
                 UpdateText3D(__instance.subtitle1Mesh,
-                    _curIntroData.subtitle1.IsNullOrEmpty() ? CustomIntroCutscene.Subtitle1DefaultText : _curIntroData.subtitle1,
+                    subtitle1Text,
                     _curIntroData.subtitleScale,
                     hasExtraData ? dataExtra.subtitle1Color : CustomIntroCutscene.SubtitleDefaultColor
                 );
+
 
                 // Create Subtitle 2
                 if (__instance.subtitle2Mesh == null)
@@ -49,6 +58,7 @@ namespace BroMakerLib.Cutscenes
                     const float SUBTITLE2_LOCALPOSITION_Y = -0.48f;
 
                     __instance.subtitle2Mesh = UnityEngine.Object.Instantiate<Text3D>(__instance.subtitle1Mesh, __instance.subtitle1Mesh.transform);
+                    __instance.subtitle2Mesh.TextString = "";
                     __instance.subtitle2Mesh.gameObject.SetActive(false);
 
                     __instance.subtitle2Mesh.Anchor = Text3D.AnchorPoint.TopMiddle;
@@ -64,6 +74,12 @@ namespace BroMakerLib.Cutscenes
                     Renderer renderer = __instance.subtitle2Mesh.GetComponent<Renderer>();
                     renderer.material = new Material(renderer.sharedMaterial);
                 }
+
+                if (__instance.subtitle2Mesh != null && __instance.subtitle2Mesh.TextString == null)
+                {
+                    __instance.subtitle2Mesh.TextString = "";
+                }
+
                 // Subtitle 2
                 if (_curIntroData.subtitle2.IsNullOrEmpty())
                 {
@@ -101,6 +117,7 @@ namespace BroMakerLib.Cutscenes
 
                 // Animation
                 UpdateAnimatedTexture(_curIntroData, __instance.spriteRenderer);
+
                 return false;
             }
             catch (Exception ex)
@@ -110,12 +127,46 @@ namespace BroMakerLib.Cutscenes
             return true;
         }
 
+        public static void Postfix(CutsceneIntroRoot __instance, CutsceneIntroData ____curIntroData)
+        {
+            if (!Main.enabled || !CustomCutsceneController.willLoadCustomCutscene)
+            {
+                return;
+            }
+
+            try
+            {
+                if (CustomCutsceneController.cutsceneToLoad.fanfarePath.IsNotNullOrEmpty())
+                {
+                    __instance.fanfareSource.Play();
+                }
+
+                if (!CustomCutsceneController.cutsceneToLoad.playDefaultFanfare)
+                {
+                    AudioSource[] allSources = UnityEngine.Object.FindObjectsOfType<AudioSource>();
+                    for (int i = 0; i < allSources.Length; ++i)
+                    {
+                        if (allSources[i].isPlaying && allSources[i].name == "camShake")
+                        {
+                            allSources[i].Pause();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                BMLogger.ExceptionLog(ex);
+            }
+
+            CustomCutsceneController.willLoadCustomCutscene = false;
+        }
+
         private static void UpdateText3D(Text3D text3D, string text, float scale, Color color)
         {
-            if (text3D == null)
+            if (text3D == null || text == null)
                 return;
 
-            text3D.UpdateText(text);
+            text3D.TextString = text;
             text3D.transform.localScale = new Vector3(scale, scale, scale);
 
             Renderer renderer = text3D.GetComponent<Renderer>();
@@ -123,6 +174,7 @@ namespace BroMakerLib.Cutscenes
                 return;
             if (renderer.material == null)
                 return;
+            text3D.UpdateText();
             renderer.material.color = color;
         }
 
@@ -186,6 +238,19 @@ namespace BroMakerLib.Cutscenes
             else
             {
                 animatedTexture.enabled = false;
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(CutsceneIntroRoot), "EndCutscene")]
+    static class CutsceneIntroRoot_EndCutscene_Patch
+    {
+        static void Prefix(ref CutsceneIntroData ____curIntroData)
+        {
+            if (____curIntroData != null)
+            {
+                ____curIntroData.subtitle1 = null;
+                ____curIntroData.subtitle2 = null;
             }
         }
     }
