@@ -71,15 +71,11 @@ namespace BroMakerLib
                 try
                 {
                     GUILayout.BeginHorizontal();
-                    if (Event.current.type == EventType.Repaint)
+                    Rect rect = GUILayoutUtility.GetRect(0, 0, GUILayout.ExpandWidth(true));
+                    if (Event.current.type == EventType.Repaint && rect.width > 1)
                     {
-                        Rect rect = GUILayoutUtility.GetRect(0, 0, GUILayout.ExpandWidth(true));
-                        if (rect.width > 1)
-                        {
-                            _windowWidth = rect.width;
-                        }
+                        _windowWidth = rect.width;
                     }
-                    GUILayout.Label(" ");
                     GUILayout.EndHorizontal();
                 }
                 catch (Exception)
