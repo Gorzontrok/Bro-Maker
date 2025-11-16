@@ -48,6 +48,8 @@ namespace BroMakerLib.Cutscenes
         public Vector2 spriteSize = Vector2.zero;
         [JsonConverter(typeof(RectConverter))]
         public Rect spriteRect = Rect.zero;
+        [JsonConverter(typeof(Vector2Converter))]
+        public Vector2 spriteOffset = Vector2.zero;
 
         // Sprite Animation
         public bool isAnimated = false;
@@ -123,6 +125,7 @@ namespace BroMakerLib.Cutscenes
             }
             data.spriteSize = spriteSize;
             data.spriteRect = spriteRect;
+            data.spriteOffset = spriteOffset;
             data.spriteAnimRateFramesWidth = spriteAnimRateFramesWidth;
 
             if (anim.IsNullOrEmpty())

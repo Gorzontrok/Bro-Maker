@@ -180,6 +180,8 @@ namespace BroMakerLib.Cutscenes
 
         private static void UpdateSpriteSM(SpriteSM spriteSM, CutsceneIntroData introData)
         {
+            CutsceneIntroDataExtra dataExtra = introData as CutsceneIntroDataExtra;
+            bool hasExtraData = dataExtra != null;
             int lowerLeftPixelX = 0;
             int lowerLeftPixelY = introData.spriteTexture.height;
             int spriteWidth = introData.spriteTexture.width;
@@ -191,9 +193,17 @@ namespace BroMakerLib.Cutscenes
                 spriteWidth = (int)introData.spriteRect.width;
                 spriteHeight = (int)introData.spriteRect.height;
             }
+            if (hasExtraData && dataExtra.spriteOffset != Vector2.zero)
+            {
+                spriteSM.SetOffset(new Vector3(dataExtra.spriteOffset.x / 256f, dataExtra.spriteOffset.y / 256f, 0f));
+            }
+            else
+            {
+                spriteSM.SetOffset(Vector3.zero);
+            }
             spriteSM.SetLowerLeftPixel((float)lowerLeftPixelX, (float)lowerLeftPixelY);
             spriteSM.SetPixelDimensions(spriteWidth, spriteHeight);
-            if (introData.spriteSize.x > 0f)
+            if (introData.spriteSize.x != 0f)
             {
                 spriteSM.SetSize(introData.spriteSize.x, introData.spriteSize.y);
             }
@@ -245,12 +255,22 @@ namespace BroMakerLib.Cutscenes
     [HarmonyPatch(typeof(CutsceneIntroRoot), "EndCutscene")]
     static class CutsceneIntroRoot_EndCutscene_Patch
     {
-        static void Prefix(ref CutsceneIntroData ____curIntroData)
+        static void Prefix(CutsceneIntroRoot __instance, ref CutsceneIntroData ____curIntroData)
         {
             if (____curIntroData != null)
             {
                 ____curIntroData.subtitle1 = null;
                 ____curIntroData.subtitle2 = null;
+            }
+
+            // Revert sprite offset
+            if (__instance.gameObject != null)
+            {
+                SpriteSM spriteSM = __instance.spriteRenderer.gameObject.GetComponent<SpriteSM>();
+                if (spriteSM != null)
+                {
+                    spriteSM.SetOffset(Vector3.zero);
+                }
             }
         }
     }

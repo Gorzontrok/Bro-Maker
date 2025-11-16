@@ -14,5 +14,7 @@ namespace BroMakerLib.Cutscenes
         public bool animationLoop = false;
         public Texture2D backgroundTexture = null;
         public float subtitle2Scale = 1f;
+
+        public Vector2 spriteOffset = Vector2.zero;
     }
 }
