@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using BroMakerLib.Loggers;
 using BroMakerLib.Storages;
 using Newtonsoft.Json;
@@ -213,7 +214,8 @@ namespace BroMakerLib.Unlocks
 
         public static bool HasPendingUnlockedBro()
         {
-            return progressData?.PendingUnlocks != null && progressData.PendingUnlocks.Count > 0;
+            // Check if there are any pending unlocks and make sure at least one of the pending unlocks is enabled and spawnable
+            return progressData?.PendingUnlocks != null && progressData.PendingUnlocks.Count > 0 && progressData.PendingUnlocks.Any(broName => BroSpawnManager.IsBroSpawnable(broName));
         }
 
         public static string GetAndClearPendingUnlockedBro()
