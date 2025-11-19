@@ -446,7 +446,7 @@ namespace BroMakerLib.Menus
 
             isEnabled = !isEnabled;
             BroSpawnManager.SetBroEnabled(currentHero.name, isEnabled);
-            Settings.instance?.Save();
+            Settings.instance?.Save(Main.mod);
 
             spawnStatusText.Text = isEnabled ? "ENABLED" : "DISABLED";
             spawnStatusText.TextColor = isEnabled ? Color.green : Color.red;

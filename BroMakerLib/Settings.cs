@@ -1,23 +1,14 @@
 ﻿using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
 using Newtonsoft.Json;
 
 namespace BroMakerLib
 {
-    public class Settings
+    public class Settings : RocketLib.JsonModSettings
     {
-        public static string FilePath
-        {
-            get
-            {
-                return Path.Combine(directory, nameof(Settings) + ".json");
-            }
-        }
         [JsonIgnore]
         public static Settings instance;
         [JsonIgnore]
-        public static string directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        public static string Directory => Main.mod.ConfigPath;
 
         // These variables allow other mods to control custom bro spawning
         [JsonIgnore]
@@ -51,10 +42,7 @@ namespace BroMakerLib
 
         public static void Load()
         {
-            if (File.Exists(FilePath))
-                instance = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(FilePath));
-            if (instance == null)
-                instance = new Settings();
+            instance = RocketLib.JsonModSettings.Load<Settings>(Main.mod);
             if (instance._notUnlockedBros == null)
             {
                 instance._notUnlockedBros = new List<List<string>> { new List<string>(), new List<string>(), new List<string>(), new List<string>(), new List<string>() };
@@ -63,17 +51,7 @@ namespace BroMakerLib
             {
                 instance._availableBros = new List<List<string>> { new List<string>(), new List<string>(), new List<string>(), new List<string>(), new List<string>() };
             }
-            instance.Save();
-        }
-
-        public void Save()
-        {
-            var settings = new JsonSerializerSettings()
-            {
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-            };
-            var json = JsonConvert.SerializeObject(this, Formatting.Indented, settings);
-            File.WriteAllText(FilePath, json);
+            instance.Save(Main.mod);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace BroMakerLib.Unlocks
         private static BroUnlockProgressData progressData;
         private static readonly List<string> unlockedBroNames = new List<string>();
         private static readonly List<StoredHero> unlockedBros = new List<StoredHero>();
-        private static readonly string saveFilePath = Path.Combine(Settings.directory, "BroMaker_UnlockProgress.json");
+        private static readonly string saveFilePath = Path.Combine(Settings.Directory, "BroMaker_UnlockProgress.json");
 
         public static List<StoredHero> UnlockedBros => unlockedBros;
         public static List<string> UnlockedBroNames => unlockedBroNames;

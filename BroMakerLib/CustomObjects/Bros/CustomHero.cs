@@ -564,8 +564,18 @@ namespace BroMakerLib.CustomObjects.Bros
         private static readonly Dictionary<Type, string> _typeDirectoryCache = new Dictionary<Type, string>();
 
         /// <summary>
+        /// Gets the config directory path for a custom bro type.
+        /// </summary>
+        /// <param name="broType">The custom bro type</param>
+        /// <returns>Path to the bro's config directory (e.g., Config/BroMaker/Bros/{BroName}/)</returns>
+        public static string GetBroConfigPath(Type broType)
+        {
+            return Path.Combine(Path.Combine(Path.Combine(UnityModManagerNet.UnityModManager.configPath, "BroMaker"), "Bros"), broType.Name);
+        }
+
+        /// <summary>
         /// Saves all static fields and properties marked with [SaveableSetting] to a JSON file.
-        /// The file will be saved to the instance's directoryPath with the name format: {BroName}settings.json
+        /// The file will be saved to Config/BroMaker/Bros/{BroName}/ with the name format: {BroName}_settings.json
         /// </summary>
         /// <remarks>
         /// - Only saves non-null values
@@ -611,15 +621,17 @@ namespace BroMakerLib.CustomObjects.Bros
 
             if (data.Count > 0)
             {
-                var fileName = $"{type.Name}settings.json";
+                var fileName = $"{type.Name}_settings.json";
+                var configPath = GetBroConfigPath(type);
+                Directory.CreateDirectory(configPath);
                 string json = JsonConvert.SerializeObject(data, Formatting.Indented);
-                File.WriteAllText(Path.Combine(DirectoryPath, fileName), json);
+                File.WriteAllText(Path.Combine(configPath, fileName), json);
             }
         }
 
         /// <summary>
         /// Loads all static fields and properties marked with [SaveableSetting] from a JSON file.
-        /// The file is expected to be in the instance's directoryPath with the name format: {BroName}settings.json
+        /// The file is expected to be in Config/BroMaker/Bros/{BroName}/ with the name format: {BroName}_settings.json
         /// </summary>
         /// <remarks>
         /// - Silently returns if the settings file doesn't exist
@@ -638,7 +650,8 @@ namespace BroMakerLib.CustomObjects.Bros
             if (!HasSaveableFields(type))
                 return;
 
-            var fileName = Path.Combine(this.DirectoryPath, $"{type.Name}settings.json");
+            var configPath = GetBroConfigPath(type);
+            var fileName = Path.Combine(configPath, $"{type.Name}_settings.json");
             if (!File.Exists(fileName))
                 return;
 
@@ -771,9 +784,11 @@ namespace BroMakerLib.CustomObjects.Bros
 
             if (data.Count > 0)
             {
-                var fileName = $"{type.Name}settings.json";
+                var fileName = $"{type.Name}_settings.json";
+                var configPath = GetBroConfigPath(type);
+                Directory.CreateDirectory(configPath);
                 string json = JsonConvert.SerializeObject(data, Formatting.Indented);
-                File.WriteAllText(Path.Combine(directoryPath, fileName), json);
+                File.WriteAllText(Path.Combine(configPath, fileName), json);
             }
         }
 
@@ -809,7 +824,8 @@ namespace BroMakerLib.CustomObjects.Bros
                 _typeDirectoryCache[type] = directoryPath;
             }
 
-            var fileName = Path.Combine(directoryPath, $"{type.Name}settings.json");
+            var configPath = GetBroConfigPath(type);
+            var fileName = Path.Combine(configPath, $"{type.Name}_settings.json");
             if (!File.Exists(fileName))
                 return;
 
@@ -937,9 +953,11 @@ namespace BroMakerLib.CustomObjects.Bros
                 {
                     try
                     {
-                        var fileName = $"{type.Name}settings.json";
+                        var fileName = $"{type.Name}_settings.json";
+                        var configPath = GetBroConfigPath(type);
+                        Directory.CreateDirectory(configPath);
                         string json = JsonConvert.SerializeObject(data, Formatting.Indented);
-                        File.WriteAllText(Path.Combine(cachedDirectoryPath, fileName), json);
+                        File.WriteAllText(Path.Combine(configPath, fileName), json);
                     }
                     catch (Exception ex)
                     {

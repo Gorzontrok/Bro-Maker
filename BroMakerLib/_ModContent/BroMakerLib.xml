@@ -700,10 +700,17 @@
             </summary>
             <param name="name">Optional custom name to use as the JSON key. If null, the member name will be used.</param>
         </member>
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.GetBroConfigPath(System.Type)">
+            <summary>
+            Gets the config directory path for a custom bro type.
+            </summary>
+            <param name="broType">The custom bro type</param>
+            <returns>Path to the bro's config directory (e.g., Config/BroMaker/Bros/{BroName}/)</returns>
+        </member>
         <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.SaveSettings">
             <summary>
             Saves all static fields and properties marked with [SaveableSetting] to a JSON file.
-            The file will be saved to the instance's directoryPath with the name format: {BroName}settings.json
+            The file will be saved to Config/BroMaker/Bros/{BroName}/ with the name format: {BroName}_settings.json
             </summary>
             <remarks>
             - Only saves non-null values
@@ -715,7 +722,7 @@
         <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.LoadSettings">
             <summary>
             Loads all static fields and properties marked with [SaveableSetting] from a JSON file.
-            The file is expected to be in the instance's directoryPath with the name format: {BroName}settings.json
+            The file is expected to be in Config/BroMaker/Bros/{BroName}/ with the name format: {BroName}_settings.json
             </summary>
             <remarks>
             - Silently returns if the settings file doesn't exist
