@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
+using RocketLib.Settings;
 
 namespace BroMakerLib
 {
-    public class Settings : RocketLib.JsonModSettings
+    public class Settings : JsonModSettings
     {
         [JsonIgnore]
         public static Settings instance;
@@ -42,7 +43,7 @@ namespace BroMakerLib
 
         public static void Load()
         {
-            instance = RocketLib.JsonModSettings.Load<Settings>(Main.mod);
+            instance = JsonModSettings.Load<Settings>(Main.mod);
             if (instance._notUnlockedBros == null)
             {
                 instance._notUnlockedBros = new List<List<string>> { new List<string>(), new List<string>(), new List<string>(), new List<string>(), new List<string>() };
