@@ -919,22 +919,4 @@ namespace BroMakerLib.HarmonyPatches
             return true;
         }
     }
-
-    [HarmonyPatch(typeof(PlayerProgress), "PostLoadProcess")]
-    static class PlayerProgress_PostLoadProcess_Patch
-    {
-        public static void Postfix()
-        {
-            // If not initialized, get current rescue count and create new save file
-            try
-            {
-                BroUnlockManager.SetupProgressData(PlayerProgress.Instance.freedBros);
-                BroUnlockManager.Initialize();
-            }
-            catch (Exception ex)
-            {
-                BMLogger.ExceptionLog("Exception loading current freed bro count: " + ex.ToString());
-            }
-        }
-    }
 }

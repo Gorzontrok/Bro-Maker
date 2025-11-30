@@ -11,8 +11,8 @@ namespace BroMakerLib.Unlocks
         {
             try
             {
-                int currentRescueCount = PlayerProgress.Instance.freedBros;
-                BroUnlockManager.CheckRescueUnlocks(currentRescueCount);
+                BroUnlockManager.RescuedBro();
+                BroUnlockManager.CheckRescueUnlocks();
             }
             catch (Exception ex)
             {

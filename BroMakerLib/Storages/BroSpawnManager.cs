@@ -42,6 +42,10 @@ namespace BroMakerLib.Storages
 
         public static bool LastSpawnWasUnlock { get; private set; }
         public static int BroStatusCount = int.MinValue;
+        public static bool Initialized
+        {
+            get => BroUnlockManager.Initialized;
+        }
 
         public static ReadOnlyCollection<StoredHero> GetAllBros()
         {
@@ -235,7 +239,12 @@ namespace BroMakerLib.Storages
             return EnabledBrosNames.Contains(broName);
         }
 
-        public static void AddBroIfEnabled(StoredHero bro)
+        public static bool IsBroEnabled(string broName)
+        {
+            return EnabledBrosNames.Contains(broName);
+        }
+
+        internal static void AddBroIfEnabled(StoredHero bro)
         {
             if (EnabledBrosNames.Contains(bro.name) && !EnabledBros.Contains(bro))
             {
@@ -273,12 +282,7 @@ namespace BroMakerLib.Storages
             }
         }
 
-        public static bool IsBroEnabled(string broName)
-        {
-            return EnabledBrosNames.Contains(broName);
-        }
-
-        public static void CreateHardcoreLists(int slot)
+        internal static void CreateHardcoreLists(int slot)
         {
             BSett.instance._notUnlockedBros[slot] = new List<string>();
             BSett.instance._availableBros[slot] = new List<string>();
@@ -291,7 +295,7 @@ namespace BroMakerLib.Storages
             }
         }
 
-        public static void CheckForDeletedBros()
+        internal static void CheckForDeletedBros()
         {
             if (GameModeController.IsHardcoreMode)
             {
@@ -342,7 +346,7 @@ namespace BroMakerLib.Storages
             return isEnabled ? BroState.Available : BroState.Disabled;
         }
 
-        public static void BroStatusChanged()
+        internal static void BroStatusChanged()
         {
             if (BroStatusCount == int.MaxValue)
             {

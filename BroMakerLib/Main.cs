@@ -61,7 +61,7 @@ namespace BroMakerLib
 
         static bool OnUnload(UnityModManager.ModEntry modEntry)
         {
-            BroUnlockManager.OnModUnload();
+            SaveAll();
             return true;
         }
 

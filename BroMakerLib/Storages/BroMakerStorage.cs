@@ -11,18 +11,18 @@ namespace BroMakerLib.Storages
 {
     public static class BroMakerStorage
     {
-        public static List<BroMakerMod> mods = new List<BroMakerMod>();
-        public static List<BroMakerMod> incompatibleMods = new List<BroMakerMod>();
+        internal static List<BroMakerMod> mods = new List<BroMakerMod>();
+        internal static List<BroMakerMod> incompatibleMods = new List<BroMakerMod>();
 
-        public static StoredAbility[] Abiltities
+        internal static StoredAbility[] Abiltities
         {
             get { return _abilities.ToArray(); }
         }
-        public static ReadOnlyCollection<StoredHero> Bros
+        internal static ReadOnlyCollection<StoredHero> Bros
         {
             get { return _brosReadOnly; }
         }
-        public static ReadOnlyCollection<string> BroNames
+        internal static ReadOnlyCollection<string> BroNames
         {
             get { return _broNamesReadOnly; }
         }
