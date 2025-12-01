@@ -59,24 +59,45 @@ namespace BroMakerLib.Triggers
                         {
                             CustomTriggerStateManager.SetForLevelStart("forceCustomBros", true);
                             CustomTriggerStateManager.SetForLevelStart("forcedCustomBroList", storedHeroes);
+                            CustomTriggerStateManager.RegisterLevelStartAction(() =>
+                            {
+                                if (Map.MapData != null)
+                                {
+                                    Map.MapData.forcedBro = HeroType.Rambro;
+                                }
+                            });
                         }
                         else
                         {
                             CustomTriggerStateManager.SetDuringLevel("forceCustomBros", true);
                             CustomTriggerStateManager.SetDuringLevel("forcedCustomBroList", storedHeroes);
+                            if (Map.MapData != null)
+                            {
+                                Map.MapData.forcedBro = HeroType.Rambro;
+                            }
                         }
                     }
                 }
                 else
                 {
-                    Map.MapData.forcedBro = HeroType.Random;
                     if (isLevelStart)
                     {
                         CustomTriggerStateManager.SetForLevelStart("forceCustomBros", false);
+                        CustomTriggerStateManager.RegisterLevelStartAction(() =>
+                        {
+                            if (Map.MapData != null)
+                            {
+                                Map.MapData.forcedBro = HeroType.Random;
+                            }
+                        });
                     }
                     else
                     {
                         CustomTriggerStateManager.SetDuringLevel("forceCustomBros", false);
+                        if (Map.MapData != null)
+                        {
+                            Map.MapData.forcedBro = HeroType.Random;
+                        }
                     }
                 }
             }
