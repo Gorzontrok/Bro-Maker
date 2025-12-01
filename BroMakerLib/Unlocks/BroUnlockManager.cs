@@ -34,7 +34,7 @@ namespace BroMakerLib.Unlocks
             Initialized = true;
         }
 
-        private static bool LoadProgressData()
+        private static void LoadProgressData()
         {
             try
             {
@@ -47,18 +47,16 @@ namespace BroMakerLib.Unlocks
                     {
                         progressData = BroUnlockProgressData.MigrateData(progressData);
                     }
-                    return true;
-                }
-                else
-                {
-                    return false;
                 }
             }
             catch (Exception ex)
             {
                 BMLogger.Error($"Failed to load unlock progress: {ex.Message}");
+            }
+
+            if (progressData == null)
+            {
                 progressData = new BroUnlockProgressData();
-                return false;
             }
         }
 
@@ -79,11 +77,6 @@ namespace BroMakerLib.Unlocks
 
         private static void ProcessNewlyInstalledBros()
         {
-            if (progressData == null)
-            {
-                progressData = new BroUnlockProgressData();
-            }
-
             var allBros = BroMakerStorage.Bros;
             if (allBros == null) return;
 
