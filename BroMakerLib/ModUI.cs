@@ -159,7 +159,7 @@ namespace BroMakerLib
             GUILayout.Label("Version", WindowScaling.ScaledWidth(200));
             GUILayout.Label("BroMaker Version", WindowScaling.ScaledWidth(200));
             GUILayout.Label("Autospawn Enabled", WindowScaling.ScaledWidth(200));
-            GUILayout.Label("Unlock Status", WindowScaling.ScaledWidth(200));
+            GUILayout.Label("Unlock Status", WindowScaling.ScaledWidth(100));
             GUILayout.EndHorizontal();
             GUILayout.Space(15);
             if (Mods.Count > 8 && !BSett.instance.scaleUIHeight)
@@ -505,11 +505,11 @@ namespace BroMakerLib
                     // Show locked status
                     if (broUnlocked)
                     {
-                        GUILayout.Label(new GUIContent("Unlocked", "Bro is unlocked"), _enabledStyle, WindowScaling.ScaledWidth(200));
+                        GUILayout.Label(new GUIContent("Unlocked", "Bro is unlocked"), _enabledStyle, WindowScaling.ScaledWidth(100));
                     }
                     else
                     {
-                        GUILayout.Label(new GUIContent("Locked", "Bro is locked, rescue more lives or play their unlock level to unlock them. The unlock level can be accessed from the Custom Bros menu on the main menu."), _disabledStyle, WindowScaling.ScaledWidth(200));
+                        GUILayout.Label(new GUIContent("Locked", "Bro is locked, rescue more lives or play their unlock level to unlock them. The unlock level can be accessed from the Custom Bros menu on the main menu."), _disabledStyle, WindowScaling.ScaledWidth(100));
                     }
                 }
                 else
@@ -607,11 +607,11 @@ namespace BroMakerLib
             // Show locked status
             if (broUnlocked)
             {
-                GUILayout.Label(new GUIContent("Unlocked", "Bro is unlocked"), _enabledStyle, WindowScaling.ScaledWidth(200));
+                GUILayout.Label(new GUIContent("Unlocked", "Bro is unlocked"), _enabledStyle, WindowScaling.ScaledWidth(100));
             }
             else
             {
-                GUILayout.Label(new GUIContent("Locked", "Bro is locked, rescue more lives or play their unlock level to unlock them. The unlock level can be accessed from the Custom Bros menu on the main menu."), _disabledStyle, WindowScaling.ScaledWidth(200));
+                GUILayout.Label(new GUIContent("Locked", "Bro is locked, rescue more lives or play their unlock level to unlock them. The unlock level can be accessed from the Custom Bros menu on the main menu."), _disabledStyle, WindowScaling.ScaledWidth(100));
             }
 
             GUILayout.EndHorizontal();
