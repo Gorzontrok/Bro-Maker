@@ -113,7 +113,6 @@ namespace BroMakerLib.Unlocks
             }
         }
 
-        // Determine if progress data or pending unlocks contains any bros that are no longer installed
         private static void CheckForDeletedBros()
         {
             if (progressData == null) return;
@@ -231,6 +230,25 @@ namespace BroMakerLib.Unlocks
                 progressData.PendingUnlocks.Remove(broName);
                 SaveProgressData();
             }
+        }
+
+        internal static int GetRemainingRescuesToUnlockNextBro()
+        {
+            if (progressData?.BroStates == null) return -1;
+            int minRemaining = int.MaxValue;
+            foreach (var kvp in progressData.BroStates)
+            {
+                var state = kvp.Value;
+                if (!state.IsUnlocked && (state.ConfiguredMethod == UnlockMethod.RescueCount || state.ConfiguredMethod == UnlockMethod.RescueOrLevel))
+                {
+                    int remaining = state.TargetRescueCount - progressData.TotalRescues;
+                    if (remaining < minRemaining)
+                    {
+                        minRemaining = remaining;
+                    }
+                }
+            }
+            return minRemaining == int.MaxValue ? -1 : minRemaining;
         }
 
         internal static void RescuedBro()

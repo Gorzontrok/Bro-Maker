@@ -354,5 +354,10 @@ namespace BroMakerLib.Storages
             }
             ++BroStatusCount;
         }
+
+        public static bool HasPendingUnlockedBro()
+        {
+            return BroUnlockManager.HasPendingUnlockedBro();
+        }
     }
 }
