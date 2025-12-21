@@ -12,9 +12,27 @@ If you run into any bugs or have any issues with the mod, please join the [Free 
 
 ## Playing as a Custom Bro
 
-// Add screenshots of UMM UI and new custom bros UI. Mention bro unlocking and unlock level system.
+To play with a Custom Bro, click on it in the BroMaker mod GUI, and click Switch to Bro. 
 
-To play with a Custom Bro, click on it in the BroMaker mod GUI, and click Load Bro. Or you can enable automatic spawning and set a chance to spawn with a custom bro in the mod settings, by default custom bros have the same chance to spawn as normal bros.
+![Main UI](https://raw.githubusercontent.com/Gorzontrok/Bro-Maker/refs/heads/main/images/LoadBroGUI.png)
+
+Or you can enable automatic spawning and set a chance to spawn with a custom bro in the mod settings, by default custom bros have the same chance to spawn as normal bros.
+
+![Settings UI](https://raw.githubusercontent.com/Gorzontrok/Bro-Maker/refs/heads/main/images/SettingsGUI.png)
+
+## Unlocking Custom Bros
+
+Some custom bros have unlock requirements, such as rescuing X bros or playing their unlock level. To check if a bro is unlocked or what needs to be done to unlock them, you can go to the custom bros menu.
+
+![Main Menu Custom Bros UI](https://raw.githubusercontent.com/Gorzontrok/Bro-Maker/refs/heads/main/images/MainMenuCustomBroGUI.png)
+
+Go to the avatar of the custom bro you want to try to unlock and press fire.
+
+![Custom Bros UI](https://raw.githubusercontent.com/Gorzontrok/Bro-Maker/refs/heads/main/images/CustomBroGUI.png)
+
+Then you can check their unlock requirements and play their unlock level if they have one. If they have an unlock level and have a required rescue amount then you can choose either method to unlock them.
+
+![Custom Bro Unlock Level UI](https://raw.githubusercontent.com/Gorzontrok/Bro-Maker/refs/heads/main/images/CustomBroUnlockLevelGUI.png)
 
 ## Known Issues
 

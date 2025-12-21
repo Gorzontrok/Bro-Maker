@@ -1,4 +1,4 @@
-# Bro Maker \[WIP\]
+# Bro Maker
 
  This mod allows you to make custom Bros for Broforce.
 
@@ -19,19 +19,17 @@
 
 * Online multiplayer doesn't work
 
-## How to use (user)
+## How to Spawn as a Custom Bro
 
 In order to spawn with a Custom Bro you need to install one.
 
-Once you are in a level, open the menu of BroMaker and click on the name of a bro, and click Load Bro.
+Once you are in a level, open the menu of BroMaker and click on the name of a bro, and click Switch to Bro.
 ![GUI](https://github.com/Gorzontrok/Bro-Maker/blob/main/images/LoadBroGUI.png)
 
 
 You can also set the mod to have a chance for you to automatically spawn as a custom bro.
 ![GUI](https://github.com/Gorzontrok/Bro-Maker/blob/main/images/SettingsGUI.png)
 
-## Guide to Developer
+## Guide for Developers
 
 [Wiki](https://github.com/Gorzontrok/Bro-Maker/wiki)
-
-[Steam Guide](https://steamcommunity.com/sharedfiles/filedetails/?id=2738232988)
