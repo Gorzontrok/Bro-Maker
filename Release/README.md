@@ -40,9 +40,9 @@ Then you can check their unlock requirements and play their unlock level if they
 
 ## Credits
 
-Thanks to [alexneargarder](https://www.nexusmods.com/broforce/users/41870080?tab=user+files) for helping me keeping the mod up to date!
+Thanks to [alexneargarder](https://thunderstore.io/c/broforce/p/AlexN/s) for helping me keeping the mod up to date!
 
-Thanks to [BruxelasCouveRocko](https://www.nexusmods.com/broforce/users/179565117) for making the thumbnail!
+Thanks to BruxelasCouveRocko for making the thumbnail!
 
 ## Source Code
 
