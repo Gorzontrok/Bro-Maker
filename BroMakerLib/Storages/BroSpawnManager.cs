@@ -40,8 +40,8 @@ namespace BroMakerLib.Storages
             set => BSett.instance._availableBros[PlayerProgress.currentWorldMapSaveSlot] = value;
         }
 
-        internal static bool ForceCustomThisLevel => CustomTriggerStateManager.Get<bool>("forceCustomBros");
-        internal static List<StoredHero> ForcedCustoms => CustomTriggerStateManager.Get<List<StoredHero>>("forcedCustomBroList", new List<StoredHero>());
+        public static bool ForceCustomThisLevel => CustomTriggerStateManager.Get<bool>("forceCustomBros");
+        public static List<StoredHero> ForcedCustoms => CustomTriggerStateManager.Get<List<StoredHero>>("forcedCustomBroList", new List<StoredHero>());
 
         public static bool RescuingHardcoreBro = false;
         public static bool LastSpawnWasUnlock { get; private set; }
