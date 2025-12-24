@@ -33,6 +33,7 @@ namespace BroMakerLib.Loaders
 
         public static bool spawnFromPlayer = false;
         public static bool[] willReplaceBro = new bool[] { false, false, false, false };
+        public static bool[] willPlayCutscene = new bool[] { false, false, false, false };
         public static bool[] spawningCustomBro = new bool[] { false, false, false, false };
         public static bool anyCustomSpawning = false;
         public static bool broBeingRescued = false;

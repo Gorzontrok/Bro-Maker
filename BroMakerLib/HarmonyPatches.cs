@@ -131,6 +131,7 @@ namespace BroMakerLib.HarmonyPatches
                 else if (BroUnlockManager.HasPendingUnlockedBro())
                 {
                     LoadHero.willReplaceBro[__instance.playerNum] = true;
+                    LoadHero.willPlayCutscene[__instance.playerNum] = true;
                 }
                 // Handle normal spawning
                 else if (BSett.instance.automaticSpawn && BroSpawnManager.EnabledBros.Count > 0)
@@ -155,6 +156,7 @@ namespace BroMakerLib.HarmonyPatches
                 {
                     LoadHero.willReplaceBro[__instance.playerNum] = false;
                     LoadHero.spawningCustomBro[__instance.playerNum] = true;
+                    LoadHero.willPlayCutscene[__instance.playerNum] = false;
                     LoadHero.anyCustomSpawning = true;
                     Storages.StoredHero choice;
                     choice = BroSpawnManager.GetRandomSpawnableBro(true);

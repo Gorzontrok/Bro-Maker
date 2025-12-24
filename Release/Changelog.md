@@ -1,3 +1,6 @@
+## v2.6.1 (unreleased)
+- Add API methods for allowing other mods to see when a bro is being unlocked and register callbacks
+
 ## v2.6.0
 - BREAKING CHANGE: Moved gunSprite and sprite from beforeStart / afterStart to the Parameters
 - Added CustomGrenade, CustomProjectile, and CustomSachelPack classes to make creating custom projectiles easier.
