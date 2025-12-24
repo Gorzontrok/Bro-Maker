@@ -2,11 +2,14 @@
   "Id": "BroMaker",
   "DisplayName": "BroMaker",
   "Author": "Gorzontrok",
-  "Version": "2.6.0",
-  "Requirements": [ "RocketLib" ],
-  "LoadAfter": [ "RocketLib" ],
+  "Version": "2.6.1",
+  "Requirements": [
+    "RocketLib"
+  ],
+  "LoadAfter": [
+    "RocketLib"
+  ],
   "AssemblyName": "BroMakerLib.dll",
   "EntryMethod": "BroMakerLib.Main.Load",
   "Repository": "https://raw.githubusercontent.com/Gorzontrok/Bro-Maker/main/Repository.json"
-
 }

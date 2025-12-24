@@ -1,4 +1,4 @@
-## v2.6.1 (unreleased)
+## v2.6.1
 - Add API methods for allowing other mods to see when a bro is being unlocked and register callbacks
 
 ## v2.6.0
