@@ -1,5 +1,8 @@
+## v2.6.2 (unreleased)
+- Update version number in Info.cs.
+
 ## v2.6.1
-- Add API methods for allowing other mods to see when a bro is being unlocked and register callbacks
+- Add API methods for allowing other mods to see when a bro is being unlocked and register callbacks.
 
 ## v2.6.0
 - BREAKING CHANGE: Moved gunSprite and sprite from beforeStart / afterStart to the Parameters
