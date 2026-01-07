@@ -1,5 +1,5 @@
-# Remove the line below if you want to inherit .editorconfig settings from higher directories
 root = true
+# Remove the line below if you want to inherit .editorconfig settings from higher directories
 
 # C# files
 [*.cs]
@@ -30,7 +30,7 @@ dotnet_search_reference_assemblies = true
 # Organize usings
 dotnet_separate_import_directive_groups = false
 dotnet_sort_system_directives_first = true
-file_header_template = unset
+file_header_template = 
 
 # this. and Me. preferences
 dotnet_style_qualification_for_event = false
@@ -163,7 +163,7 @@ csharp_new_line_before_catch = true
 csharp_new_line_before_else = true
 csharp_new_line_before_finally = true
 csharp_new_line_before_members_in_anonymous_types = true
-csharp_new_line_before_members_in_object_initializers = true
+csharp_new_line_before_members_in_object_initializers = false
 csharp_new_line_before_open_brace = all
 csharp_new_line_between_query_expression_clauses = true
 

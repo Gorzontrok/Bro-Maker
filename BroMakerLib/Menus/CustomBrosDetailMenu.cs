@@ -37,10 +37,10 @@ namespace BroMakerLib.Menus
 
         public static CustomBrosDetailMenu Show(StoredHero hero, CustomBrosGridMenu gridMenu)
         {
-            CustomBrosDetailMenu detailMenu = FlexMenu.Show<CustomBrosDetailMenu>(
-                parentFlex: gridMenu,
-                parentGame: null,
-                instanceId: hero.name
+            CustomBrosDetailMenu detailMenu = Show<CustomBrosDetailMenu>(
+                gridMenu,
+                null,
+                hero.name
             );
 
             detailMenu.currentHero = hero;
@@ -54,7 +54,7 @@ namespace BroMakerLib.Menus
         {
             base.InitializeContainer();
 
-            var mainContainer = new VerticalLayoutContainer
+            VerticalLayoutContainer mainContainer = new VerticalLayoutContainer
             {
                 Name = "DetailView_MainContainer",
                 WidthMode = SizeMode.Fill,
@@ -71,11 +71,11 @@ namespace BroMakerLib.Menus
                 TextColor = Color.white,
                 FontSize = 10f,
                 WidthMode = SizeMode.Fill,
-                HeightMode = SizeMode.Auto,
+                HeightMode = SizeMode.Auto
             };
             mainContainer.AddChild(titleText);
 
-            var mainRow = new HorizontalLayoutContainer
+            HorizontalLayoutContainer mainRow = new HorizontalLayoutContainer
             {
                 Name = "Main Row",
                 WidthMode = SizeMode.Fill,
@@ -87,7 +87,7 @@ namespace BroMakerLib.Menus
 
             mainContainer.AddChild(mainRow);
 
-            var leftMainRowSpacer = new SpacerElement
+            SpacerElement leftMainRowSpacer = new SpacerElement
             {
                 WidthMode = SizeMode.Percentage,
                 Width = 3
@@ -95,7 +95,7 @@ namespace BroMakerLib.Menus
 
             mainRow.AddChild(leftMainRowSpacer);
 
-            var avatarContainer = new VerticalLayoutContainer
+            VerticalLayoutContainer avatarContainer = new VerticalLayoutContainer
             {
                 Name = "Avatar Panel",
                 WidthMode = SizeMode.Fill,
@@ -104,7 +104,7 @@ namespace BroMakerLib.Menus
 
             mainRow.AddChild(avatarContainer);
 
-            var avatarSpacer = new SpacerElement
+            SpacerElement avatarSpacer = new SpacerElement
             {
                 HeightMode = SizeMode.Fixed,
                 Height = -40
@@ -123,7 +123,7 @@ namespace BroMakerLib.Menus
 
             avatarContainer.AddChild(avatarImage);
 
-            var mainRowMiddleSpacer = new SpacerElement
+            SpacerElement mainRowMiddleSpacer = new SpacerElement
             {
                 WidthMode = SizeMode.Fixed,
                 Width = -20
@@ -131,7 +131,7 @@ namespace BroMakerLib.Menus
 
             mainRow.AddChild(mainRowMiddleSpacer);
 
-            var infoPanel = new VerticalLayoutContainer
+            VerticalLayoutContainer infoPanel = new VerticalLayoutContainer
             {
                 Name = "InfoPanel",
                 WidthMode = SizeMode.Fill,
@@ -142,7 +142,7 @@ namespace BroMakerLib.Menus
 
             mainRow.AddChild(infoPanel);
 
-            var infoPanelTopSpacer = new SpacerElement
+            SpacerElement infoPanelTopSpacer = new SpacerElement
             {
                 HeightMode = SizeMode.Percentage,
                 Height = 14
@@ -150,27 +150,27 @@ namespace BroMakerLib.Menus
 
             infoPanel.AddChild(infoPanelTopSpacer);
 
-            var spawnContainer = CreateInfoRow("SPAWNING:", "");
-            spawnStatusText = (spawnContainer.Children[2] as TextElement);
+            HorizontalLayoutContainer spawnContainer = CreateInfoRow("SPAWNING:", "");
+            spawnStatusText = spawnContainer.Children[2] as TextElement;
             infoPanel.AddChild(spawnContainer);
 
-            var statusContainer = CreateInfoRow("STATUS:", "");
-            statusText = (statusContainer.Children[2] as TextElement);
+            HorizontalLayoutContainer statusContainer = CreateInfoRow("STATUS:", "");
+            statusText = statusContainer.Children[2] as TextElement;
             infoPanel.AddChild(statusContainer);
 
             levelContainer = CreateInfoRow("UNLOCK LEVEL:", "");
-            unlockLevelText = (levelContainer.Children[2] as TextElement);
+            unlockLevelText = levelContainer.Children[2] as TextElement;
             infoPanel.AddChild(levelContainer);
 
             rescueContainer = CreateInfoRow("UNLOCK REQUIREMENT:", "");
-            rescueText = (rescueContainer.Children[2] as TextElement);
+            rescueText = rescueContainer.Children[2] as TextElement;
             infoPanel.AddChild(rescueContainer);
 
-            var authorContainer = CreateInfoRow("AUTHOR:", "");
-            authorText = (authorContainer.Children[2] as TextElement);
+            HorizontalLayoutContainer authorContainer = CreateInfoRow("AUTHOR:", "");
+            authorText = authorContainer.Children[2] as TextElement;
             infoPanel.AddChild(authorContainer);
 
-            var bottomSpacer = new SpacerElement
+            SpacerElement bottomSpacer = new SpacerElement
             {
                 HeightMode = SizeMode.Percentage,
                 Height = 5
@@ -178,7 +178,7 @@ namespace BroMakerLib.Menus
 
             mainContainer.AddChild(bottomSpacer);
 
-            var buttonContainer = new HorizontalLayoutContainer
+            HorizontalLayoutContainer buttonContainer = new HorizontalLayoutContainer
             {
                 Name = "ButtonContainer",
                 WidthMode = SizeMode.Fill,
@@ -215,7 +215,7 @@ namespace BroMakerLib.Menus
             };
             buttonContainer.AddChild(playLevelButton);
 
-            var buttonSpacer = new SpacerElement("ButtonSpacer")
+            SpacerElement buttonSpacer = new SpacerElement("ButtonSpacer")
             {
                 WidthMode = SizeMode.Fill,
                 HeightMode = SizeMode.Fixed,
@@ -238,7 +238,7 @@ namespace BroMakerLib.Menus
 
         private HorizontalLayoutContainer CreateInfoRow(string label, string value)
         {
-            var row = new HorizontalLayoutContainer
+            HorizontalLayoutContainer row = new HorizontalLayoutContainer
             {
                 HeightMode = SizeMode.Fixed,
                 Height = 30f,
@@ -246,7 +246,7 @@ namespace BroMakerLib.Menus
                 Spacing = 3f
             };
 
-            var labelText = new TextElement($"Label_{label}")
+            TextElement labelText = new TextElement($"Label_{label}")
             {
                 Text = label,
                 TextColor = Color.gray,
@@ -255,12 +255,12 @@ namespace BroMakerLib.Menus
                 HeightMode = SizeMode.Fill
             };
 
-            var middleSpacer = new SpacerElement
+            SpacerElement middleSpacer = new SpacerElement
             {
                 WidthMode = SizeMode.Fill
             };
 
-            var valueText = new TextElement($"Value_{label}")
+            TextElement valueText = new TextElement($"Value_{label}")
             {
                 Text = value,
                 TextColor = Color.white,
@@ -269,7 +269,7 @@ namespace BroMakerLib.Menus
                 HeightMode = SizeMode.Fill
             };
 
-            var rightSpacer = new SpacerElement
+            SpacerElement rightSpacer = new SpacerElement
             {
                 WidthMode = SizeMode.Percentage,
                 Width = 8
@@ -358,15 +358,19 @@ namespace BroMakerLib.Menus
 
         private void ToggleSpawn()
         {
-            if (currentHero.name == null) return;
+            if (currentHero.name == null)
+            {
+                return;
+            }
 
             // Don't allow toggling for locked bros
-            if (isLocked) return;
+            if (isLocked)
+            {
+                return;
+            }
 
-            isEnabled = !isEnabled;
-            BroSpawnManager.SetBroEnabled(currentHero.name, isEnabled);
+            BroSpawnManager.SetBroEnabled(currentHero.name, !isEnabled);
             Settings.instance?.Save(Main.mod);
-
 
             RefreshBroDetails();
         }
@@ -378,6 +382,7 @@ namespace BroMakerLib.Menus
             {
                 return;
             }
+
             bool previousUnlocked = isLocked;
             bool previousEnabled = isEnabled;
             isLocked = !BroUnlockManager.IsBroUnlocked(storedHero.name);
@@ -387,19 +392,18 @@ namespace BroMakerLib.Menus
                 statusText.Text = isLocked ? "LOCKED" : "UNLOCKED";
                 statusText.TextColor = isLocked ? Color.red : Color.green;
 
-                var unlockState = BroUnlockManager.GetBroUnlockState(storedHero.name);
+                BroUnlockState unlockState = BroUnlockManager.GetBroUnlockState(storedHero.name);
                 if (unlockState != null)
                 {
                     // Show unlock level if the bro has an unlock level, regardless of lock status
                     bool hasUnlockLevel = (unlockState.ConfiguredMethod == UnlockMethod.UnlockLevel ||
-                                          unlockState.ConfiguredMethod == UnlockMethod.RescueOrLevel) &&
+                                           unlockState.ConfiguredMethod == UnlockMethod.RescueOrLevel) &&
                                           (!string.IsNullOrEmpty(unlockState.UnlockLevelName) ||
                                            !string.IsNullOrEmpty(unlockState.UnlockLevelPath));
 
                     if (hasUnlockLevel)
                     {
-                        unlockLevelText.Text = !string.IsNullOrEmpty(unlockState.UnlockLevelName) ?
-                            unlockState.UnlockLevelName : "Custom Level";
+                        unlockLevelText.Text = !string.IsNullOrEmpty(unlockState.UnlockLevelName) ? unlockState.UnlockLevelName : "Custom Level";
                         levelContainer.IsVisibleAndPositioned = true;
                     }
                     else
@@ -462,7 +466,7 @@ namespace BroMakerLib.Menus
                     spawnButton.IsFocusable = true;
                 }
 
-                this.RefreshLayout();
+                RefreshLayout();
             }
 
             lastSeenStatusCount = BroSpawnManager.BroStatusCount;
@@ -470,7 +474,7 @@ namespace BroMakerLib.Menus
 
         private void PlayUnlockLevel()
         {
-            FlexMenu.SetReturnTarget(parentGridMenu);
+            SetReturnTarget(parentGridMenu);
 
             if (!BroUnlockManager.LoadUnlockLevel(currentHero.name))
             {
