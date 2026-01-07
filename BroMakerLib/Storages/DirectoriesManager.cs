@@ -32,17 +32,16 @@ namespace BroMakerLib
         {
             if (string.IsNullOrEmpty(_storageDirectory))
             {
-                _storageDirectory = Path.Combine(RocketLibUtils.GetRootDirectory(), "BroMaker_Storage\\");
+                _storageDirectory = Path.Combine(RocketLibUtils.GetRootDirectory(), "BroMaker_Storage");
             }
 
-
-            BrosDirectory = Path.Combine(StorageDirectory, "Bros\\");
-            AbilitiesDirectory = Path.Combine(StorageDirectory, "Abilities\\");
-            WeaponsDirectory = Path.Combine(StorageDirectory, "Weapons\\");
-            AbilitiesDirectory = Path.Combine(StorageDirectory, "Abilties\\");
-            GrenadesDirectory = Path.Combine(StorageDirectory, "Grenades\\");
-            ProjectilesDirectory = Path.Combine(StorageDirectory, "Projectiles\\");
-            CutscenesDirectory = Path.Combine(StorageDirectory, "Cutscenes\\");
+            BrosDirectory = Path.Combine(StorageDirectory, "Bros");
+            AbilitiesDirectory = Path.Combine(StorageDirectory, "Abilities");
+            WeaponsDirectory = Path.Combine(StorageDirectory, "Weapons");
+            AbilitiesDirectory = Path.Combine(StorageDirectory, "Abilties");
+            GrenadesDirectory = Path.Combine(StorageDirectory, "Grenades");
+            ProjectilesDirectory = Path.Combine(StorageDirectory, "Projectiles");
+            CutscenesDirectory = Path.Combine(StorageDirectory, "Cutscenes");
         }
 
         public static void CheckDirectories()

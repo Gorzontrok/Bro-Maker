@@ -1,8 +1,10 @@
 *.vscode/
 *.vs/
+.idea/
 *bin/
 *obj/
 wiki/
 BroMaker/src/BroMaker/NewFolder1/
 **/_ModContent/*.dll
 BroMakerLib/LocalBroforcePath.props
+CLAUDE.md
