@@ -49,7 +49,14 @@ namespace BroMakerLib
                 BroUnlockManager.Initialize();
 
                 // Preload all bro assets
-                PreloadBroAssets();
+                try
+                {
+                    PreloadBroAssets();
+                }
+                catch (Exception ex)
+                {
+                    BMLogger.ExceptionLog("Error during asset preloading (some bros may not work)", ex);
+                }
 
                 BroSpawnManager.CheckForDeletedBros();
 
