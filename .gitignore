@@ -7,4 +7,6 @@ wiki/
 BroMaker/src/BroMaker/NewFolder1/
 **/_ModContent/*.dll
 BroMakerLib/LocalBroforcePath.props
-CLAUDE.md
+# Claude
+CLAUDE*.md
+.claude
