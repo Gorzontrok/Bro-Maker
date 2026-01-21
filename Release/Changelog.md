@@ -1,6 +1,7 @@
 ## v2.6.2 (unreleased)
 - Update version number in Info.cs.
 - Add handling for exceptions thrown while preloading bro assets.
+- Fix handling array of special icons as multiple variants rather than a single variant with multiple specials.
 
 ## v2.6.1
 - Add API methods for allowing other mods to see when a bro is being unlocked and register callbacks.

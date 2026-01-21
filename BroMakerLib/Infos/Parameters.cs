@@ -150,25 +150,29 @@ namespace BroMakerLib
                     }
                     else
                     {
-                        // Array of strings - one icon per variant
+                        // Array of strings - one variant with multiple icons (different icon per special ammo slot)
+                        var variantMaterials = new List<Material>();
                         foreach (var item in array)
                         {
                             string iconFile = item.ToObject<string>();
                             Material specialMat = ResourcesController.GetMaterial(hero.Info.path, iconFile);
-                            hero.Info.SpecialMaterials.Add(new List<Material> { specialMat });
+                            variantMaterials.Add(specialMat);
                         }
+                        hero.Info.SpecialMaterials.Add(variantMaterials);
                     }
                 }
             }
             else if (value is string[])
             {
-                // Array of strings - one icon per variant
+                // Array of strings - one variant with multiple icons
                 string[] iconFiles = value as string[];
+                var variantMaterials = new List<Material>();
                 for (int i = 0; i < iconFiles.Length; ++i)
                 {
                     Material specialMat = ResourcesController.GetMaterial(hero.Info.path, iconFiles[i]);
-                    hero.Info.SpecialMaterials.Add(new List<Material> { specialMat });
+                    variantMaterials.Add(specialMat);
                 }
+                hero.Info.SpecialMaterials.Add(variantMaterials);
             }
             else
             {
