@@ -1,11 +1,11 @@
 {
   "name": "BroMaker",
   "author": "BroMaker",
-  "version_number": "2.6.1",
+  "version_number": "2.6.2",
   "website_url": "https://github.com/Gorzontrok/Bro-Maker",
   "description": "BroMaker allows you to load custom bros into the game.",
   "dependencies": [
-    "UMM-UMM-1.0.2",
+    "UMM-UMM-1.1.0",
     "RocketLib-RocketLib-2.4.2"
   ]
 }
