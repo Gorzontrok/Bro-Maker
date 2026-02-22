@@ -8,8 +8,8 @@
 
 ## Installation
 
-* All of my mods require [Unity Mod Manager](https://www.nexusmods.com/site/mods/21).
-* Also requires [RocketLib](https://www.nexusmods.com/broforce/mods/9)
+* All of my mods require [Unity Mod Manager](https://thunderstore.io/c/broforce/p/UMM/UMM/) (install via [r2modman](https://thunderstore.io/c/broforce/p/ebkr/r2modman/)).
+* Also requires [RocketLib](https://thunderstore.io/c/broforce/p/RocketLib/RocketLib/)
 * The installation guide can be found [here](https://steamcommunity.com/sharedfiles/filedetails/?id=2434812447).  
 * The latest Release is in the `/Release/` folder.
 
