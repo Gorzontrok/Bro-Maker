@@ -22,7 +22,8 @@ namespace BroMakerLib
         public static bool disableWarnings = false;
 
         static PresetManager()
-        { }
+        {
+        }
 
         public static void Initialize()
         {
@@ -34,24 +35,23 @@ namespace BroMakerLib
             CheckAssembly(Assembly.GetExecutingAssembly());
 
             // Load assemblies of mods
-            foreach (BroMakerMod mod in BroMakerStorage.mods)
+            foreach (var mod in BroMakerStorage.mods)
             {
                 if (mod.HasHarmonyPatch)
+                {
                     mod.Harmony = new Harmony(mod.Name);
-                foreach (string assemblyPath in mod.Assemblies)
+                }
+
+                foreach (var assemblyPath in mod.Assemblies)
                 {
                     var path = Path.Combine(mod.Path, assemblyPath);
                     if (!File.Exists(path))
-                        continue;
-
-                    string destFileName = path + ".cache";
-                    if (!File.Exists(destFileName))
                     {
-                        //File.Delete(destFileName);
-                        File.Copy(path, destFileName);
+                        continue;
                     }
-                    Assembly assembly = Assembly.LoadFile(path);
-                    bool flag = CheckAssembly(assembly);
+
+                    var assembly = Assembly.LoadFile(path);
+                    var flag = CheckAssembly(assembly);
                     if (flag && mod.Harmony != null)
                     {
                         try
@@ -73,39 +73,53 @@ namespace BroMakerLib
         public static Type GetHeroPreset(string presetName)
         {
             if (!heroesPreset.ContainsKey(presetName))
+            {
                 return null;
+            }
+
             return heroesPreset[presetName];
         }
 
         public static Type GetAbilityPreset(string name)
         {
             if (!abilities.ContainsKey(name))
+            {
                 return null;
+            }
+
             return abilities[name];
         }
 
         public static Type GetGrenadePreset(string name)
         {
             if (!grenades.ContainsKey(name))
+            {
                 return null;
+            }
+
             return grenades[name];
         }
 
         public static MethodInfo GetParameterMethod(string name)
         {
             if (!parameters.ContainsKey(name))
+            {
                 return null;
+            }
+
             return parameters[name];
         }
 
         public static bool CheckAssembly(Assembly assembly)
         {
             if (assembly == null)
+            {
                 return false;
+            }
 
             try
             {
-                Type[] types = assembly.GetTypes();
+                var types = assembly.GetTypes();
                 if (types.Length == 0)
                 {
                     BMLogger.Warning($"Assembly '{assembly.GetName().Name}' is somehow empty ( ͠° ͟ʖ ͡°)");
@@ -114,7 +128,7 @@ namespace BroMakerLib
 
 
                 RetrieveParameters(types);
-                Type[] presets = FindPresets(types);
+                var presets = FindPresets(types);
                 AddPresets(presets);
             }
             catch (Exception ex)
@@ -122,16 +136,19 @@ namespace BroMakerLib
                 BMLogger.ExceptionLog($"{assembly.FullName} - " + ex);
                 return false;
             }
+
             return true;
         }
 
         private static void RetrieveParameters(Type[] types)
         {
-            Type paramerterType = types.FirstOrDefault((t) => t.Name == "Parameters");
+            var paramerterType = types.FirstOrDefault((t) => t.Name == "Parameters");
             if (paramerterType == null || paramerterType.Name != "Parameters")
+            {
                 return;
+            }
 
-            var methods = paramerterType.GetMethods();
+            var methods = paramerterType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
             foreach (var method in methods)
             {
                 var attributes = method.GetCustomAttributes(typeof(ParameterAttribute), true);
@@ -144,9 +161,13 @@ namespace BroMakerLib
                     }
 
                     if (parameters.ContainsKey(method.Name))
+                    {
                         BMLogger.Warning($"Parameter of name {method.Name} already exist in assembly {paramerterType.Assembly.FullName}");
+                    }
                     else
+                    {
                         parameters.Add(method.Name, method);
+                    }
                 }
             }
         }
@@ -155,7 +176,7 @@ namespace BroMakerLib
         {
             var result = new List<Type>();
 
-            foreach (Type type in types)
+            foreach (var type in types)
             {
                 var attributes = type.GetCustomAttributes(typeof(CustomObjectPresetAttribute), true);
                 if (attributes.IsNotNullOrEmpty())
@@ -163,12 +184,13 @@ namespace BroMakerLib
                     result.Add(type);
                 }
             }
+
             return result.ToArray();
         }
 
         private static void AddPresets(Type[] types)
         {
-            foreach (Type type in types)
+            foreach (var type in types)
             {
                 var attributes = type.GetCustomAttributes(typeof(CustomObjectPresetAttribute), true);
                 if (attributes.IsNotNullOrEmpty())
@@ -179,7 +201,9 @@ namespace BroMakerLib
                         var presetCollection = GetPresetCollection(first);
 
                         if (presetCollection == null)
+                        {
                             continue;
+                        }
 
                         AddPresetToCollection(presetCollection, type, first.As<CustomObjectPresetAttribute>().name, GetCollectionName(first));
                     }
@@ -194,14 +218,24 @@ namespace BroMakerLib
         private static Dictionary<string, Type> GetPresetCollection(object attribute)
         {
             if (attribute == null || attribute as CustomObjectPresetAttribute == null)
+            {
                 return null;
+            }
 
             if (attribute is HeroPresetAttribute)
+            {
                 return heroesPreset;
+            }
+
             if (attribute is AbilityPresetAttribute)
+            {
                 return abilities;
+            }
+
             if (attribute is GrenadePresetAttribute)
+            {
                 return grenades;
+            }
 
             return customObjectsPreset;
         }
@@ -209,11 +243,19 @@ namespace BroMakerLib
         private static void AddPresetToCollection(Dictionary<string, Type> collection, Type preset, string name, string collectionName = "")
         {
             if (collection == null)
+            {
                 throw new ArgumentNullException(nameof(collection));
+            }
+
             if (preset == null)
+            {
                 throw new ArgumentNullException(nameof(preset));
+            }
+
             if (name.IsNullOrEmpty())
+            {
                 throw new ArgumentNullException(nameof(name), "is null or empty.");
+            }
 
             if (collection.ContainsKey(name))
             {
@@ -223,17 +265,28 @@ namespace BroMakerLib
                 }
             }
             else
+            {
                 collection.Add(name, preset);
+            }
         }
 
         private static string GetCollectionName(object attribute)
         {
             if (attribute is HeroPresetAttribute)
+            {
                 return "Hero";
+            }
+
             if (attribute is AbilityPresetAttribute)
+            {
                 return "Ability";
+            }
+
             if (attribute is GrenadePresetAttribute)
+            {
                 return "Grenade";
+            }
+
             return string.Empty;
         }
     }

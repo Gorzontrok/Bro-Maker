@@ -11,6 +11,8 @@ using HarmonyLib;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
+using UnityModManagerNet;
+using Random = UnityEngine.Random;
 
 namespace BroMakerLib.CustomObjects.Bros
 {
@@ -32,25 +34,16 @@ namespace BroMakerLib.CustomObjects.Bros
             ChevBroliosDrowsy
         }
 
-        [Syncronize]
-        public CustomBroInfo Info { get; set; }
-        [Syncronize]
-        public BroBase Character { get; set; }
-        [JsonIgnore]
-        public MuscleTempleFlexEffect FlexEffect { get; set; }
+        [Syncronize] public CustomBroInfo Info { get; set; }
+        [Syncronize] public BroBase Character { get; set; }
+        [JsonIgnore] public MuscleTempleFlexEffect FlexEffect { get; set; }
 
-        [JsonIgnore]
-        public int CurrentVariant { get; set; }
-        [JsonIgnore]
-        public Vector2 CurrentGunSpriteOffset { get; set; }
-        [JsonIgnore]
-        public List<Material> CurrentSpecialMaterials { get; set; }
-        [JsonIgnore]
-        public Vector2 CurrentSpecialMaterialOffset { get; set; }
-        [JsonIgnore]
-        public float CurrentSpecialMaterialSpacing { get; set; }
-        [JsonIgnore]
-        public Material CurrentFirstAvatar { get; set; }
+        [JsonIgnore] public int CurrentVariant { get; set; }
+        [JsonIgnore] public Vector2 CurrentGunSpriteOffset { get; set; }
+        [JsonIgnore] public List<Material> CurrentSpecialMaterials { get; set; }
+        [JsonIgnore] public Vector2 CurrentSpecialMaterialOffset { get; set; }
+        [JsonIgnore] public float CurrentSpecialMaterialSpacing { get; set; }
+        [JsonIgnore] public Material CurrentFirstAvatar { get; set; }
 
         /// <summary>
         /// Set this to control which hero is used for the default soundHolder.
@@ -59,7 +52,7 @@ namespace BroMakerLib.CustomObjects.Bros
         public HeroType SoundHolderHeroType = HeroType.None;
 
         /// <summary>
-        /// Set this to control which hero is used for the default SoundHolderVoice. 
+        /// Set this to control which hero is used for the default SoundHolderVoice.
         /// If set to none, the SoundHolderHeroType will be used, unless that is set to None,
         /// in which case the base HeroType of your bro will be used.
         /// </summary>
@@ -68,35 +61,68 @@ namespace BroMakerLib.CustomObjects.Bros
         /// <summary>
         /// Contains the path to the directory that contains your custom bro's dll
         /// </summary>
-        public string DirectoryPath
-        {
-            get => _directoryPath;
-        }
+        public string DirectoryPath => _directoryPath;
 
         /// <summary>
         /// Contains the path to your bro's sound folder (assumes the folder is named "sounds" by default)
         /// </summary>
-        public string SoundPath
-        {
-            get => _soundPath;
-        }
+        public string SoundPath => _soundPath;
 
         /// <summary>
         /// Contains the path to your bro's projectile folder (assumes the folder is named "projectiles" by default)
         /// </summary>
-        public string ProjectilePath
-        {
-            get => _projectilePath;
-        }
+        public string ProjectilePath => _projectilePath;
 
-        [SerializeField]
-        private string _directoryPath;
-        [SerializeField]
-        private string _soundPath;
-        [SerializeField]
-        private string _projectilePath;
+        [SerializeField] private string _directoryPath;
+        [SerializeField] private string _soundPath;
+        [SerializeField] private string _projectilePath;
+
+        /// <summary>
+        /// When enabled, CustomHero tracks death and revival state via <see cref="acceptedDeath" /> and calls
+        /// <see cref="OnDeath" /> and <see cref="OnRevived" /> at the appropriate times.
+        /// Bros should check <c>if (acceptedDeath) return;</c> after <c>base.Update()</c> to skip their own logic when dead.
+        /// </summary>
+        protected bool trackDeathRevival = true;
+
+        /// <summary>
+        /// When enabled, CustomHero automatically resets _TintColor to Color.gray on the main renderer,
+        /// gun sprite, and all materials registered via <see cref="RegisterTintMaterial" /> when invulnerability ends.
+        /// </summary>
+        protected bool trackInvulnerabilityTint = true;
+
+        /// <summary>
+        /// When enabled, CustomHero sets meleeType and currentMeleeType to MeleeType.Custom in Start(),
+        /// which causes the base game to call StartCustomMelee() instead of the default melee.
+        /// </summary>
+        protected bool useCustomMelee = false;
+
+        /// <summary>
+        /// When enabled, CustomHero's SetGestureAnimation override blocks gesture animations while doingMelee is true,
+        /// preventing flex and other gestures from interrupting melee attacks.
+        /// </summary>
+        protected bool blockGesturesDuringMelee = true;
+
+        /// <summary>
+        /// When enabled, the variant system ensures each active instance of the same bro type gets a different variant
+        /// in multiplayer. Registration and unregistration are handled automatically through the lifecycle.
+        /// Override <see cref="GetVariant" /> and call <see cref="GetUniqueVariant" /> directly to pass a filtered variant list.
+        /// </summary>
+        protected bool deduplicateVariants = false;
+
+        /// <summary>
+        /// Set to true when the bro has died and is not immediately reviving. Managed automatically when
+        /// <see cref="trackDeathRevival" /> is enabled.
+        /// Bros should check <c>if (acceptedDeath) return;</c> after <c>base.Update()</c> to skip their own Update logic when dead.
+        /// </summary>
+        protected bool acceptedDeath = false;
+
+        protected bool wasInvulnerable = false;
+        protected List<Material> tintMaterials = new List<Material>();
+
+        private static readonly Dictionary<Type, Dictionary<CustomHero, int>> _activeVariants = new Dictionary<Type, Dictionary<CustomHero, int>>();
 
         #region BroBase Methods
+
         protected override void Awake()
         {
             Character = this;
@@ -106,16 +132,20 @@ namespace BroMakerLib.CustomObjects.Bros
                 EnableSyncing(true, true);
 
                 // Select variant
-                this.CurrentVariant = this.GetVariant();
+                CurrentVariant = GetVariant();
+                if (deduplicateVariants)
+                {
+                    RegisterVariant();
+                }
 
                 // Cache current variant parameters
-                this.CurrentGunSpriteOffset = BroMakerUtilities.GetVariantValue(this.Info.GunSpriteOffset, this.CurrentVariant);
-                this.CurrentSpecialMaterials = BroMakerUtilities.GetVariantValue(this.Info.SpecialMaterials, this.CurrentVariant);
-                this.CurrentSpecialMaterialOffset = BroMakerUtilities.GetVariantValue(this.Info.SpecialMaterialOffset, this.CurrentVariant);
-                this.CurrentSpecialMaterialSpacing = BroMakerUtilities.GetVariantValue(this.Info.SpecialMaterialSpacing, this.CurrentVariant);
-                this.CurrentFirstAvatar = BroMakerUtilities.GetVariantValue(this.Info.FirstAvatar, this.CurrentVariant);
+                CurrentGunSpriteOffset = BroMakerUtilities.GetVariantValue(Info.GunSpriteOffset, CurrentVariant);
+                CurrentSpecialMaterials = BroMakerUtilities.GetVariantValue(Info.SpecialMaterials, CurrentVariant);
+                CurrentSpecialMaterialOffset = BroMakerUtilities.GetVariantValue(Info.SpecialMaterialOffset, CurrentVariant);
+                CurrentSpecialMaterialSpacing = BroMakerUtilities.GetVariantValue(Info.SpecialMaterialSpacing, CurrentVariant);
+                CurrentFirstAvatar = BroMakerUtilities.GetVariantValue(Info.FirstAvatar, CurrentVariant);
 
-                this.Character.specialGrenade.playerNum = LoadHero.playerNum;
+                Character.specialGrenade.playerNum = LoadHero.playerNum;
 
                 Info.BeforeAwake(this);
                 base.Awake();
@@ -125,10 +155,10 @@ namespace BroMakerLib.CustomObjects.Bros
                 // Make sure parachute isn't null, for some reason the game's default way of handling this doesn't work
                 if (this.parachute == null)
                 {
-                    Parachute parachute = null;
-                    for (int i = 0; i < this.transform.childCount; ++i)
+                    Parachute parachute;
+                    for (var i = 0; i < transform.childCount; ++i)
                     {
-                        if ((parachute = this.transform.GetChild(i).GetComponent<Parachute>()) != null)
+                        if ((parachute = transform.GetChild(i).GetComponent<Parachute>()) != null)
                         {
                             this.parachute = parachute;
                             break;
@@ -147,6 +177,12 @@ namespace BroMakerLib.CustomObjects.Bros
         {
             try
             {
+                if (useCustomMelee)
+                {
+                    meleeType = MeleeType.Custom;
+                    currentMeleeType = MeleeType.Custom;
+                }
+
                 Info.BeforeStart(this);
                 base.Start();
                 Info.AfterStart(this);
@@ -158,137 +194,203 @@ namespace BroMakerLib.CustomObjects.Bros
             }
         }
 
+        protected override void Update()
+        {
+            base.Update();
+
+            if (trackDeathRevival && acceptedDeath)
+            {
+                if (health <= 0 && !WillReviveAlready)
+                {
+                    return;
+                }
+
+                acceptedDeath = false;
+                OnRevived();
+            }
+
+            if (trackInvulnerabilityTint)
+            {
+                if (invulnerable)
+                {
+                    wasInvulnerable = true;
+                }
+                else if (wasInvulnerable)
+                {
+                    wasInvulnerable = false;
+                    ResetTintColors();
+                }
+            }
+
+            if (trackDeathRevival && actionState == ActionState.Dead && !acceptedDeath && !WillReviveAlready)
+            {
+                acceptedDeath = true;
+                OnDeath();
+            }
+        }
+
+        protected override void OnDestroy()
+        {
+            if (deduplicateVariants)
+            {
+                UnregisterVariant();
+            }
+
+            base.OnDestroy();
+        }
+
+        public override void SetGestureAnimation(GestureElement.Gestures gesture)
+        {
+            if (blockGesturesDuringMelee && doingMelee)
+            {
+                return;
+            }
+
+            base.SetGestureAnimation(gesture);
+        }
+
         // This function is overridden to remove the RPC calls, since they don't work currently
         protected override void CheckForTraps(ref float yIT)
         {
-            float num = base.Y + yIT;
-            if (num <= this.groundHeight + 1f)
+            var num = Y + yIT;
+            if (num <= groundHeight + 1f)
             {
-                num = this.groundHeight + 1f;
+                num = groundHeight + 1f;
             }
-            if (Map.isEditing || this.invulnerable)
-            {
-                return;
-            }
-            if (!base.IsEnemy && !base.IsMine)
+
+            if (Map.isEditing || invulnerable)
             {
                 return;
             }
-            DoodadAcidPool nearestAcid = Map.GetNearestAcid(base.X, base.Y + 8f, 2f);
+
+            if (!IsEnemy && !IsMine)
+            {
+                return;
+            }
+
+            var nearestAcid = Map.GetNearestAcid(X, Y + 8f, 2f);
             if (nearestAcid != null && nearestAcid.fullness > 0.2f)
             {
-                this.CoverInAcid();
+                CoverInAcid();
             }
-            if (this.impaledByTransform == null && base.IsHero && ((this.yI > 50f && (this.canTouchRightWalls || this.canTouchLeftWalls || this.WallClimbing) && (Time.time - this.lastJumpTime > 0.2f || base.Y > this.groundHeight + 17f)) || this.yI < -120f) && this.IsSurroundedByBarbedWire())
+
+            if (impaledByTransform == null && IsHero && ((yI > 50f && (canTouchRightWalls || canTouchLeftWalls || WallClimbing) && (Time.time - lastJumpTime > 0.2f || Y > groundHeight + 17f)) || yI < -120f) && IsSurroundedByBarbedWire())
             {
-                EffectsController.CreateBloodParticles(this.bloodColor, base.X, base.Y + 10f, -5f, 1, 4f, 4f, 50f, this.xI * 0.8f, 70f);
-                if (this.yI < 0f)
+                EffectsController.CreateBloodParticles(bloodColor, X, Y + 10f, -5f, 1, 4f, 4f, 50f, xI * 0.8f, 70f);
+                if (yI < 0f)
                 {
-                    this.yI *= 0.2f;
+                    yI *= 0.2f;
                 }
                 else
                 {
-                    this.yI *= 0.45f;
+                    yI *= 0.45f;
                 }
-                this.barbedWireWithin.ForceBloody();
-                this.barbedWireWithin.PlayCutSound();
+
+                barbedWireWithin.ForceBloody();
+                barbedWireWithin.PlayCutSound();
             }
+
             RaycastHit raycastHit;
-            if (this.impaledByTransform == null && Physics.Raycast(new Vector3(base.X, num, 0f), Vector3.down, out raycastHit, 25f, this.groundLayer))
+            if (impaledByTransform == null && Physics.Raycast(new Vector3(X, num, 0f), Vector3.down, out raycastHit, 25f, groundLayer))
             {
-                Block component = raycastHit.collider.GetComponent<Block>();
+                var component = raycastHit.collider.GetComponent<Block>();
                 if (component != null)
                 {
-                    if (raycastHit.distance < 10f && (base.IsMine || base.IsEnemy))
+                    if (raycastHit.distance < 10f && (IsMine || IsEnemy))
                     {
                         component.CheckForMine();
                     }
-                    if (component.spikes != null && !this.invulnerable && !this.wallDrag)
+
+                    if (component.spikes != null && !invulnerable && !wallDrag)
                     {
                         if (component.spikes.EvaluateImpalent(this))
                         {
-                            float num2 = (base.playerNum >= 0) ? component.spikes.spikeTrapHarmlessHeight : (component.spikes.spikeTrapHarmlessHeight * 0.5f);
-                            if (this.yI < -150f && raycastHit.point.y > this.groundHeight - 1f && raycastHit.distance >= num2 && raycastHit.distance < component.spikes.spikeTrapHeight && base.Y > component.Y + component.spikes.spikeTrapHeight)
+                            var num2 = playerNum >= 0 ? component.spikes.spikeTrapHarmlessHeight : component.spikes.spikeTrapHarmlessHeight * 0.5f;
+                            if (yI < -150f && raycastHit.point.y > groundHeight - 1f && raycastHit.distance >= num2 && raycastHit.distance < component.spikes.spikeTrapHeight && Y > component.Y + component.spikes.spikeTrapHeight)
                             {
-                                base.Y = Mathf.Clamp(base.Y, this.groundHeight + 2f, this.groundHeight + 3f);
+                                Y = Mathf.Clamp(Y, groundHeight + 2f, groundHeight + 3f);
                                 yIT = 0f;
                                 //Networking.RPC<TestVanDammeAnim>(PID.TargetAll, new RpcSignature<TestVanDammeAnim>(component.spikes.ImpaleUnit), this, false);
                                 component.spikes.ImpaleUnit(this);
                             }
                         }
-                        else if (component.spikes.IsBarbedWire(this) && component.spikes.collumn == component.collumn && base.Y < raycastHit.point.y + 12f && Mathf.Abs(this.yI) < 50f && Mathf.Abs(this.xI + this.xIBlast) > this.GetSpeed - 2f && (int)Mathf.Sign(this.xI + this.xIBlast) == ((!this.left) ? 0 : -1) + ((!this.right) ? 0 : 1))
+                        else if (component.spikes.IsBarbedWire(this) && component.spikes.collumn == component.collumn && Y < raycastHit.point.y + 12f && Mathf.Abs(yI) < 50f && Mathf.Abs(xI + xIBlast) > GetSpeed - 2f && (int)Mathf.Sign(xI + xIBlast) == (!left ? 0 : -1) + (!right ? 0 : 1))
                         {
-                            EffectsController.CreateBloodParticles(this.bloodColor, base.X, base.Y + 10f, -5f, 1, 4f, 4f, 50f, this.xI * 0.8f, 70f);
-                            this.xIBlast -= this.xI * 0.4f;
-                            this.xI = 0f;
+                            EffectsController.CreateBloodParticles(bloodColor, X, Y + 10f, -5f, 1, 4f, 4f, 50f, xI * 0.8f, 70f);
+                            xIBlast -= xI * 0.4f;
+                            xI = 0f;
                             component.spikes.ForceBloody();
                             component.spikes.PlayCutSound();
                         }
                     }
                 }
             }
+
             RaycastHit raycastHit2;
-            if (this.impaledByTransform == null && Physics.Raycast(new Vector3(base.X - 3f, num, 0f), Vector3.down, out raycastHit2, 25f, this.groundLayer))
+            if (impaledByTransform == null && Physics.Raycast(new Vector3(X - 3f, num, 0f), Vector3.down, out raycastHit2, 25f, groundLayer))
             {
-                Block component2 = raycastHit2.collider.GetComponent<Block>();
+                var component2 = raycastHit2.collider.GetComponent<Block>();
                 if (component2 != null)
                 {
-                    if (raycastHit2.distance < 10f && (base.IsMine || base.IsEnemy))
+                    if (raycastHit2.distance < 10f && (IsMine || IsEnemy))
                     {
                         component2.CheckForMine();
                     }
-                    if (component2.spikes != null && !this.invulnerable && !this.wallDrag)
+
+                    if (component2.spikes != null && !invulnerable && !wallDrag)
                     {
                         if (component2.spikes.EvaluateImpalent(this))
                         {
-                            float num3 = (base.playerNum >= 0) ? component2.spikes.spikeTrapHarmlessHeight : (component2.spikes.spikeTrapHarmlessHeight * 0.5f);
-                            if (this.yI < -150f && raycastHit2.point.y > this.groundHeight - 1f && raycastHit2.distance >= num3 && raycastHit2.distance < component2.spikes.spikeTrapHeight && base.Y > component2.Y + component2.spikes.spikeTrapHeight)
+                            var num3 = playerNum >= 0 ? component2.spikes.spikeTrapHarmlessHeight : component2.spikes.spikeTrapHarmlessHeight * 0.5f;
+                            if (yI < -150f && raycastHit2.point.y > groundHeight - 1f && raycastHit2.distance >= num3 && raycastHit2.distance < component2.spikes.spikeTrapHeight && Y > component2.Y + component2.spikes.spikeTrapHeight)
                             {
-                                base.Y = Mathf.Clamp(base.Y, this.groundHeight + 2f, this.groundHeight + 3f);
+                                Y = Mathf.Clamp(Y, groundHeight + 2f, groundHeight + 3f);
                                 yIT = 0f;
                                 //Networking.RPC<TestVanDammeAnim>(PID.TargetAll, new RpcSignature<TestVanDammeAnim>(component2.spikes.ImpaleUnit), this, false);
                                 component2.spikes.ImpaleUnit(this);
                             }
                         }
-                        else if (component2.spikes.IsBarbedWire(this) && component2.spikes.collumn == component2.collumn && base.Y < raycastHit2.point.y + 12f && Mathf.Abs(this.yI) < 50f && Mathf.Abs(this.xI + this.xIBlast) > this.GetSpeed - 2f && (int)Mathf.Sign(this.xI + this.xIBlast) == ((!this.left) ? 0 : -1) + ((!this.right) ? 0 : 1))
+                        else if (component2.spikes.IsBarbedWire(this) && component2.spikes.collumn == component2.collumn && Y < raycastHit2.point.y + 12f && Mathf.Abs(yI) < 50f && Mathf.Abs(xI + xIBlast) > GetSpeed - 2f && (int)Mathf.Sign(xI + xIBlast) == (!left ? 0 : -1) + (!right ? 0 : 1))
                         {
-                            EffectsController.CreateBloodParticles(this.bloodColor, base.X, base.Y + 10f, -5f, 1, 4f, 4f, 50f, this.xI * 0.8f, 70f);
-                            this.xIBlast -= this.xI * 0.4f;
-                            this.xI = 0f;
+                            EffectsController.CreateBloodParticles(bloodColor, X, Y + 10f, -5f, 1, 4f, 4f, 50f, xI * 0.8f, 70f);
+                            xIBlast -= xI * 0.4f;
+                            xI = 0f;
                             component2.spikes.ForceBloody();
                             component2.spikes.PlayCutSound();
                         }
                     }
                 }
             }
+
             RaycastHit raycastHit3;
-            if (this.impaledByTransform == null && Physics.Raycast(new Vector3(base.X + 3f, num, 0f), Vector3.down, out raycastHit3, 25f, this.groundLayer))
+            if (impaledByTransform == null && Physics.Raycast(new Vector3(X + 3f, num, 0f), Vector3.down, out raycastHit3, 25f, groundLayer))
             {
-                Block component3 = raycastHit3.collider.GetComponent<Block>();
+                var component3 = raycastHit3.collider.GetComponent<Block>();
                 if (component3 != null)
                 {
-                    if (raycastHit3.distance < 10f && (base.IsMine || base.IsEnemy))
+                    if (raycastHit3.distance < 10f && (IsMine || IsEnemy))
                     {
                         component3.CheckForMine();
                     }
-                    if (component3.spikes != null && !this.invulnerable && !this.wallDrag)
+
+                    if (component3.spikes != null && !invulnerable && !wallDrag)
                     {
                         if (component3.spikes.EvaluateImpalent(this))
                         {
-                            float num4 = (base.playerNum >= 0) ? component3.spikes.spikeTrapHarmlessHeight : (component3.spikes.spikeTrapHarmlessHeight * 0.5f);
-                            if (this.yI < -150f && raycastHit3.point.y > this.groundHeight - 1f && raycastHit3.distance >= num4 && raycastHit3.distance < component3.spikes.spikeTrapHeight && base.Y > component3.Y + component3.spikes.spikeTrapHeight)
+                            var num4 = playerNum >= 0 ? component3.spikes.spikeTrapHarmlessHeight : component3.spikes.spikeTrapHarmlessHeight * 0.5f;
+                            if (yI < -150f && raycastHit3.point.y > groundHeight - 1f && raycastHit3.distance >= num4 && raycastHit3.distance < component3.spikes.spikeTrapHeight && Y > component3.Y + component3.spikes.spikeTrapHeight)
                             {
-                                base.Y = Mathf.Clamp(base.Y, this.groundHeight + 2f, this.groundHeight + 3f);
+                                Y = Mathf.Clamp(Y, groundHeight + 2f, groundHeight + 3f);
                                 yIT = 0f;
                                 //Networking.RPC<TestVanDammeAnim>(PID.TargetAll, new RpcSignature<TestVanDammeAnim>(component3.spikes.ImpaleUnit), this, false);
                                 component3.spikes.ImpaleUnit(this);
                             }
                         }
-                        else if (component3.spikes.IsBarbedWire(this) && component3.spikes.collumn == component3.collumn && base.Y < raycastHit3.point.y + 12f && Mathf.Abs(this.yI) < 50f && Mathf.Abs(this.xI + this.xIBlast) > this.GetSpeed - 2f && (int)Mathf.Sign(this.xI + this.xIBlast) == ((!this.left) ? 0 : -1) + ((!this.right) ? 0 : 1))
+                        else if (component3.spikes.IsBarbedWire(this) && component3.spikes.collumn == component3.collumn && Y < raycastHit3.point.y + 12f && Mathf.Abs(yI) < 50f && Mathf.Abs(xI + xIBlast) > GetSpeed - 2f && (int)Mathf.Sign(xI + xIBlast) == (!left ? 0 : -1) + (!right ? 0 : 1))
                         {
-                            EffectsController.CreateBloodParticles(this.bloodColor, base.X, base.Y + 10f, -5f, 1, 4f, 4f, 50f, this.xI * 0.8f, 70f);
-                            this.xIBlast -= this.xI * 0.4f;
-                            this.xI = 0f;
+                            EffectsController.CreateBloodParticles(bloodColor, X, Y + 10f, -5f, 1, 4f, 4f, 50f, xI * 0.8f, 70f);
+                            xIBlast -= xI * 0.4f;
+                            xI = 0f;
                             component3.spikes.ForceBloody();
                             component3.spikes.PlayCutSound();
                         }
@@ -299,50 +401,54 @@ namespace BroMakerLib.CustomObjects.Bros
 
         protected override void TriggerFlexEvent()
         {
-            if (this.player.HasFlexPower(PickupType.FlexAlluring))
+            if (player.HasFlexPower(PickupType.FlexAlluring))
             {
-                Map.AttractMooks(base.X, base.Y, 96f, 30f);
+                Map.AttractMooks(X, Y, 96f, 30f);
             }
-            if (this.player.HasFlexPower(PickupType.FlexGoldenLight))
+
+            if (player.HasFlexPower(PickupType.FlexGoldenLight))
             {
                 if (FlexEffect == null)
                 {
-                    this.FlexEffect = Traverse.Create((this as BroBase)).GetFieldValue("flexEffect") as MuscleTempleFlexEffect;
+                    FlexEffect = Traverse.Create(this as BroBase).GetFieldValue("flexEffect") as MuscleTempleFlexEffect;
                 }
-                if (this.FlexEffect != null)
+
+                if (FlexEffect != null)
                 {
-                    this.FlexEffect.PlaySoundEffect();
+                    FlexEffect.PlaySoundEffect();
                 }
-                if (base.IsMine)
+
+                if (IsMine)
                 {
-                    int num = 8 + UnityEngine.Random.Range(0, 5);
-                    for (int i = 0; i < num; i++)
+                    var num = 8 + Random.Range(0, 5);
+                    for (var i = 0; i < num; i++)
                     {
-                        float angle = -1.88495576f + 1.2f / (float)(num - 1) * 3.14159274f * (float)i;
-                        Vector2 vector = global::Math.Point2OnCircle(angle, 1f);
-                        ProjectileController.SpawnProjectileLocally(ProjectileController.instance.goldenLightProjectile, this, base.X, base.Y + 12f, vector.x * 400f, vector.y * 400f, true, 15, false, true, -15f);
+                        var angle = -1.88495576f + 1.2f / (float)(num - 1) * 3.14159274f * (float)i;
+                        var vector = Math.Point2OnCircle(angle, 1f);
+                        ProjectileController.SpawnProjectileLocally(ProjectileController.instance.goldenLightProjectile, this, X, Y + 12f, vector.x * 400f, vector.y * 400f, true, 15, false, true, -15f);
                     }
                 }
             }
-            else if (this.player.HasFlexPower(PickupType.FlexInvulnerability) && this.FlexEffect != null)
+            else if (player.HasFlexPower(PickupType.FlexInvulnerability) && FlexEffect != null)
             {
-                this.FlexEffect.PlaySoundEffect();
+                FlexEffect.PlaySoundEffect();
             }
         }
 
         protected override void SetGunPosition(float xOffset, float yOffset)
         {
-            this.gunSprite.transform.localPosition = new Vector3(xOffset + CurrentGunSpriteOffset.x, yOffset + CurrentGunSpriteOffset.y, -.001f);
+            gunSprite.transform.localPosition = new Vector3(xOffset + CurrentGunSpriteOffset.x, yOffset + CurrentGunSpriteOffset.y, -.001f);
         }
+
         #endregion
 
         #region Custom Methods
+
         /// <summary>
         /// Override this method to have UI options displayed for your custom hero underneath their name in the Custom Bros tab
         /// </summary>
         public virtual void UIOptions()
         {
-
         }
 
         /// <summary>
@@ -370,11 +476,11 @@ namespace BroMakerLib.CustomObjects.Bros
         /// <summary>
         /// Preloads each sprite in the spritePaths list.
         /// </summary>
-		/// <param name="directoryPath">Path to the directory containing the sprites</param>
+        /// <param name="directoryPath">Path to the directory containing the sprites</param>
         /// <param name="spritePaths">Sprites to load</param>
         public static void PreloadSprites(string directoryPath, List<string> spritePaths)
         {
-            for (int i = 0; i < spritePaths.Count; ++i)
+            for (var i = 0; i < spritePaths.Count; ++i)
             {
                 ResourcesController.GetMaterial(directoryPath, spritePaths[i]);
             }
@@ -383,11 +489,11 @@ namespace BroMakerLib.CustomObjects.Bros
         /// <summary>
         /// Preloads each sound in the soundPaths list.
         /// </summary>
-		/// <param name="directoryPath">Path to the directory containing the sound files</param>
+        /// <param name="directoryPath">Path to the directory containing the sound files</param>
         /// <param name="soundPaths">Sounds to load</param>
         public static void PreloadSounds(string directoryPath, List<string> soundPaths)
         {
-            for (int i = 0; i < soundPaths.Count; ++i)
+            for (var i = 0; i < soundPaths.Count; ++i)
             {
                 ResourcesController.GetAudioClip(directoryPath, soundPaths[i]);
             }
@@ -412,88 +518,90 @@ namespace BroMakerLib.CustomObjects.Bros
 
         internal void PrefabSetup()
         {
-            this.BeforePrefabSetup();
-            HeroType baseHeroType = this.SoundHolderHeroType;
+            BeforePrefabSetup();
+            var baseHeroType = SoundHolderHeroType;
             // Use base hero type if SoundHolderHeroType is unassigned
             if (baseHeroType == HeroType.None)
             {
-                baseHeroType = LoadHero.GetBaseHeroTypeOfPreset(this.GetType());
+                baseHeroType = LoadHero.GetBaseHeroTypeOfPreset(GetType());
             }
-            this.soundHolder = UnityEngine.Object.Instantiate(HeroController.GetHeroPrefab(baseHeroType).soundHolder);
-            this.soundHolder.gameObject.SetActive(false);
-            this.soundHolder.gameObject.name = "SoundHolder " + this.name;
-            UnityEngine.Object.DontDestroyOnLoad(this.soundHolder);
 
-            if (this.SoundHolderVoiceType == SoundHolderVoiceTypes.None)
+            soundHolder = Instantiate(HeroController.GetHeroPrefab(baseHeroType).soundHolder);
+            soundHolder.gameObject.SetActive(false);
+            soundHolder.gameObject.name = "SoundHolder " + name;
+            DontDestroyOnLoad(soundHolder);
+
+            if (SoundHolderVoiceType == SoundHolderVoiceTypes.None)
             {
-                this.soundHolderVoice = UnityEngine.Object.Instantiate((HeroController.GetHeroPrefab(baseHeroType) as BroBase).soundHolderVoice);
+                soundHolderVoice = Instantiate((HeroController.GetHeroPrefab(baseHeroType) as BroBase).soundHolderVoice);
             }
             else
             {
-                switch (this.SoundHolderVoiceType)
+                switch (SoundHolderVoiceType)
                 {
                     case SoundHolderVoiceTypes.MaleDeep:
-                        this.soundHolderVoice = UnityEngine.Object.Instantiate((HeroController.GetHeroPrefab(HeroType.Rambro) as BroBase).soundHolderVoice);
+                        soundHolderVoice = Instantiate((HeroController.GetHeroPrefab(HeroType.Rambro) as BroBase).soundHolderVoice);
                         break;
                     case SoundHolderVoiceTypes.MaleLight:
-                        this.soundHolderVoice = UnityEngine.Object.Instantiate((HeroController.GetHeroPrefab(HeroType.McBrover) as BroBase).soundHolderVoice);
+                        soundHolderVoice = Instantiate((HeroController.GetHeroPrefab(HeroType.McBrover) as BroBase).soundHolderVoice);
                         break;
                     case SoundHolderVoiceTypes.MaleRough:
-                        this.soundHolderVoice = UnityEngine.Object.Instantiate((HeroController.GetHeroPrefab(HeroType.SnakeBroSkin) as BroBase).soundHolderVoice);
+                        soundHolderVoice = Instantiate((HeroController.GetHeroPrefab(HeroType.SnakeBroSkin) as BroBase).soundHolderVoice);
                         break;
                     case SoundHolderVoiceTypes.MaleFlyInsect:
-                        this.soundHolderVoice = UnityEngine.Object.Instantiate((HeroController.GetHeroPrefab(HeroType.BrondleFly) as BroBase).soundHolderVoice);
+                        soundHolderVoice = Instantiate((HeroController.GetHeroPrefab(HeroType.BrondleFly) as BroBase).soundHolderVoice);
                         break;
                     case SoundHolderVoiceTypes.Female:
-                        this.soundHolderVoice = UnityEngine.Object.Instantiate((HeroController.GetHeroPrefab(HeroType.EllenRipbro) as BroBase).soundHolderVoice);
+                        soundHolderVoice = Instantiate((HeroController.GetHeroPrefab(HeroType.EllenRipbro) as BroBase).soundHolderVoice);
                         break;
                     case SoundHolderVoiceTypes.ChevBrolios:
-                        this.soundHolderVoice = UnityEngine.Object.Instantiate((HeroController.GetHeroPrefab(HeroType.ChevBrolios) as ChevBrolios).arousedVoiceHolder);
+                        soundHolderVoice = Instantiate((HeroController.GetHeroPrefab(HeroType.ChevBrolios) as ChevBrolios).arousedVoiceHolder);
                         break;
                     case SoundHolderVoiceTypes.ChevBroliosDrowsy:
-                        this.soundHolderVoice = UnityEngine.Object.Instantiate((HeroController.GetHeroPrefab(HeroType.ChevBrolios) as ChevBrolios).drowsyVoiceHolder);
+                        soundHolderVoice = Instantiate((HeroController.GetHeroPrefab(HeroType.ChevBrolios) as ChevBrolios).drowsyVoiceHolder);
                         break;
                 }
             }
-            this.soundHolderVoice.gameObject.SetActive(false);
-            this.soundHolderVoice.gameObject.name = "SoundHolderVoice " + this.name;
-            UnityEngine.Object.DontDestroyOnLoad(this.soundHolderVoice);
 
-            this.soundHolderFootSteps = UnityEngine.Object.Instantiate(HeroController.GetHeroPrefab(baseHeroType).soundHolderFootSteps);
-            this.soundHolderFootSteps.gameObject.SetActive(false);
-            this.soundHolderFootSteps.gameObject.name = "SoundHolderFootSteps " + this.name;
-            UnityEngine.Object.DontDestroyOnLoad(this.soundHolderFootSteps);
+            soundHolderVoice.gameObject.SetActive(false);
+            soundHolderVoice.gameObject.name = "SoundHolderVoice " + name;
+            DontDestroyOnLoad(soundHolderVoice);
 
-            this.AssignDirectoryPaths(LoadHero.currentInfo.path);
+            soundHolderFootSteps = Instantiate(HeroController.GetHeroPrefab(baseHeroType).soundHolderFootSteps);
+            soundHolderFootSteps.gameObject.SetActive(false);
+            soundHolderFootSteps.gameObject.name = "SoundHolderFootSteps " + name;
+            DontDestroyOnLoad(soundHolderFootSteps);
+
+            AssignDirectoryPaths(LoadHero.currentInfo.path);
             try
             {
-                this.LoadSettings();
+                LoadSettings();
             }
             catch (Exception ex)
             {
                 BMLogger.ExceptionLog("Failed to load settings in SetupPrefab: ", ex);
             }
 
-            this.Character = this;
-            this.Info = LoadHero.currentInfo;
+            Character = this;
+            Info = LoadHero.currentInfo;
 
             // Setup CustomHero from original bro component and destroy it
             this.SetupCustomHero();
 
-            this.AfterPrefabSetup();
+            AfterPrefabSetup();
         }
 
         /// <summary>
         /// Sets up the DirectoryPath, SoundPath, and ProjectilePath variables.
-        /// You can override this to adjust the paths if your sounds / projectiles folders 
+        /// You can override this to adjust the paths if your sounds / projectiles folders
         /// are named something other than "sounds" and "projectiles"
         /// </summary>
         /// <param name="directoryPath">Path to the directory that contains your custom bro's .dll</param>
         public virtual void AssignDirectoryPaths(string directoryPath)
         {
-            this._directoryPath = directoryPath;
-            this._soundPath = Path.Combine(directoryPath, "sounds");
-            this._projectilePath = Path.Combine(directoryPath, "projectiles");
+            _directoryPath = directoryPath;
+            _soundPath = Path.Combine(directoryPath, "sounds");
+            _projectilePath = Path.Combine(directoryPath, "projectiles");
         }
 
         /// <summary>
@@ -506,7 +614,13 @@ namespace BroMakerLib.CustomObjects.Bros
             {
                 return 0;
             }
-            return UnityEngine.Random.Range(0, Info.VariantCount);
+
+            if (deduplicateVariants)
+            {
+                return GetUniqueVariant();
+            }
+
+            return Random.Range(0, Info.VariantCount);
         }
 
         /// <summary>
@@ -522,20 +636,152 @@ namespace BroMakerLib.CustomObjects.Bros
         /// <param name="variant">Variant to switch to</param>
         public virtual void SwitchVariant(int variant)
         {
-            this.CurrentVariant = variant;
-            this.CurrentGunSpriteOffset = BroMakerUtilities.GetVariantValue(this.Info.GunSpriteOffset, this.CurrentVariant);
-            this.CurrentSpecialMaterials = BroMakerUtilities.GetVariantValue(this.Info.SpecialMaterials, this.CurrentVariant);
-            this.CurrentSpecialMaterialOffset = BroMakerUtilities.GetVariantValue(this.Info.SpecialMaterialOffset, this.CurrentVariant);
-            this.CurrentSpecialMaterialSpacing = BroMakerUtilities.GetVariantValue(this.Info.SpecialMaterialSpacing, this.CurrentVariant);
-            this.CurrentFirstAvatar = BroMakerUtilities.GetVariantValue(this.Info.FirstAvatar, this.CurrentVariant);
+            CurrentVariant = variant;
+            CurrentGunSpriteOffset = BroMakerUtilities.GetVariantValue(Info.GunSpriteOffset, CurrentVariant);
+            CurrentSpecialMaterials = BroMakerUtilities.GetVariantValue(Info.SpecialMaterials, CurrentVariant);
+            CurrentSpecialMaterialOffset = BroMakerUtilities.GetVariantValue(Info.SpecialMaterialOffset, CurrentVariant);
+            CurrentSpecialMaterialSpacing = BroMakerUtilities.GetVariantValue(Info.SpecialMaterialSpacing, CurrentVariant);
+            CurrentFirstAvatar = BroMakerUtilities.GetVariantValue(Info.FirstAvatar, CurrentVariant);
 
             this.SetSprites();
-            BroMakerUtilities.SetSpecialMaterials(this.playerNum, this.CurrentSpecialMaterials, this.CurrentSpecialMaterialOffset, this.CurrentSpecialMaterialSpacing);
-            HeroController.SetAvatarMaterial(playerNum, this.CurrentFirstAvatar);
+            BroMakerUtilities.SetSpecialMaterials(playerNum, CurrentSpecialMaterials, CurrentSpecialMaterialOffset, CurrentSpecialMaterialSpacing);
+            HeroController.SetAvatarMaterial(playerNum, CurrentFirstAvatar);
         }
+
+        /// <summary>
+        /// Called when the bro dies. Override to perform bro-specific cleanup (stop audio, drop items, reset state).
+        /// Requires <see cref="trackDeathRevival" /> to be enabled.
+        /// Always call base.OnDeath() when overriding to preserve variant deduplication.
+        /// </summary>
+        protected virtual void OnDeath()
+        {
+            if (deduplicateVariants)
+            {
+                UnregisterVariant();
+            }
+        }
+
+        /// <summary>
+        /// Called when the bro is revived after death. Override to perform bro-specific revival setup (restore ammo, reset
+        /// materials).
+        /// Requires <see cref="trackDeathRevival" /> to be enabled.
+        /// Always call base.OnRevived() when overriding to preserve variant deduplication.
+        /// </summary>
+        protected virtual void OnRevived()
+        {
+            if (deduplicateVariants)
+            {
+                RegisterVariant();
+            }
+        }
+
+        /// <summary>
+        /// Registers a material to be included in automatic tint color resets when invulnerability ends.
+        /// Call this for any additional materials beyond the main renderer and gun sprite (which are handled automatically).
+        /// Must be called after the material is created, typically in Start() or AfterPrefabSetup().
+        /// </summary>
+        /// <param name="mat">The material to register for tint tracking</param>
+        protected void RegisterTintMaterial(Material mat)
+        {
+            if (mat != null && !tintMaterials.Contains(mat))
+            {
+                tintMaterials.Add(mat);
+            }
+        }
+
+        /// <summary>
+        /// Resets the _TintColor on the main renderer, gun sprite, and all registered tint materials to Color.gray.
+        /// Called automatically when invulnerability ends if <see cref="trackInvulnerabilityTint" /> is enabled.
+        /// Can also be called directly for cases where tint needs to be reset manually (e.g. clearing invulnerability early).
+        /// </summary>
+        public void ResetTintColors()
+        {
+            GetComponent<Renderer>().material.SetColor("_TintColor", Color.gray);
+            gunSprite.meshRender.material.SetColor("_TintColor", Color.gray);
+            foreach (var mat in tintMaterials)
+            {
+                mat.SetColor("_TintColor", Color.gray);
+            }
+        }
+
+        /// <summary>
+        /// Returns a variant index not currently in use by other active instances of the same bro type.
+        /// Falls back to random selection if all variants are taken.
+        /// Used automatically by <see cref="GetVariant" /> when <see cref="deduplicateVariants" /> is enabled.
+        /// Can be called directly from a <see cref="GetVariant" /> override to pass a filtered list of allowed variants.
+        /// </summary>
+        /// <param name="allowedVariants">
+        /// Optional list of variant indices to choose from. If null, all variants (0 to
+        /// VariantCount-1) are considered.
+        /// </param>
+        /// <returns>A variant index not in use by other active instances, or a random one if all are taken</returns>
+        protected int GetUniqueVariant(List<int> allowedVariants = null)
+        {
+            var broType = GetType();
+            List<int> candidates;
+
+            if (allowedVariants != null)
+            {
+                candidates = new List<int>(allowedVariants);
+            }
+            else
+            {
+                candidates = new List<int>();
+                for (var i = 0; i < Info.VariantCount; i++)
+                {
+                    candidates.Add(i);
+                }
+            }
+
+            if (_activeVariants.ContainsKey(broType))
+            {
+                var active = _activeVariants[broType];
+                foreach (var kvp in active)
+                {
+                    if (kvp.Key != this)
+                    {
+                        candidates.Remove(kvp.Value);
+                    }
+                }
+            }
+
+            if (candidates.Count > 0)
+            {
+                return candidates[Random.Range(0, candidates.Count)];
+            }
+
+            if (allowedVariants != null && allowedVariants.Count > 0)
+            {
+                return allowedVariants[Random.Range(0, allowedVariants.Count)];
+            }
+
+            return Random.Range(0, Info.VariantCount);
+        }
+
+        private void RegisterVariant()
+        {
+            var broType = GetType();
+            if (!_activeVariants.ContainsKey(broType))
+            {
+                _activeVariants[broType] = new Dictionary<CustomHero, int>();
+            }
+
+            _activeVariants[broType][this] = CurrentVariant;
+        }
+
+        private void UnregisterVariant()
+        {
+            var broType = GetType();
+            if (_activeVariants.ContainsKey(broType))
+            {
+                _activeVariants[broType].Remove(this);
+            }
+        }
+
         #endregion
 
         #region Save / Load Settings
+
         /// <summary>
         /// Marks a static field or property to be saved/loaded as a persistent setting.
         /// Only static members marked with this attribute will be included in settings serialization.
@@ -570,7 +816,7 @@ namespace BroMakerLib.CustomObjects.Bros
         /// <returns>Path to the bro's config directory (e.g., Config/BroMaker/Bros/{BroName}/)</returns>
         public static string GetBroConfigPath(Type broType)
         {
-            return Path.Combine(Path.Combine(Path.Combine(UnityModManagerNet.UnityModManager.configPath, "BroMaker"), "Bros"), broType.Name);
+            return Path.Combine(Path.Combine(Path.Combine(UnityModManager.configPath, "BroMaker"), "Bros"), broType.Name);
         }
 
         /// <summary>
@@ -588,10 +834,12 @@ namespace BroMakerLib.CustomObjects.Bros
             var type = GetType();
 
             // Cache the directory path for this type
-            _typeDirectoryCache[type] = this.DirectoryPath;
+            _typeDirectoryCache[type] = DirectoryPath;
 
             if (!HasSaveableFields(type))
+            {
                 return;
+            }
 
             var saveableMembers = GetSaveableMembers(type);
             var data = new Dictionary<string, object>();
@@ -616,7 +864,9 @@ namespace BroMakerLib.CustomObjects.Bros
                 }
 
                 if (value != null && key != null)
+                {
                     data[key] = value;
+                }
             }
 
             if (data.Count > 0)
@@ -624,7 +874,7 @@ namespace BroMakerLib.CustomObjects.Bros
                 var fileName = $"{type.Name}_settings.json";
                 var configPath = GetBroConfigPath(type);
                 Directory.CreateDirectory(configPath);
-                string json = JsonConvert.SerializeObject(data, Formatting.Indented);
+                var json = JsonConvert.SerializeObject(data, Formatting.Indented);
                 File.WriteAllText(Path.Combine(configPath, fileName), json);
             }
         }
@@ -645,34 +895,40 @@ namespace BroMakerLib.CustomObjects.Bros
             var type = GetType();
 
             // Cache the directory path for this type
-            _typeDirectoryCache[type] = this.DirectoryPath;
+            _typeDirectoryCache[type] = DirectoryPath;
 
             if (!HasSaveableFields(type))
+            {
                 return;
+            }
 
             var configPath = GetBroConfigPath(type);
             var fileName = Path.Combine(configPath, $"{type.Name}_settings.json");
             if (!File.Exists(fileName))
+            {
                 return;
+            }
 
             try
             {
-                string json = File.ReadAllText(fileName);
+                var json = File.ReadAllText(fileName);
                 var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
 
                 if (data == null)
+                {
                     return;
+                }
 
                 var saveableMembers = GetSaveableMembers(type);
 
                 foreach (var member in saveableMembers)
                 {
-                    SaveableSettingAttribute attr = null;
-                    string key = null;
+                    SaveableSettingAttribute attr;
+                    string key;
 
                     if (member is FieldInfo)
                     {
-                        FieldInfo field = (FieldInfo)member;
+                        var field = (FieldInfo)member;
                         attr = (SaveableSettingAttribute)field.GetCustomAttributes(typeof(SaveableSettingAttribute), false).FirstOrDefault();
                         key = attr?.Name ?? field.Name;
 
@@ -738,24 +994,28 @@ namespace BroMakerLib.CustomObjects.Bros
             string directoryPath;
             if (!_typeDirectoryCache.TryGetValue(type, out directoryPath))
             {
-                if (!Storages.BroMakerStorage.GetStoredHeroByCustomHeroType<T>(out StoredHero storedHero))
+                if (!BroMakerStorage.GetStoredHeroByCustomHeroType<T>(out var storedHero))
                 {
                     BMLogger.Error($"Error: Could not find stored hero for custom bro {type.Name}");
                     return;
                 }
+
                 directoryPath = storedHero.GetInfo().path;
                 if (string.IsNullOrEmpty(directoryPath))
                 {
                     BMLogger.Error($"Error: Could not determine directory path for custom bro {type.Name}");
                     return;
                 }
+
                 _typeDirectoryCache[type] = directoryPath;
             }
 
             // Get saveable members
             var saveableMembers = GetSaveableMembers(type);
             if (saveableMembers.Count == 0)
+            {
                 return;
+            }
 
             var data = new Dictionary<string, object>();
 
@@ -779,7 +1039,9 @@ namespace BroMakerLib.CustomObjects.Bros
                 }
 
                 if (value != null && key != null)
+                {
                     data[key] = value;
+                }
             }
 
             if (data.Count > 0)
@@ -787,7 +1049,7 @@ namespace BroMakerLib.CustomObjects.Bros
                 var fileName = $"{type.Name}_settings.json";
                 var configPath = GetBroConfigPath(type);
                 Directory.CreateDirectory(configPath);
-                string json = JsonConvert.SerializeObject(data, Formatting.Indented);
+                var json = JsonConvert.SerializeObject(data, Formatting.Indented);
                 File.WriteAllText(Path.Combine(configPath, fileName), json);
             }
         }
@@ -810,43 +1072,49 @@ namespace BroMakerLib.CustomObjects.Bros
             string directoryPath;
             if (!_typeDirectoryCache.TryGetValue(type, out directoryPath))
             {
-                if (!Storages.BroMakerStorage.GetStoredHeroByCustomHeroType<T>(out StoredHero storedHero))
+                if (!BroMakerStorage.GetStoredHeroByCustomHeroType<T>(out var storedHero))
                 {
                     BMLogger.Error($"Error: Could not find stored hero for custom bro {type.Name}");
                     return;
                 }
+
                 directoryPath = storedHero.GetInfo().path;
                 if (string.IsNullOrEmpty(directoryPath))
                 {
                     BMLogger.Error($"Error: Could not determine directory path for custom bro {type.Name}");
                     return;
                 }
+
                 _typeDirectoryCache[type] = directoryPath;
             }
 
             var configPath = GetBroConfigPath(type);
             var fileName = Path.Combine(configPath, $"{type.Name}_settings.json");
             if (!File.Exists(fileName))
+            {
                 return;
+            }
 
             try
             {
-                string json = File.ReadAllText(fileName);
+                var json = File.ReadAllText(fileName);
                 var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
 
                 if (data == null)
+                {
                     return;
+                }
 
                 var saveableMembers = GetSaveableMembers(type);
 
                 foreach (var member in saveableMembers)
                 {
-                    SaveableSettingAttribute attr = null;
-                    string key = null;
+                    SaveableSettingAttribute attr;
+                    string key;
 
                     if (member is FieldInfo)
                     {
-                        FieldInfo field = (FieldInfo)member;
+                        var field = (FieldInfo)member;
                         attr = (SaveableSettingAttribute)field.GetCustomAttributes(typeof(SaveableSettingAttribute), false).FirstOrDefault();
                         key = attr?.Name ?? field.Name;
 
@@ -897,10 +1165,12 @@ namespace BroMakerLib.CustomObjects.Bros
 
         /// <summary>
         /// Saves settings for all custom bros that have been previously loaded or saved.
-        /// This static method uses cached custom bro and directory information to save all settings without requiring instances.
+        /// This static method uses cached custom bro and directory information to save all settings without requiring
+        /// instances.
         /// </summary>
         /// <remarks>
-        /// - Only saves settings for custom bros that have been cached (i.e., SaveSettings or LoadSettings was called at least once)
+        /// - Only saves settings for custom bros that have been cached (i.e., SaveSettings or LoadSettings was called at least
+        /// once)
         /// - Skips custom bros that don't have a cached directory path
         /// - Logs warnings for custom bros without cached directory paths
         /// - Logs success/error messages for each custom bro
@@ -914,7 +1184,7 @@ namespace BroMakerLib.CustomObjects.Bros
                 var saveableMembers = kvp.Value;
 
                 // Skip if we don't have a directory path cached for this custom bro
-                if (!_typeDirectoryCache.TryGetValue(type, out string cachedDirectoryPath))
+                if (!_typeDirectoryCache.TryGetValue(type, out _))
                 {
                     BMLogger.Warning($"Warning: No directory path cached for custom bro {type.Name}, skipping...");
                     continue;
@@ -922,7 +1192,9 @@ namespace BroMakerLib.CustomObjects.Bros
 
                 // Skip if no saveable members
                 if (saveableMembers.Count == 0)
+                {
                     continue;
+                }
 
                 var data = new Dictionary<string, object>();
 
@@ -946,7 +1218,9 @@ namespace BroMakerLib.CustomObjects.Bros
                     }
 
                     if (value != null && key != null)
+                    {
                         data[key] = value;
+                    }
                 }
 
                 if (data.Count > 0)
@@ -956,7 +1230,7 @@ namespace BroMakerLib.CustomObjects.Bros
                         var fileName = $"{type.Name}_settings.json";
                         var configPath = GetBroConfigPath(type);
                         Directory.CreateDirectory(configPath);
-                        string json = JsonConvert.SerializeObject(data, Formatting.Indented);
+                        var json = JsonConvert.SerializeObject(data, Formatting.Indented);
                         File.WriteAllText(Path.Combine(configPath, fileName), json);
                     }
                     catch (Exception ex)
@@ -969,7 +1243,7 @@ namespace BroMakerLib.CustomObjects.Bros
 
         private bool HasSaveableFields(Type type)
         {
-            if (_hasSaveableFieldsCache.TryGetValue(type, out bool hasSaveable))
+            if (_hasSaveableFieldsCache.TryGetValue(type, out var hasSaveable))
             {
                 return hasSaveable;
             }
@@ -985,7 +1259,9 @@ namespace BroMakerLib.CustomObjects.Bros
         private static List<MemberInfo> GetSaveableMembers(Type type)
         {
             if (_saveableMembersCache.TryGetValue(type, out var cached))
+            {
                 return cached;
+            }
 
             var members = new List<MemberInfo>();
             var flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
@@ -994,13 +1270,17 @@ namespace BroMakerLib.CustomObjects.Bros
                 .Where(f => f.GetCustomAttributes(typeof(SaveableSettingAttribute), false).Length > 0);
 
             foreach (var field in fields)
+            {
                 members.Add(field);
+            }
 
             var properties = type.GetProperties(flags)
                 .Where(p => p.GetCustomAttributes(typeof(SaveableSettingAttribute), false).Length > 0);
 
             foreach (var property in properties)
+            {
                 members.Add(property);
+            }
 
             _saveableMembersCache[type] = members;
 
@@ -1010,29 +1290,38 @@ namespace BroMakerLib.CustomObjects.Bros
         private static object ConvertValue(object value, Type targetType)
         {
             if (value == null)
+            {
                 return null;
+            }
 
             // Handle Newtonsoft.Json's JObject/JArray types
             if (value is JObject || value is JArray || value is JValue)
             {
-                string jsonString = value.ToString();
+                var jsonString = value.ToString();
                 return JsonConvert.DeserializeObject(jsonString, targetType);
             }
 
             // Handle simple type conversions
             if (targetType == value.GetType())
+            {
                 return value;
+            }
 
             if (targetType.IsEnum)
             {
                 if (value is string)
+                {
                     return Enum.Parse(targetType, (string)value);
+                }
                 else
+                {
                     return Enum.ToObject(targetType, value);
+                }
             }
 
             return Convert.ChangeType(value, targetType);
         }
+
         #endregion
     }
 }

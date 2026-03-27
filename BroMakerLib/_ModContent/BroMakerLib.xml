@@ -589,7 +589,7 @@
         </member>
         <member name="F:BroMakerLib.CustomObjects.Bros.CustomHero.SoundHolderVoiceType">
             <summary>
-            Set this to control which hero is used for the default SoundHolderVoice. 
+            Set this to control which hero is used for the default SoundHolderVoice.
             If set to none, the SoundHolderHeroType will be used, unless that is set to None,
             in which case the base HeroType of your bro will be used.
             </summary>
@@ -607,6 +607,44 @@
         <member name="P:BroMakerLib.CustomObjects.Bros.CustomHero.ProjectilePath">
             <summary>
             Contains the path to your bro's projectile folder (assumes the folder is named "projectiles" by default)
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Bros.CustomHero.trackDeathRevival">
+            <summary>
+            When enabled, CustomHero tracks death and revival state via <see cref="F:BroMakerLib.CustomObjects.Bros.CustomHero.acceptedDeath" /> and calls
+            <see cref="M:BroMakerLib.CustomObjects.Bros.CustomHero.OnDeath" /> and <see cref="M:BroMakerLib.CustomObjects.Bros.CustomHero.OnRevived" /> at the appropriate times.
+            Bros should check <c>if (acceptedDeath) return;</c> after <c>base.Update()</c> to skip their own logic when dead.
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Bros.CustomHero.trackInvulnerabilityTint">
+            <summary>
+            When enabled, CustomHero automatically resets _TintColor to Color.gray on the main renderer,
+            gun sprite, and all materials registered via <see cref="M:BroMakerLib.CustomObjects.Bros.CustomHero.RegisterTintMaterial(UnityEngine.Material)" /> when invulnerability ends.
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Bros.CustomHero.useCustomMelee">
+            <summary>
+            When enabled, CustomHero sets meleeType and currentMeleeType to MeleeType.Custom in Start(),
+            which causes the base game to call StartCustomMelee() instead of the default melee.
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Bros.CustomHero.blockGesturesDuringMelee">
+            <summary>
+            When enabled, CustomHero's SetGestureAnimation override blocks gesture animations while doingMelee is true,
+            preventing flex and other gestures from interrupting melee attacks.
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Bros.CustomHero.deduplicateVariants">
+            <summary>
+            When enabled, the variant system ensures each active instance of the same bro type gets a different variant
+            in multiplayer. Registration and unregistration are handled automatically through the lifecycle.
+            Override <see cref="M:BroMakerLib.CustomObjects.Bros.CustomHero.GetVariant" /> and call <see cref="M:BroMakerLib.CustomObjects.Bros.CustomHero.GetUniqueVariant(System.Collections.Generic.List{System.Int32})" /> directly to pass a filtered variant list.
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.CustomObjects.Bros.CustomHero.acceptedDeath">
+            <summary>
+            Tracks whether this bro has accepted death. Managed automatically when <see cref="F:BroMakerLib.CustomObjects.Bros.CustomHero.trackDeathRevival" /> is enabled.
+            Bros should check <c>if (acceptedDeath) return;</c> after <c>base.Update()</c> to skip their own Update logic when dead.
             </summary>
         </member>
         <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.UIOptions">
@@ -660,7 +698,7 @@
         <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.AssignDirectoryPaths(System.String)">
             <summary>
             Sets up the DirectoryPath, SoundPath, and ProjectilePath variables.
-            You can override this to adjust the paths if your sounds / projectiles folders 
+            You can override this to adjust the paths if your sounds / projectiles folders
             are named something other than "sounds" and "projectiles"
             </summary>
             <param name="directoryPath">Path to the directory that contains your custom bro's .dll</param>
@@ -681,6 +719,49 @@
             This method switches the current variant and changes all assigned parameters to the new variant's values
             </summary>
             <param name="variant">Variant to switch to</param>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.OnDeath">
+            <summary>
+            Called when the bro dies. Override to perform bro-specific cleanup (stop audio, drop items, reset state).
+            Requires <see cref="F:BroMakerLib.CustomObjects.Bros.CustomHero.trackDeathRevival" /> to be enabled.
+            Always call base.OnDeath() when overriding to preserve variant deduplication.
+            </summary>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.OnRevived">
+            <summary>
+            Called when the bro is revived after death. Override to perform bro-specific revival setup (restore ammo, reset
+            materials).
+            Requires <see cref="F:BroMakerLib.CustomObjects.Bros.CustomHero.trackDeathRevival" /> to be enabled.
+            Always call base.OnRevived() when overriding to preserve variant deduplication.
+            </summary>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.RegisterTintMaterial(UnityEngine.Material)">
+            <summary>
+            Registers a material to be included in automatic tint color resets when invulnerability ends.
+            Call this for any additional materials beyond the main renderer and gun sprite (which are handled automatically).
+            Must be called after the material is created, typically in Start() or AfterPrefabSetup().
+            </summary>
+            <param name="mat">The material to register for tint tracking</param>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.ResetTintColors">
+            <summary>
+            Resets the _TintColor on the main renderer, gun sprite, and all registered tint materials to Color.gray.
+            Called automatically when invulnerability ends if <see cref="F:BroMakerLib.CustomObjects.Bros.CustomHero.trackInvulnerabilityTint" /> is enabled.
+            Can also be called directly for cases where tint needs to be reset manually (e.g. clearing invulnerability early).
+            </summary>
+        </member>
+        <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.GetUniqueVariant(System.Collections.Generic.List{System.Int32})">
+            <summary>
+            Returns a variant index not currently in use by other active instances of the same bro type.
+            Falls back to random selection if all variants are taken.
+            Used automatically by <see cref="M:BroMakerLib.CustomObjects.Bros.CustomHero.GetVariant" /> when <see cref="F:BroMakerLib.CustomObjects.Bros.CustomHero.deduplicateVariants" /> is enabled.
+            Can be called directly from a <see cref="M:BroMakerLib.CustomObjects.Bros.CustomHero.GetVariant" /> override to pass a filtered list of allowed variants.
+            </summary>
+            <param name="allowedVariants">
+            Optional list of variant indices to choose from. If null, all variants (0 to
+            VariantCount-1) are considered.
+            </param>
+            <returns>A variant index not in use by other active instances, or a random one if all are taken</returns>
         </member>
         <member name="T:BroMakerLib.CustomObjects.Bros.CustomHero.SaveableSettingAttribute">
             <summary>
@@ -758,10 +839,12 @@
         <member name="M:BroMakerLib.CustomObjects.Bros.CustomHero.SaveAll">
             <summary>
             Saves settings for all custom bros that have been previously loaded or saved.
-            This static method uses cached custom bro and directory information to save all settings without requiring instances.
+            This static method uses cached custom bro and directory information to save all settings without requiring
+            instances.
             </summary>
             <remarks>
-            - Only saves settings for custom bros that have been cached (i.e., SaveSettings or LoadSettings was called at least once)
+            - Only saves settings for custom bros that have been cached (i.e., SaveSettings or LoadSettings was called at least
+            once)
             - Skips custom bros that don't have a cached directory path
             - Logs warnings for custom bros without cached directory paths
             - Logs success/error messages for each custom bro

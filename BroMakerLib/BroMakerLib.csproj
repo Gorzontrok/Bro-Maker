@@ -1,245 +1,244 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{1D628CEE-72B0-4318-B136-AA16203256FF}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BroMakerLib</RootNamespace>
-    <AssemblyName>BroMakerLib</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\BroMakerLib.xml</DocumentationFile>
-    <NoWarn>1591</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="0Harmony, Version=2.2.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(LibPath)\0Harmony.dll</HintPath>
-    </Reference>
-    <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(LibPath)\Assembly-CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="BitCode.AssetManagement, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(LibPath)\BitCode.AssetManagement.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(LibPath)\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="RocketLib">
-      <HintPath>$(RocketLibPath)</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data" />
-    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(LibPath)\UnityEngine.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.AnimationModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(LibPath)\UnityEngine.AnimationModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.AudioModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(LibPath)\UnityEngine.AudioModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(LibPath)\UnityEngine.CoreModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.ImageConversionModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(LibPath)\UnityEngine.ImageConversionModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(LibPath)\UnityEngine.IMGUIModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.ParticlesLegacyModule">
-      <HintPath>$(LibPath)\UnityEngine.ParticlesLegacyModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.ParticleSystemModule">
-      <HintPath>$(LibPath)\UnityEngine.ParticleSystemModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.PhysicsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(LibPath)\UnityEngine.PhysicsModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(LibPath)\UnityEngine.TextRenderingModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(LibPath)\UnityEngine.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UnityWebRequestWWWModule">
-      <HintPath>$(LibPath)\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityModManager, Version=0.25.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(LibPath)\UnityModManager.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Abilities\Ability.cs" />
-    <Compile Include="Abilities\CharacterAbility.cs" />
-    <Compile Include="Abilities\Characters\FlameThrower.cs" />
-    <Compile Include="Abilities\Characters\ProjectileSpray.cs" />
-    <Compile Include="Abilities\Characters\SpawnDrone.cs" />
-    <Compile Include="Abilities\Characters\Teleportation.cs" />
-    <Compile Include="Abilities\Characters\ThrowGrenade.cs" />
-    <Compile Include="Abilities\Characters\Jetpack.cs" />
-    <Compile Include="Attributes\AbilityPresetAttribute.cs" />
-    <Compile Include="Attributes\GrenadePresetAttribute.cs" />
-    <Compile Include="Attributes\HeroPresetAttribute.cs" />
-    <Compile Include="Attributes\ParameterAttribute.cs" />
-    <Compile Include="BroMaker.cs" />
-    <Compile Include="Attributes\CustomObjectPresetAttribute.cs" />
-    <Compile Include="BroMakerUtilities.cs" />
-    <Compile Include="CustomObjects\Projectiles\CustomGrenade.cs" />
-    <Compile Include="CustomObjects\Projectiles\CustomPockettedSpecial.cs" />
-    <Compile Include="CustomObjects\Projectiles\CustomProjectile.cs" />
-    <Compile Include="CustomObjects\Projectiles\CustomSachelPack.cs" />
-    <Compile Include="CustomObjects\Projectiles\ICustomProjectile.cs" />
-    <Compile Include="Cutscenes\CutsceneSpriteAnimatedJsonConverter.cs" />
-    <Compile Include="Cutscenes\CutsceneConverter.cs" />
-    <Compile Include="Cutscenes\CutsceneIntroExtra.cs" />
-    <Compile Include="HarmonyPatches.cs" />
-    <Compile Include="Loaders\LoadBroforceObjects.cs" />
-    <Compile Include="Main.cs" />
-    <Compile Include="ModUI.cs" />
-    <Compile Include="Storages\BroMakerMod.cs" />
-    <Compile Include="Info.cs" />
-    <Compile Include="CustomObjects\Bros\SwordHero.cs" />
-    <Compile Include="Cutscenes\CustomCutsceneController.cs" />
-    <Compile Include="Cutscenes\CustomIntroCutscene.cs" />
-    <Compile Include="Cutscenes\CutscenePatches.cs" />
-    <Compile Include="Attributes\EditorIgnoreAttribute.cs" />
-    <Compile Include="Extensions\ICustomHeroExtensions.cs" />
-    <Compile Include="Extensions\InvulnerabilityFlashExtensions.cs" />
-    <Compile Include="Infos\AbilityInfo.cs" />
-    <Compile Include="Infos\CustomBroforceObjectInfo.cs" />
-    <Compile Include="Infos\CustomCharacterInfo.cs" />
-    <Compile Include="Infos\Parameters.cs" />
-    <Compile Include="Storages\PresetManager.cs" />
-    <Compile Include="Settings.cs" />
-    <Compile Include="Storages\BroMakerStorage.cs" />
-    <Compile Include="Storages\BroSpawnManager.cs" />
-    <Compile Include="Storages\DirectoriesManager.cs" />
-    <Compile Include="CustomObjects\ICustomHero.cs" />
-    <Compile Include="Infos\CustomBroInfo.cs" />
-    <Compile Include="Loaders\LoadHero.cs" />
-    <Compile Include="Loggers\Log.cs" />
-    <Compile Include="Loggers\BMLogger.cs" />
-    <Compile Include="Menus\CustomBrosGridMenu.cs" />
-    <Compile Include="Menus\CustomBrosDetailMenu.cs" />
-    <Compile Include="ResourcesController.cs" />
-    <Compile Include="CustomObjects\Bros\CustomHero.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Storages\IStoredObject.cs" />
-    <Compile Include="Storages\StoredHero.cs" />
-    <Compile Include="Storages\StoredAbility.cs" />
-    <Compile Include="Triggers\ForceBroAction.cs" />
-    <Compile Include="Triggers\HeroUnlockCutsceneAction.cs" />
-    <Compile Include="Unlocks\UnlockMethod.cs" />
-    <Compile Include="Unlocks\BroUnlockConfig.cs" />
-    <Compile Include="Unlocks\BroUnlockState.cs" />
-    <Compile Include="Unlocks\BroUnlockProgressData.cs" />
-    <Compile Include="Unlocks\BroUnlockManager.cs" />
-    <Compile Include="Unlocks\UnlockPatches.cs" />
-    <Compile Include="Vanilla\Bros\AshBrolliamsM.cs" />
-    <Compile Include="Vanilla\Bros\BaBroracusM.cs" />
-    <Compile Include="Vanilla\Bros\BillyConnollyM.cs" />
-    <Compile Include="Vanilla\Bros\BladeM.cs" />
-    <Compile Include="Vanilla\Bros\BoondockBroM.cs" />
-    <Compile Include="Vanilla\Bros\BrobocopM.cs" />
-    <Compile Include="Vanilla\Bros\BroCeasarM.cs" />
-    <Compile Include="Vanilla\Bros\BrocheteM.cs" />
-    <Compile Include="Vanilla\Bros\BrocSnipesM.cs" />
-    <Compile Include="Vanilla\Bros\BrodellWalkerM.cs" />
-    <Compile Include="Vanilla\Bros\BrodenM.cs" />
-    <Compile Include="Vanilla\Bros\BroDreddM.cs" />
-    <Compile Include="Vanilla\Bros\BroffyM.cs" />
-    <Compile Include="Vanilla\Bros\BroGummerM.cs" />
-    <Compile Include="Vanilla\Bros\BroHardM.cs" />
-    <Compile Include="Vanilla\Bros\BroLeeM.cs" />
-    <Compile Include="Vanilla\Bros\BroMaxM.cs" />
-    <Compile Include="Vanilla\Bros\BrominatorM.cs" />
-    <Compile Include="Vanilla\Bros\BrommandoM.cs" />
-    <Compile Include="Vanilla\Bros\BronanTheBrobarianM.cs" />
-    <Compile Include="Vanilla\Bros\BrondleFlyM.cs" />
-    <Compile Include="Vanilla\Bros\BroneyRossM.cs" />
-    <Compile Include="Vanilla\Bros\BroniversalSoldierM.cs" />
-    <Compile Include="Vanilla\Bros\BronnarJensenM.cs" />
-    <Compile Include="Vanilla\Bros\BrononymousM.cs" />
-    <Compile Include="Vanilla\Bros\BroshipTrooperM.cs" />
-    <Compile Include="Vanilla\Bros\BroveHeartM.cs" />
-    <Compile Include="Vanilla\Bros\CaseyBrobackM.cs" />
-    <Compile Include="Vanilla\Bros\CherryBrolingM.cs" />
-    <Compile Include="Vanilla\Bros\ChevBroliosM.cs" />
-    <Compile Include="Vanilla\Bros\ColJamesBrodockM.cs" />
-    <Compile Include="Vanilla\Bros\DemolitionBroM.cs" />
-    <Compile Include="Vanilla\Bros\DesperabroM.cs" />
-    <Compile Include="Vanilla\Bros\DirtyHarryM.cs" />
-    <Compile Include="Vanilla\Bros\DoubleBroSevenM.cs" />
-    <Compile Include="Vanilla\Bros\EllenRipbroM.cs" />
-    <Compile Include="Vanilla\Bros\IndianaBronesM.cs" />
-    <Compile Include="Vanilla\Bros\LeeBroxmasM.cs" />
-    <Compile Include="Vanilla\Bros\McBroverM.cs" />
-    <Compile Include="Vanilla\Bros\NebroM.cs" />
-    <Compile Include="Vanilla\Bros\NorrisBroM.cs" />
-    <Compile Include="Vanilla\Bros\PistolWhipBroM.cs" />
-    <Compile Include="Vanilla\Bros\PredabroM.cs" />
-    <Compile Include="Vanilla\Bros\RambroM.cs" />
-    <Compile Include="Vanilla\Bros\ScorpionBroM.cs" />
-    <Compile Include="Vanilla\Bros\SnakeBroskinM.cs" />
-    <Compile Include="Vanilla\Bros\TankBroM.cs" />
-    <Compile Include="Vanilla\Bros\TheBrocketeerM.cs" />
-    <Compile Include="Vanilla\Bros\TheBrodeM.cs" />
-    <Compile Include="Vanilla\Bros\TheBrofessionalM.cs" />
-    <Compile Include="Vanilla\Bros\TheBrolanderM.cs" />
-    <Compile Include="Vanilla\Bros\TimeBroVanDammeM.cs" />
-    <Compile Include="Vanilla\Bros\TollBroadM.cs" />
-    <Compile Include="Vanilla\Bros\TrentBroserM.cs" />
-    <Compile Include="Vanilla\Bros\VanDammeBroM.cs" />
-    <Compile Include="Vanilla\Bros\XebroM.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Cutscenes\rambroSilhouette.png" />
-  </ItemGroup>
-  <ItemGroup />
-  <PropertyGroup>
-    <CopyXmlDocToModContent>true</CopyXmlDocToModContent>
-    <InstallFolderName>BroMaker</InstallFolderName>
-  </PropertyGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\Scripts\BroforceModBuild.targets" />
+    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')"/>
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <ProjectGuid>{1D628CEE-72B0-4318-B136-AA16203256FF}</ProjectGuid>
+        <OutputType>Library</OutputType>
+        <AppDesignerFolder>Properties</AppDesignerFolder>
+        <RootNamespace>BroMakerLib</RootNamespace>
+        <AssemblyName>BroMakerLib</AssemblyName>
+        <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+        <FileAlignment>512</FileAlignment>
+        <Deterministic>true</Deterministic>
+        <NuGetPackageImportStamp>
+        </NuGetPackageImportStamp>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>bin\Debug\</OutputPath>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+        <DocumentationFile>bin\Debug\BroMakerLib.xml</DocumentationFile>
+        <NoWarn>1591</NoWarn>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>bin\Release\</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="0Harmony, Version=2.2.2.0, Culture=neutral, processorArchitecture=MSIL">
+            <SpecificVersion>False</SpecificVersion>
+            <HintPath>$(LibPath)\0Harmony.dll</HintPath>
+        </Reference>
+        <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+            <SpecificVersion>False</SpecificVersion>
+            <HintPath>$(LibPath)\Assembly-CSharp.dll</HintPath>
+        </Reference>
+        <Reference Include="BitCode.AssetManagement, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+            <SpecificVersion>False</SpecificVersion>
+            <HintPath>$(LibPath)\BitCode.AssetManagement.dll</HintPath>
+        </Reference>
+        <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+            <SpecificVersion>False</SpecificVersion>
+            <HintPath>$(LibPath)\Newtonsoft.Json.dll</HintPath>
+        </Reference>
+        <Reference Include="RocketLib">
+            <HintPath>$(RocketLibPath)</HintPath>
+        </Reference>
+        <Reference Include="System"/>
+        <Reference Include="System.Core"/>
+        <Reference Include="System.Data.DataSetExtensions"/>
+        <Reference Include="System.Data"/>
+        <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+            <SpecificVersion>False</SpecificVersion>
+            <HintPath>$(LibPath)\UnityEngine.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.AnimationModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+            <SpecificVersion>False</SpecificVersion>
+            <HintPath>$(LibPath)\UnityEngine.AnimationModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.AudioModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+            <SpecificVersion>False</SpecificVersion>
+            <HintPath>$(LibPath)\UnityEngine.AudioModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+            <SpecificVersion>False</SpecificVersion>
+            <HintPath>$(LibPath)\UnityEngine.CoreModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.ImageConversionModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+            <SpecificVersion>False</SpecificVersion>
+            <HintPath>$(LibPath)\UnityEngine.ImageConversionModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+            <SpecificVersion>False</SpecificVersion>
+            <HintPath>$(LibPath)\UnityEngine.IMGUIModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.ParticlesLegacyModule">
+            <HintPath>$(LibPath)\UnityEngine.ParticlesLegacyModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.ParticleSystemModule">
+            <HintPath>$(LibPath)\UnityEngine.ParticleSystemModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.PhysicsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+            <SpecificVersion>False</SpecificVersion>
+            <HintPath>$(LibPath)\UnityEngine.PhysicsModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+            <SpecificVersion>False</SpecificVersion>
+            <HintPath>$(LibPath)\UnityEngine.TextRenderingModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+            <SpecificVersion>False</SpecificVersion>
+            <HintPath>$(LibPath)\UnityEngine.UI.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.UnityWebRequestWWWModule">
+            <HintPath>$(LibPath)\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityModManager, Version=0.25.5.0, Culture=neutral, processorArchitecture=MSIL">
+            <SpecificVersion>False</SpecificVersion>
+            <HintPath>$(LibPath)\UnityModManager.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Abilities\Ability.cs"/>
+        <Compile Include="Abilities\CharacterAbility.cs"/>
+        <Compile Include="Abilities\Characters\FlameThrower.cs"/>
+        <Compile Include="Abilities\Characters\ProjectileSpray.cs"/>
+        <Compile Include="Abilities\Characters\SpawnDrone.cs"/>
+        <Compile Include="Abilities\Characters\Teleportation.cs"/>
+        <Compile Include="Abilities\Characters\ThrowGrenade.cs"/>
+        <Compile Include="Abilities\Characters\Jetpack.cs"/>
+        <Compile Include="Attributes\AbilityPresetAttribute.cs"/>
+        <Compile Include="Attributes\GrenadePresetAttribute.cs"/>
+        <Compile Include="Attributes\HeroPresetAttribute.cs"/>
+        <Compile Include="Attributes\ParameterAttribute.cs"/>
+        <Compile Include="BroMaker.cs"/>
+        <Compile Include="Attributes\CustomObjectPresetAttribute.cs"/>
+        <Compile Include="BroMakerUtilities.cs"/>
+        <Compile Include="CustomObjects\Projectiles\CustomGrenade.cs"/>
+        <Compile Include="CustomObjects\Projectiles\CustomPockettedSpecial.cs"/>
+        <Compile Include="CustomObjects\Projectiles\CustomProjectile.cs"/>
+        <Compile Include="CustomObjects\Projectiles\CustomSachelPack.cs"/>
+        <Compile Include="CustomObjects\Projectiles\ICustomProjectile.cs"/>
+        <Compile Include="Cutscenes\CutsceneSpriteAnimatedJsonConverter.cs"/>
+        <Compile Include="Cutscenes\CutsceneConverter.cs"/>
+        <Compile Include="Cutscenes\CutsceneIntroExtra.cs"/>
+        <Compile Include="HarmonyPatches.cs"/>
+        <Compile Include="Loaders\LoadBroforceObjects.cs"/>
+        <Compile Include="Main.cs"/>
+        <Compile Include="ModUI.cs"/>
+        <Compile Include="Storages\BroMakerMod.cs"/>
+        <Compile Include="Info.cs"/>
+        <Compile Include="CustomObjects\Bros\SwordHero.cs"/>
+        <Compile Include="Cutscenes\CustomCutsceneController.cs"/>
+        <Compile Include="Cutscenes\CustomIntroCutscene.cs"/>
+        <Compile Include="Cutscenes\CutscenePatches.cs"/>
+        <Compile Include="Attributes\EditorIgnoreAttribute.cs"/>
+        <Compile Include="Extensions\ICustomHeroExtensions.cs"/>
+        <Compile Include="Extensions\InvulnerabilityFlashExtensions.cs"/>
+        <Compile Include="Infos\AbilityInfo.cs"/>
+        <Compile Include="Infos\CustomBroforceObjectInfo.cs"/>
+        <Compile Include="Infos\Parameters.cs"/>
+        <Compile Include="Storages\PresetManager.cs"/>
+        <Compile Include="Settings.cs"/>
+        <Compile Include="Storages\BroMakerStorage.cs"/>
+        <Compile Include="Storages\BroSpawnManager.cs"/>
+        <Compile Include="Storages\DirectoriesManager.cs"/>
+        <Compile Include="CustomObjects\ICustomHero.cs"/>
+        <Compile Include="Infos\CustomBroInfo.cs"/>
+        <Compile Include="Loaders\LoadHero.cs"/>
+        <Compile Include="Loggers\Log.cs"/>
+        <Compile Include="Loggers\BMLogger.cs"/>
+        <Compile Include="Menus\CustomBrosGridMenu.cs"/>
+        <Compile Include="Menus\CustomBrosDetailMenu.cs"/>
+        <Compile Include="ResourcesController.cs"/>
+        <Compile Include="CustomObjects\Bros\CustomHero.cs"/>
+        <Compile Include="Properties\AssemblyInfo.cs"/>
+        <Compile Include="Storages\IStoredObject.cs"/>
+        <Compile Include="Storages\StoredHero.cs"/>
+        <Compile Include="Storages\StoredAbility.cs"/>
+        <Compile Include="Triggers\ForceBroAction.cs"/>
+        <Compile Include="Triggers\HeroUnlockCutsceneAction.cs"/>
+        <Compile Include="Unlocks\UnlockMethod.cs"/>
+        <Compile Include="Unlocks\BroUnlockConfig.cs"/>
+        <Compile Include="Unlocks\BroUnlockState.cs"/>
+        <Compile Include="Unlocks\BroUnlockProgressData.cs"/>
+        <Compile Include="Unlocks\BroUnlockManager.cs"/>
+        <Compile Include="Unlocks\UnlockPatches.cs"/>
+        <Compile Include="Vanilla\Bros\AshBrolliamsM.cs"/>
+        <Compile Include="Vanilla\Bros\BaBroracusM.cs"/>
+        <Compile Include="Vanilla\Bros\BillyConnollyM.cs"/>
+        <Compile Include="Vanilla\Bros\BladeM.cs"/>
+        <Compile Include="Vanilla\Bros\BoondockBroM.cs"/>
+        <Compile Include="Vanilla\Bros\BrobocopM.cs"/>
+        <Compile Include="Vanilla\Bros\BroCeasarM.cs"/>
+        <Compile Include="Vanilla\Bros\BrocheteM.cs"/>
+        <Compile Include="Vanilla\Bros\BrocSnipesM.cs"/>
+        <Compile Include="Vanilla\Bros\BrodellWalkerM.cs"/>
+        <Compile Include="Vanilla\Bros\BrodenM.cs"/>
+        <Compile Include="Vanilla\Bros\BroDreddM.cs"/>
+        <Compile Include="Vanilla\Bros\BroffyM.cs"/>
+        <Compile Include="Vanilla\Bros\BroGummerM.cs"/>
+        <Compile Include="Vanilla\Bros\BroHardM.cs"/>
+        <Compile Include="Vanilla\Bros\BroLeeM.cs"/>
+        <Compile Include="Vanilla\Bros\BroMaxM.cs"/>
+        <Compile Include="Vanilla\Bros\BrominatorM.cs"/>
+        <Compile Include="Vanilla\Bros\BrommandoM.cs"/>
+        <Compile Include="Vanilla\Bros\BronanTheBrobarianM.cs"/>
+        <Compile Include="Vanilla\Bros\BrondleFlyM.cs"/>
+        <Compile Include="Vanilla\Bros\BroneyRossM.cs"/>
+        <Compile Include="Vanilla\Bros\BroniversalSoldierM.cs"/>
+        <Compile Include="Vanilla\Bros\BronnarJensenM.cs"/>
+        <Compile Include="Vanilla\Bros\BrononymousM.cs"/>
+        <Compile Include="Vanilla\Bros\BroshipTrooperM.cs"/>
+        <Compile Include="Vanilla\Bros\BroveHeartM.cs"/>
+        <Compile Include="Vanilla\Bros\CaseyBrobackM.cs"/>
+        <Compile Include="Vanilla\Bros\CherryBrolingM.cs"/>
+        <Compile Include="Vanilla\Bros\ChevBroliosM.cs"/>
+        <Compile Include="Vanilla\Bros\ColJamesBrodockM.cs"/>
+        <Compile Include="Vanilla\Bros\DemolitionBroM.cs"/>
+        <Compile Include="Vanilla\Bros\DesperabroM.cs"/>
+        <Compile Include="Vanilla\Bros\DirtyHarryM.cs"/>
+        <Compile Include="Vanilla\Bros\DoubleBroSevenM.cs"/>
+        <Compile Include="Vanilla\Bros\EllenRipbroM.cs"/>
+        <Compile Include="Vanilla\Bros\IndianaBronesM.cs"/>
+        <Compile Include="Vanilla\Bros\LeeBroxmasM.cs"/>
+        <Compile Include="Vanilla\Bros\McBroverM.cs"/>
+        <Compile Include="Vanilla\Bros\NebroM.cs"/>
+        <Compile Include="Vanilla\Bros\NorrisBroM.cs"/>
+        <Compile Include="Vanilla\Bros\PistolWhipBroM.cs"/>
+        <Compile Include="Vanilla\Bros\PredabroM.cs"/>
+        <Compile Include="Vanilla\Bros\RambroM.cs"/>
+        <Compile Include="Vanilla\Bros\ScorpionBroM.cs"/>
+        <Compile Include="Vanilla\Bros\SnakeBroskinM.cs"/>
+        <Compile Include="Vanilla\Bros\TankBroM.cs"/>
+        <Compile Include="Vanilla\Bros\TheBrocketeerM.cs"/>
+        <Compile Include="Vanilla\Bros\TheBrodeM.cs"/>
+        <Compile Include="Vanilla\Bros\TheBrofessionalM.cs"/>
+        <Compile Include="Vanilla\Bros\TheBrolanderM.cs"/>
+        <Compile Include="Vanilla\Bros\TimeBroVanDammeM.cs"/>
+        <Compile Include="Vanilla\Bros\TollBroadM.cs"/>
+        <Compile Include="Vanilla\Bros\TrentBroserM.cs"/>
+        <Compile Include="Vanilla\Bros\VanDammeBroM.cs"/>
+        <Compile Include="Vanilla\Bros\XebroM.cs"/>
+    </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Include="Cutscenes\rambroSilhouette.png"/>
+    </ItemGroup>
+    <ItemGroup/>
+    <PropertyGroup>
+        <CopyXmlDocToModContent>true</CopyXmlDocToModContent>
+        <InstallFolderName>BroMaker</InstallFolderName>
+    </PropertyGroup>
+    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
+    <Import Project="..\Scripts\BroforceModBuild.targets"/>
 </Project>
