@@ -19,8 +19,7 @@ namespace BroMakerLib.Loggers
         public static void Log(string message, LogType logType = LogType.Log, bool useColors = true)
         {
             StringBuilder sb = new StringBuilder(FormatLogType(logType));
-            sb.AppendLine(FormatMessage(message, logType, useColors));
-            sb.Remove(sb.Length - 2, 2);
+            sb.Append(FormatMessage(message, logType, useColors));
             logs.Add(new Log(sb.ToString()));
         }
 
@@ -38,6 +37,7 @@ namespace BroMakerLib.Loggers
         {
             Log(message, LogType.Exception, useColors);
         }
+
         public static void ExceptionLog(object message, Exception exception, bool useColors = true)
         {
             StringBuilder sb = new StringBuilder(message.ToString());
@@ -56,10 +56,10 @@ namespace BroMakerLib.Loggers
             {
                 return;
             }
+
             StringBuilder sb = new StringBuilder(FormatLogType(logType));
             sb.Insert(0, "[DEBUG] ");
-            sb.AppendLine(FormatMessage(message.ToString(), logType, useColors));
-            sb.Remove(sb.Length - 2, 2);
+            sb.Append(FormatMessage(message.ToString(), logType, useColors));
             debugLogs.Add(new Log(sb.ToString()));
         }
 
@@ -86,6 +86,7 @@ namespace BroMakerLib.Loggers
             {
                 sb.Append("yellow>");
             }
+
             sb.Append(message);
             sb.Append("</color>");
             return sb.ToString();
