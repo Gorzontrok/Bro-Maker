@@ -14,26 +14,14 @@ namespace BroMakerLib.Storages
         internal static List<BroMakerMod> mods = new List<BroMakerMod>();
         internal static List<BroMakerMod> incompatibleMods = new List<BroMakerMod>();
 
-        internal static StoredAbility[] Abiltities
-        {
-            get { return _abilities.ToArray(); }
-        }
-        internal static ReadOnlyCollection<StoredHero> Bros
-        {
-            get { return _brosReadOnly; }
-        }
-        internal static ReadOnlyCollection<string> BroNames
-        {
-            get { return _broNamesReadOnly; }
-        }
+        internal static ReadOnlyCollection<StoredHero> Bros { get; private set; }
 
-        private static List<StoredAbility> _abilities = new List<StoredAbility>();
+        internal static ReadOnlyCollection<string> BroNames { get; private set; }
+
         private static List<StoredHero> _bros = new List<StoredHero>();
-        private static ReadOnlyCollection<StoredHero> _brosReadOnly;
         private static Dictionary<string, StoredHero> _brosByName = new Dictionary<string, StoredHero>();
         private static Dictionary<Type, StoredHero> _brosByType = new Dictionary<Type, StoredHero>();
         private static List<string> _broNames = new List<string>();
-        private static ReadOnlyCollection<string> _broNamesReadOnly;
 
         public static void Initialize()
         {
@@ -41,7 +29,6 @@ namespace BroMakerLib.Storages
             LoadMods();
 
             _bros = new List<StoredHero>();
-            _abilities = new List<StoredAbility>();
             _brosByName = new Dictionary<string, StoredHero>();
             _brosByType = new Dictionary<Type, StoredHero>();
             _broNames = new List<string>();
@@ -49,12 +36,11 @@ namespace BroMakerLib.Storages
             foreach (BroMakerMod mod in mods)
             {
                 StoreCharactersFromMod(mod);
-                StoreAbilitiesFromMod(mod);
             }
 
             _broNames.Sort();
-            _brosReadOnly = _bros.AsReadOnly();
-            _broNamesReadOnly = _broNames.AsReadOnly();
+            Bros = _bros.AsReadOnly();
+            BroNames = _broNames.AsReadOnly();
 
             BMLogger.Debug("BroMakerStorage Initialized.");
         }
@@ -97,6 +83,7 @@ namespace BroMakerLib.Storages
                             {
                                 mod.ErrorMessage = modName + " was created using an outdated version of BroMaker (" + mod.BroMakerVersion + ") you may experience bugs using it on this version of BroMaker. It's recommended that you update " + modNameLowerCase + " to a newer version if possible.";
                             }
+
                             mod.Initialize();
                             mods.Add(mod);
                         }
@@ -107,6 +94,7 @@ namespace BroMakerLib.Storages
                     BMLogger.ExceptionLog($"Unable to load BroMaker Mod at {jsonFile}.", ex);
                 }
             }
+
             BMLogger.Debug("Finish Loading Mods");
         }
 
@@ -129,7 +117,9 @@ namespace BroMakerLib.Storages
             hero = null;
 
             if (name.IsNullOrEmpty())
+            {
                 return false;
+            }
 
             return _brosByName.TryGetValue(name, out hero);
         }
@@ -144,7 +134,9 @@ namespace BroMakerLib.Storages
             hero = null;
 
             if (customHeroType == null || !typeof(CustomHero).IsAssignableFrom(customHeroType))
+            {
                 return false;
+            }
 
             return _brosByType.TryGetValue(customHeroType, out hero);
         }
@@ -152,7 +144,9 @@ namespace BroMakerLib.Storages
         public static void StoreCharactersFromMod(BroMakerMod mod)
         {
             if (mod == null || mod.CustomBros == null || mod.CustomBros.Length == 0)
+            {
                 return;
+            }
 
             var temp = new List<StoredHero>();
             foreach (var broObject in mod.CustomBros)
@@ -178,6 +172,7 @@ namespace BroMakerLib.Storages
                     {
                         cutscene.path = mod.Path;
                     }
+
                     var hero = new StoredHero(info, mod);
                     temp.Add(hero);
                     _bros.Add(hero);
@@ -185,41 +180,8 @@ namespace BroMakerLib.Storages
                     _broNames.Add(hero.name);
                 }
             }
+
             mod.StoredHeroes = temp.ToArray();
-        }
-
-        public static void StoreAbilitiesFromMod(BroMakerMod mod)
-        {
-            if (mod == null || mod.Abilities == null || mod.Abilities.Length == 0)
-                return;
-
-            var temp = new List<StoredAbility>();
-            foreach (var abilityObject in mod.Abilities)
-            {
-                if (abilityObject == null)
-                    continue;
-
-                if (abilityObject as string != null && abilityObject.As<string>().IsNotNullOrEmpty())
-                {
-                    var path = Path.Combine(mod.Path, abilityObject as string);
-                    if (File.Exists(path))
-                    {
-                        var ability = new StoredAbility(path);
-                        temp.Add(ability);
-                        _abilities.Add(ability);
-                        BMLogger.Debug($"Found file: '{path}'");
-                    }
-                }
-                else if (abilityObject as AbilityInfo != null)
-                {
-                    AbilityInfo info = abilityObject as AbilityInfo;
-                    info.path = mod.Path;
-                    var ability = new StoredAbility(info);
-                    temp.Add(ability);
-                    _abilities.Add(ability);
-                }
-            }
-            mod.StoredAbilities = temp.ToArray();
         }
     }
 }

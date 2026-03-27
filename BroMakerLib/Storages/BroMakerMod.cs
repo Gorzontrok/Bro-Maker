@@ -21,20 +21,13 @@ namespace BroMakerLib
 
         public string[] Assemblies = new string[0];
         public object[] CustomBros = new object[0];
-        public object[] Abilities = new object[0];
-        public object[] Grenades = new object[0];
 
         // Not in JSON file
-        [JsonIgnore]
-        public string Path { get; protected set; }
-        [JsonIgnore]
-        public string[] BrosNames { get; protected set; }
-        [JsonIgnore]
-        public StoredHero[] StoredHeroes { get; set; }
-        [JsonIgnore]
-        public StoredAbility[] StoredAbilities { get; set; }
-        [JsonIgnore]
-        public Harmony Harmony = null;
+        [JsonIgnore] public string Path { get; protected set; }
+        [JsonIgnore] public string[] BrosNames { get; protected set; }
+        [JsonIgnore] public StoredHero[] StoredHeroes { get; set; }
+        [JsonIgnore] public Harmony Harmony = null;
+
         public static BroMakerMod TryLoad(string path)
         {
             BroMakerMod mod = JsonConvert.DeserializeObject<BroMakerMod>(File.ReadAllText(path));
@@ -42,8 +35,8 @@ namespace BroMakerLib
             if (mod != null)
             {
                 mod.Path = Directory.GetParent(path).ToString();
-
             }
+
             return mod;
         }
 
@@ -53,8 +46,8 @@ namespace BroMakerLib
             {
                 Name = Path.Substring(Directory.GetCurrentDirectory().Length - 1, Path.Length);
             }
+
             CustomBros = CheckFiles<CustomBroInfo>(CustomBros);
-            Abilities = CheckFiles<AbilityInfo>(Abilities);
 
             BrosNames = GetNames<CustomBroforceObjectInfo>(CustomBros);
         }
@@ -64,9 +57,11 @@ namespace BroMakerLib
         {
             Name = fileName;
             if (!Directory.Exists(folderPath))
+            {
                 Directory.CreateDirectory(folderPath);
+            }
 
-            var settings = new JsonSerializerSettings()
+            var settings = new JsonSerializerSettings
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             };
@@ -79,13 +74,17 @@ namespace BroMakerLib
             where T : CustomBroforceObjectInfo
         {
             if (objects.IsNullOrEmpty())
+            {
                 return new object[0];
+            }
 
             List<object> temp = new List<object>();
             foreach (var obj in objects)
             {
                 if (obj == null)
+                {
                     continue;
+                }
 
                 if (obj is string && obj.As<string>().IsNotNullOrEmpty())
                 {
@@ -109,6 +108,7 @@ namespace BroMakerLib
                     }
                 }
             }
+
             return temp.ToArray();
         }
 
@@ -116,13 +116,17 @@ namespace BroMakerLib
             where T : CustomBroforceObjectInfo
         {
             if (objects.IsNullOrEmpty())
+            {
                 return new string[0];
+            }
 
             List<string> temp = new List<string>();
             foreach (var obj in objects)
             {
                 if (obj == null)
+                {
                     continue;
+                }
 
                 if (obj is string && obj.As<string>().IsNotNullOrEmpty())
                 {
@@ -142,6 +146,7 @@ namespace BroMakerLib
                     temp.Add(obj.As<T>().name);
                 }
             }
+
             return temp.ToArray();
         }
     }

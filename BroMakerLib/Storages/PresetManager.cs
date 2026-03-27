@@ -16,8 +16,8 @@ namespace BroMakerLib
 
         public static Dictionary<string, Type> heroesPreset = new Dictionary<string, Type>();
         public static Dictionary<string, Type> customObjectsPreset = new Dictionary<string, Type>();
-        public static Dictionary<string, Type> abilities = new Dictionary<string, Type>();
-        public static Dictionary<string, Type> grenades = new Dictionary<string, Type>();
+        public static Dictionary<string, Type> specialPresets = new Dictionary<string, Type>();
+        public static Dictionary<string, Type> meleePresets = new Dictionary<string, Type>();
 
         public static bool disableWarnings = false;
 
@@ -29,7 +29,8 @@ namespace BroMakerLib
         {
             heroesPreset = new Dictionary<string, Type>();
             customObjectsPreset = new Dictionary<string, Type>();
-            abilities = new Dictionary<string, Type>();
+            specialPresets = new Dictionary<string, Type>();
+            meleePresets = new Dictionary<string, Type>();
             parameters = new Dictionary<string, MethodInfo>();
 
             CheckAssembly(Assembly.GetExecutingAssembly());
@@ -80,24 +81,34 @@ namespace BroMakerLib
             return heroesPreset[presetName];
         }
 
-        public static Type GetAbilityPreset(string name)
+        public static Type GetSpecialPreset(string name)
         {
-            if (!abilities.ContainsKey(name))
+            if (!specialPresets.ContainsKey(name))
             {
                 return null;
             }
 
-            return abilities[name];
+            return specialPresets[name];
         }
 
-        public static Type GetGrenadePreset(string name)
+        public static Type GetMeleePreset(string name)
         {
-            if (!grenades.ContainsKey(name))
+            if (!meleePresets.ContainsKey(name))
             {
                 return null;
             }
 
-            return grenades[name];
+            return meleePresets[name];
+        }
+
+        public static Dictionary<string, Type> GetAllSpecialPresets()
+        {
+            return new Dictionary<string, Type>(specialPresets);
+        }
+
+        public static Dictionary<string, Type> GetAllMeleePresets()
+        {
+            return new Dictionary<string, Type>(meleePresets);
         }
 
         public static MethodInfo GetParameterMethod(string name)
@@ -227,14 +238,14 @@ namespace BroMakerLib
                 return heroesPreset;
             }
 
-            if (attribute is AbilityPresetAttribute)
+            if (attribute is SpecialPresetAttribute)
             {
-                return abilities;
+                return specialPresets;
             }
 
-            if (attribute is GrenadePresetAttribute)
+            if (attribute is MeleePresetAttribute)
             {
-                return grenades;
+                return meleePresets;
             }
 
             return customObjectsPreset;
@@ -277,14 +288,14 @@ namespace BroMakerLib
                 return "Hero";
             }
 
-            if (attribute is AbilityPresetAttribute)
+            if (attribute is SpecialPresetAttribute)
             {
-                return "Ability";
+                return "Special";
             }
 
-            if (attribute is GrenadePresetAttribute)
+            if (attribute is MeleePresetAttribute)
             {
-                return "Grenade";
+                return "Melee";
             }
 
             return string.Empty;
