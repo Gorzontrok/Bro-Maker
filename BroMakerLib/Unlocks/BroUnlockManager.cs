@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using BroMakerLib.Loggers;
 using BroMakerLib.Storages;
 using Newtonsoft.Json;
@@ -388,18 +389,43 @@ namespace BroMakerLib.Unlocks
             }
         }
 
-        public static void SaveProgressData()
+        private static readonly object saveFileLock = new object();
+
+        public static void SaveProgressData(bool synchronous = false)
         {
+            if (progressData == null) return;
+
             try
             {
-                if (progressData == null) return;
-
                 string json = JsonConvert.SerializeObject(progressData, Formatting.Indented);
-                File.WriteAllText(saveFilePath, json);
+                if (synchronous)
+                {
+                    lock (saveFileLock)
+                    {
+                        File.WriteAllText(saveFilePath, json);
+                    }
+                }
+                else
+                {
+                    ThreadPool.QueueUserWorkItem(_ =>
+                    {
+                        try
+                        {
+                            lock (saveFileLock)
+                            {
+                                File.WriteAllText(saveFilePath, json);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            BMLogger.Error($"Failed to save unlock progress: {ex.Message}");
+                        }
+                    });
+                }
             }
             catch (Exception ex)
             {
-                BMLogger.Error($"Failed to save unlock progress: {ex.Message}");
+                BMLogger.Error($"Failed to serialize unlock progress: {ex.Message}");
             }
         }
 
