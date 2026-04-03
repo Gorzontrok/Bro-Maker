@@ -44,6 +44,10 @@ namespace BroMakerLib.Vanilla.Specials
             {
                 specialAttackSounds = sourceBro.soundHolder.specialAttackSounds;
             }
+            if (owner.faderSpritePrefab == null)
+            {
+                owner.faderSpritePrefab = sourceBro.faderSpritePrefab;
+            }
         }
 
         public override void PressSpecial()

@@ -88,6 +88,11 @@ namespace BroMakerLib.Vanilla.Specials
             }
 
             levelUpZapTime = 0.6f;
+
+            if (owner.faderSpritePrefab == null && brolander != null)
+            {
+                owner.faderSpritePrefab = brolander.faderSpritePrefab;
+            }
         }
 
         public override void PressSpecial()

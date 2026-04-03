@@ -89,6 +89,8 @@ namespace BroMakerLib.Vanilla.Specials
                     special4Sounds = broLee.soundHolder.special4Sounds;
                 if (attackSounds == null)
                     attackSounds = broLee.soundHolder.attackSounds;
+                if (owner.faderSpritePrefab == null)
+                    owner.faderSpritePrefab = broLee.faderSpritePrefab;
             }
         }
 

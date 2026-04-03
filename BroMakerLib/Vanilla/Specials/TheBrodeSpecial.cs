@@ -9,6 +9,17 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("TheBrode")]
     public class TheBrodeSpecial : SpecialAbility
     {
+        public override void Initialize(TestVanDammeAnim owner)
+        {
+            base.Initialize(owner);
+            if (owner.faderSpritePrefab == null)
+            {
+                var prefab = HeroController.GetHeroPrefab(HeroType.TheBrode);
+                var sourceBro = prefab.GetComponent<TestVanDammeAnim>();
+                owner.faderSpritePrefab = sourceBro.faderSpritePrefab;
+            }
+        }
+
         public int palmDamage = 3;
         public float palmXRange = 8f;
         public float palmYRange = 8f;

@@ -12,11 +12,15 @@ namespace BroMakerLib.Vanilla.Specials
         public override void Initialize(TestVanDammeAnim owner)
         {
             base.Initialize(owner);
+            var prefab = HeroController.GetHeroPrefab(HeroType.Blade);
+            var sourceBro = prefab.GetComponent<TestVanDammeAnim>();
             if (specialAttackSounds == null)
             {
-                var prefab = HeroController.GetHeroPrefab(HeroType.Blade);
-                var sourceBro = prefab.GetComponent<TestVanDammeAnim>();
                 specialAttackSounds = sourceBro.soundHolder.specialAttackSounds;
+            }
+            if (owner.faderSpritePrefab == null)
+            {
+                owner.faderSpritePrefab = sourceBro.faderSpritePrefab;
             }
         }
 
