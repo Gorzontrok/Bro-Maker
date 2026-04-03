@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using BroMakerLib.Abilities;
 using BroMakerLib.Infos;
 using BroMakerLib.Loaders;
 using BroMakerLib.Loggers;
@@ -44,6 +45,7 @@ namespace BroMakerLib.CustomObjects.Bros
         [JsonIgnore] public Vector2 CurrentSpecialMaterialOffset { get; set; }
         [JsonIgnore] public float CurrentSpecialMaterialSpacing { get; set; }
         [JsonIgnore] public Material CurrentFirstAvatar { get; set; }
+
 
         /// <summary>
         /// Set this to control which hero is used for the default soundHolder.
@@ -439,6 +441,66 @@ namespace BroMakerLib.CustomObjects.Bros
         {
             gunSprite.transform.localPosition = new Vector3(xOffset + CurrentGunSpriteOffset.x, yOffset + CurrentGunSpriteOffset.y, -.001f);
         }
+
+        #endregion
+
+        #region ICustomHero Ability Accessors
+
+        SpecialAbility ICustomHero.SpecialAbility => null;
+        MeleeAbility ICustomHero.MeleeAbility => null;
+
+        SpriteSM ICustomHero.Sprite => sprite;
+        int ICustomHero.SpritePixelWidth => spritePixelWidth;
+        int ICustomHero.SpritePixelHeight => spritePixelHeight;
+        bool ICustomHero.DoingMelee => doingMelee;
+        bool ICustomHero.Ducking => ducking;
+        float ICustomHero.DeltaTime => t;
+        Sound ICustomHero.Sound => sound;
+
+        float ICustomHero.FrameRate
+        {
+            get => frameRate;
+            set => frameRate = value;
+        }
+
+        bool ICustomHero.UsingSpecial
+        {
+            get => usingSpecial;
+            set => usingSpecial = value;
+        }
+
+        bool ICustomHero.UsingPockettedSpecial
+        {
+            get => usingPockettedSpecial;
+            set => usingPockettedSpecial = value;
+        }
+
+        int ICustomHero.PressSpecialFacingDirection
+        {
+            get => pressSpecialFacingDirection;
+            set => pressSpecialFacingDirection = value;
+        }
+
+        int ICustomHero.GunFrame
+        {
+            get => gunFrame;
+            set => gunFrame = value;
+        }
+
+        float ICustomHero.InvulnerableTime
+        {
+            get => invulnerableTime;
+            set => invulnerableTime = value;
+        }
+
+        void ICustomHero.SetSpriteOffset(float x, float y) => SetSpriteOffset(x, y);
+        void ICustomHero.DeactivateGun() => DeactivateGun();
+        void ICustomHero.ActivateGun() => ActivateGun();
+        void ICustomHero.ChangeFrame() => ChangeFrame();
+        void ICustomHero.TriggerBroSpecialEvent() => TriggerBroSpecialEvent();
+        void ICustomHero.PlayAttackSound() => PlayAttackSound();
+        void ICustomHero.PlayAttackSound(float v) => PlayAttackSound(v);
+        void ICustomHero.SetGunSprite(int spriteFrame, int spriteRow) => SetGunSprite(spriteFrame, spriteRow);
 
         #endregion
 

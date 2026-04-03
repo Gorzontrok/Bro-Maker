@@ -2,6 +2,7 @@
 using BroMakerLib.Cutscenes;
 using BroMakerLib.Unlocks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace BroMakerLib.Infos
@@ -19,6 +20,12 @@ namespace BroMakerLib.Infos
         }
 
         public string CharacterPreset = "CustomHero";
+
+        /// <summary>Special ability JSON config. Contains "preset" key and optional parameter overrides.</summary>
+        public JObject special { get; set; }
+
+        /// <summary>Melee ability JSON config. Contains "preset" key and optional parameter overrides.</summary>
+        public JObject melee { get; set; }
 
         [JsonConverter(typeof(CutsceneConverter))]
         public List<CustomIntroCutscene> Cutscene = new List<CustomIntroCutscene> { new CustomIntroCutscene() };

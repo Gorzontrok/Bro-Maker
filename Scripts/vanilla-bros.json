@@ -1,0 +1,541 @@
+{
+    "templateClass": "RambroM",
+    "templateFile": "../BroMakerLib/Vanilla/Bros/RambroM.cs",
+    "outputDirectory": "../BroMakerLib/Vanilla/Bros/",
+    "bros": [
+        {
+            "presetName": "AshBrolliams",
+            "className": "AshBrolliamsM",
+            "baseClass": "AshBrolliams",
+            "heroType": "AshBrolliams",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["bulletShell", "chainsawStart", "chainsawSpin", "chainsawWindDown", "bloodyAvatar"]}
+            ]
+        },
+        {
+            "presetName": "BaBroracus",
+            "className": "BaBroracusM",
+            "baseClass": "BaBroracus",
+            "heroType": "BaBroracus",
+            "nullFixes": [
+                {"type": "getComponent", "field": "flameSource", "component": "AudioSource"},
+                {"type": "prefabCopy", "fields": ["flameSound", "flameSoundEnd", "projectile2", "projectile3"]}
+            ]
+        },
+        {
+            "presetName": "BillyConnolly",
+            "className": "BillyConnollyM",
+            "baseClass": "BillyConnolly",
+            "heroType": "BoondockBros",
+            "prefabSource": {"heroType": "BoondockBros", "castClass": "BoondockBro"},
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["billyConnollyPrefab", "secondBroMaterial", "avatar1", "avatar2"]}
+            ]
+        },
+        {
+            "presetName": "Brade",
+            "className": "BladeM",
+            "baseClass": "Blade",
+            "heroType": "Blade",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["shrapnelSpark", "hitPuff", "throwingKnife"]}
+            ]
+        },
+        {
+            "presetName": "BoondockBro",
+            "className": "BoondockBroM",
+            "baseClass": "BoondockBro",
+            "heroType": "BoondockBros",
+            "nullFixes": [
+                {"type": "setValue", "field": "isLeadBro", "value": "true"},
+                {"type": "prefabCopy", "fields": ["billyConnollyPrefab", "secondBroMaterial", "avatar1", "avatar2"]},
+                {"type": "raw", "code": ["gameObject.name = gameObject.name.Insert(0, \"[LEAD] \");"]}
+            ]
+        },
+        {
+            "presetName": "Brobocop",
+            "className": "BrobocopM",
+            "baseClass": "Brobocop",
+            "heroType": "Brobocop",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["targetSystemPrefab", "chargingSound", "finishedChargingSound", "gunMaterialDefault", "gunMaterialOneLight", "gunMaterialOtherLight", "gunMaterialBothLights"]}
+            ]
+        },
+        {
+            "presetName": "BroCeasar",
+            "className": "BroCeasarM",
+            "baseClass": "BroCeasar",
+            "heroType": "HaleTheBro",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["bulletShell", "miniGunSoundSpinning", "miniGunSoundWindDown", "miniGunSoundWindup"]}
+            ]
+        },
+        {
+            "presetName": "Brochete",
+            "className": "BrocheteM",
+            "baseClass": "Brochete",
+            "heroType": "Brochete",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["macheteSprayProjectile"]}
+            ]
+        },
+        {
+            "presetName": "BrocSnipes",
+            "className": "BrocSnipesM",
+            "baseClass": "BrocSnipes",
+            "heroType": "Broc",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["shrapnelSpark", "hitPuff"]}
+            ]
+        },
+        {
+            "presetName": "BrodellWalker",
+            "className": "BrodellWalkerM",
+            "baseClass": "BrodellWalker",
+            "heroType": "BrodellWalker",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["bulletShell"]}
+            ]
+        },
+        {
+            "presetName": "Broden",
+            "className": "BrodenM",
+            "baseClass": "Broden",
+            "heroType": "Broden",
+            "nullFixes": [
+                {"type": "findChild", "field": "zapper", "childName": "ElectricZap", "component": "ElectricZap"}
+            ]
+        },
+        {
+            "presetName": "BroDredd",
+            "className": "BroDreddM",
+            "baseClass": "BroDredd",
+            "heroType": "BroDredd",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["specialRocketPrefab"]}
+            ]
+        },
+        {
+            "presetName": "Broffy",
+            "className": "BroffyM",
+            "baseClass": "Broffy",
+            "heroType": "Broffy",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["halo"]}
+            ]
+        },
+        {
+            "presetName": "BroGummer",
+            "className": "BroGummerM",
+            "baseClass": "BroGummer",
+            "heroType": "BroGummer",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["specialSniperBulletPrefab", "sachelPackProjectile", "broGummerSniperTargetPrefab"]}
+            ]
+        },
+        {
+            "presetName": "BroHard",
+            "className": "BroHardM",
+            "baseClass": "BroHard",
+            "heroType": "BroHard",
+            "nullFixes": []
+        },
+        {
+            "presetName": "BroLee",
+            "className": "BroLeeM",
+            "baseClass": "BroLee",
+            "heroType": "BroLee",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["shrapnelSpark", "hitPuff"]}
+            ]
+        },
+        {
+            "presetName": "BroMax",
+            "className": "BroMaxM",
+            "baseClass": "BroMax",
+            "heroType": "BroMax",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["boomerang", "flameProjectiles"]}
+            ]
+        },
+        {
+            "presetName": "Brominator",
+            "className": "BrominatorM",
+            "baseClass": "Brominator",
+            "heroType": "Brominator",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["miniGunSoundWindup", "miniGunSoundSpinning", "miniGunSoundWindDown", "metalBrominator", "humanBrominator", "metalGunBrominator", "brominatorHumanAvatar", "brominatorRobotAvatar", "bulletShell"]},
+                {"type": "raw", "code": ["humanGunBrominator = bro.humanGunBrominator;"]}
+            ]
+        },
+        {
+            "presetName": "Brommando",
+            "className": "BrommandoM",
+            "baseClass": "Brommando",
+            "heroType": "Brommando",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["barageProjectile"]}
+            ]
+        },
+        {
+            "presetName": "Bronan",
+            "className": "BronanTheBrobarianM",
+            "baseClass": "BronanTheBrobarian",
+            "heroType": "BronanTheBrobarian",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["shrapnelSpark", "hitPuff", "throwingKnife"]}
+            ]
+        },
+        {
+            "presetName": "SethBrondle",
+            "className": "BrondleFlyM",
+            "baseClass": "BrondleFly",
+            "heroType": "BrondleFly",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["bulletShell", "teleportOutAnimation", "teleportInAnimation", "teleportSound", "coveredInBloodMaterial", "openMouthBloodyMaterial", "openMouthMaterial", "hoverClip"]},
+                {"type": "getComponentInChildren", "field": "_vomitParticles", "component": "ParticleSystem"}
+            ]
+        },
+        {
+            "presetName": "BroneyRoss",
+            "className": "BroneyRossM",
+            "baseClass": "BroneyRoss",
+            "heroType": "BroneyRoss",
+            "nullFixes": []
+        },
+        {
+            "presetName": "BroniversalSoldier",
+            "className": "BroniversalSoldierM",
+            "baseClass": "BroniversalSoldier",
+            "heroType": "BroniversalSoldier",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["bulletShell"]},
+                {"type": "raw", "code": ["#pragma warning disable", "serumParticles = this.FindChildOfName(\"SerumParticles\").GetComponent<ParticleEmitter>();", "#pragma warning restore"]},
+                {"type": "prefabCopy", "fields": ["reviveBlastPrefab", "reviveClips"]}
+            ]
+        },
+        {
+            "presetName": "BronnarJensen",
+            "className": "BronnarJensenM",
+            "baseClass": "BronnarJensen",
+            "heroType": "BronnarJensen",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["primaryGrenade", "remoteControlVehiclePrefab"]}
+            ]
+        },
+        {
+            "presetName": "BroInBlack",
+            "className": "BrononymousM",
+            "baseClass": "Brononymous",
+            "heroType": "Brononymous",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["neuraliserPrefab"]}
+            ]
+        },
+        {
+            "presetName": "BroshipTrooper",
+            "className": "BroshipTrooperM",
+            "baseClass": "BroshipTrooper",
+            "heroType": "Rambro",
+            "prefabSource": {"heroType": "Rambro", "castClass": "Rambro"},
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["bulletShell"]},
+                {"type": "raw", "code": ["var bro2 = HeroController.GetHeroPrefab(HeroType.DoubleBroSeven).As<DoubleBroSeven>();", "liftOffBlastFlameWall = bro2.liftOffBlastFlameWall;"]}
+            ]
+        },
+        {
+            "presetName": "BroHeart",
+            "className": "BroveHeartM",
+            "baseClass": "BroveHeart",
+            "heroType": "BroveHeart",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["shrapnelSpark", "hitPuff", "swordPrefab"]},
+                {"type": "findChild", "field": "freedomBubble", "childName": "AmericaFlagBubble", "component": "ReactionBubble"}
+            ]
+        },
+        {
+            "presetName": "CaseyBroback",
+            "className": "CaseyBrobackM",
+            "baseClass": "CaseyBroback",
+            "heroType": "CaseyBroback",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["bulletShell"]}
+            ]
+        },
+        {
+            "presetName": "CherryBroling",
+            "className": "CherryBrolingM",
+            "baseClass": "CherryBroling",
+            "heroType": "CherryBroling",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["rocketGrenade"]}
+            ]
+        },
+        {
+            "presetName": "ChevBrolios",
+            "className": "ChevBroliosM",
+            "baseClass": "ChevBrolios",
+            "heroType": "ChevBrolios",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["arousedVoiceHolder", "drowsyVoiceHolder", "avatarTired", "avatarNormal", "avatarFrenzy"]}
+            ]
+        },
+        {
+            "presetName": "ColJamesBrodock",
+            "className": "ColJamesBrodockM",
+            "baseClass": "ColJamesBrodock",
+            "heroType": "ColJamesBroddock",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["primaryGrenade", "gunCookingMaterial"]}
+            ]
+        },
+        {
+            "presetName": "DemolitionBro",
+            "className": "DemolitionBroM",
+            "baseClass": "DemolitionBro",
+            "heroType": "DemolitionBro",
+            "nullFixes": []
+        },
+        {
+            "presetName": "Desperabro",
+            "className": "DesperabroM",
+            "baseClass": "Desperabro",
+            "heroType": "Desperabro",
+            "nullFixes": [
+                {"type": "setValue", "field": "mariachiBroType", "value": "MariachiBroType.Desperabro"},
+                {"type": "prefabCopy", "fields": ["bulletShell"]},
+                {"type": "findChild", "field": "musicParticles", "childName": "MusicParticles", "component": "ParticleSystem"},
+                {"type": "findChild", "field": "guitarGunSprite", "childName": "Guitar", "component": "SpriteSM"},
+                {"type": "prefabCopy", "fields": ["campaBroMaterial", "campaBroGuitarMaterial", "campaBroProjectile", "quinoBroGuitarMaterial", "quinoBroMaterial", "quinoBroProjectile"]}
+            ]
+        },
+        {
+            "presetName": "DirtyBrory",
+            "className": "DirtyHarryM",
+            "baseClass": "DirtyHarry",
+            "heroType": "DirtyHarry",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["bulletShell"]}
+            ]
+        },
+        {
+            "presetName": "DoubleBroSeven",
+            "className": "DoubleBroSevenM",
+            "baseClass": "DoubleBroSeven",
+            "heroType": "DoubleBroSeven",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["martiniGlass", "tearGasGrenade"]},
+                {"type": "findChild", "field": "laserLine", "childName": "Laser", "component": "LineRenderer"},
+                {"type": "prefabCopy", "fields": ["liftOffBlastFlameWall", "balaclavaMaterial"]},
+                {"type": "getComponent", "field": "laserAudio", "component": "AudioSource"}
+            ]
+        },
+        {
+            "presetName": "EllenRipbro",
+            "className": "EllenRipbroM",
+            "baseClass": "EllenRipbro",
+            "heroType": "EllenRipbro",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["flameWavePrefab"]}
+            ]
+        },
+        {
+            "presetName": "IndianaBrones",
+            "className": "IndianaBronesM",
+            "baseClass": "IndianaBrones",
+            "heroType": "IndianaBrones",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["whipHitPuff"]},
+                {"type": "findChild", "field": "whipSprite", "childName": "Whip", "component": "SpriteSM"},
+                {"type": "prefabCopy", "fields": ["materialArmless", "ropeStretchSound"]}
+            ]
+        },
+        {
+            "presetName": "LeeBroxmas",
+            "className": "LeeBroxmasM",
+            "baseClass": "LeeBroxmas",
+            "heroType": "LeeBroxmas",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["macheteSprayProjectile"]}
+            ]
+        },
+        {
+            "presetName": "McBrover",
+            "className": "McBroverM",
+            "baseClass": "McBrover",
+            "heroType": "McBrover",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["turkeyProjectile"]}
+            ]
+        },
+        {
+            "presetName": "MrAnderbro",
+            "className": "NebroM",
+            "baseClass": "Nebro",
+            "heroType": "Nebro",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["returnZonePrefab", "materialArmless", "faderSpriteDownPrefab", "faderSpritePrefab", "faderSpriteRightPrefab", "faderSpriteUpPrefab", "shrapnelSpark", "hitPuff", "throwingKnife"]}
+            ]
+        },
+        {
+            "presetName": "NorrisBro",
+            "className": "NorrisBroM",
+            "baseClass": "NorrisBro",
+            "heroType": "Rambro",
+            "nullFixes": []
+        },
+        {
+            "presetName": "PistolWhipBro",
+            "className": "PistolWhipBroM",
+            "baseClass": "PistolWhipBro",
+            "heroType": "BroHard",
+            "nullFixes": []
+        },
+        {
+            "presetName": "Brodator",
+            "className": "PredabroM",
+            "baseClass": "Predabro",
+            "heroType": "Predabro",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["stealthMaterial", "stealthGunMaterial", "targetPrefab"]},
+                {"type": "findChild", "field": "shoulderCannonBaseSprite", "childName": "ShoulderCanon Base", "component": "SpriteSM"},
+                {"type": "raw", "code": ["shoulderCannonSprite = shoulderCannonBaseSprite.FindChildOfName(\"ShoulderCanon\").transform;"]},
+                {"type": "prefabCopy", "fields": ["shoulderCannonBullet"]},
+                {"type": "raw", "code": [
+                    "var temp = new List<SpriteSM>();",
+                    "Transform laserSightParent = null;",
+                    "for (int i = 0; i < shoulderCannonSprite.transform.childCount; i++)",
+                    "{",
+                    "    var child = shoulderCannonSprite.transform.GetChild(i);",
+                    "    if (child.gameObject.name == \"Lazer\")",
+                    "        temp.Add(child.GetComponent<SpriteSM>());",
+                    "    else",
+                    "        laserSightParent = child.transform;",
+                    "}",
+                    "laserSightLazers = temp.ToArray();",
+                    "",
+                    "var temp2 = new List<Transform>();",
+                    "for (int i = 0; i < laserSightParent.childCount; i++)",
+                    "{",
+                    "    temp2.Add(laserSightParent.GetChild(i).transform);",
+                    "}",
+                    "laserSights = temp2.ToArray();"
+                ]},
+                {"type": "prefabCopy", "fields": ["cloakingSound", "selfDestructSoundSound"]},
+                {"type": "findChild", "field": "outlineSprite", "childName": "StealthOutline", "component": "ReplicateSprite"},
+                {"type": "findChild", "field": "searchRing", "childName": "Search Ring", "component": "SpriteSM"},
+                {"type": "prefabCopy", "fields": ["giltchTextures", "hudSpecialCountDownMaterials"]},
+                {"type": "raw", "code": [
+                    "heldSpearSprite = this.FindChildOfName(\"Gun\").FindChildOfName(\"PullBackFrame\").GetComponent<SpriteSM>();",
+                    "heldSpearSpriteCharged = this.FindChildOfName(\"Gun\").FindChildOfName(\"PullBackFrameCharged\").GetComponent<SpriteSM>();"
+                ]},
+                {"type": "prefabCopy", "fields": ["chargedSpearProectilePrefab", "predabroSymbolPrefab"]}
+            ]
+        },
+        {
+            "presetName": "ScorpionBro",
+            "className": "ScorpionBroM",
+            "baseClass": "ScorpionBro",
+            "heroType": "ScorpionBro",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["scorpionModeMaterial"]}
+            ]
+        },
+        {
+            "presetName": "SnakeBroskin",
+            "className": "SnakeBroskinM",
+            "baseClass": "SnakeBroskin",
+            "heroType": "SnakeBroSkin",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["hologramMaterial"]},
+                {"type": "getComponent", "field": "gliderAudio", "component": "AudioSource"}
+            ]
+        },
+        {
+            "presetName": "TankBro",
+            "className": "TankBroM",
+            "baseClass": "TankBro",
+            "heroType": "TankBro",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["barageProjectile", "whistle"]}
+            ]
+        },
+        {
+            "presetName": "Brocketeer",
+            "className": "TheBrocketeerM",
+            "baseClass": "TheBrocketeer",
+            "heroType": "TheBrocketeer",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["bulletShell", "liftOffBlastFlameWall", "jetpackLiftSound", "jetpackDiveSound"]}
+            ]
+        },
+        {
+            "presetName": "TheBrode",
+            "className": "TheBrodeM",
+            "baseClass": "TheBrode",
+            "heroType": "TheBrode",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["throwingKnife", "shrapnelSpark", "hitPuff"]}
+            ]
+        },
+        {
+            "presetName": "TheBrofessional",
+            "className": "TheBrofessionalM",
+            "baseClass": "TheBrofessional",
+            "heroType": "TheBrofessional",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["matildaTargettingWavePrefab"]}
+            ]
+        },
+        {
+            "presetName": "TheBrolander",
+            "className": "TheBrolanderM",
+            "baseClass": "TheBrolander",
+            "heroType": "TheBrolander",
+            "nullFixes": [
+                {"type": "findChild", "field": "zapper", "childName": "ElectricZap", "component": "ElectricZap"},
+                {"type": "getComponent", "field": "quickeningAudio", "component": "AudioSource"},
+                {"type": "prefabCopy", "fields": ["shrapnelSpark", "hitPuff", "throwingKnife"]}
+            ]
+        },
+        {
+            "presetName": "TimeBro",
+            "className": "TimeBroVanDammeM",
+            "baseClass": "TimeBroVanDamme",
+            "heroType": "TimeBroVanDamme",
+            "nullFixes": []
+        },
+        {
+            "presetName": "TollBroad",
+            "className": "TollBroadM",
+            "baseClass": "TollBroad",
+            "heroType": "TollBroad",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["flameProjectiles"]}
+            ]
+        },
+        {
+            "presetName": "TrentBroser",
+            "className": "TrentBroserM",
+            "baseClass": "TrentBroser",
+            "heroType": "TrentBroser",
+            "nullFixes": []
+        },
+        {
+            "presetName": "VanDammeBro",
+            "className": "VanDammeBroM",
+            "baseClass": "VanDammeBro",
+            "heroType": "TimeBroVanDamme",
+            "nullFixes": []
+        },
+        {
+            "presetName": "Xebro",
+            "className": "XebroM",
+            "baseClass": "Xebro",
+            "heroType": "Xebro",
+            "nullFixes": [
+                {"type": "prefabCopy", "fields": ["chakramPrefab", "shrapnelSpark", "hitPuff"]}
+            ]
+        }
+    ]
+}

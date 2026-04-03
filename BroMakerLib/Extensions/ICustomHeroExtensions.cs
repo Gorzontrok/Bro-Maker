@@ -113,6 +113,7 @@ namespace BroMakerLib
                 var type = otherBroComponent.GetType();
                 UnityEngine.Object.DestroyImmediate(otherBroComponent);
                 BMLogger.Debug($"SetupCustomHero: Has destroy {type} component.");
+                SetDefaultParameters(hero.Info);
                 hero.Info.ReadParameters(hero.Character);
                 BMLogger.Debug("SetupCustomHero: Has read parameters");
             }
@@ -232,6 +233,20 @@ namespace BroMakerLib
                 throw new InvalidOperationException(
                     $"{propertyName} has {list.Count} items but VariantCount is {expectedCount}. " +
                     $"Lists must have either 1 item (shared across variants) or exactly {expectedCount} items (one per variant).");
+            }
+        }
+
+        /// <summary>
+        /// Injects default parameter values into the info's parameters dictionary.
+        /// Only sets values that the user hasn't already specified.
+        /// Called before <see cref="CustomBroforceObjectInfo.ReadParameters"/> so user values take precedence.
+        /// </summary>
+        /// <param name="info">The bro's config info.</param>
+        private static void SetDefaultParameters(Infos.CustomBroInfo info)
+        {
+            if (!info.parameters.ContainsKey("BetterAnimation"))
+            {
+                info.parameters["BetterAnimation"] = true;
             }
         }
 

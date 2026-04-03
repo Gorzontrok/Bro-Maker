@@ -94,6 +94,7 @@ namespace BroMakerLib.Abilities
         public int terrainDamage = 2;
 
         /// <summary>Called once when the bro spawns. Sets <see cref="owner" /> and caches protected field references.</summary>
+        /// <param name="owner">The bro instance that owns this ability.</param>
         public virtual void Initialize(TestVanDammeAnim owner)
         {
             this.owner = owner;
@@ -122,6 +123,12 @@ namespace BroMakerLib.Abilities
 
         /// <summary>Called every frame. Use for timers and other per-frame logic.</summary>
         public virtual void Update()
+        {
+        }
+
+        /// <summary>Called before this ability is replaced by another. Override to destroy any
+        /// components or child objects created during Initialize.</summary>
+        public virtual void Cleanup()
         {
         }
     }

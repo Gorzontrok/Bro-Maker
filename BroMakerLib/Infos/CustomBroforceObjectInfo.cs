@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using BroMakerLib.Loaders;
 using BroMakerLib.Loggers;
 using HarmonyLib;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using RocketLib.Utils;
 using UnityEngine;
 
 namespace BroMakerLib.Infos
@@ -198,6 +201,19 @@ namespace BroMakerLib.Infos
 
         protected void SetFieldData(Traverse field, string key, object value)
         {
+            SetFieldDataStatic(field, key, value, path);
+        }
+
+        /// <summary>
+        /// Type-aware field setter that handles Unity types, enums, and game objects.
+        /// Used by both lifecycle callbacks (beforeAwake, etc.) and ability JSON deserialization.
+        /// </summary>
+        /// <param name="field">Traverse handle to the field being set.</param>
+        /// <param name="key">Field name (for error logging).</param>
+        /// <param name="value">Value to assign (may need type conversion).</param>
+        /// <param name="path">Base path for resolving relative file references (textures, audio, etc.).</param>
+        public static void SetFieldDataStatic(Traverse field, string key, object value, string path)
+        {
             try
             {
                 Type fieldType = field.GetValueType();
@@ -230,6 +246,27 @@ namespace BroMakerLib.Infos
                         throw new InvalidCastException("can't cast value to string on 'Texture2D' field");
                     field.SetValue((Texture2D)ResourcesController.GetTexture(path, (string)value));
                 }
+                else if (fieldType == typeof(AudioClip))
+                {
+                    if (!(value is string))
+                        throw new InvalidCastException("can't cast value to string on 'AudioClip' field");
+                    field.SetValue(ResourcesController.GetAudioClip(path, (string)value));
+                }
+                else if (fieldType == typeof(AudioClip[]))
+                {
+                    string[] fileNames;
+                    if (value is JArray jArray)
+                        fileNames = jArray.Select(t => t.ToString()).ToArray();
+                    else if (value is string[] strArray)
+                        fileNames = strArray;
+                    else
+                        throw new InvalidCastException("can't cast value to string[] on 'AudioClip[]' field");
+
+                    var clips = new AudioClip[fileNames.Length];
+                    for (int i = 0; i < fileNames.Length; i++)
+                        clips[i] = ResourcesController.GetAudioClip(path, fileNames[i]);
+                    field.SetValue(clips);
+                }
                 else if (fieldType.IsEnum)
                 {
                     if (value is string)
@@ -238,7 +275,7 @@ namespace BroMakerLib.Infos
                     }
                     else
                     {
-                        field.SetValue((int)value);
+                        field.SetValue(Convert.ToInt32(value));
                     }
                 }
                 else if (fieldType == typeof(float))

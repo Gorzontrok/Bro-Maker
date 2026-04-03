@@ -2,19 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
 using BroMakerLib.CustomObjects;
 using BroMakerLib.CustomObjects.Bros;
 using BroMakerLib.CustomObjects.Projectiles;
+using BroMakerLib.Cutscenes;
 using BroMakerLib.Infos;
 using BroMakerLib.Loaders;
 using BroMakerLib.Loggers;
 using BroMakerLib.Storages;
 using BroMakerLib.Unlocks;
 using HarmonyLib;
+using Networking;
 using UnityEngine;
 using BSett = BroMakerLib.Settings;
+using Object = UnityEngine.Object;
+using Random = UnityEngine.Random;
 
-namespace BroMakerLib.HarmonyPatches
+// ReSharper disable UnusedMember.Local
+
+namespace BroMakerLib
 {
     // Collect Logs
     [HarmonyPatch(typeof(BMLogger), "Log", new Type[] { typeof(string), typeof(LogType), typeof(bool) })]
@@ -55,7 +62,8 @@ namespace BroMakerLib.HarmonyPatches
                     nextHeroType = HeroType.Rambro;
                     return;
                 }
-                else if (BSett.instance.disableSpawning)
+
+                if (BSett.instance.disableSpawning)
                 {
                     LoadHero.willReplaceBro[__instance.playerNum] = false;
                     return;
@@ -95,9 +103,9 @@ namespace BroMakerLib.HarmonyPatches
                             {
                                 // Probability of a custom bro being unlocked should be the number of custom bros / (number of custom bros + notUnlocked vanilla bros + dead vanilla bros)
                                 // We add 1 because the chosen bro will have already been added to the available bros
-                                LoadHero.willReplaceBro[__instance.playerNum] = UnityEngine.Random.value <= (BroSpawnManager.HardcoreBrosNotYetUnlocked.Count() /
-                                    (BroSpawnManager.HardcoreBrosNotYetUnlocked.Count() + PlayerProgress.Instance.unlockedHeroes.Count() -
-                                    GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count() - GameState.Instance.currentWorldmapSave.hardcoreModeDeadBros.Count() + 1.0f));
+                                LoadHero.willReplaceBro[__instance.playerNum] = Random.value <= (BroSpawnManager.HardcoreBrosNotYetUnlocked.Count() /
+                                                                                                 (BroSpawnManager.HardcoreBrosNotYetUnlocked.Count() + PlayerProgress.Instance.unlockedHeroes.Count() -
+                                                                                                     GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count() - GameState.Instance.currentWorldmapSave.hardcoreModeDeadBros.Count() + 1.0f));
 
                                 // If replacing hero, remove previously unlocked one from available bros
                                 if (LoadHero.willReplaceBro[__instance.playerNum])
@@ -122,8 +130,8 @@ namespace BroMakerLib.HarmonyPatches
                         }
                         else if (BroSpawnManager.HardcoreAvailableBros.Count() > 0)
                         {
-                            LoadHero.willReplaceBro[__instance.playerNum] = UnityEngine.Random.value <= (BroSpawnManager.HardcoreAvailableBros.Count() /
-                            ((float)BroSpawnManager.HardcoreAvailableBros.Count() + GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count()));
+                            LoadHero.willReplaceBro[__instance.playerNum] = Random.value <= (BroSpawnManager.HardcoreAvailableBros.Count() /
+                                                                                             ((float)BroSpawnManager.HardcoreAvailableBros.Count() + GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count()));
                         }
                     }
                 }
@@ -136,7 +144,7 @@ namespace BroMakerLib.HarmonyPatches
                 // Handle normal spawning
                 else if (BSett.instance.automaticSpawn && BroSpawnManager.EnabledBros.Count > 0)
                 {
-                    LoadHero.willReplaceBro[__instance.playerNum] = UnityEngine.Random.value <= (BroSpawnManager.CalculateSpawnProbability() / 100.0f);
+                    LoadHero.willReplaceBro[__instance.playerNum] = Random.value <= (BroSpawnManager.CalculateSpawnProbability() / 100.0f);
                 }
 
                 if (LoadHero.willReplaceBro[__instance.playerNum])
@@ -158,13 +166,12 @@ namespace BroMakerLib.HarmonyPatches
                     LoadHero.spawningCustomBro[__instance.playerNum] = true;
                     LoadHero.willPlayCutscene[__instance.playerNum] = false;
                     LoadHero.anyCustomSpawning = true;
-                    Storages.StoredHero choice;
+                    StoredHero choice;
                     choice = BroSpawnManager.GetRandomSpawnableBro(true);
 
                     if (BroSpawnManager.LastSpawnWasUnlock)
                     {
                         var info = choice.GetInfo();
-                        var unlockConfig = info?.UnlockConfig;
 
                         if (info.Cutscene.Count > 0 && info.Cutscene[0].playCutsceneOnFirstSpawn)
                         {
@@ -178,7 +185,7 @@ namespace BroMakerLib.HarmonyPatches
 
                     if (LoadHero.playCutscene)
                     {
-                        Cutscenes.CustomCutsceneController.LoadHeroCutscene(BroMakerUtilities.GetVariantValue(choice.GetInfo().Cutscene, (bro as CustomHero).CurrentVariant));
+                        CustomCutsceneController.LoadHeroCutscene(BroMakerUtilities.GetVariantValue(choice.GetInfo().Cutscene, (bro as CustomHero).CurrentVariant));
                         LoadHero.playCutscene = false;
                     }
                     __instance.changingBroFromTrigger = false;
@@ -213,7 +220,7 @@ namespace BroMakerLib.HarmonyPatches
     [HarmonyPatch(typeof(Map), "AddBroToHeroTransport")]
     static class Map_AddBroToHeroTransport_Patch
     {
-        static bool Prefix(Map __instance, ref TestVanDammeAnim Bro)
+        static bool Prefix(ref TestVanDammeAnim Bro)
         {
             // If mod is disabled or if we aren't loading a custom character don't disable
             return !Main.enabled || !LoadHero.willReplaceBro[Bro.playerNum];
@@ -230,7 +237,8 @@ namespace BroMakerLib.HarmonyPatches
                 return true;
             }
             // Check Unit's pos because sometimes this function is called with a unit that has not had its position set yet
-            else if (LoadHero.anyCustomSpawning && (!LoadHero.broBeingRescued || (unit.X <= 0 && unit.Y <= 0)))
+
+            if (LoadHero.anyCustomSpawning && (!LoadHero.broBeingRescued || (unit.X <= 0 && unit.Y <= 0)))
             {
                 return false;
             }
@@ -241,7 +249,7 @@ namespace BroMakerLib.HarmonyPatches
     [HarmonyPatch(typeof(Player), "WorkOutSpawnPosition")]
     static class Player_WorkOutSpawnPosition_Patch
     {
-        static void Prefix(Player __instance, ref TestVanDammeAnim bro)
+        static void Prefix(Player __instance)
         {
             if (!Main.enabled)
             {
@@ -262,7 +270,6 @@ namespace BroMakerLib.HarmonyPatches
         {
             if (!Main.enabled)
             {
-                return;
             }
             // Store spawning info of normal character so we can pass it on to the custom character
             else if (LoadHero.willReplaceBro[__instance.playerNum])
@@ -396,7 +403,8 @@ namespace BroMakerLib.HarmonyPatches
                 {
                     return false;
                 }
-                else if (BroSpawnManager.HardcoreBrosNotYetUnlocked.Count() +
+
+                if (BroSpawnManager.HardcoreBrosNotYetUnlocked.Count() +
                     GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count() + PlayerProgress.Instance.yetToBePlayedUnlockedHeroes.Count() == 0)
                 {
                     return false;
@@ -477,7 +485,7 @@ namespace BroMakerLib.HarmonyPatches
     [HarmonyPatch(typeof(AssMouthOrifice), "TryConsumeObject")]
     static class AssMouthOrifice_TryConsumeObject_Patch
     {
-        public static int customObjectIsConsumed = 0;
+        public static int customObjectIsConsumed;
         public static void Postfix(AssMouthOrifice __instance, ref BroforceObject obj, ref bool __result, ref bool ___playSwallowAnim, ref float ___swallowFrameTimer, ref int ___swallowFrame, List<BroforceObject> ___consumedThisFrame)
         {
             if (!Main.enabled)
@@ -491,7 +499,7 @@ namespace BroMakerLib.HarmonyPatches
                 ___playSwallowAnim = true;
                 ___swallowFrameTimer = 0f;
                 ___swallowFrame = 0;
-                AssMouthTransportWrapper assMouthTransportWrapper = UnityEngine.Object.Instantiate<AssMouthTransportWrapper>(__instance.wrapperPrefab);
+                AssMouthTransportWrapper assMouthTransportWrapper = Object.Instantiate<AssMouthTransportWrapper>(__instance.wrapperPrefab);
                 assMouthTransportWrapper.Setup(obj, __instance.root);
                 ___consumedThisFrame.Add(obj);
                 __instance.open = true;
@@ -575,7 +583,7 @@ namespace BroMakerLib.HarmonyPatches
                                 if (pickupable.pickupType == PickupType.FlexAirJump || pickupable.pickupType == PickupType.FlexGoldenLight || pickupable.pickupType == PickupType.FlexInvulnerability ||
                                     pickupable.pickupType == PickupType.FlexTeleport || pickupable.pickupType == PickupType.FlexAlluring)
                                 {
-                                    pickupable.AddFlexPowerRPC(self, pickupable.pickupType, false);
+                                    pickupable.AddFlexPowerRPC(self, pickupable.pickupType);
                                 }
                                 else
                                 {
@@ -688,7 +696,7 @@ namespace BroMakerLib.HarmonyPatches
 
                 if (deathObject != null)
                 {
-                    VictoryMookDeath victoryMookDeath = UnityEngine.Object.Instantiate<VictoryMookDeath>(__instance.broDeathGenericPrefab, position, Quaternion.identity);
+                    VictoryMookDeath victoryMookDeath = Object.Instantiate<VictoryMookDeath>(__instance.broDeathGenericPrefab, position, Quaternion.identity);
                     CustomBroDeath broDeath = LoadHero.customBroDeaths[deathNum];
                     CustomBroInfo bro = broDeath.info;
                     int variant = broDeath.variantIndex;
@@ -741,7 +749,7 @@ namespace BroMakerLib.HarmonyPatches
                 return true;
             }
 
-            __result = ProjectileController.SpawnGrenadeLocally(grenadePrefab, firedBy, x, y, radius, force, xI, yI, playerNum, UnityEngine.Random.Range(0, 10000));
+            __result = ProjectileController.SpawnGrenadeLocally(grenadePrefab, firedBy, x, y, radius, force, xI, yI, playerNum, Random.Range(0, 10000));
             if (lifeM < 1f)
             {
                 __result.ReduceLife(lifeM);
@@ -762,7 +770,7 @@ namespace BroMakerLib.HarmonyPatches
             }
 
             __result = ProjectileController.SpawnProjectileLocally(prefab, FiredBy, x, y, xI, yI, playerNum, AddTemporaryPlayerTarget, _zOffset);
-            __result.SetSeed(UnityEngine.Random.Range(-10000, 10000));
+            __result.SetSeed(Random.Range(-10000, 10000));
             if (AddTemporaryPlayerTarget)
             {
                 HeroController.AddTemporaryPlayerTarget(playerNum, __result.transform);
@@ -782,7 +790,7 @@ namespace BroMakerLib.HarmonyPatches
                 return true;
             }
 
-            GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(grenadePrefab.gameObject);
+            GameObject gameObject = Object.Instantiate<GameObject>(grenadePrefab.gameObject);
             gameObject.SetActive(true);
             __result = gameObject.GetComponent<Grenade>();
             __result.SetupGrenade(seed, playerNum, firedBy);
@@ -803,7 +811,7 @@ namespace BroMakerLib.HarmonyPatches
                 return true;
             }
 
-            __result = UnityEngine.Object.Instantiate<Projectile>(projectilePrefab, new Vector3(x, y, 0f), Quaternion.identity);
+            __result = Object.Instantiate<Projectile>(projectilePrefab, new Vector3(x, y, 0f), Quaternion.identity);
             __result.gameObject.SetActive(true);
             __result.Fire(x, y, xI, yI, 0f, playerNum, FiredBy);
             return false;
@@ -821,7 +829,7 @@ namespace BroMakerLib.HarmonyPatches
                 return true;
             }
 
-            __result = UnityEngine.Object.Instantiate<Projectile>(prefab, new Vector3(x, y, 0f), Quaternion.identity);
+            __result = Object.Instantiate<Projectile>(prefab, new Vector3(x, y, 0f), Quaternion.identity);
             __result.gameObject.SetActive(true);
             __result.Fire(x, y, xI, yI, _zOffset, playerNum, FiredBy);
             return false;
@@ -839,7 +847,7 @@ namespace BroMakerLib.HarmonyPatches
                 return true;
             }
 
-            __result = UnityEngine.Object.Instantiate(prefab, new Vector3(x, y, 0f), Quaternion.identity);
+            __result = Object.Instantiate(prefab, new Vector3(x, y, 0f), Quaternion.identity);
             __result.gameObject.SetActive(true);
             __result.Fire(x, y, xI, yI, _zOffset, playerNum, FiredBy);
             return false;
@@ -919,6 +927,123 @@ namespace BroMakerLib.HarmonyPatches
             }
 
             return true;
+        }
+    }
+
+    // Fix RPC security check to find private [AllowedRPC] methods on base classes
+    [HarmonyPatch(typeof(RPCSecurity), "IsAllowed", new Type[] { typeof(Type), typeof(string) })]
+    static class RPCSecurity_IsAllowed_Patch
+    {
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            var getMethodCall = AccessTools.Method(typeof(Type), "GetMethod",
+                new Type[] { typeof(string), typeof(BindingFlags) });
+            var replacement = AccessTools.Method(typeof(RPCInheritanceHelper),
+                nameof(RPCInheritanceHelper.FindMethodIncludingBasePrivate));
+
+            var codeMatcher = new CodeMatcher(instructions);
+            codeMatcher.MatchStartForward(new CodeMatch(i => i.Calls(getMethodCall)));
+            if (!codeMatcher.IsValid)
+            {
+                BMLogger.Warning("RPCSecurity_IsAllowed_Patch: Could not find Type.GetMethod call");
+                return instructions;
+            }
+
+            codeMatcher.Advance(-1);
+            codeMatcher.RemoveInstruction();
+            codeMatcher.Set(OpCodes.Call, replacement);
+
+            return codeMatcher.InstructionEnumeration();
+        }
+    }
+
+    // Fix RPC invocation to find private methods on base classes and log exceptions
+    [HarmonyPatch(typeof(NonStaticRPCObject), "Execute")]
+    static class NonStaticRPCObject_Execute_Patch
+    {
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+        {
+            var invokeMemberCall = AccessTools.Method(typeof(Type), "InvokeMember",
+                new Type[] { typeof(string), typeof(BindingFlags), typeof(Binder), typeof(object), typeof(object[]) });
+            var replacement = AccessTools.Method(typeof(RPCInheritanceHelper),
+                nameof(RPCInheritanceHelper.FindAndInvoke));
+            var getTypeCall = AccessTools.Method(typeof(object), "GetType");
+
+            var codeMatcher = new CodeMatcher(instructions, generator);
+            codeMatcher.MatchStartForward(new CodeMatch(i => i.Calls(invokeMemberCall)));
+            if (!codeMatcher.IsValid)
+            {
+                BMLogger.Warning("NonStaticRPCObject_Execute_Patch: Could not find Type.InvokeMember call");
+                return instructions;
+            }
+
+            codeMatcher.MatchStartBackwards(new CodeMatch(i => i.Calls(getTypeCall)));
+            if (!codeMatcher.IsValid)
+            {
+                BMLogger.Warning("NonStaticRPCObject_Execute_Patch: Could not find GetType call before InvokeMember");
+                return instructions;
+            }
+
+            // Remove: GetType, ldarg.0, ldfld methodName, ldloc.2, get_DefaultBinder, ldloc.0, ldloc.1, InvokeMember, pop
+            codeMatcher.RemoveInstructions(9);
+            codeMatcher.Insert(
+                new CodeInstruction(OpCodes.Ldarg_0),
+                new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(RPCObject), "methodName")),
+                new CodeInstruction(OpCodes.Ldloc_1),
+                new CodeInstruction(OpCodes.Call, replacement)
+            );
+
+            return codeMatcher.InstructionEnumeration();
+        }
+
+        static Exception Finalizer(Exception __exception, NonStaticRPCObject __instance)
+        {
+            if (__exception != null)
+            {
+                var targetName = Registry.GetObject(__instance.targetID)?.GetType().Name ?? "NULL";
+                BMLogger.ExceptionLog($"[RPC] {__instance.methodName} on {targetName}", __exception);
+            }
+            return null;
+        }
+    }
+
+    // Walks the inheritance chain to find methods, including private ones on base classes
+    static class RPCInheritanceHelper
+    {
+        private const BindingFlags AllDeclared = BindingFlags.Instance | BindingFlags.Static
+            | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+
+        public static MethodInfo FindMethodIncludingBasePrivate(Type type, string methodName)
+        {
+            Type current = type;
+            while (current != null)
+            {
+                try
+                {
+                    var method = current.GetMethod(methodName, AllDeclared);
+                    if (method != null)
+                        return method;
+                }
+                catch (AmbiguousMatchException)
+                {
+                    foreach (var m in current.GetMethods(AllDeclared))
+                    {
+                        if (m.Name == methodName)
+                            return m;
+                    }
+                }
+                current = current.BaseType;
+            }
+            return null;
+        }
+
+        public static void FindAndInvoke(object target, string methodName, object[] parameters)
+        {
+            var method = FindMethodIncludingBasePrivate(target.GetType(), methodName);
+            if (method != null)
+            {
+                method.Invoke(target, parameters);
+            }
         }
     }
 }

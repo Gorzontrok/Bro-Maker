@@ -1,130 +1,561 @@
-using HarmonyLib;
+using BroMakerLib.CustomObjects;
 using Newtonsoft.Json;
 using UnityEngine;
 
 namespace BroMakerLib.Abilities
 {
-    /// <summary>
-    /// Base class for all special abilities. Subclasses implement specific vanilla specials
-    /// (grenade throws, dashes, mode toggles, etc.) and are registered via <see cref="Attributes.SpecialPresetAttribute" />.
-    /// Not a MonoBehaviour — instantiated as a plain C# object and configured via JSON deserialization.
-    /// Public fields are the JSON parameter schema; override defaults in subclass constructors for bro-specific values.
-    /// </summary>
     public abstract class SpecialAbility
     {
-        /// <summary>The bro that owns this ability. Set by <see cref="Initialize" />.</summary>
         [JsonIgnore]
         public TestVanDammeAnim owner;
 
-        [JsonIgnore] protected Sound _sound;
+        [JsonIgnore]
+        protected ICustomHero hero;
 
-        /// <summary>Owner's player number.</summary>
         [JsonIgnore]
         protected int PlayerNum => owner.playerNum;
 
-        /// <summary>Owner's facing direction: 1 = right, -1 = left.</summary>
         [JsonIgnore]
         protected float Direction => Mathf.Sign(owner.transform.localScale.x);
 
-        /// <summary>Owner's X world position.</summary>
         [JsonIgnore]
         protected float X => owner.X;
 
-        /// <summary>Owner's Y world position.</summary>
         [JsonIgnore]
         protected float Y => owner.Y;
 
-        /// <summary>The Sound singleton for playing audio. Cached from owner's protected field.</summary>
         [JsonIgnore]
-        protected Sound sound => _sound;
+        protected Sound sound => hero.Sound;
 
-        /// <summary>Owner's SoundHolder containing AudioClip arrays for SFX (specialSounds, throwSounds, etc.).</summary>
         [JsonIgnore]
         protected SoundHolder soundHolder => owner.soundHolder;
 
-        /// <summary>Sprite sheet row for the special animation.</summary>
         public int animationRow = 1;
-
-        /// <summary>Starting column on the sprite sheet.</summary>
         public int animationColumn = 16;
-
-        /// <summary>Number of frames in the animation.</summary>
         public int animationFrameCount = 5;
-
-        /// <summary>Which frame triggers the special effect (calls <see cref="UseSpecial" />).</summary>
         public int triggerFrame = 2;
-
-        /// <summary>Seconds per animation frame.</summary>
         public float frameRate = 0.0334f;
-
-        /// <summary>When true, <see cref="PressSpecial" /> calls <see cref="UseSpecial" /> directly, skipping the animation.</summary>
+        public float spawnOffsetX = 0f;
+        public float spawnOffsetY = 0f;
         public bool instantUse = false;
-
-        /// <summary>When true, the bro cannot move during the special animation.</summary>
-        public bool blockMovement = true;
-
-        /// <summary>When true, hides the gun sprite during the special animation.</summary>
+        public bool blockMovement = false;
         public bool deactivateGun = true;
 
-        /// <summary>
-        /// Whether this ability is currently active (e.g., mid-dash, in stealth mode).
-        /// While active, CustomHero calls modifier hooks each frame.
-        /// </summary>
+        public AudioClip[] throwSounds;
+        public AudioClip[] attackSounds;
+        public AudioClip[] specialAttackSounds;
+
         [JsonIgnore]
         public bool IsActive { get; protected set; }
 
-        /// <summary>Called once when the bro spawns. Sets <see cref="owner" /> and caches protected field references.</summary>
         public virtual void Initialize(TestVanDammeAnim owner)
         {
             this.owner = owner;
-            _sound = Traverse.Create(owner).Field<Sound>("sound").Value;
+            this.hero = owner as ICustomHero;
         }
 
-        /// <summary>Called when the player presses the special button. Consumes ammo and begins the special sequence.</summary>
         public virtual void PressSpecial()
         {
+            if (owner.hasBeenCoverInAcid || hero.DoingMelee)
+            {
+                return;
+            }
+
+            if (instantUse)
+            {
+                UseSpecial();
+                return;
+            }
+
+            hero.UsingSpecial = true;
+            owner.frame = 0;
+            hero.PressSpecialFacingDirection = (int)owner.transform.localScale.x;
         }
 
-        /// <summary>Called each frame during the special animation. Controls sprite frames and triggers <see cref="UseSpecial" /> at <see cref="triggerFrame" />.</summary>
         public virtual void AnimateSpecial()
         {
+            hero.SetSpriteOffset(0f, 0f);
+
+            if (deactivateGun)
+            {
+                hero.DeactivateGun();
+            }
+
+            hero.FrameRate = frameRate;
+
+            int column = animationColumn + Mathf.Clamp(owner.frame, 0, animationFrameCount - 1);
+            hero.Sprite.SetLowerLeftPixel(column * hero.SpritePixelWidth, animationRow * hero.SpritePixelHeight);
+
+            if (owner.frame == triggerFrame)
+            {
+                UseSpecial();
+            }
+
+            if (owner.frame >= animationFrameCount - 1)
+            {
+                owner.frame = 0;
+                hero.UsingSpecial = false;
+                hero.UsingPockettedSpecial = false;
+                hero.ActivateGun();
+                hero.ChangeFrame();
+            }
         }
 
-        /// <summary>Called at the trigger frame to execute the special effect (spawn projectile, activate mode, etc.).</summary>
         public virtual void UseSpecial()
+        {
+            if (owner.SpecialAmmo > 0)
+            {
+                owner.SpecialAmmo--;
+                hero.TriggerBroSpecialEvent();
+                ActivateSpecial();
+            }
+            else
+            {
+                HeroController.FlashSpecialAmmo(PlayerNum);
+                hero.ActivateGun();
+            }
+            hero.PressSpecialFacingDirection = 0;
+        }
+
+        public virtual void ActivateSpecial()
         {
         }
 
-        /// <summary>Called every frame. Use for timers, projectile tracking, and other per-frame logic.</summary>
+        /// <summary>Called when the bro dies.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleDeath()
+        {
+            return true;
+        }
+
+        /// <summary>Called after Death has run.</summary>
+        public virtual void HandleAfterDeath()
+        {
+        }
+
+        /// <summary>Called during CanReduceLives check.</summary>
+        /// <returns>True to run original, false to force the provided result.</returns>
+        public virtual bool HandleCanReduceLives(ref bool result)
+        {
+            return true;
+        }
+
         public virtual void Update()
         {
         }
 
-        /// <summary>
-        /// Called during the bro's movement processing while <see cref="IsActive" /> is true.
-        /// Return value follows Harmony prefix convention: true = run original movement, false = skip it.
-        /// </summary>
-        public virtual bool HandleMovement(ref float xI, ref float yI)
+        /// <summary>Called during movement processing.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleCalculateMovement(ref float xI, ref float yI)
+        {
+            if (blockMovement && hero.UsingSpecial)
+            {
+                xI = 0f;
+                yI = 0f;
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>Called after CalculateMovement has run.</summary>
+        public virtual void HandleAfterCalculateMovement()
+        {
+        }
+
+        /// <summary>Called when the bro takes damage.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleDamage(int damage, DamageType damageType, float xI, float yI, int direction, MonoBehaviour damageSender, float hitX, float hitY)
         {
             return true;
         }
 
-        /// <summary>
-        /// Called when the bro takes damage while <see cref="IsActive" /> is true.
-        /// Return value follows Harmony prefix convention: true = run original damage handling, false = skip it.
-        /// </summary>
-        public virtual bool HandleDamage(DamageObject damage)
+        /// <summary>Called during firing logic.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleFireWeapon()
         {
             return true;
         }
 
-        /// <summary>
-        /// Called during the bro's firing logic while <see cref="IsActive" /> is true.
-        /// Return value follows Harmony prefix convention: true = run original firing, false = skip it.
-        /// </summary>
-        public virtual bool HandleFiring()
+        /// <summary>Called after FireWeapon has run.</summary>
+        public virtual void HandleAfterFireWeapon(float x, float y, float xSpeed, float ySpeed)
+        {
+        }
+
+        /// <summary>Called after AddSpeedLeft has run.</summary>
+        public virtual void HandleAfterAddSpeedLeft()
+        {
+        }
+
+        /// <summary>Called after AddSpeedRight has run.</summary>
+        public virtual void HandleAfterAddSpeedRight()
+        {
+        }
+
+        /// <summary>Called during CanBeImpaledByGroundSpikes check.</summary>
+        /// <returns>True to run original, false to force the provided result.</returns>
+        public virtual bool HandleCanBeImpaledByGroundSpikes(ref bool result)
         {
             return true;
+        }
+
+        /// <summary>Called when the bro jumps.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleJump(bool wallJump)
+        {
+            return true;
+        }
+
+        /// <summary>Called during RunMovement.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleRunMovement()
+        {
+            return true;
+        }
+
+        /// <summary>Called during gravity application.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleApplyNormalGravity()
+        {
+            return true;
+        }
+
+        /// <summary>Called when the bro starts firing.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleStartFiring()
+        {
+            return true;
+        }
+
+        /// <summary>Called when the bro starts a melee attack.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleStartMelee()
+        {
+            return true;
+        }
+
+        /// <summary>Called during ChangeFrame.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleChangeFrame()
+        {
+            return true;
+        }
+
+        /// <summary>Called during RunGun.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleRunGun()
+        {
+            return true;
+        }
+
+        /// <summary>Called during RunFiring.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleRunFiring()
+        {
+            return true;
+        }
+
+        /// <summary>Called during RunAvatarFiring.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleRunAvatarFiring()
+        {
+            return true;
+        }
+
+        /// <summary>Called during floor constraint check.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleConstrainToFloor()
+        {
+            return true;
+        }
+
+        /// <summary>Called during ceiling constraint check.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleConstrainToCeiling()
+        {
+            return true;
+        }
+
+        /// <summary>Called during wall constraint check.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleConstrainToWalls()
+        {
+            return true;
+        }
+
+        /// <summary>Called during IsOverLadder check.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleIsOverLadder()
+        {
+            return true;
+        }
+
+        /// <summary>Called when WallDrag is being set.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleWallDrag(bool value)
+        {
+            return true;
+        }
+
+        /// <summary>Called during jumping frame animation.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleAnimateActualJumpingFrames()
+        {
+            return true;
+        }
+
+        /// <summary>Called before Land.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleLand()
+        {
+            return true;
+        }
+
+        /// <summary>Called after Land has run.</summary>
+        public virtual void HandleAfterLand()
+        {
+        }
+
+        /// <summary>Called after ChangeFrame has run.</summary>
+        public virtual void HandleAfterChangeFrame()
+        {
+        }
+
+        /// <summary>Called when the special button is released.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleReleaseSpecial()
+        {
+            return true;
+        }
+
+        /// <summary>Called during MustIgnoreHighFiveMeleePress to allow side effects before the base check runs.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleMustIgnoreHighFiveMeleePress()
+        {
+            return true;
+        }
+
+        /// <summary>Called after AnimateActualNewRunningFrames has run.</summary>
+        public virtual void HandleAfterAnimateNewRunningFrames()
+        {
+        }
+
+        /// <summary>Called when the camera queries the bro's follow position.</summary>
+        /// <returns>True to run original, false to use the provided result.</returns>
+        public virtual bool HandleGetFollowPosition(ref Vector3 result)
+        {
+            return true;
+        }
+
+        /// <summary>Called during IsInStealthMode check.</summary>
+        /// <returns>True to run original, false to force stealth mode active.</returns>
+        public virtual bool HandleIsInStealthMode()
+        {
+            return true;
+        }
+
+        /// <summary>Called during AlertNearbyMooks.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleAlertNearbyMooks()
+        {
+            return true;
+        }
+
+        /// <summary>Called when the bro is gibbed.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleGib(DamageType damageType, float xI, float yI)
+        {
+            return true;
+        }
+
+        /// <summary>Called when the bro is recalled (e.g., level extraction).</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleRecallBro()
+        {
+            return true;
+        }
+
+        /// <summary>Called after RecallBro has run.</summary>
+        public virtual void HandleAfterRecallBro()
+        {
+        }
+
+        /// <summary>Called when the bro attaches to the extraction helicopter.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleAttachToHeli()
+        {
+            return true;
+        }
+
+        /// <summary>Called when the bro hits a ceiling.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleHitCeiling()
+        {
+            return true;
+        }
+
+        /// <summary>Called after HitCeiling has run.</summary>
+        public virtual void HandleAfterHitCeiling()
+        {
+        }
+
+        /// <summary>Called when the bro hits a left wall.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleHitLeftWall()
+        {
+            return true;
+        }
+
+        /// <summary>Called after HitLeftWall has run.</summary>
+        public virtual void HandleAfterHitLeftWall()
+        {
+        }
+
+        /// <summary>Called when the bro hits a right wall.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleHitRightWall()
+        {
+            return true;
+        }
+
+        /// <summary>Called after HitRightWall has run.</summary>
+        public virtual void HandleAfterHitRightWall()
+        {
+        }
+
+        /// <summary>Called during wall drag Y velocity clamping.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleClampWallDragYI(ref float yIT)
+        {
+            return true;
+        }
+
+        /// <summary>Called during RunHanging.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleRunHanging()
+        {
+            return true;
+        }
+
+        /// <summary>Called during CanCheckClimbAlongCeiling.</summary>
+        /// <returns>True to run original, false to use the provided result.</returns>
+        public virtual bool HandleCanCheckClimbAlongCeiling(ref bool result)
+        {
+            return true;
+        }
+
+        /// <summary>Called during CheckClimbAlongCeiling.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleCheckClimbAlongCeiling()
+        {
+            return true;
+        }
+
+        /// <summary>Called after CheckInput has run.</summary>
+        public virtual void HandleAfterCheckInput()
+        {
+        }
+
+        /// <summary>Called during AirDashDown.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleAirDashDown()
+        {
+            return true;
+        }
+
+        /// <summary>Called during RunDownwardDash.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleRunDownwardDash()
+        {
+            return true;
+        }
+
+        /// <summary>Called after RunDownwardDash has run.</summary>
+        public virtual void HandleAfterRunDownwardDash()
+        {
+        }
+
+        /// <summary>Called during IsAlive check.</summary>
+        /// <returns>True to run original, false to use the provided result.</returns>
+        public virtual bool HandleIsAlive(ref bool result)
+        {
+            return true;
+        }
+
+        /// <summary>Called during Revive.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleRevive(int playerNum, bool isUnderPlayerControl, TestVanDammeAnim reviveSource)
+        {
+            return true;
+        }
+
+        /// <summary>Called after Revive has run.</summary>
+        public virtual void HandleAfterRevive(int playerNum, bool isUnderPlayerControl, TestVanDammeAnim reviveSource)
+        {
+        }
+
+        /// <summary>Called during UseSteroids.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleUseSteroids()
+        {
+            return true;
+        }
+
+        /// <summary>Called after UseSteroids has run.</summary>
+        public virtual void HandleAfterUseSteroids()
+        {
+        }
+
+        /// <summary>Called during CheckNotifyDeathType.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleCheckNotifyDeathType()
+        {
+            return true;
+        }
+
+        /// <summary>Called during ApplyFallingGravity.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleApplyFallingGravity()
+        {
+            return true;
+        }
+
+        /// <summary>Called during SetDeltaTime.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleSetDeltaTime()
+        {
+            return true;
+        }
+
+        /// <summary>Called during CanInseminate check.</summary>
+        /// <returns>True to run original, false to use the provided result.</returns>
+        public virtual bool HandleCanInseminate(ref bool result)
+        {
+            return true;
+        }
+
+        /// <summary>Called when the bro starts piloting a unit.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleStartPilotingUnit()
+        {
+            return true;
+        }
+
+        /// <summary>Called during LateUpdate.</summary>
+        public virtual void HandleLateUpdate()
+        {
+        }
+
+        /// <summary>Called during CheckForTraps.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleCheckForTraps()
+        {
+            return true;
+        }
+
+        /// <summary>Called before this ability is replaced by another. Override to destroy any
+        /// components or child objects created during Initialize.</summary>
+        public virtual void Cleanup()
+        {
         }
     }
 }
