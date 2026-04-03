@@ -7,8 +7,7 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("TankBro")]
     public class TankBroSpecial : GrenadeThrowSpecial
     {
-        [JsonIgnore]
-        protected AudioClip whistle;
+        public AudioClip whistle;
 
         public TankBroSpecial()
         {

@@ -35,10 +35,8 @@ namespace BroMakerLib.Vanilla.Specials
         private Vector3 lastFlamePos;
         [JsonIgnore]
         private AudioSource jetpackAudio;
-        [JsonIgnore]
-        private AudioClip jetpackLiftSound;
-        [JsonIgnore]
-        private AudioClip jetpackDiveSound;
+        public AudioClip jetpackLiftSound;
+        public AudioClip jetpackDiveSound;
         [JsonIgnore]
         private FlameWallExplosion liftOffBlastFlameWall;
 
@@ -94,8 +92,10 @@ namespace BroMakerLib.Vanilla.Specials
             }
             if (brocketeer != null)
             {
-                jetpackLiftSound = brocketeer.jetpackLiftSound;
-                jetpackDiveSound = brocketeer.jetpackDiveSound;
+                if (jetpackLiftSound == null)
+                    jetpackLiftSound = brocketeer.jetpackLiftSound;
+                if (jetpackDiveSound == null)
+                    jetpackDiveSound = brocketeer.jetpackDiveSound;
                 liftOffBlastFlameWall = brocketeer.liftOffBlastFlameWall;
                 hoverDuration = brocketeer.hoverDuration;
                 hoverSinStart = brocketeer.hoverSinStart;

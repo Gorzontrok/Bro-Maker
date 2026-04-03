@@ -19,6 +19,10 @@ namespace BroMakerLib.Vanilla.Specials
             {
                 specialAttackSounds = sourceBro.soundHolder.specialAttackSounds;
             }
+            if (special2Sounds == null)
+            {
+                special2Sounds = sourceBro.soundHolder.special2Sounds;
+            }
             if (owner.faderSpritePrefab == null)
             {
                 owner.faderSpritePrefab = sourceBro.faderSpritePrefab;
@@ -33,6 +37,7 @@ namespace BroMakerLib.Vanilla.Specials
         public int terrainDamage = 3;
         public float impaleDamage = 5;
         public float sliceVolume = 0.7f;
+        public AudioClip[] special2Sounds;
         public int dashSpriteRow = 1;
         public int dashSpriteColumn = 23;
         public int dashGunColumn = 11;
@@ -149,7 +154,7 @@ namespace BroMakerLib.Vanilla.Specials
             if (impaledUnits.Count > 0)
             {
                 SortOfFollow.Shake(0.6f);
-                sound.PlaySoundEffectAt(soundHolder.special2Sounds, sliceVolume * 2f, owner.transform.position, 1f, true, false, false, 0f);
+                sound.PlaySoundEffectAt(special2Sounds, sliceVolume * 2f, owner.transform.position, 1f, true, false, false, 0f);
             }
             for (int i = impaledUnits.Count - 1; i >= 0; i--)
             {

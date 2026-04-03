@@ -12,6 +12,7 @@ namespace BroMakerLib.Loaders
             { "Grenade", "networkobjects:Grenade" },
             { "Default", "networkobjects:Grenade" },
             { "Martini", "networkobjects:Martini Grenade" },
+            { "MartiniGlass", "networkobjects:Martini Grenade" },
             { "TearGas", "networkobjects:GrenadeTearGas" },
             { "FlameWave", "networkobjects:GrenadeFlameWave" },
             { "AirStrike", "networkobjects:Grenade Airstrike" },

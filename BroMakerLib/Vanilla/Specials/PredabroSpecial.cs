@@ -19,7 +19,7 @@ namespace BroMakerLib.Vanilla.Specials
             finish
         }
 
-        public float stealthModeDuration = 20f;
+        public float stealthModeDuration = 4f;
         public float scanRange = 250f;
         public float maxPulseTime = 3.3f;
         public float emptyPulseTime = 1.3f;
@@ -75,7 +75,7 @@ namespace BroMakerLib.Vanilla.Specials
         [JsonIgnore]
         private int glitchFrame;
         [JsonIgnore]
-        private float glitchFrameRate = 0.2f;
+        private float glitchFrameRate = 0.025f;
         [JsonIgnore]
         private int warningBeepCount;
         [JsonIgnore]
@@ -102,10 +102,8 @@ namespace BroMakerLib.Vanilla.Specials
         private Projectile shoulderCannonBullet;
         [JsonIgnore]
         private PredabroTarget targetPrefab;
-        [JsonIgnore]
-        private AudioClip cloakingSound;
-        [JsonIgnore]
-        private AudioClip lazerCannonSound;
+        public AudioClip cloakingSound;
+        public AudioClip lazerCannonSound;
         [JsonIgnore]
         private Transform shoulderCannonSprite;
         [JsonIgnore]
@@ -118,8 +116,6 @@ namespace BroMakerLib.Vanilla.Specials
         public override void Initialize(TestVanDammeAnim owner)
         {
             base.Initialize(owner);
-            normalMaterial = owner.GetComponent<Renderer>().sharedMaterial;
-            normalGunMaterial = owner.gunSprite.GetComponent<Renderer>().sharedMaterial;
 
             var predabro = owner as Predabro;
             var prefab = HeroController.GetHeroPrefab(HeroType.Predabro) as Predabro;
@@ -130,8 +126,10 @@ namespace BroMakerLib.Vanilla.Specials
                 stealthGunMaterial = source.stealthGunMaterial;
                 shoulderCannonBullet = source.shoulderCannonBullet;
                 targetPrefab = source.targetPrefab;
-                cloakingSound = source.cloakingSound;
-                lazerCannonSound = source.lazerCannonSound;
+                if (cloakingSound == null)
+                    cloakingSound = source.cloakingSound;
+                if (lazerCannonSound == null)
+                    lazerCannonSound = source.lazerCannonSound;
                 selfDestructSound = source.selfDestructSoundSound;
                 hudSpecialCountDownMaterials = source.hudSpecialCountDownMaterials;
             }
@@ -146,15 +144,18 @@ namespace BroMakerLib.Vanilla.Specials
             else if (prefab != null)
             {
                 // Instantiate child objects from prefab for non-Predabro owners
-                if (prefab.shoulderCannonSprite != null)
-                {
-                    shoulderCannonSprite = Object.Instantiate(prefab.shoulderCannonSprite, owner.transform);
-                    shoulderCannonSprite.localPosition = prefab.shoulderCannonSprite.localPosition;
-                }
+                // Base sprite must be created first as parent for the cannon
+                Transform cannonParent = owner.transform;
                 if (prefab.shoulderCannonBaseSprite != null)
                 {
                     var baseSprite = Object.Instantiate(prefab.shoulderCannonBaseSprite, owner.transform);
                     baseSprite.transform.localPosition = prefab.shoulderCannonBaseSprite.transform.localPosition;
+                    cannonParent = baseSprite.transform;
+                }
+                if (prefab.shoulderCannonSprite != null)
+                {
+                    shoulderCannonSprite = Object.Instantiate(prefab.shoulderCannonSprite, cannonParent);
+                    shoulderCannonSprite.localPosition = prefab.shoulderCannonSprite.localPosition;
                 }
                 if (prefab.outlineSprite != null)
                 {
@@ -168,15 +169,19 @@ namespace BroMakerLib.Vanilla.Specials
                     searchRing.transform.localPosition = prefab.searchRing.transform.localPosition;
                     searchRing.gameObject.SetActive(false);
                 }
-                if (prefab.laserSightLazers != null && prefab.laserSightLazers.Length > 0)
+                if (prefab.laserSightLazers != null && prefab.laserSightLazers.Length > 0 && shoulderCannonSprite != null)
                 {
+                    // Find the lazers inside the already-instantiated cannon hierarchy
+                    // rather than creating separate copies
                     laserSightLazers = new SpriteSM[prefab.laserSightLazers.Length];
-                    for (int i = 0; i < prefab.laserSightLazers.Length; i++)
+                    var allLazers = shoulderCannonSprite.GetComponentsInChildren<SpriteSM>(true);
+                    int found = 0;
+                    foreach (var lazer in allLazers)
                     {
-                        if (prefab.laserSightLazers[i] != null && shoulderCannonSprite != null)
+                        if (lazer.transform != shoulderCannonSprite && lazer.name.Contains("Lazer") && found < laserSightLazers.Length)
                         {
-                            laserSightLazers[i] = Object.Instantiate(prefab.laserSightLazers[i], shoulderCannonSprite);
-                            laserSightLazers[i].transform.localPosition = prefab.laserSightLazers[i].transform.localPosition;
+                            laserSightLazers[found] = lazer;
+                            found++;
                         }
                     }
                 }
@@ -200,6 +205,11 @@ namespace BroMakerLib.Vanilla.Specials
             if (scanning)
             {
                 return;
+            }
+            if (normalMaterial == null)
+            {
+                normalMaterial = owner.GetComponent<Renderer>().sharedMaterial;
+                normalGunMaterial = owner.gunSprite.GetComponent<Renderer>().sharedMaterial;
             }
             owner.SpecialAmmo--;
             Map.ForgetPlayer(PlayerNum, true, false);

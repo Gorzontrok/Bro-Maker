@@ -30,10 +30,10 @@ namespace BroMakerLib.Abilities
         [JsonIgnore]
         protected SoundHolder soundHolder => owner.soundHolder;
 
-        public int animationRow = 1;
-        public int animationColumn = 16;
-        public int animationFrameCount = 5;
-        public int triggerFrame = 2;
+        public int animationRow = 5;
+        public int animationColumn = 17;
+        public int animationFrameCount = 8;
+        public int triggerFrame = 4;
         public float frameRate = 0.0334f;
         public float spawnOffsetX = 0f;
         public float spawnOffsetY = 0f;
@@ -136,6 +136,12 @@ namespace BroMakerLib.Abilities
         /// <summary>Called during CanReduceLives check.</summary>
         /// <returns>True to run original, false to force the provided result.</returns>
         public virtual bool HandleCanReduceLives(ref bool result)
+        {
+            return true;
+        }
+
+        /// <summary>Called before the bro's base Update. Return false to skip base.Update() entirely.</summary>
+        public virtual bool HandleUpdate()
         {
             return true;
         }
@@ -317,6 +323,11 @@ namespace BroMakerLib.Abilities
 
         /// <summary>Called after ChangeFrame has run.</summary>
         public virtual void HandleAfterChangeFrame()
+        {
+        }
+
+        /// <summary>Called after IncreaseFrame has run (once per animation frame advance).</summary>
+        public virtual void HandleAfterIncreaseFrame()
         {
         }
 

@@ -30,8 +30,7 @@ namespace BroMakerLib.Vanilla.Specials
         private SpriteSM teleportOutAnimation;
         [JsonIgnore]
         private SpriteSM teleportInAnimation;
-        [JsonIgnore]
-        private AudioClip teleportSound;
+        public AudioClip teleportSound;
         [JsonIgnore]
         private Material coveredInBloodMaterial;
 
@@ -48,7 +47,8 @@ namespace BroMakerLib.Vanilla.Specials
             {
                 teleportOutAnimation = brondleFly.teleportOutAnimation;
                 teleportInAnimation = brondleFly.teleportInAnimation;
-                teleportSound = brondleFly.teleportSound;
+                if (teleportSound == null)
+                    teleportSound = brondleFly.teleportSound;
                 coveredInBloodMaterial = brondleFly.coveredInBloodMaterial;
             }
         }

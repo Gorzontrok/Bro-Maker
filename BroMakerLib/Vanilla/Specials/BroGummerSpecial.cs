@@ -112,9 +112,7 @@ namespace BroMakerLib.Vanilla.Specials
                     {
                         targetSystem = Networking.Networking.Instantiate(targetSystemPrefab,
                             owner.transform.position + Vector3.up * 6.5f, Quaternion.identity, null, false);
-                        Networking.Networking.RPC<Unit, DirectionEnum>(PID.TargetAll,
-                            new RpcSignature<Unit, DirectionEnum>(targetSystem.SetupTargetting),
-                            owner, direction, false);
+                        targetSystem.SetupTargetting(owner, direction);
                     }
                     targettedUnits = new List<BroforceObject>();
                     currentTargetingObjectStreak = new List<TargetableObject>();

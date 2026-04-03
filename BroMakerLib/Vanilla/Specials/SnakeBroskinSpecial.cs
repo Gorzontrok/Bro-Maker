@@ -73,6 +73,8 @@ namespace BroMakerLib.Vanilla.Specials
             if (snakeBroskin != null)
             {
                 hologramMaterial = snakeBroskin.hologramMaterial;
+                if (faderSpritePrefab == null)
+                    faderSpritePrefab = snakeBroskin.faderSpritePrefab;
                 if (throwSounds == null) throwSounds = snakeBroskin.soundHolder.throwSounds;
                 if (special2Sounds == null) special2Sounds = snakeBroskin.soundHolder.special2Sounds;
             }
@@ -174,11 +176,20 @@ namespace BroMakerLib.Vanilla.Specials
             return true;
         }
 
+        public override bool HandleUpdate()
+        {
+            if (fadeToHolo)
+            {
+                return false;
+            }
+            return true;
+        }
+
         public override void Update()
         {
             if (fadeToHolo)
             {
-                fadeToHoloTimeLeft -= hero.DeltaTime;
+                fadeToHoloTimeLeft -= Time.deltaTime;
                 if (fadeToHoloTimeLeft < 0f)
                 {
                     fadeToHolo = false;

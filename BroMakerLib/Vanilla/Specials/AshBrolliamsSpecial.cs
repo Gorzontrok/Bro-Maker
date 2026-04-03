@@ -47,14 +47,12 @@ namespace BroMakerLib.Vanilla.Specials
         private bool haveSwitchedMaterial;
         [JsonIgnore]
         private bool hitChainsawLastFrame;
+        public AudioClip[] effortSounds;
         [JsonIgnore]
         private AudioSource chainsawAudio;
-        [JsonIgnore]
-        private AudioClip chainsawStart;
-        [JsonIgnore]
-        private AudioClip chainsawSpin;
-        [JsonIgnore]
-        private AudioClip chainsawWindDown;
+        public AudioClip chainsawStart;
+        public AudioClip chainsawSpin;
+        public AudioClip chainsawWindDown;
         [JsonIgnore]
         private Material bloodyAvatar;
 
@@ -77,10 +75,15 @@ namespace BroMakerLib.Vanilla.Specials
             }
             if (ashBrolliams != null)
             {
-                chainsawStart = ashBrolliams.chainsawStart;
-                chainsawSpin = ashBrolliams.chainsawSpin;
-                chainsawWindDown = ashBrolliams.chainsawWindDown;
+                if (chainsawStart == null)
+                    chainsawStart = ashBrolliams.chainsawStart;
+                if (chainsawSpin == null)
+                    chainsawSpin = ashBrolliams.chainsawSpin;
+                if (chainsawWindDown == null)
+                    chainsawWindDown = ashBrolliams.chainsawWindDown;
                 bloodyAvatar = ashBrolliams.bloodyAvatar;
+                if (effortSounds == null)
+                    effortSounds = ashBrolliams.soundHolder.effortSounds;
             }
         }
 
@@ -151,7 +154,7 @@ namespace BroMakerLib.Vanilla.Specials
                     owner.transform.localScale.x * chainsawHitXI, chainsawHitYI,
                     false, true, true, true, ref bloodColor, null, false))
                 {
-                    sound.PlaySoundEffectAt(soundHolder.effortSounds, 0.5f, owner.transform.position, 1f, true, false, false, 0f);
+                    sound.PlaySoundEffectAt(effortSounds, 0.5f, owner.transform.position, 1f, true, false, false, 0f);
                     if (bloodColor == BloodColor.Green || bloodColor == BloodColor.Red)
                     {
                         EffectsController.CreateBloodParticles(bloodColor,

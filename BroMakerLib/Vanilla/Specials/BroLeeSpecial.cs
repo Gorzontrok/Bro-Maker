@@ -18,6 +18,9 @@ namespace BroMakerLib.Vanilla.Specials
         public float special4SoundVolume = 0.5f;
         public float attackSoundVolume = 0.6f;
         public AudioClip[] special4Sounds;
+        public AudioClip[] special2Sounds;
+        public AudioClip[] attack2Sounds;
+        public AudioClip[] attack3Sounds;
         public int attackForwardsStrikeFrame = 2;
         public int attackUpwardsStrikeFrame = 2;
         public int attackDownwardsStrikeFrame = 3;
@@ -89,6 +92,14 @@ namespace BroMakerLib.Vanilla.Specials
                     special4Sounds = broLee.soundHolder.special4Sounds;
                 if (attackSounds == null)
                     attackSounds = broLee.soundHolder.attackSounds;
+                if (specialAttackSounds == null)
+                    specialAttackSounds = broLee.soundHolder.specialAttackSounds;
+                if (special2Sounds == null)
+                    special2Sounds = broLee.soundHolder.special2Sounds;
+                if (attack2Sounds == null)
+                    attack2Sounds = broLee.soundHolder.attack2Sounds;
+                if (attack3Sounds == null)
+                    attack3Sounds = broLee.soundHolder.attack3Sounds;
                 if (owner.faderSpritePrefab == null)
                     owner.faderSpritePrefab = broLee.faderSpritePrefab;
             }
@@ -109,7 +120,7 @@ namespace BroMakerLib.Vanilla.Specials
                 owner.SpecialAmmo--;
                 UseSpecial();
                 Sound.GetInstance().PlaySoundEffectAt(special4Sounds, special4SoundVolume, owner.transform.position, 1f + owner.pitchShiftAmount, true, false, false, 0f);
-                Sound.GetInstance().PlaySoundEffectAt(soundHolder.specialAttackSounds, specialSoundVolume,
+                Sound.GetInstance().PlaySoundEffectAt(specialAttackSounds, specialSoundVolume,
                     owner.transform.position, 1f, true, false, false, 0f);
             }
             else
@@ -167,6 +178,14 @@ namespace BroMakerLib.Vanilla.Specials
             else
             {
                 hero.UsingSpecial = false;
+            }
+        }
+
+        public override void HandleAfterIncreaseFrame()
+        {
+            if (attackUpwards || attackDownwards || attackForwards)
+            {
+                attackFrames++;
             }
         }
 
@@ -363,7 +382,7 @@ namespace BroMakerLib.Vanilla.Specials
 
         private void PlaySliceSound()
         {
-            sound.PlaySoundEffectAt(soundHolder.special2Sounds, 0.7f, owner.transform.position, 1f, true, false, false, 0f);
+            sound.PlaySoundEffectAt(special2Sounds, 0.7f, owner.transform.position, 1f, true, false, false, 0f);
         }
 
         private void OnHitForward()
@@ -581,7 +600,7 @@ namespace BroMakerLib.Vanilla.Specials
                     owner.xI, 0f, hit.point.x, hit.point.y);
                 hasHitWithWall = true;
                 attackHasHit = true;
-                sound.PlaySoundEffectAt(soundHolder.attack2Sounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
+                sound.PlaySoundEffectAt(attack2Sounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
             }
         }
 
@@ -606,7 +625,7 @@ namespace BroMakerLib.Vanilla.Specials
             if (Time.time - lastBroceLeeSoundTime > 0.3f || hero.UsingSpecial)
             {
                 lastBroceLeeSoundTime = Time.time;
-                Sound.GetInstance().PlaySoundEffectAt(soundHolder.attack3Sounds, attackSoundVolume,
+                Sound.GetInstance().PlaySoundEffectAt(attack3Sounds, attackSoundVolume,
                     owner.transform.position, 1f, true, false, false, 0f);
             }
         }

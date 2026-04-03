@@ -117,7 +117,7 @@ namespace BroMakerLib.Vanilla.Specials
                 {
                     dir = DirectionEnum.Left;
                 }
-                global::Networking.Networking.RPC<int, TestVanDammeAnim, DirectionEnum>(PID.TargetAll, new RpcSignature<int, TestVanDammeAnim, DirectionEnum>(wave.Setup), PlayerNum, owner, dir, false);
+                wave.Setup(PlayerNum, owner, dir);
                 hero.PressSpecialFacingDirection = 0;
             }
             else

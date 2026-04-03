@@ -65,6 +65,8 @@ namespace BroMakerLib.Vanilla.Specials
                 maxSpecialAmmo = brolander.maxSpecialAmmo;
                 enemiesSlainPerPowerValue = brolander.enemiesSlainPerPowerValue;
                 zapper = brolander.zapper;
+                if (specialAttackSounds == null)
+                    specialAttackSounds = brolander.soundHolder.specialAttackSounds;
             }
 
             var ownerBrolander = owner as TheBrolander;
@@ -193,7 +195,7 @@ namespace BroMakerLib.Vanilla.Specials
                 owner.CallMethod("CreateElectricShockPuff", 2f);
                 owner.X -= owner.transform.localScale.x * 3f;
             }
-            Sound.GetInstance().PlaySoundEffectAt(soundHolder.specialAttackSounds, 0.5f, owner.transform.position, 1f + owner.pitchShiftAmount, true, false, false, 0f);
+            Sound.GetInstance().PlaySoundEffectAt(specialAttackSounds, 0.5f, owner.transform.position, 1f + owner.pitchShiftAmount, true, false, false, 0f);
             SortOfFollow.Shake(0.2f);
             FullScreenFlashEffect.FlashLightning(0.3f);
             if (zapCount % 3 == 1)
@@ -385,7 +387,7 @@ namespace BroMakerLib.Vanilla.Specials
                         zapper.Create(vector2 + vector * 100f, vector2, new DamageObject(5, DamageType.Plasma, 0f, 0f, X, Y, owner), null, null, -1, -1, 0);
                     }
                     levelUpZapCounter -= 0.2f;
-                    Sound.GetInstance().PlaySoundEffectAt(soundHolder.specialAttackSounds, 0.23f, owner.transform.position, 1f + owner.pitchShiftAmount, true, false, false, 0f);
+                    Sound.GetInstance().PlaySoundEffectAt(specialAttackSounds, 0.23f, owner.transform.position, 1f + owner.pitchShiftAmount, true, false, false, 0f);
                     owner.CallMethod("CreateElectricShockPuff", 3f);
                     levelUpZapCount++;
                     if (levelUpZapCount % 2 == 0)
@@ -405,7 +407,7 @@ namespace BroMakerLib.Vanilla.Specials
                     leveledUpTrailCount++;
                     if (leveledUpTrailCount % 15 == 0)
                     {
-                        Sound.GetInstance().PlaySoundEffectAt(soundHolder.specialAttackSounds, 0.13f, owner.transform.position, 1f + owner.pitchShiftAmount, true, false, false, 0f);
+                        Sound.GetInstance().PlaySoundEffectAt(specialAttackSounds, 0.13f, owner.transform.position, 1f + owner.pitchShiftAmount, true, false, false, 0f);
                         owner.CallMethod("CreateElectricShockPuff", 3f);
                         Map.HitUnits(owner, PlayerNum, 3, 1, DamageType.Plasma, 14f, 10f, X, Y + 4f, 0f, 0f, true, false, true, alreadyHit, false, false);
                         alreadyHit.Clear();
@@ -422,7 +424,7 @@ namespace BroMakerLib.Vanilla.Specials
                     leveledUpTrailCount++;
                     if (leveledUpTrailCount % 25 == 0)
                     {
-                        Sound.GetInstance().PlaySoundEffectAt(soundHolder.specialAttackSounds, 0.13f, owner.transform.position, 1f + owner.pitchShiftAmount, true, false, false, 0f);
+                        Sound.GetInstance().PlaySoundEffectAt(specialAttackSounds, 0.13f, owner.transform.position, 1f + owner.pitchShiftAmount, true, false, false, 0f);
                         owner.CallMethod("CreateElectricShockPuff", 3f);
                         Map.HitUnits(owner, PlayerNum, 3, 1, DamageType.Plasma, 14f, 10f, X, Y + 4f, 0f, 0f, true, false, true, alreadyHit, false, false);
                         alreadyHit.Clear();

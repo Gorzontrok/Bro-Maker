@@ -1,5 +1,6 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
+using Newtonsoft.Json;
 using RocketLib.Extensions;
 using UnityEngine;
 
@@ -13,6 +14,22 @@ namespace BroMakerLib.Vanilla.Specials
         public float colorShiftDuration = 2.2f;
         public float soundVolume = 0.7f;
 
+        public AudioClip[] special3Sounds;
+
+        public override void Initialize(TestVanDammeAnim owner)
+        {
+            base.Initialize(owner);
+            if (special3Sounds == null)
+            {
+                var prefab = HeroController.GetHeroPrefab(HeroType.TimeBroVanDamme);
+                var sourceBro = prefab.GetComponent<TestVanDammeAnim>();
+                if (sourceBro != null)
+                {
+                    special3Sounds = sourceBro.soundHolder.special3Sounds;
+                }
+            }
+        }
+
         public TimeBroVanDammeSpecial()
         {
             animationColumn = 17;
@@ -25,7 +42,7 @@ namespace BroMakerLib.Vanilla.Specials
         {
             if (owner.SpecialAmmo > 0)
             {
-                Sound.GetInstance().PlaySoundEffect(soundHolder.special3Sounds, soundVolume, 1f);
+                Sound.GetInstance().PlaySoundEffect(special3Sounds, soundVolume, 1f);
                 owner.SpecialAmmo--;
                 if (owner.IsMine)
                 {

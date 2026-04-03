@@ -19,6 +19,10 @@ namespace BroMakerLib.Vanilla.Specials
             {
                 specialAttackSounds = sourceBro.soundHolder.specialAttackSounds;
             }
+            if (special2Sounds == null)
+            {
+                special2Sounds = sourceBro.soundHolder.special2Sounds;
+            }
             if (owner.faderSpritePrefab == null)
             {
                 owner.faderSpritePrefab = sourceBro.faderSpritePrefab;
@@ -36,6 +40,7 @@ namespace BroMakerLib.Vanilla.Specials
         public float impaleRange = 8f;
         public float impaleSearchAhead = 12f;
         public float sliceVolume = 0.3f;
+        public AudioClip[] special2Sounds;
         public float postDashXIBlast = -170f;
         public float postDashSpinUpTime = 0.11f;
         public int spinSpriteColumn = 11;
@@ -169,7 +174,7 @@ namespace BroMakerLib.Vanilla.Specials
             if (impaledUnits.Count > 0)
             {
                 SortOfFollow.Shake(0.6f);
-                sound.PlaySoundEffectAt(soundHolder.special2Sounds, sliceVolume * 2f, owner.transform.position, 1f, true, false, false, 0f);
+                sound.PlaySoundEffectAt(special2Sounds, sliceVolume * 2f, owner.transform.position, 1f, true, false, false, 0f);
             }
             UnimpaleAll();
             owner.yI = owner.jumpForce;

@@ -74,6 +74,12 @@ namespace BroMakerLib.Vanilla.Bros
 
         protected override void Update()
         {
+            if (specialAbility != null && !specialAbility.HandleUpdate())
+            {
+                specialAbility.Update();
+                meleeAbility?.Update();
+                return;
+            }
             base.Update();
             specialAbility?.Update();
             meleeAbility?.Update();
@@ -574,6 +580,12 @@ namespace BroMakerLib.Vanilla.Bros
             }
             base.ChangeFrame();
             specialAbility?.HandleAfterChangeFrame();
+        }
+
+        protected override void IncreaseFrame()
+        {
+            base.IncreaseFrame();
+            specialAbility?.HandleAfterIncreaseFrame();
         }
 
         protected override void RunGun()

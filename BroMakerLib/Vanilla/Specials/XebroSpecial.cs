@@ -34,6 +34,10 @@ namespace BroMakerLib.Vanilla.Specials
             if (xebro != null)
             {
                 chakramPrefab = xebro.chakramPrefab;
+                if (throwSounds == null)
+                {
+                    throwSounds = xebro.soundHolder.throwSounds;
+                }
             }
         }
 
@@ -59,7 +63,7 @@ namespace BroMakerLib.Vanilla.Specials
             Vector3 normalized = vector.normalized;
             var chakram = ProjectileController.SpawnProjectileOverNetwork(chakramPrefab, owner, X + Direction * spawnOffsetX, Y + spawnOffsetY, normalized.x, normalized.y, true, PlayerNum, false, false, 0f) as Chakram;
             thrownChakram.Add(chakram);
-            Sound.GetInstance().PlaySoundEffectAt(soundHolder.throwSounds, throwSoundVolume, owner.transform.position, 1f, true, false, false, 0f);
+            Sound.GetInstance().PlaySoundEffectAt(throwSounds, throwSoundVolume, owner.transform.position, 1f, true, false, false, 0f);
             var broBase = owner as BroBase;
             if (broBase != null) broBase.meleeType = BroBase.MeleeType.Custom;
         }

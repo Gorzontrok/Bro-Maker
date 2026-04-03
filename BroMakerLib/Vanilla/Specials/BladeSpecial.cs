@@ -18,6 +18,10 @@ namespace BroMakerLib.Vanilla.Specials
             {
                 specialAttackSounds = sourceBro.soundHolder.specialAttackSounds;
             }
+            if (attackSounds == null)
+            {
+                attackSounds = sourceBro.soundHolder.attackSounds;
+            }
             if (owner.faderSpritePrefab == null)
             {
                 owner.faderSpritePrefab = sourceBro.faderSpritePrefab;
@@ -141,7 +145,7 @@ namespace BroMakerLib.Vanilla.Specials
             hero.FrameRate = 0.025f;
             if (owner.frame % 4 == 0)
             {
-                sound.PlaySoundEffectAt(soundHolder.attackSounds, 0.3f, owner.transform.position, 1.5f, true, false, false, 0f);
+                sound.PlaySoundEffectAt(attackSounds, 0.3f, owner.transform.position, 1.5f, true, false, false, 0f);
                 if (showSlashEffect)
                 {
                     EffectsController.CreateMeleeStrikeLargeEffect(X + Mathf.Sign(owner.xI) * 22f, Y + 8f, -owner.xI * 0.2f, 0f);

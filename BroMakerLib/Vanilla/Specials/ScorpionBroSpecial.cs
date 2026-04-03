@@ -28,6 +28,8 @@ namespace BroMakerLib.Vanilla.Specials
         private float defaultJumpForce;
         [JsonIgnore]
         private Material scorpionModeMaterial;
+        [JsonIgnore]
+        private Material normalMaterial;
 
         public override void Initialize(TestVanDammeAnim owner)
         {
@@ -77,6 +79,10 @@ namespace BroMakerLib.Vanilla.Specials
 
         private void EnterScorpionMode()
         {
+            if (normalMaterial == null)
+            {
+                normalMaterial = owner.GetComponent<Renderer>().sharedMaterial;
+            }
             isInScorpionMode = true;
             scorpionModeTimer = 20f;
             isLaunching = false;
@@ -92,7 +98,10 @@ namespace BroMakerLib.Vanilla.Specials
             isInScorpionMode = false;
             owner.jumpForce = defaultJumpForce;
             isLaunching = false;
-            owner.GetComponent<Renderer>().sharedMaterial = owner.GetFieldValue<Material>("defaultMaterial");
+            if (normalMaterial != null)
+            {
+                owner.GetComponent<Renderer>().sharedMaterial = normalMaterial;
+            }
             hero.ActivateGun();
         }
 

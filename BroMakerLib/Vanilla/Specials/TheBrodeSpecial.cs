@@ -12,10 +12,18 @@ namespace BroMakerLib.Vanilla.Specials
         public override void Initialize(TestVanDammeAnim owner)
         {
             base.Initialize(owner);
+            var prefab = HeroController.GetHeroPrefab(HeroType.TheBrode);
+            var sourceBro = prefab.GetComponent<TestVanDammeAnim>();
+            if (specialAttackSounds == null)
+            {
+                specialAttackSounds = sourceBro.soundHolder.specialAttackSounds;
+            }
+            if (special3Sounds == null)
+            {
+                special3Sounds = sourceBro.soundHolder.special3Sounds;
+            }
             if (owner.faderSpritePrefab == null)
             {
-                var prefab = HeroController.GetHeroPrefab(HeroType.TheBrode);
-                var sourceBro = prefab.GetComponent<TestVanDammeAnim>();
                 owner.faderSpritePrefab = sourceBro.faderSpritePrefab;
             }
         }
@@ -35,6 +43,7 @@ namespace BroMakerLib.Vanilla.Specials
         public int maxHoldFrames = 10;
         public float cooldownSpeedMultiplier = 0.5f;
 
+        public AudioClip[] special3Sounds;
         [JsonIgnore]
         private int punchHoldFrames;
         [JsonIgnore]
@@ -63,7 +72,7 @@ namespace BroMakerLib.Vanilla.Specials
                 hero.UsingSpecial = true;
                 owner.frame = 0;
                 hero.PressSpecialFacingDirection = (int)owner.transform.localScale.x;
-                Sound.GetInstance().PlaySoundEffectAt(soundHolder.specialAttackSounds, specialSoundVolume,
+                Sound.GetInstance().PlaySoundEffectAt(specialAttackSounds, specialSoundVolume,
                     owner.transform.position, 1f, true, false, false, 0f);
             }
             else
@@ -102,7 +111,7 @@ namespace BroMakerLib.Vanilla.Specials
                     owner.transform.localScale.x * palmXI, palmYI, false, true))
                 {
                     SortOfFollow.Shake(hitShakeAmount, hitShakeDuration);
-                    Sound.GetInstance().PlaySoundEffectAt(soundHolder.special3Sounds, specialSoundVolume,
+                    Sound.GetInstance().PlaySoundEffectAt(special3Sounds, specialSoundVolume,
                         owner.transform.position, 1f, true, false, false, 0f);
                     owner.xI = 0f;
                     owner.xIBlast = 0f;

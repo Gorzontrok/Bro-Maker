@@ -105,7 +105,7 @@ namespace BroMakerLib.Vanilla.Specials
                 {
                     dir = DirectionEnum.Left;
                 }
-                global::Networking.Networking.RPC<int, TestVanDammeAnim, DirectionEnum>(PID.TargetAll, new RpcSignature<int, TestVanDammeAnim, DirectionEnum>(currentFlameWave.Setup), PlayerNum, owner, dir, false);
+                currentFlameWave.Setup(PlayerNum, owner, dir);
             }
             else
             {

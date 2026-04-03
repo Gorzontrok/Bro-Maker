@@ -18,6 +18,7 @@ namespace BroMakerLib.Vanilla.Specials
         public float danceInterval = 0.0334f;
         public float serenadeAutoFinishTime = 4.2f;
 
+        public AudioClip[] special4Sounds;
         [JsonIgnore]
         private bool isSerenading;
         [JsonIgnore]
@@ -48,12 +49,16 @@ namespace BroMakerLib.Vanilla.Specials
             {
                 musicParticles = desperabro.musicParticles;
                 guitarGunSprite = desperabro.guitarGunSprite;
+                if (special4Sounds == null)
+                    special4Sounds = desperabro.soundHolder.special4Sounds;
             }
             else
             {
                 var prefab = HeroController.GetHeroPrefab(HeroType.Desperabro) as Desperabro;
                 if (prefab != null)
                 {
+                    if (special4Sounds == null)
+                        special4Sounds = prefab.soundHolder.special4Sounds;
                     if (prefab.musicParticles != null)
                     {
                         musicParticles = Object.Instantiate(prefab.musicParticles, owner.transform);
@@ -127,7 +132,7 @@ namespace BroMakerLib.Vanilla.Specials
                 }
             }
             SpawnMariachiBand();
-            serenadeAudio = sound.PlaySoundEffectAt(soundHolder.special4Sounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
+            serenadeAudio = sound.PlaySoundEffectAt(special4Sounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
         }
 
         private void SpawnMariachiBand()
@@ -230,7 +235,7 @@ namespace BroMakerLib.Vanilla.Specials
 
             if (serenadeAudio != null && !serenadeAudio.isPlaying)
             {
-                serenadeAudio = sound.PlaySoundEffectAt(soundHolder.special4Sounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
+                serenadeAudio = sound.PlaySoundEffectAt(special4Sounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
             }
             attractCounter += hero.DeltaTime;
             if (attractCounter >= danceInterval)

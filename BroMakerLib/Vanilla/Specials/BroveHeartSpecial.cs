@@ -28,6 +28,7 @@ namespace BroMakerLib.Vanilla.Specials
         public float bubbleLife = 4f;
         public AudioClip[] attack4Sounds;
 
+        public AudioClip[] special3Sounds;
         [JsonIgnore]
         private float broveheartSpecialTime;
         [JsonIgnore]
@@ -74,9 +75,18 @@ namespace BroMakerLib.Vanilla.Specials
             freedomCryAudio.volume = audioVolume;
             freedomCryAudio.dopplerLevel = 0f;
             freedomCryAudio.pitch = audioPitch;
-            if (soundHolder != null && soundHolder.special3Sounds != null && soundHolder.special3Sounds.Length > 0)
+            if (special3Sounds == null)
             {
-                freedomCryAudio.clip = soundHolder.special3Sounds[Random.Range(0, soundHolder.special3Sounds.Length)];
+                var prefab = HeroController.GetHeroPrefab(HeroType.BroveHeart);
+                var sourceBro = prefab.GetComponent<TestVanDammeAnim>();
+                if (sourceBro != null)
+                {
+                    special3Sounds = sourceBro.soundHolder.special3Sounds;
+                }
+            }
+            if (special3Sounds != null && special3Sounds.Length > 0)
+            {
+                freedomCryAudio.clip = special3Sounds[Random.Range(0, special3Sounds.Length)];
             }
             freedomCryAudio.loop = false;
             freedomCryAudio.playOnAwake = false;

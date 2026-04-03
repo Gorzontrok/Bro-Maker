@@ -38,8 +38,7 @@ namespace BroMakerLib.Vanilla.Specials
         private ReviveBlast reviveBlastPrefab;
         [JsonIgnore]
         private ParticleEmitter serumParticles;
-        [JsonIgnore]
-        private AudioClip[] reviveClips;
+        public AudioClip[] reviveClips;
         [JsonIgnore]
         private List<ReviveBlast> reviveQueue = new List<ReviveBlast>();
 
@@ -53,7 +52,6 @@ namespace BroMakerLib.Vanilla.Specials
         {
             base.Initialize(owner);
             originalSpeed = owner.speed;
-            armedGunMaterial = owner.gunSprite.GetComponent<Renderer>().material;
 
             var soldier = owner as BroniversalSoldier;
             if (soldier == null)
@@ -64,7 +62,8 @@ namespace BroMakerLib.Vanilla.Specials
             if (soldier != null)
             {
                 reviveBlastPrefab = soldier.reviveBlastPrefab;
-                reviveClips = soldier.reviveClips;
+                if (reviveClips == null)
+                    reviveClips = soldier.reviveClips;
                 if (special4Sounds == null)
                 {
                     special4Sounds = soldier.soundHolder.special4Sounds;
@@ -117,12 +116,14 @@ namespace BroMakerLib.Vanilla.Specials
                     ReviveBlast reviveBlast = Networking.Networking.Instantiate<ReviveBlast>(reviveBlastPrefab,
                         new Vector3(owner.transform.position.x, owner.transform.position.y + 8f, -9f), Quaternion.identity, false);
                     reviveQueue.Add(reviveBlast);
-                    Networking.Networking.RPC<int, TestVanDammeAnim>(PID.TargetAll,
-                        new RpcSignature<int, TestVanDammeAnim>(reviveBlast.Setup),
-                        PlayerNum, owner, false);
+                    reviveBlast.Setup(PlayerNum, owner);
                 }
                 cannotGibTime = serumDuration;
                 owner.canGib = false;
+                if (armedGunMaterial == null)
+                {
+                    armedGunMaterial = owner.gunSprite.GetComponent<Renderer>().material;
+                }
                 serumFrenzy = true;
                 if (serumParticles != null)
                 {
