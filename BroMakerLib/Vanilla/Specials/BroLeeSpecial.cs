@@ -189,6 +189,27 @@ namespace BroMakerLib.Vanilla.Specials
             }
         }
 
+        public override bool HandleChangeFrame()
+        {
+            if (owner.health <= 0) return true;
+            if (attackUpwards)
+            {
+                AnimateAttackUpwards();
+                return false;
+            }
+            if (attackDownwards)
+            {
+                AnimateAttackDownwards();
+                return false;
+            }
+            if (attackForwards)
+            {
+                AnimateAttackForwards();
+                return false;
+            }
+            return true;
+        }
+
         public override void AnimateSpecial()
         {
             if (attackDownwards)
@@ -223,6 +244,10 @@ namespace BroMakerLib.Vanilla.Specials
                 ignoreTimescale = true;
             }
             owner.SetFieldValue("airdashTime", 0f);
+            if (Y < owner.groundHeight + 1f)
+            {
+                owner.CallMethod("StopAirDashing");
+            }
 
             if (attackForwards || attackDownwards || attackUpwards)
             {
@@ -243,6 +268,7 @@ namespace BroMakerLib.Vanilla.Specials
                 hero.ChangeFrame();
                 ClearCurrentAttackVariables();
                 groundSwordDamage = 5;
+                owner.SetFieldValue("airdashDirection", DirectionEnum.Up);
             }
             else if (owner.down && !hasAttackedDownwards)
             {
@@ -267,6 +293,7 @@ namespace BroMakerLib.Vanilla.Specials
                 hero.ChangeFrame();
                 ClearCurrentAttackVariables();
                 groundSwordDamage = 5;
+                owner.SetFieldValue("airdashDirection", DirectionEnum.Down);
             }
             else if (owner.left && !hasAttackedForwards)
             {
@@ -301,6 +328,7 @@ namespace BroMakerLib.Vanilla.Specials
                 CreateFaderTrailInstance();
                 ClearCurrentAttackVariables();
                 groundSwordDamage = 5;
+                owner.SetFieldValue("airdashDirection", DirectionEnum.Left);
             }
             else if (owner.right && !hasAttackedForwards)
             {
@@ -335,6 +363,7 @@ namespace BroMakerLib.Vanilla.Specials
                 CreateFaderTrailInstance();
                 ClearCurrentAttackVariables();
                 groundSwordDamage = 5;
+                owner.SetFieldValue("airdashDirection", DirectionEnum.Right);
             }
         }
 
@@ -632,12 +661,12 @@ namespace BroMakerLib.Vanilla.Specials
 
         public override bool HandleRunFiring()
         {
+            owner.specialAttackXIBoost = 0f;
+            owner.specialAttackYIBoost = 0f;
             if (!attackUpwards && !attackForwards && !attackDownwards)
             {
                 return true;
             }
-            owner.specialAttackYIBoost = 0f;
-            owner.specialAttackXIBoost = 0f;
             if (hero.UsingSpecial)
             {
                 MapController.DamageGround(owner, ValueOrchestrator.GetModifiedDamage(10, PlayerNum),
@@ -726,6 +755,16 @@ namespace BroMakerLib.Vanilla.Specials
         public override bool HandleJump(bool wallJump)
         {
             return !hero.UsingSpecial;
+        }
+
+        public override bool HandleStartFiring()
+        {
+            if (attackForwards || attackUpwards || attackDownwards)
+            {
+                startNewAttack = true;
+                return false;
+            }
+            return true;
         }
 
         public override bool HandleStartMelee()
@@ -858,6 +897,10 @@ namespace BroMakerLib.Vanilla.Specials
             {
                 owner.xI = xIBeforeAddSpeed;
             }
+            else if (attackForwards && attackFrames > 4 && owner.xI < -owner.speed * 0.5f)
+            {
+                owner.xI = -owner.speed * 0.5f;
+            }
         }
 
         public override void HandleAfterAddSpeedRight()
@@ -865,6 +908,10 @@ namespace BroMakerLib.Vanilla.Specials
             if (attackDownwards || attackUpwards || postAttackHitPauseTime >= 0f)
             {
                 owner.xI = xIBeforeAddSpeed;
+            }
+            else if (attackForwards && attackFrames > 4 && owner.xI > owner.speed * 0.5f)
+            {
+                owner.xI = owner.speed * 0.5f;
             }
         }
 
