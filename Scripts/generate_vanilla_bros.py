@@ -34,12 +34,8 @@ def load_template(config):
         return f.read()
 
 
-def generate_null_fix_body(bro):
-    """Generate the C# code for FixNullVariableLocal() body."""
-    fixes = bro.get("nullFixes", [])
-    if not fixes:
-        return ""
-
+def generate_fix_body(bro):
+    """Generate the C# code for the FixNullVariableLocal() marker block."""
     lines = []
 
     # Determine the prefab source
@@ -51,15 +47,21 @@ def generate_null_fix_body(bro):
         hero_type = bro["heroType"]
         cast_class = bro["baseClass"]
 
-    # Check if we need the bro variable (any prefabCopy fixes?)
-    needs_bro_var = any(
-        fix["type"] == "prefabCopy" for fix in fixes
-    )
+    fixes = bro.get("nullFixes", [])
+    has_ref_fixes = any(fix["type"] != "setValue" for fix in fixes)
 
-    if needs_bro_var:
+    if has_ref_fixes:
         lines.append(
             f"            var bro = HeroController.GetHeroPrefab(HeroType.{hero_type}).As<{cast_class}>();"
         )
+        lines.append(f"            if (bro == null) return;")
+        lines.append(f"            CopySerializedValues(bro);")
+    else:
+        lines.append(
+            f"            var prefab = HeroController.GetHeroPrefab(HeroType.{hero_type});"
+        )
+        lines.append(f"            if (prefab == null) return;")
+        lines.append(f"            CopySerializedValues(prefab);")
 
     for fix in fixes:
         fix_type = fix["type"]
@@ -118,14 +120,14 @@ def generate_bro(template, bro):
         result,
     )
 
-    # Replace FixNullVariableLocal body
-    fix_body = generate_null_fix_body(bro)
-    if fix_body:
-        result = re.sub(
-            r"(protected virtual void FixNullVariableLocal\(\)\s*\{)\s*(\})",
-            rf"\1\n{fix_body}\n        \2",
-            result,
-        )
+    # Replace FixNullVariableLocal marker block
+    fix_body = generate_fix_body(bro)
+    result = re.sub(
+        r"            // GENERATOR:FIXES\n.*?            // GENERATOR:END",
+        fix_body,
+        result,
+        flags=re.DOTALL,
+    )
 
     # Add header
     result = HEADER + result

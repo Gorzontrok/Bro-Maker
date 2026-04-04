@@ -1,14 +1,15 @@
 // Auto-generated from RambroM.cs — do not edit manually
+
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using BroMakerLib.Abilities;
 using BroMakerLib.CustomObjects;
+using BroMakerLib.Extensions;
 using BroMakerLib.Infos;
-using BroMakerLib.Loaders;
 using BroMakerLib.Loggers;
 using HarmonyLib;
 using Newtonsoft.Json;
-using RocketLib;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -38,7 +39,7 @@ namespace BroMakerLib.Vanilla.Bros
         {
             try
             {
-                this.StandardBeforeAwake(FixNullVariableLocal);
+                this.StandardBeforeAwake();
 
                 specialAbility = AbilityFactory.CreateSpecial(Info.special, this);
                 meleeAbility = AbilityFactory.CreateMelee(Info.melee, this);
@@ -85,9 +86,38 @@ namespace BroMakerLib.Vanilla.Bros
             meleeAbility?.Update();
         }
 
+        void ICustomHero.PrefabSetup()
+        {
+            FixNullVariableLocal();
+        }
+
+        protected void CopySerializedValues(TestVanDammeAnim prefab)
+        {
+            Type type = prefab.GetType();
+            while (type != null && type != typeof(MonoBehaviour))
+            {
+                foreach (FieldInfo field in type.GetFields(
+                             BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly))
+                {
+                    if (field.FieldType.IsValueType || field.FieldType == typeof(string))
+                    {
+                        field.SetValue(this, field.GetValue(prefab));
+                    }
+                }
+
+                type = type.BaseType;
+            }
+        }
+
         protected virtual void FixNullVariableLocal()
         {
             var bro = HeroController.GetHeroPrefab(HeroType.Brochete).As<Brochete>();
+            if (bro == null)
+            {
+                return;
+            }
+
+            CopySerializedValues(bro);
             macheteSprayProjectile = bro.macheteSprayProjectile;
         }
 
@@ -557,7 +587,7 @@ namespace BroMakerLib.Vanilla.Bros
 
         /// <summary>
         /// Assigns a melee ability at runtime. Calls <see cref="MeleeAbility.Initialize"/> on the new ability
-        /// and sets <c>meleeType</c> to <see cref="MeleeType.Custom"/>.
+        /// and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
         /// </summary>
         /// <param name="ability">The ability to assign, or null to clear.</param>
         public void SetMeleeAbility(MeleeAbility ability)

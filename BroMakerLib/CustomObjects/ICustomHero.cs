@@ -47,5 +47,11 @@ namespace BroMakerLib.CustomObjects
         void PlayAttackSound();
         void PlayAttackSound(float v);
         void SetGunSprite(int spriteFrame, int spriteRow);
+
+        /// <summary>
+        /// Called once at prefab creation time to set up fields that would otherwise be lost
+        /// during the component swap. Runs before any Awake calls.
+        /// </summary>
+        void PrefabSetup();
     }
 }

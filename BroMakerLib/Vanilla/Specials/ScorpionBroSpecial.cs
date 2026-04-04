@@ -15,15 +15,9 @@ namespace BroMakerLib.Vanilla.Specials
         [JsonIgnore]
         private bool isInScorpionMode;
         [JsonIgnore]
-        private float scorpionModeTimer;
-        [JsonIgnore]
         private bool isLaunching;
         [JsonIgnore]
-        private bool isLaunchingFromCeiling;
-        [JsonIgnore]
         private Vector2 launchDirection;
-        [JsonIgnore]
-        private float launchTimer;
         [JsonIgnore]
         private float defaultJumpForce;
         [JsonIgnore]
@@ -84,7 +78,6 @@ namespace BroMakerLib.Vanilla.Specials
                 normalMaterial = owner.GetComponent<Renderer>().sharedMaterial;
             }
             isInScorpionMode = true;
-            scorpionModeTimer = 20f;
             isLaunching = false;
             if (scorpionModeMaterial != null)
             {

@@ -37,7 +37,9 @@ namespace BroMakerLib.Vanilla.Specials
         [JsonIgnore]
         private ReviveBlast reviveBlastPrefab;
         [JsonIgnore]
+#pragma warning disable 618
         private ParticleEmitter serumParticles;
+#pragma warning restore 618
         public AudioClip[] reviveClips;
         [JsonIgnore]
         private List<ReviveBlast> reviveQueue = new List<ReviveBlast>();

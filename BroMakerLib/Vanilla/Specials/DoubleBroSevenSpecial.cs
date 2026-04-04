@@ -119,7 +119,9 @@ namespace BroMakerLib.Vanilla.Specials
             else
             {
                 laserLine = owner.gameObject.AddComponent<LineRenderer>();
+#pragma warning disable 618
                 laserLine.SetVertexCount(2);
+#pragma warning restore 618
                 laserLine.startWidth = 0f;
                 laserLine.endWidth = 0f;
                 laserLine.enabled = false;

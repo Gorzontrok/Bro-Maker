@@ -16,8 +16,10 @@ namespace BroMakerLib.Vanilla.Specials
         private ProjectileReturnZone returnZonePrefab;
         [JsonIgnore]
         private ProjectileReturnZone currentZone;
+#pragma warning disable 649
         [JsonIgnore]
         private float lastReturnZoneTime;
+#pragma warning restore 649
 
         public override void Initialize(TestVanDammeAnim owner)
         {

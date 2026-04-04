@@ -11,7 +11,7 @@ namespace BroMakerLib.Abilities
     /// <summary>
     /// Factory for instantiating ability instances from JSON configuration.
     /// Reads the "preset" field to determine the concrete type, creates the instance via
-    /// <see cref="Activator.CreateInstance"/> (which runs the constructor for bro-specific defaults),
+    /// <c>Activator.CreateInstance</c> (which runs the constructor for bro-specific defaults),
     /// then applies JSON overrides using <see cref="CustomBroforceObjectInfo.SetFieldDataStatic"/>
     /// for full Unity type support (AudioClip, Texture, Material, Projectile, Grenade, etc.).
     /// </summary>

@@ -698,8 +698,8 @@ namespace BroMakerLib
                 {
                     VictoryMookDeath victoryMookDeath = Object.Instantiate<VictoryMookDeath>(__instance.broDeathGenericPrefab, position, Quaternion.identity);
                     CustomBroDeath broDeath = LoadHero.customBroDeaths[deathNum];
-                    CustomBroInfo bro = broDeath.info;
-                    int variant = broDeath.variantIndex;
+                    CustomBroInfo bro = broDeath.Info;
+                    int variant = broDeath.VariantIndex;
 
                     victoryMookDeath.Setup(deathObject, 0.2f, parent, shakeObject);
 

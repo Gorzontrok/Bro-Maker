@@ -56,8 +56,6 @@ namespace BroMakerLib.Vanilla.Specials
         private bool localChimneyFlip;
         [JsonIgnore]
         private int localChimneyFlipFrames;
-        [JsonIgnore]
-        private int localChimneyFlipDirection;
 
         public override void AnimateSpecial()
         {
@@ -180,7 +178,6 @@ namespace BroMakerLib.Vanilla.Specials
             {
                 localChimneyFlip = true;
                 localChimneyFlipFrames = 11;
-                localChimneyFlipDirection = 0;
             }
             hero.ChangeFrame();
         }

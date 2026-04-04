@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using BroMakerLib.Abilities;
+using BroMakerLib.Extensions;
 using BroMakerLib.Infos;
 using BroMakerLib.Loaders;
 using BroMakerLib.Loggers;
@@ -578,7 +579,7 @@ namespace BroMakerLib.CustomObjects.Bros
         {
         }
 
-        internal void PrefabSetup()
+        void ICustomHero.PrefabSetup()
         {
             BeforePrefabSetup();
             var baseHeroType = SoundHolderHeroType;

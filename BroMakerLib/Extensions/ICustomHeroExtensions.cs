@@ -1,13 +1,14 @@
 ﻿using System;
 using BroMakerLib.CustomObjects;
 using BroMakerLib.CustomObjects.Bros;
+using BroMakerLib.Infos;
 using BroMakerLib.Loaders;
 using BroMakerLib.Loggers;
 using Networking;
 using RocketLib;
 using UnityEngine;
 
-namespace BroMakerLib
+namespace BroMakerLib.Extensions
 {
     public static class ICustomHeroExtensions
     {
@@ -132,15 +133,9 @@ namespace BroMakerLib
 
             if (Settings.instance.maxHealthAtOne)
             {
-                if (info.afterStart.ContainsKey("health"))
-                    info.afterStart["health"] = 1;
-                else
-                    info.afterStart.Add("health", 1);
+                info.afterStart["health"] = 1;
 
-                if (info.afterStart.ContainsKey("maxHealth"))
-                    info.afterStart["maxHealth"] = 1;
-                else
-                    info.afterStart.Add("maxHealth", 1);
+                info.afterStart["maxHealth"] = 1;
             }
 
             // Determine variant count from all variant properties
@@ -196,7 +191,7 @@ namespace BroMakerLib
             }
         }
 
-        private static void DetermineVariantCount(Infos.CustomBroInfo info)
+        private static void DetermineVariantCount(CustomBroInfo info)
         {
             int maxCount = 1;
 
@@ -213,7 +208,7 @@ namespace BroMakerLib
             info.VariantCount = maxCount;
         }
 
-        private static void ValidateVariantLists(Infos.CustomBroInfo info)
+        private static void ValidateVariantLists(CustomBroInfo info)
         {
             // Each list must have either 1 item or exactly VariantCount items
             ValidateList(info.SpritePath, "SpritePath", info.VariantCount);
@@ -242,7 +237,7 @@ namespace BroMakerLib
         /// Called before <see cref="CustomBroforceObjectInfo.ReadParameters"/> so user values take precedence.
         /// </summary>
         /// <param name="info">The bro's config info.</param>
-        private static void SetDefaultParameters(Infos.CustomBroInfo info)
+        private static void SetDefaultParameters(CustomBroInfo info)
         {
             if (!info.parameters.ContainsKey("BetterAnimation"))
             {
@@ -288,12 +283,10 @@ namespace BroMakerLib
         /// Called before base.Awake() for vanilla bros
         /// </summary>
         /// <param name="hero">The hero instance to setup</param>
-        /// <param name="fixNullVariableLocal">Optional action to fix null variables specific to the hero type</param>
-        public static void StandardBeforeAwake(this ICustomHero hero, Action fixNullVariableLocal = null)
+        public static void StandardBeforeAwake(this ICustomHero hero)
         {
             hero.Character = hero as BroBase;
             hero.Info = LoadHero.currentInfo;
-            fixNullVariableLocal?.Invoke();
             hero.SetupCustomHero();
             hero.Info.BeforeAwake(hero);
         }
