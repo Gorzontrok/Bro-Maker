@@ -19,7 +19,7 @@ namespace BroMakerLib.Vanilla.Specials
         public float pressSpecialSoundVolume = 0.5f;
         public float useSpecialSoundVolume = 0.4f;
         public int useSpecialAttackFrame = 2;
-        public float stampDelay = 0.4f;
+        public float stampDelay = 0f;
         public float slamGravityMultiplier = 0.5f;
 
         [JsonIgnore]

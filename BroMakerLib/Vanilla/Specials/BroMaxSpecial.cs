@@ -10,7 +10,7 @@ namespace BroMakerLib.Vanilla.Specials
     public class BroMaxSpecial : SpecialAbility
     {
         public string boomerangName = "Boomerang";
-        public float boomerangSpeed = 200f;
+        public float boomerangSpeed = 240f;
         public float boomerangSpeedY = 0f;
         public float catchFrameRate = 0.045f;
 

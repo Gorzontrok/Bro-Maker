@@ -10,7 +10,7 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("BroniversalSoldier")]
     public class BroniversalSoldierSpecial : SpecialAbility
     {
-        public float serumDuration = 2f;
+        public float serumDuration = 6.5f;
         public float deathGracePeriod = 0.66f;
         public float reviveRadius = 15f;
         public float reviveInterval = 0.1f;

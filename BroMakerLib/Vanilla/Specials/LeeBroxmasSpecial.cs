@@ -10,8 +10,8 @@ namespace BroMakerLib.Vanilla.Specials
     public class LeeBroxmasSpecial : SpecialAbility
     {
         public string projectileName = "KnifeSpray";
-        public float knifeSpraySpeed = 520f;
-        public int knifeSprayCount = 12;
+        public float knifeSpraySpeed = 420f;
+        public int knifeSprayCount = 4;
         public float throwSoundVolume = 0.44f;
         public float sprayAngleOffset = -18.25f;
         public float sprayAngleStep1 = 9.5f;

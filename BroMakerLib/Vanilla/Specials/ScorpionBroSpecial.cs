@@ -9,8 +9,8 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("ScorpionBro")]
     public class ScorpionBroSpecial : SpecialAbility
     {
-        public float launchForce = 400f;
-        public float launchDuration = 0.25f;
+        public float launchForce = 250f;
+        public float launchDuration = 1f;
 
         [JsonIgnore]
         private bool isInScorpionMode;

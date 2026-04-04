@@ -11,9 +11,9 @@ namespace BroMakerLib.Vanilla.Specials
     {
         public float duckingSpeedX = 400f;
         public float duckingRecoilX = 60f;
-        public Vector3 fireLeftDirection = new Vector3(-280f, -240f, 0f);
+        public Vector3 fireLeftDirection = new Vector3(-160f, -330f, 0f);
         public Vector3 fireDownDirection = new Vector3(0f, -370f, 0f);
-        public Vector3 fireRightDirection = new Vector3(280f, -240f, 0f);
+        public Vector3 fireRightDirection = new Vector3(160f, -330f, 0f);
 
         [JsonIgnore]
         protected Projectile rocketGrenade;

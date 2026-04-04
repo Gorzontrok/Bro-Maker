@@ -10,8 +10,8 @@ namespace BroMakerLib.Vanilla.Specials
     public class BrocheteSpecial : SpecialAbility
     {
         public string projectileName = "MacheteSpray";
-        public float knifeSpraySpeed = 320f;
-        public int knifeSprayCount = 12;
+        public float knifeSpraySpeed = 400f;
+        public int knifeSprayCount = 6;
         public float throwSoundVolume = 0.44f;
         public float sprayAngleOffset = -13.25f;
         public float sprayAngleStep1 = 7.5f;

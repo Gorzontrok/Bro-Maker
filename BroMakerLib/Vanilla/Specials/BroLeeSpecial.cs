@@ -13,7 +13,7 @@ namespace BroMakerLib.Vanilla.Specials
     {
         public int maxHits = 15;
         public int enemySwordDamage = 5;
-        public int groundSwordDamage = 5;
+        public int groundSwordDamage = 1;
         public float specialSoundVolume = 0.7f;
         public float special4SoundVolume = 0.5f;
         public float attackSoundVolume = 0.6f;
@@ -21,7 +21,7 @@ namespace BroMakerLib.Vanilla.Specials
         public AudioClip[] special2Sounds;
         public AudioClip[] attack2Sounds;
         public AudioClip[] attack3Sounds;
-        public int attackForwardsStrikeFrame = 2;
+        public int attackForwardsStrikeFrame = 3;
         public int attackUpwardsStrikeFrame = 2;
         public int attackDownwardsStrikeFrame = 3;
         public float targetRange = 64f;

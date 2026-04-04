@@ -39,7 +39,7 @@ namespace BroMakerLib.Vanilla.Specials
         public float explosiveEndRange = 24f;
         public float impaleRange = 8f;
         public float impaleSearchAhead = 12f;
-        public float sliceVolume = 0.3f;
+        public float sliceVolume = 0.7f;
         public AudioClip[] special2Sounds;
         public float postDashXIBlast = -170f;
         public float postDashSpinUpTime = 0.11f;

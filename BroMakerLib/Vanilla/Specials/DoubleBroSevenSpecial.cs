@@ -12,13 +12,13 @@ namespace BroMakerLib.Vanilla.Specials
     {
         public float balaclavaTimeDuration = 5f;
         public float jetPackFuelDuration = 0.8f;
-        public float startLaserAngle = 120f;
-        public float endLaserAngle = 30f;
+        public float startLaserAngle = 265f;
+        public float endLaserAngle = 120f;
         public float laserStepM = 0.33f;
         public float minSquareLaserDist = 5f;
-        public float laserAngleSpeed = 90f;
+        public float laserAngleSpeed = 120f;
         public float laserAngleAcceleration = 80f;
-        public float laserVolume = 0.33f;
+        public float laserVolume = 0.25f;
         public string martiniGrenadeName = "MartiniGlass";
         public string tearGasGrenadeName = "TearGas";
 
