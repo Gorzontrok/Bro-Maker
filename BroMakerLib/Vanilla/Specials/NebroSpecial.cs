@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
-    [SpecialPreset("Nebro")]
+    [SpecialPreset("MrAnderbro")]
     public class NebroSpecial : SpecialAbility
     {
         public float zoneCooldown = 0.33f;

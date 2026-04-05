@@ -48,6 +48,10 @@ namespace BroMakerLib.Loaders
             TestVanDammeAnim hero = null;
             try
             {
+                if (type == null)
+                    throw new ArgumentException($"No hero preset found for '{customBroInfo?.CharacterPreset}'. Valid presets: {string.Join(", ", new List<string>(PresetManager.heroesPreset.Keys).ToArray())}");
+
+
                 if (!typeof(ICustomHero).IsAssignableFrom(type))
                     throw new ArgumentException($"Type '{type.Name}' should inherit from 'ICustomHero'", nameof(type));
 

@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
-    [SpecialPreset("Predabro")]
+    [SpecialPreset("Brodator")]
     public class PredabroSpecial : SpecialAbility
     {
         private enum SpecialState
@@ -561,7 +561,7 @@ namespace BroMakerLib.Vanilla.Specials
             prevTarget = EffectsController.InstantiateEffect(targetPrefab) as PredabroTarget;
             if (prevTarget != null)
             {
-                prevTarget.Setup(unit, owner as Predabro);
+                prevTarget.Setup(unit, null);
             }
             return prevTarget;
         }

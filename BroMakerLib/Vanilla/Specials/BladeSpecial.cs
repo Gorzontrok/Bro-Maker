@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
-    [SpecialPreset("Blade")]
+    [SpecialPreset("Brade")]
     public class BladeSpecial : SpecialAbility
     {
         public override void Initialize(TestVanDammeAnim owner)

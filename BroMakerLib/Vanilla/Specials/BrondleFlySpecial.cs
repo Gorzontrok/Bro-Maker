@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
-    [SpecialPreset("BrondleFly")]
+    [SpecialPreset("SethBrondle")]
     public class BrondleFlySpecial : SpecialAbility
     {
         public float cooldownTime = 0.12f;

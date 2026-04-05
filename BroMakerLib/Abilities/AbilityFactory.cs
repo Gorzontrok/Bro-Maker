@@ -34,7 +34,7 @@ namespace BroMakerLib.Abilities
             Type type = PresetManager.GetSpecialPreset(presetName);
             if (type == null)
             {
-                BMLogger.Warning($"Special preset '{presetName}' not found");
+                BMLogger.Warning($"Special preset '{presetName}' not found. Valid presets: {string.Join(", ", new List<string>(PresetManager.GetAllSpecialPresets().Keys).ToArray())}");
                 return null;
             }
 
@@ -69,7 +69,7 @@ namespace BroMakerLib.Abilities
             Type type = PresetManager.GetMeleePreset(presetName);
             if (type == null)
             {
-                BMLogger.Warning($"Melee preset '{presetName}' not found");
+                BMLogger.Warning($"Melee preset '{presetName}' not found. Valid presets: {string.Join(", ", new List<string>(PresetManager.GetAllMeleePresets().Keys).ToArray())}");
                 return null;
             }
 
@@ -101,8 +101,10 @@ namespace BroMakerLib.Abilities
             if (dict.Count == 0) return;
 
             string path = (owner as ICustomHero)?.Info?.path ?? "";
+            string presetName = config.Value<string>("preset");
             ability.DynamicFieldsValueSetter(dict, null,
-                (field, key, value) => CustomBroforceObjectInfo.SetFieldDataStatic(field, key, value, path));
+                (field, key, value) => CustomBroforceObjectInfo.SetFieldDataStatic(field, key, value, path),
+                context: $"{presetName} special/melee override");
         }
     }
 }

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
-    [SpecialPreset("TheBrocketeer")]
+    [SpecialPreset("Brocketeer")]
     public class TheBrocketeerSpecial : SpecialAbility
     {
         public float downSlamInvulnerabilityTime = 0.33f;

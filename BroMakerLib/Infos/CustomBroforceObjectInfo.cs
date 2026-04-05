@@ -60,7 +60,7 @@ namespace BroMakerLib.Infos
                 throw new Exception("beforeAwake null");
             try
             {
-                obj.DynamicFieldsValueSetter(beforeAwake, null, SetFieldData);
+                obj.DynamicFieldsValueSetter(beforeAwake, null, SetFieldData, context: $"{name} beforeAwake");
             }
             catch (Exception e)
             {
@@ -73,7 +73,7 @@ namespace BroMakerLib.Infos
                 throw new Exception("afterAwake null");
             try
             {
-                obj.DynamicFieldsValueSetter(afterAwake, null, SetFieldData);
+                obj.DynamicFieldsValueSetter(afterAwake, null, SetFieldData, context: $"{name} afterAwake");
             }
             catch (Exception e)
             {
@@ -86,7 +86,7 @@ namespace BroMakerLib.Infos
                 throw new Exception("beforeStart null");
             try
             {
-                obj.DynamicFieldsValueSetter(beforeStart, null, SetFieldData);
+                obj.DynamicFieldsValueSetter(beforeStart, null, SetFieldData, context: $"{name} beforeStart");
             }
             catch (Exception e)
             {
@@ -99,7 +99,7 @@ namespace BroMakerLib.Infos
                 throw new Exception("afterStart null");
             try
             {
-                obj.DynamicFieldsValueSetter(afterStart, null, SetFieldData);
+                obj.DynamicFieldsValueSetter(afterStart, null, SetFieldData, context: $"{name} afterStart");
             }
             catch (Exception e)
             {

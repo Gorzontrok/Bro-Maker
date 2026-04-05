@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
-    [SpecialPreset("BroveHeart")]
+    [SpecialPreset("BroHeart")]
     public class BroveHeartSpecial : SpecialAbility
     {
         public float heroBoostDuration = 5f;

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
-    [SpecialPreset("TimeBroVanDamme")]
+    [SpecialPreset("TimeBro")]
     public class TimeBroVanDammeSpecial : SpecialAbility
     {
         public float timeBoostDuration = 2f;

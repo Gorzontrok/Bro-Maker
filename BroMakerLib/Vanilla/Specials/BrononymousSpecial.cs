@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
-    [SpecialPreset("Brononymous")]
+    [SpecialPreset("BroInBlack")]
     public class BrononymousSpecial : SpecialAbility
     {
         public float specialSoundVolume = 0.3f;
