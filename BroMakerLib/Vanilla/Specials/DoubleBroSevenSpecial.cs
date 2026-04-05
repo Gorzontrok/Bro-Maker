@@ -450,7 +450,7 @@ namespace BroMakerLib.Vanilla.Specials
                 dir.x = Mathf.Abs(dir.x) * owner.transform.localScale.x;
                 float range = 350f;
                 RaycastHit hit;
-                if (Physics.Raycast(origin, dir, out hit, range, owner.GetFieldValue<LayerMask>("groundLayer")))
+                if (Physics.Raycast(origin, dir, out hit, range, hero.GroundLayer))
                 {
                     if (hit.distance < range) range = hit.distance;
                     if (range < 15f)
@@ -467,7 +467,7 @@ namespace BroMakerLib.Vanilla.Specials
                         lastLaserCollider = null;
                     }
                 }
-                if (Physics.Raycast(origin, dir, out hit, range, unitsLayer) || Physics.Raycast(origin, dir, out hit, 350f, owner.GetFieldValue<LayerMask>("groundLayer")))
+                if (Physics.Raycast(origin, dir, out hit, range, unitsLayer) || Physics.Raycast(origin, dir, out hit, 350f, hero.GroundLayer))
                 {
                     hitSomething = true;
                     hitPoint = hit.point;

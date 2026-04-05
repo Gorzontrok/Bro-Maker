@@ -121,7 +121,7 @@ namespace BroMakerLib.Vanilla.Specials
                 {
                     showSlashEffect = true;
                 }
-                owner.CallMethod("CreateFaderTrailInstance");
+                hero.CreateFaderTrailInstance();
             }
 
             if (dashTime <= 0f)

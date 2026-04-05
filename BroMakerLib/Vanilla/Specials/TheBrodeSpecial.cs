@@ -89,7 +89,7 @@ namespace BroMakerLib.Vanilla.Specials
             hero.Sprite.SetLowerLeftPixel(column * hero.SpritePixelWidth, animationRow * hero.SpritePixelHeight);
             if (owner.frame == triggerFrame)
             {
-                owner.CallMethod("CreateFaderTrailInstance");
+                hero.CreateFaderTrailInstance();
                 UseSpecial();
             }
             if (owner.frame >= animationFrameCount - 1)

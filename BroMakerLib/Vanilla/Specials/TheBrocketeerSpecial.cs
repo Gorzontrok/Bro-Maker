@@ -152,7 +152,7 @@ namespace BroMakerLib.Vanilla.Specials
             owner.xI = 0f;
             owner.SetFieldValue("airdashDownAvailable", false);
             owner.actionState = ActionState.Jumping;
-            owner.SetFieldValue("jumpTime", 0f);
+            hero.JumpTime = 0f;
 
             if (owner.transform.localScale.x > 0f)
                 downwardDashDirection = DirectionEnum.Right;
@@ -247,7 +247,7 @@ namespace BroMakerLib.Vanilla.Specials
             RunAirDashDamage();
             if (owner.yI < -100f && Y < owner.groundHeight + 30f)
             {
-                owner.CallMethod("SetInvulnerable", 0.35f, false, false);
+                hero.SetInvulnerable(0.35f, false, false);
             }
             return false;
         }
@@ -523,7 +523,7 @@ namespace BroMakerLib.Vanilla.Specials
                 {
                     owner.CallMethod("Jump", true);
                 }
-                owner.CallMethod("SetInvulnerable", downSlamInvulnerabilityTime, false, false);
+                hero.SetInvulnerable(downSlamInvulnerabilityTime, false, false);
                 owner.SetFieldValue("airdashDirection", DirectionEnum.Any);
                 downwardDashDirection = DirectionEnum.None;
                 owner.SetFieldValue("airdashTime", 0f);

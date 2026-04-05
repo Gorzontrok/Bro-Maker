@@ -60,7 +60,7 @@ namespace BroMakerLib.Vanilla.Specials
             if (owner.SpecialAmmo > 0 && Time.time - lastReturnZoneTime > zoneCooldown
                 && (currentZone == null || currentZone.PoolIndex == -1 || currentZone.life <= 0f))
             {
-                owner.CallMethod("SetInvulnerable", invulnerableOnUse, false, false);
+                hero.SetInvulnerable(invulnerableOnUse, false, false);
                 owner.SpecialAmmo--;
                 HeroController.SetSpecialAmmo(PlayerNum, owner.SpecialAmmo);
                 currentZone = EffectsController.InstantiateEffect(returnZonePrefab,

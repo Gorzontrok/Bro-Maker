@@ -261,7 +261,7 @@ namespace BroMakerLib.Vanilla.Specials
                 MakeBroceLeeSound();
                 StopAttack();
                 if (owner.yI > 50f) owner.yI = 50f;
-                owner.SetFieldValue("jumpTime", 0f);
+                hero.JumpTime = 0f;
                 hasAttackedUpwards = true;
                 attackFrames = 0;
                 attackUpwards = true;
@@ -289,7 +289,7 @@ namespace BroMakerLib.Vanilla.Specials
                 hasAttackedDownwards = true;
                 attackFrames = 0;
                 attackDownwards = true;
-                owner.SetFieldValue("jumpTime", 0f);
+                hero.JumpTime = 0f;
                 hero.ChangeFrame();
                 ClearCurrentAttackVariables();
                 groundSwordDamage = 5;
@@ -323,7 +323,7 @@ namespace BroMakerLib.Vanilla.Specials
                 attackFrames = 0;
                 owner.yI = 0f;
                 attackForwards = true;
-                owner.SetFieldValue("jumpTime", 0f);
+                hero.JumpTime = 0f;
                 hero.ChangeFrame();
                 CreateFaderTrailInstance();
                 ClearCurrentAttackVariables();
@@ -358,7 +358,7 @@ namespace BroMakerLib.Vanilla.Specials
                 attackFrames = 0;
                 owner.yI = 0f;
                 attackForwards = true;
-                owner.SetFieldValue("jumpTime", 0f);
+                hero.JumpTime = 0f;
                 hero.ChangeFrame();
                 CreateFaderTrailInstance();
                 ClearCurrentAttackVariables();
@@ -617,7 +617,7 @@ namespace BroMakerLib.Vanilla.Specials
         private void FireWeaponGround(float x, float y, Vector3 dir, float distance, float xSpeed, float ySpeed)
         {
             RaycastHit hit;
-            if (Physics.Raycast(new Vector3(x, y, 0f), dir, out hit, distance, owner.GetFieldValue<LayerMask>("groundLayer")))
+            if (Physics.Raycast(new Vector3(x, y, 0f), dir, out hit, distance, hero.GroundLayer))
             {
                 if (!hasHitWithWall)
                 {

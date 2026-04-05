@@ -207,7 +207,7 @@ namespace BroMakerLib.Vanilla.Specials
 
         private void ActuallyZap(ref Vector3 direction, ref Vector3 start)
         {
-            LayerMask groundLayer = owner.GetFieldValue<LayerMask>("groundLayer");
+            LayerMask groundLayer = hero.GroundLayer;
             Unit nearestEnemyUnit = Map.GetNearestEnemyUnit(PlayerNum, zapRange + 16, zapRange / 2, X - Mathf.Sign(direction.x) * 10f, Y + (float)zapRange * 0.35f, true, (int)Mathf.Sign(direction.x), lastZappedUnit);
             Vector3 vector = ((!(nearestEnemyUnit != null)) ? Vector3.up : (nearestEnemyUnit.transform.position - start));
             float magnitude = vector.magnitude;

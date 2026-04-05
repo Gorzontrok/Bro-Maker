@@ -135,7 +135,7 @@ namespace BroMakerLib.Vanilla.Specials
             {
                 onRampage = false;
                 owner.speed = normalSpeed;
-                owner.CallMethod("SetInvulnerable", endInvulnerableTime, true, false);
+                hero.SetInvulnerable(endInvulnerableTime, true, false);
                 StopChainsawAudio();
                 HeroController.SetAvatarCalm(PlayerNum, true);
                 return;
@@ -283,7 +283,7 @@ namespace BroMakerLib.Vanilla.Specials
             onRampage = false;
             owner.dashing = false;
             owner.speed = normalSpeed;
-            owner.SetFieldValue("doingMelee", false);  // protected field
+            hero.DoingMelee = false;
             return true;
         }
 

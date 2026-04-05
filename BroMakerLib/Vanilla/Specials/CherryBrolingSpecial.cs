@@ -54,7 +54,7 @@ namespace BroMakerLib.Vanilla.Specials
                             hero.InvulnerableTime = 0f;
                             owner.invulnerable = false;
                         }
-                        owner.SetFieldValue("doingMelee", false);
+                        hero.DoingMelee = false;
                         UseSpecial();
                     }
                 }
@@ -131,7 +131,7 @@ namespace BroMakerLib.Vanilla.Specials
 
         public override bool HandleCalculateMovement(ref float xI, ref float yI)
         {
-            if (somersaulting && (owner.actionState != ActionState.Jumping || owner.GetFieldValue<bool>("wallDrag")))
+            if (somersaulting && (owner.actionState != ActionState.Jumping || hero.WallDrag))
             {
                 somersaulting = false;
                 somersaultFrame = 0;

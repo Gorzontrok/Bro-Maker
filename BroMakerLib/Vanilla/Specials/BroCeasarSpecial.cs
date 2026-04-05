@@ -120,7 +120,7 @@ namespace BroMakerLib.Vanilla.Specials
                 {
                     hero.FrameRate = 0.1f;
                 }
-                owner.CallMethod("CreateFaderTrailInstance");
+                hero.CreateFaderTrailInstance();
             }
             if (owner.frame == useSpecialAttackFrame)
             {
