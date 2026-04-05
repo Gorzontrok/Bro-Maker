@@ -306,13 +306,15 @@ namespace BroMakerLib.Vanilla.Bros
         SpecialAbility ICustomHero.SpecialAbility => specialAbility;
         MeleeAbility ICustomHero.MeleeAbility => meleeAbility;
 
+        // Shared field accessors
         SpriteSM ICustomHero.Sprite => sprite;
         int ICustomHero.SpritePixelWidth => spritePixelWidth;
         int ICustomHero.SpritePixelHeight => spritePixelHeight;
-        bool ICustomHero.DoingMelee => doingMelee;
         bool ICustomHero.Ducking => ducking;
         float ICustomHero.DeltaTime => t;
         Sound ICustomHero.Sound => sound;
+        LayerMask ICustomHero.GroundLayer => groundLayer;
+        bool ICustomHero.WallDrag => wallDrag;
 
         float ICustomHero.FrameRate
         {
@@ -320,6 +322,24 @@ namespace BroMakerLib.Vanilla.Bros
             set => frameRate = value;
         }
 
+        int ICustomHero.GunFrame
+        {
+            get => gunFrame;
+            set => gunFrame = value;
+        }
+
+        float ICustomHero.InvulnerableTime
+        {
+            get => invulnerableTime;
+            set => invulnerableTime = value;
+        }
+
+        float ICustomHero.JumpTime
+        {
+            set => jumpTime = value;
+        }
+
+        // Special ability state
         bool ICustomHero.UsingSpecial
         {
             get => usingSpecial;
@@ -338,26 +358,58 @@ namespace BroMakerLib.Vanilla.Bros
             set => pressSpecialFacingDirection = value;
         }
 
-        int ICustomHero.GunFrame
+        // Melee ability state
+        bool ICustomHero.DoingMelee
         {
-            get => gunFrame;
-            set => gunFrame = value;
+            get => doingMelee;
+            set => doingMelee = value;
         }
 
-        float ICustomHero.InvulnerableTime
+        bool ICustomHero.MeleeHasHit
         {
-            get => invulnerableTime;
-            set => invulnerableTime = value;
+            get => meleeHasHit;
+            set => meleeHasHit = value;
         }
 
+        bool ICustomHero.MeleeFollowUp
+        {
+            get => meleeFollowUp;
+            set => meleeFollowUp = value;
+        }
+
+        bool ICustomHero.StandingMelee => standingMelee;
+        bool ICustomHero.JumpingMelee => jumpingMelee;
+        bool ICustomHero.DashingMelee => dashingMelee;
+
+        Unit ICustomHero.MeleeChosenUnit
+        {
+            get => meleeChosenUnit;
+            set => meleeChosenUnit = value;
+        }
+
+        // Shared method accessors
         void ICustomHero.SetSpriteOffset(float x, float y) => SetSpriteOffset(x, y);
         void ICustomHero.DeactivateGun() => DeactivateGun();
         void ICustomHero.ActivateGun() => ActivateGun();
         void ICustomHero.ChangeFrame() => ChangeFrame();
+        void ICustomHero.SetGunSprite(int spriteFrame, int spriteRow) => SetGunSprite(spriteFrame, spriteRow);
+        void ICustomHero.CreateFaderTrailInstance() => CreateFaderTrailInstance();
+        void ICustomHero.SetInvulnerable(float time, bool dvOverride, bool dvNetwork) => SetInvulnerable(time, dvOverride, dvNetwork);
+
+        // Special ability methods
         void ICustomHero.TriggerBroSpecialEvent() => TriggerBroSpecialEvent();
         void ICustomHero.PlayAttackSound() => PlayAttackSound();
         void ICustomHero.PlayAttackSound(float v) => PlayAttackSound(v);
-        void ICustomHero.SetGunSprite(int spriteFrame, int spriteRow) => SetGunSprite(spriteFrame, spriteRow);
+
+        // Melee ability methods
+        void ICustomHero.AnimateMeleeCommon() => AnimateMeleeCommon();
+        void ICustomHero.CancelMelee() => CancelMelee();
+        void ICustomHero.SetMeleeType() => SetMeleeType();
+        bool ICustomHero.TryMeleeTerrain(int offset, int damage) => TryMeleeTerrain(offset, damage);
+        void ICustomHero.KickDoors(float range) => KickDoors(range);
+        void ICustomHero.TriggerBroMeleeEvent() => TriggerBroMeleeEvent();
+        void ICustomHero.ResetMeleeValues() => ResetMeleeValues();
+        void ICustomHero.StartMeleeCommon() => StartMeleeCommon();
 
         #endregion
 
@@ -433,6 +485,10 @@ namespace BroMakerLib.Vanilla.Bros
             {
                 return;
             }
+            if (meleeAbility != null && !meleeAbility.HandleDamage(damage, damageType, xI, yI, direction, damageSender, hitX, hitY))
+            {
+                return;
+            }
             base.Damage(damage, damageType, xI, yI, direction, damageSender, hitX, hitY);
         }
 
@@ -442,8 +498,13 @@ namespace BroMakerLib.Vanilla.Bros
             {
                 return;
             }
+            if (meleeAbility != null && !meleeAbility.HandleDeath())
+            {
+                return;
+            }
             base.Death(xI, yI, damage);
             specialAbility?.HandleAfterDeath();
+            meleeAbility?.HandleAfterDeath();
         }
 
         protected override bool CanReduceLives()
@@ -502,6 +563,10 @@ namespace BroMakerLib.Vanilla.Bros
             {
                 return;
             }
+            if (meleeAbility != null && !meleeAbility.HandleStartFiring())
+            {
+                return;
+            }
             base.StartFiring();
         }
 
@@ -512,6 +577,15 @@ namespace BroMakerLib.Vanilla.Bros
                 return;
             }
             base.StartMelee();
+        }
+
+        protected override void RunIndependentMeleeFrames()
+        {
+            if (meleeAbility != null)
+            {
+                return;
+            }
+            base.RunIndependentMeleeFrames();
         }
 
         protected override void StartCustomMelee()
@@ -620,8 +694,13 @@ namespace BroMakerLib.Vanilla.Bros
             {
                 return;
             }
+            if (meleeAbility != null && !meleeAbility.HandleLand())
+            {
+                return;
+            }
             base.Land();
             specialAbility?.HandleAfterLand();
+            meleeAbility?.HandleAfterLand();
         }
 
         protected override void RunAvatarFiring()
@@ -648,6 +727,10 @@ namespace BroMakerLib.Vanilla.Bros
             set
             {
                 if (specialAbility != null && !specialAbility.HandleWallDrag(value))
+                {
+                    return;
+                }
+                if (meleeAbility != null && !meleeAbility.HandleWallDrag(value))
                 {
                     return;
                 }
@@ -716,12 +799,20 @@ namespace BroMakerLib.Vanilla.Bros
             {
                 return true;
             }
+            if (meleeAbility != null && !meleeAbility.HandleIsInStealthMode())
+            {
+                return true;
+            }
             return base.IsInStealthMode();
         }
 
         protected override void AlertNearbyMooks()
         {
             if (specialAbility != null && !specialAbility.HandleAlertNearbyMooks())
+            {
+                return;
+            }
+            if (meleeAbility != null && !meleeAbility.HandleAlertNearbyMooks())
             {
                 return;
             }
@@ -762,8 +853,13 @@ namespace BroMakerLib.Vanilla.Bros
             {
                 return;
             }
+            if (meleeAbility != null && !meleeAbility.HandleHitCeiling())
+            {
+                return;
+            }
             base.HitCeiling(ceilingHit);
             specialAbility?.HandleAfterHitCeiling();
+            meleeAbility?.HandleAfterHitCeiling();
         }
 
         protected override void HitLeftWall()
@@ -900,6 +996,10 @@ namespace BroMakerLib.Vanilla.Bros
             {
                 return;
             }
+            if (meleeAbility != null && !meleeAbility.HandleApplyFallingGravity())
+            {
+                return;
+            }
             base.ApplyFallingGravity();
         }
 
@@ -918,6 +1018,14 @@ namespace BroMakerLib.Vanilla.Bros
             {
                 bool result = false;
                 if (!specialAbility.HandleCanInseminate(ref result))
+                {
+                    return result;
+                }
+            }
+            if (meleeAbility != null)
+            {
+                bool result = false;
+                if (!meleeAbility.HandleCanInseminate(ref result))
                 {
                     return result;
                 }

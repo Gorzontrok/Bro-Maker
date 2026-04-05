@@ -1,4 +1,4 @@
-using HarmonyLib;
+using BroMakerLib.CustomObjects;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -16,7 +16,10 @@ namespace BroMakerLib.Abilities
         [JsonIgnore]
         public TestVanDammeAnim owner;
 
-        [JsonIgnore] protected Sound _sound;
+        /// <summary>The <see cref="ICustomHero" /> interface on the owner bro. Provides access to protected
+        /// fields and methods without reflection.</summary>
+        [JsonIgnore]
+        protected ICustomHero hero;
 
         /// <summary>Owner's player number.</summary>
         [JsonIgnore]
@@ -34,9 +37,9 @@ namespace BroMakerLib.Abilities
         [JsonIgnore]
         protected float Y => owner.Y;
 
-        /// <summary>The Sound singleton for playing audio. Cached from owner's protected field.</summary>
+        /// <summary>The Sound singleton for playing audio.</summary>
         [JsonIgnore]
-        protected Sound sound => _sound;
+        protected Sound sound => hero.Sound;
 
         /// <summary>Owner's SoundHolder containing AudioClip arrays for SFX (meleeHitSound, attackSounds, etc.).</summary>
         [JsonIgnore]
@@ -93,12 +96,18 @@ namespace BroMakerLib.Abilities
         /// <summary>Damage dealt to terrain blocks on hit.</summary>
         public int terrainDamage = 2;
 
-        /// <summary>Called once when the bro spawns. Sets <see cref="owner" /> and caches protected field references.</summary>
+        // Common melee sound clips — loaded from source bro's prefab in subclass Initialize
+        public AudioClip[] meleeHitSounds;
+        public AudioClip[] missSounds;
+        public AudioClip[] meleeHitTerrainSounds;
+        public AudioClip[] alternateMeleeHitSounds;
+
+        /// <summary>Called once when the bro spawns. Sets <see cref="owner" /> and caches the <see cref="hero" /> reference.</summary>
         /// <param name="owner">The bro instance that owns this ability.</param>
         public virtual void Initialize(TestVanDammeAnim owner)
         {
             this.owner = owner;
-            _sound = Traverse.Create(owner).Field<Sound>("sound").Value;
+            this.hero = owner as ICustomHero;
         }
 
         /// <summary>Called when the player presses melee. Initializes state and sets animation parameters.</summary>
@@ -116,7 +125,9 @@ namespace BroMakerLib.Abilities
         {
         }
 
-        /// <summary>Called when the melee is interrupted (e.g., taking damage, falling).</summary>
+        /// <summary>Called when the melee is interrupted (e.g., taking damage, falling).
+        /// IMPORTANT: Do NOT call <c>hero.CancelMelee()</c> from this method — the wrapper
+        /// already calls both this callback and <c>base.CancelMelee()</c> in sequence.</summary>
         public virtual void CancelMelee()
         {
         }
@@ -124,6 +135,91 @@ namespace BroMakerLib.Abilities
         /// <summary>Called every frame. Use for timers and other per-frame logic.</summary>
         public virtual void Update()
         {
+        }
+
+        /// <summary>Called when the bro dies.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleDeath()
+        {
+            return true;
+        }
+
+        /// <summary>Called after Death has run.</summary>
+        public virtual void HandleAfterDeath()
+        {
+        }
+
+        /// <summary>Called when the bro takes damage.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleDamage(int damage, DamageType damageType, float xI, float yI, int direction, MonoBehaviour damageSender, float hitX, float hitY)
+        {
+            return true;
+        }
+
+        /// <summary>Called during IsInStealthMode check.</summary>
+        /// <returns>True to run original, false to force stealth mode active.</returns>
+        public virtual bool HandleIsInStealthMode()
+        {
+            return true;
+        }
+
+        /// <summary>Called before Land.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleLand()
+        {
+            return true;
+        }
+
+        /// <summary>Called after Land has run.</summary>
+        public virtual void HandleAfterLand()
+        {
+        }
+
+        /// <summary>Called during CanInseminate check.</summary>
+        /// <returns>True to run original, false to use the provided result.</returns>
+        public virtual bool HandleCanInseminate(ref bool result)
+        {
+            return true;
+        }
+
+        /// <summary>Called during ApplyFallingGravity.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleApplyFallingGravity()
+        {
+            return true;
+        }
+
+        /// <summary>Called during AlertNearbyMooks.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleAlertNearbyMooks()
+        {
+            return true;
+        }
+
+        /// <summary>Called when WallDrag is being set.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleWallDrag(bool value)
+        {
+            return true;
+        }
+
+        /// <summary>Called when the bro hits a ceiling.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleHitCeiling()
+        {
+            return true;
+        }
+
+        /// <summary>Called after HitCeiling has run.</summary>
+        public virtual void HandleAfterHitCeiling()
+        {
+        }
+
+        /// <summary>Called when the bro starts firing.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleStartFiring()
+        {
+            return true;
         }
 
         /// <summary>Called before this ability is replaced by another. Override to destroy any

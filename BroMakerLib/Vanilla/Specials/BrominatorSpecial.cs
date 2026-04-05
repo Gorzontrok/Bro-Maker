@@ -247,7 +247,7 @@ namespace BroMakerLib.Vanilla.Specials
                     }
                     if (!GameModeController.IsDeathMatchMode)
                     {
-                        owner.CallMethod("SetInvulnerable", endInvulnerableTime, true, false);
+                        hero.SetInvulnerable(endInvulnerableTime, true, false);
                     }
                     owner.speed = originalSpeed;
                 }

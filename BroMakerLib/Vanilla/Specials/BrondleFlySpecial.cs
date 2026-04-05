@@ -171,7 +171,7 @@ namespace BroMakerLib.Vanilla.Specials
             owner.xI = 0f;
             if (owner.up)
             {
-                owner.SetFieldValue("jumpTime", 0.1f);
+                hero.JumpTime = 0.1f;
                 owner.yI = jumpYI;
             }
             else

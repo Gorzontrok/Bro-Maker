@@ -71,7 +71,7 @@ namespace BroMakerLib.Vanilla.Specials
                 }
                 owner.frame = 0;
                 hero.UsingSpecial = false;
-                if (owner.GetFieldValue<bool>("meleeFollowUp"))
+                if (hero.MeleeFollowUp)
                 {
                     owner.CallMethod("PressHighFiveMelee", false);
                 }

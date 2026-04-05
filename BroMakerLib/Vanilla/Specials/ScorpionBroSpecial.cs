@@ -125,7 +125,7 @@ namespace BroMakerLib.Vanilla.Specials
             launchDirection = direction.normalized;
             RaycastHit hit;
             if (Physics.Raycast(owner.transform.position + Vector3.up * 6f, launchDirection.normalized, out hit, 160f,
-                owner.GetFieldValue<LayerMask>("groundLayer") | owner.GetFieldValue<LayerMask>("fragileLayer")))
+                hero.GroundLayer | owner.GetFieldValue<LayerMask>("fragileLayer")))
             {
                 isLaunching = true;
             }
@@ -145,7 +145,7 @@ namespace BroMakerLib.Vanilla.Specials
 
         public override bool HandleJump(bool wallJump)
         {
-            if (isInScorpionMode && !owner.GetFieldValue<bool>("wallDrag"))
+            if (isInScorpionMode && !hero.WallDrag)
             {
                 ScorpionLaunch(GetInputVector());
                 if (isLaunching)
@@ -183,7 +183,7 @@ namespace BroMakerLib.Vanilla.Specials
 
         public override bool HandleStartMelee()
         {
-            if (isInScorpionMode && (owner.IsHanging() || owner.GetFieldValue<bool>("wallDrag")))
+            if (isInScorpionMode && (owner.IsHanging() || hero.WallDrag))
             {
                 return false;
             }
@@ -259,11 +259,11 @@ namespace BroMakerLib.Vanilla.Specials
             else
             {
                 RaycastHit hit;
-                if (Physics.Raycast(new Vector3(X + 4f, Y + 5f, 0f), Vector3.up, out hit, owner.headHeight, owner.GetFieldValue<LayerMask>("groundLayer")))
+                if (Physics.Raycast(new Vector3(X + 4f, Y + 5f, 0f), Vector3.up, out hit, owner.headHeight, hero.GroundLayer))
                 {
                     owner.doodadCurrentlyHangingFrom = hit.collider.gameObject.GetComponent<JiggleDoodad>();
                 }
-                else if (Physics.Raycast(new Vector3(X - 4f, Y + 5f, 0f), Vector3.up, out hit, owner.headHeight, owner.GetFieldValue<LayerMask>("groundLayer")))
+                else if (Physics.Raycast(new Vector3(X - 4f, Y + 5f, 0f), Vector3.up, out hit, owner.headHeight, hero.GroundLayer))
                 {
                     owner.doodadCurrentlyHangingFrom = hit.collider.gameObject.GetComponent<JiggleDoodad>();
                 }
@@ -309,14 +309,14 @@ namespace BroMakerLib.Vanilla.Specials
                 if ((wasConstrainedLeft && !constrainedLeft) || (wasConstrainedRight && !constrainedRight))
                 {
                     RaycastHit hit;
-                    if (owner.right && Physics.Raycast(new Vector3(X + halfWidth + 4f, Y + 5f, 0f), Vector3.up, out hit, headHeight + 14f, owner.GetFieldValue<LayerMask>("groundLayer")))
+                    if (owner.right && Physics.Raycast(new Vector3(X + halfWidth + 4f, Y + 5f, 0f), Vector3.up, out hit, headHeight + 14f, hero.GroundLayer))
                     {
                         owner.doodadCurrentlyHangingFrom = hit.collider.gameObject.GetComponent<JiggleDoodad>();
                         owner.SetFieldValue("hangGrace", owner.GetFieldValue<float>("hangGraceTime"));
                         owner.SetXY(X, Map.GetBlockCenterY(owner.GetFieldValue<int>("row")) - 16f);
                         owner.yI = 50f;
                     }
-                    else if (owner.left && Physics.Raycast(new Vector3(X - halfWidth - 4f, Y + 5f, 0f), Vector3.up, out hit, headHeight + 14f, owner.GetFieldValue<LayerMask>("groundLayer")))
+                    else if (owner.left && Physics.Raycast(new Vector3(X - halfWidth - 4f, Y + 5f, 0f), Vector3.up, out hit, headHeight + 14f, hero.GroundLayer))
                     {
                         owner.doodadCurrentlyHangingFrom = hit.collider.gameObject.GetComponent<JiggleDoodad>();
                         owner.SetFieldValue("hangGrace", owner.GetFieldValue<float>("hangGraceTime"));

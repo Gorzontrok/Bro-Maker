@@ -509,7 +509,7 @@ namespace BroMakerLib.Vanilla.Specials
                     }
                     float dx = X - entity.X;
                     int side = (int)Mathf.Sign(dx);
-                    if (side == (int)Direction && !owner.GetFieldValue<bool>("wallClimbing") && !owner.GetFieldValue<bool>("wallDrag"))
+                    if (side == (int)Direction && !owner.GetFieldValue<bool>("wallClimbing") && !hero.WallDrag)
                     {
                         remove = true;
                     }

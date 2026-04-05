@@ -135,7 +135,7 @@ namespace BroMakerLib.Vanilla.Specials
                     firstUnit.Impale(owner.transform, Vector3.right * Mathf.Sign(owner.xI), 0, owner.xI, owner.yI,
                         owner.transform.localScale.x * 8f, 0f);
                 }
-                owner.CallMethod("CreateFaderTrailInstance");
+                hero.CreateFaderTrailInstance();
             }
 
             if (dashTime <= 0f)
