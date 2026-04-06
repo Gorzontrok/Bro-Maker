@@ -9,14 +9,13 @@ namespace BroMakerLib.Vanilla.Melees
     [MeleePreset("CherryBroling")]
     public class CherryBrolingMelee : MeleeAbility
     {
-        [JsonIgnore]
-        private AudioClip[] alternateMeleeHitSounds2;
-        [JsonIgnore]
-        private AudioClip[] alternateMeleeMissSounds;
+        public AudioClip[] alternateMeleeHitSounds2;
+        public AudioClip[] alternateMeleeMissSounds;
 
         public override void Initialize(TestVanDammeAnim owner)
         {
             base.Initialize(owner);
+            meleeType = BroBase.MeleeType.FlipKick;
 
             var cherryBroling = owner as CherryBroling;
             if (cherryBroling == null)

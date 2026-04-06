@@ -96,6 +96,12 @@ namespace BroMakerLib.Abilities
         /// <summary>Damage dealt to terrain blocks on hit.</summary>
         public int terrainDamage = 2;
 
+        /// <summary>The vanilla MeleeType this ability represents. Controls BroBase dispatch routing
+        /// and affects sounds played by TryMeleeTerrain. Set in subclass constructors to match the
+        /// source bro's prefab value.</summary>
+        [JsonIgnore]
+        public BroBase.MeleeType meleeType = BroBase.MeleeType.Knife;
+
         // Common melee sound clips — loaded from source bro's prefab in subclass Initialize
         public AudioClip[] meleeHitSounds;
         public AudioClip[] missSounds;

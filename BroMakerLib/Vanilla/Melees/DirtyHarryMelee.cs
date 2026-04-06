@@ -14,6 +14,7 @@ namespace BroMakerLib.Vanilla.Melees
         public override void Initialize(TestVanDammeAnim owner)
         {
             base.Initialize(owner);
+            meleeType = BroBase.MeleeType.Punch;
 
             var harry = owner as DirtyHarry;
             if (harry == null)

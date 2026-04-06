@@ -9,14 +9,10 @@ namespace BroMakerLib.Vanilla.Melees
     [MeleePreset("AshBrolliams")]
     public class AshBrolliamsMelee : MeleeAbility
     {
-        [JsonIgnore]
-        private AudioClip chainsawStart;
-        [JsonIgnore]
-        private AudioClip chainsawSpin;
-        [JsonIgnore]
-        private AudioClip chainsawWindDown;
-        [JsonIgnore]
-        private AudioClip[] alternateMeleeHitSounds2;
+        public AudioClip chainsawStart;
+        public AudioClip chainsawSpin;
+        public AudioClip chainsawWindDown;
+        public AudioClip[] alternateMeleeHitSounds2;
 
         [JsonIgnore]
         private AudioSource chainsawAudio;
@@ -32,6 +28,7 @@ namespace BroMakerLib.Vanilla.Melees
         public override void Initialize(TestVanDammeAnim owner)
         {
             base.Initialize(owner);
+            meleeType = BroBase.MeleeType.ChainSaw;
 
             var ashBrolliams = owner as AshBrolliams;
             if (ashBrolliams == null)

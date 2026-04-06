@@ -32,7 +32,6 @@ namespace BroMakerLib.Vanilla.Bros
         protected bool blockGesturesDuringMelee = true;
 
         #region BroBase Methods
-
         protected override void Awake()
         {
             try
@@ -43,7 +42,7 @@ namespace BroMakerLib.Vanilla.Bros
                 meleeAbility = AbilityFactory.CreateMelee(Info.melee, this);
                 if (meleeAbility != null)
                 {
-                    meleeType = MeleeType.Custom;
+                    meleeType = meleeAbility.meleeType;
                 }
 
                 base.Awake();
@@ -137,7 +136,10 @@ namespace BroMakerLib.Vanilla.Bros
 
         protected override void CheckForTraps(ref float yIT)
         {
-            if (specialAbility != null && !specialAbility.HandleCheckForTraps()) return;
+            if (specialAbility != null && !specialAbility.HandleCheckForTraps())
+            {
+                return;
+            }
 
             var num = Y + yIT;
             if (num <= groundHeight + 1f)
@@ -307,7 +309,7 @@ namespace BroMakerLib.Vanilla.Bros
                     var num = 8 + Random.Range(0, 5);
                     for (var i = 0; i < num; i++)
                     {
-                        var angle = -1.88495576f + 1.2f / (float)(num - 1) * 3.14159274f * (float)i;
+                        var angle = -1.88495576f + (1.2f / (float)(num - 1) * 3.14159274f * (float)i);
                         var vector = Math.Point2OnCircle(angle, 1f);
                         ProjectileController.SpawnProjectileLocally(ProjectileController.instance.goldenLightProjectile, this, X, Y + 12f, vector.x * 400f, vector.y * 400f, true, 15, false, true, -15f);
                     }
@@ -318,11 +320,9 @@ namespace BroMakerLib.Vanilla.Bros
                 FlexEffect.PlaySoundEffect();
             }
         }
-
         #endregion
 
         #region ICustomHero Ability Accessors
-
         SpecialAbility ICustomHero.SpecialAbility => specialAbility;
         MeleeAbility ICustomHero.MeleeAbility => meleeAbility;
 
@@ -430,11 +430,9 @@ namespace BroMakerLib.Vanilla.Bros
         void ICustomHero.TriggerBroMeleeEvent() => TriggerBroMeleeEvent();
         void ICustomHero.ResetMeleeValues() => ResetMeleeValues();
         void ICustomHero.StartMeleeCommon() => StartMeleeCommon();
-
         #endregion
 
         #region Ability Forwarding
-
         protected override void PressSpecial()
         {
             if (specialAbility != null)
@@ -608,6 +606,76 @@ namespace BroMakerLib.Vanilla.Bros
             base.RunIndependentMeleeFrames();
         }
 
+        protected override void StartKnifeMelee()
+        {
+            if (meleeAbility != null)
+            {
+                meleeAbility.StartMelee();
+                return;
+            }
+            base.StartKnifeMelee();
+        }
+
+        protected override void AnimateKnifeMelee()
+        {
+            if (meleeAbility != null)
+            {
+                meleeAbility.AnimateMelee();
+                return;
+            }
+            base.AnimateKnifeMelee();
+        }
+
+        protected override void RunKnifeMeleeMovement()
+        {
+            if (meleeAbility != null)
+            {
+                meleeAbility.RunMeleeMovement();
+                return;
+            }
+            base.RunKnifeMeleeMovement();
+        }
+
+        protected override void StartPunch()
+        {
+            if (meleeAbility != null)
+            {
+                meleeAbility.StartMelee();
+                return;
+            }
+            base.StartPunch();
+        }
+
+        protected override void AnimatePunch()
+        {
+            if (meleeAbility != null)
+            {
+                meleeAbility.AnimateMelee();
+                return;
+            }
+            base.AnimatePunch();
+        }
+
+        protected override void RunPunchMovement()
+        {
+            if (meleeAbility != null)
+            {
+                meleeAbility.RunMeleeMovement();
+                return;
+            }
+            base.RunPunchMovement();
+        }
+
+        protected override void RunJetPackPunchMovement()
+        {
+            if (meleeAbility != null)
+            {
+                meleeAbility.RunMeleeMovement();
+                return;
+            }
+            base.RunJetPackPunchMovement();
+        }
+
         protected override void StartCustomMelee()
         {
             if (meleeAbility != null)
@@ -648,7 +716,7 @@ namespace BroMakerLib.Vanilla.Bros
         }
 
         /// <summary>
-        /// Assigns a special ability at runtime. Calls <see cref="SpecialAbility.Initialize"/> on the new ability.
+        /// Assigns a special ability at runtime. Calls <see cref="SpecialAbility.Initialize" /> on the new ability.
         /// </summary>
         /// <param name="ability">The ability to assign, or null to clear.</param>
         public void SetSpecialAbility(SpecialAbility ability)
@@ -659,8 +727,8 @@ namespace BroMakerLib.Vanilla.Bros
         }
 
         /// <summary>
-        /// Assigns a melee ability at runtime. Calls <see cref="MeleeAbility.Initialize"/> on the new ability
-        /// and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+        /// Assigns a melee ability at runtime. Calls <see cref="MeleeAbility.Initialize" /> on the new ability
+        /// and sets <c>meleeType</c> to the ability's declared <see cref="MeleeAbility.meleeType" />.
         /// </summary>
         /// <param name="ability">The ability to assign, or null to clear.</param>
         public void SetMeleeAbility(MeleeAbility ability)
@@ -670,7 +738,7 @@ namespace BroMakerLib.Vanilla.Bros
             ability?.Initialize(this);
             if (ability != null)
             {
-                meleeType = MeleeType.Custom;
+                meleeType = ability.meleeType;
             }
         }
 
@@ -1092,7 +1160,6 @@ namespace BroMakerLib.Vanilla.Bros
             }
             return !invulnerable && !wallDrag;
         }
-
         #endregion
     }
 }

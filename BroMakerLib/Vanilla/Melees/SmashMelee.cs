@@ -28,6 +28,11 @@ namespace BroMakerLib.Vanilla.Melees
         public float smashGroundDamageRange = 25f;
         public float smashGroundWaveSize = 80f;
 
+        // Additional sound clips beyond the base class set
+        public AudioClip[] alternateMeleeMissSounds;
+        public AudioClip[] alternateMeleeHitSounds2;
+        public AudioClip[] special3Sounds;
+
         // Runtime state — not serialized
         [JsonIgnore]
         private bool smashing;
@@ -42,6 +47,7 @@ namespace BroMakerLib.Vanilla.Melees
         public override void Initialize(TestVanDammeAnim owner)
         {
             base.Initialize(owner);
+            meleeType = BroBase.MeleeType.Smash;
         }
 
         public override void StartMelee()
@@ -236,7 +242,7 @@ namespace BroMakerLib.Vanilla.Melees
             List<Unit> list = new List<Unit>();
             if (Map.HitUnits(owner, PlayerNum, upperCutDamage, DamageType.Melee, 6f, X + Direction * 8f, Y + 8f, owner.xI + Direction * upperCutXI, owner.yI + upperCutYI, false, false, false, list, false, true))
             {
-                sound.PlaySoundEffectAt(soundHolder.alternateMeleeHitSound, 0.5f, owner.transform.position, 1f, true, false, false, 0f);
+                sound.PlaySoundEffectAt(alternateMeleeHitSounds, 0.5f, owner.transform.position, 1f, true, false, false, 0f);
                 hero.MeleeHasHit = true;
             }
             else if (playMissSound)
@@ -265,7 +271,7 @@ namespace BroMakerLib.Vanilla.Melees
         {
             if (!owner.GetFieldValue<bool>("hasPlayedMissSound"))
             {
-                sound.PlaySoundEffectAt(soundHolder.alternateMeleeMissSound, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
+                sound.PlaySoundEffectAt(alternateMeleeMissSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
                 owner.SetFieldValue("hasPlayedMissSound", true);
             }
             float range = 8f;
@@ -276,7 +282,7 @@ namespace BroMakerLib.Vanilla.Melees
             {
                 if (!hero.MeleeHasHit)
                 {
-                    sound.PlaySoundEffectAt(soundHolder.alternateMeleeHitSound, 0.5f, owner.transform.position, 1f, true, false, false, 0f);
+                    sound.PlaySoundEffectAt(alternateMeleeHitSounds, 0.5f, owner.transform.position, 1f, true, false, false, 0f);
                 }
                 hero.MeleeHasHit = true;
             }
@@ -293,7 +299,7 @@ namespace BroMakerLib.Vanilla.Melees
             Map.ExplodeUnits(owner, 10, DamageType.Crush, smashExplodeRange, smashExplodeHeight, xPoint, yPoint, smashExplodeXI, smashExplodeYI, PlayerNum, false, false, true);
             MapController.DamageGround(owner, ValueOrchestrator.GetModifiedDamage(15, PlayerNum), DamageType.Explosion, smashGroundDamageRange, xPoint, yPoint, null, false);
             EffectsController.CreateWhiteFlashPop(xPoint, yPoint);
-            owner.PlaySpecial3Sound(0.25f);
+            sound.PlaySoundEffectAt(special3Sounds, 0.25f, owner.transform.position, 1f, true, false, false, 0f);
             if (groundWave)
             {
                 EffectsController.CreateGroundWave(xPoint, yPoint + 1f, smashGroundWaveSize);
@@ -326,9 +332,10 @@ namespace BroMakerLib.Vanilla.Melees
             }
             if (bronan != null)
             {
-                soundHolder.alternateMeleeHitSound = bronan.soundHolder.alternateMeleeHitSound;
-                soundHolder.missSounds = bronan.soundHolder.missSounds;
-                soundHolder.alternateMeleeMissSound = bronan.soundHolder.alternateMeleeMissSound;
+                alternateMeleeHitSounds = bronan.soundHolder.alternateMeleeHitSound;
+                missSounds = bronan.soundHolder.missSounds;
+                alternateMeleeMissSounds = bronan.soundHolder.alternateMeleeMissSound;
+                special3Sounds = bronan.soundHolder.special3Sounds;
             }
         }
 
@@ -339,7 +346,7 @@ namespace BroMakerLib.Vanilla.Melees
 
         protected override void OnAfterStartMeleeCommon()
         {
-            sound.PlaySoundEffectAt(soundHolder.missSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
+            sound.PlaySoundEffectAt(missSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
             owner.SetFieldValue("hasPlayedMissSound", true);
         }
 

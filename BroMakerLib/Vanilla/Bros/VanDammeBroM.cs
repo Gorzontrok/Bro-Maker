@@ -1,5 +1,4 @@
 // Auto-generated from RambroM.cs — do not edit manually
-
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -7,6 +6,7 @@ using BroMakerLib.Abilities;
 using BroMakerLib.CustomObjects;
 using BroMakerLib.Extensions;
 using BroMakerLib.Infos;
+using RocketLib;
 using BroMakerLib.Loggers;
 using HarmonyLib;
 using Newtonsoft.Json;
@@ -45,7 +45,7 @@ namespace BroMakerLib.Vanilla.Bros
                 meleeAbility = AbilityFactory.CreateMelee(Info.melee, this);
                 if (meleeAbility != null)
                 {
-                    meleeType = MeleeType.Custom;
+                    meleeType = meleeAbility.meleeType;
                 }
 
                 base.Awake();
@@ -112,11 +112,7 @@ namespace BroMakerLib.Vanilla.Bros
         protected virtual void FixNullVariableLocal()
         {
             var prefab = HeroController.GetHeroPrefab(HeroType.TimeBroVanDamme);
-            if (prefab == null)
-            {
-                return;
-            }
-
+            if (prefab == null) return;
             CopySerializedValues(prefab);
         }
 
@@ -608,33 +604,63 @@ namespace BroMakerLib.Vanilla.Bros
             base.RunIndependentMeleeFrames();
         }
 
+        protected override void StartKnifeMelee()
+        {
+            if (meleeAbility != null) { meleeAbility.StartMelee(); return; }
+            base.StartKnifeMelee();
+        }
+
+        protected override void AnimateKnifeMelee()
+        {
+            if (meleeAbility != null) { meleeAbility.AnimateMelee(); return; }
+            base.AnimateKnifeMelee();
+        }
+
+        protected override void RunKnifeMeleeMovement()
+        {
+            if (meleeAbility != null) { meleeAbility.RunMeleeMovement(); return; }
+            base.RunKnifeMeleeMovement();
+        }
+
+        protected override void StartPunch()
+        {
+            if (meleeAbility != null) { meleeAbility.StartMelee(); return; }
+            base.StartPunch();
+        }
+
+        protected override void AnimatePunch()
+        {
+            if (meleeAbility != null) { meleeAbility.AnimateMelee(); return; }
+            base.AnimatePunch();
+        }
+
+        protected override void RunPunchMovement()
+        {
+            if (meleeAbility != null) { meleeAbility.RunMeleeMovement(); return; }
+            base.RunPunchMovement();
+        }
+
+        protected override void RunJetPackPunchMovement()
+        {
+            if (meleeAbility != null) { meleeAbility.RunMeleeMovement(); return; }
+            base.RunJetPackPunchMovement();
+        }
+
         protected override void StartCustomMelee()
         {
-            if (meleeAbility != null)
-            {
-                meleeAbility.StartMelee();
-                return;
-            }
+            if (meleeAbility != null) { meleeAbility.StartMelee(); return; }
             base.StartCustomMelee();
         }
 
         protected override void AnimateCustomMelee()
         {
-            if (meleeAbility != null)
-            {
-                meleeAbility.AnimateMelee();
-                return;
-            }
+            if (meleeAbility != null) { meleeAbility.AnimateMelee(); return; }
             base.AnimateCustomMelee();
         }
 
         protected override void RunCustomMeleeMovement()
         {
-            if (meleeAbility != null)
-            {
-                meleeAbility.RunMeleeMovement();
-                return;
-            }
+            if (meleeAbility != null) { meleeAbility.RunMeleeMovement(); return; }
             base.RunCustomMeleeMovement();
         }
 
@@ -660,7 +686,7 @@ namespace BroMakerLib.Vanilla.Bros
 
         /// <summary>
         /// Assigns a melee ability at runtime. Calls <see cref="MeleeAbility.Initialize"/> on the new ability
-        /// and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+        /// and sets <c>meleeType</c> to the ability's declared <see cref="MeleeAbility.meleeType"/>.
         /// </summary>
         /// <param name="ability">The ability to assign, or null to clear.</param>
         public void SetMeleeAbility(MeleeAbility ability)
@@ -670,7 +696,7 @@ namespace BroMakerLib.Vanilla.Bros
             ability?.Initialize(this);
             if (ability != null)
             {
-                meleeType = MeleeType.Custom;
+                meleeType = ability.meleeType;
             }
         }
 

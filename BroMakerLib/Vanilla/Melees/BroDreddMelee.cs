@@ -9,8 +9,7 @@ namespace BroMakerLib.Vanilla.Melees
     [MeleePreset("BroDredd")]
     public class BroDreddMelee : MeleeAbility
     {
-        [JsonIgnore]
-        private AudioClip[] alternateMeleeHitSounds2;
+        public AudioClip[] alternateMeleeHitSounds2;
 
         [JsonIgnore]
         private int shockFrameCounter;
@@ -22,6 +21,7 @@ namespace BroMakerLib.Vanilla.Melees
         public override void Initialize(TestVanDammeAnim owner)
         {
             base.Initialize(owner);
+            meleeType = BroBase.MeleeType.Tazer;
 
             var broDredd = owner as BroDredd;
             if (broDredd == null)

@@ -89,8 +89,7 @@ namespace BroMakerLib.Vanilla.Melees
         /// <summary>Sprite sheet row for the disembowel animation.</summary>
         public int animRow = 9;
 
-        [JsonIgnore]
-        private AudioClip[] alternateMeleeHitSounds2;
+        public AudioClip[] alternateMeleeHitSounds2;
 
         [JsonIgnore]
         private SpriteSM disembowelmentViscera;
@@ -98,6 +97,7 @@ namespace BroMakerLib.Vanilla.Melees
         public override void Initialize(TestVanDammeAnim owner)
         {
             base.Initialize(owner);
+            meleeType = BroBase.MeleeType.Disembowel;
 
             Brochete brochete = owner as Brochete;
             if (brochete == null)
@@ -107,7 +107,9 @@ namespace BroMakerLib.Vanilla.Melees
             }
             if (brochete != null)
             {
+                alternateMeleeHitSounds = brochete.soundHolder.alternateMeleeHitSound;
                 alternateMeleeHitSounds2 = brochete.soundHolder.alternateMeleeHitSound2;
+                missSounds = brochete.soundHolder.missSounds;
                 disembowelmentViscera = brochete.disembowelmentViscera;
             }
         }
@@ -239,7 +241,7 @@ namespace BroMakerLib.Vanilla.Melees
                 Map.PanicUnits(owner.X, owner.Y, 84f, 24f, 2f, true, false);
                 if (!hero.MeleeHasHit)
                 {
-                    sound.PlaySoundEffectAt(owner.soundHolder.alternateMeleeHitSound, 1f, owner.transform.position, 1f, true, false, false, 0f);
+                    sound.PlaySoundEffectAt(alternateMeleeHitSounds, 1f, owner.transform.position, 1f, true, false, false, 0f);
                 }
                 hero.MeleeHasHit = true;
             }
@@ -247,7 +249,7 @@ namespace BroMakerLib.Vanilla.Melees
             {
                 if (!owner.GetFieldValue<bool>("hasPlayedMissSound"))
                 {
-                    sound.PlaySoundEffectAt(owner.soundHolder.missSounds, 0.5f, owner.transform.position, 1f, true, false, false, 0f);
+                    sound.PlaySoundEffectAt(missSounds, 0.5f, owner.transform.position, 1f, true, false, false, 0f);
                 }
                 owner.SetFieldValue("hasPlayedMissSound", true);
             }

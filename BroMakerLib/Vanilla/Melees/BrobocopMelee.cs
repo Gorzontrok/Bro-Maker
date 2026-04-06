@@ -10,14 +10,13 @@ namespace BroMakerLib.Vanilla.Melees
     [MeleePreset("Brobocop")]
     public class BrobocopMelee : MeleeAbility
     {
-        [JsonIgnore]
-        private AudioClip[] alternateMeleeHitSounds2;
-        [JsonIgnore]
-        private AudioClip[] missSounds2;
+        public AudioClip[] alternateMeleeHitSounds2;
+        public AudioClip[] missSounds2;
 
         public override void Initialize(TestVanDammeAnim owner)
         {
             base.Initialize(owner);
+            meleeType = BroBase.MeleeType.BrobocopPunch;
 
             var brobocop = owner as Brobocop;
             if (brobocop == null)

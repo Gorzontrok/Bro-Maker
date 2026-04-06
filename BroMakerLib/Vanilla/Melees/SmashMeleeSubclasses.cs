@@ -20,9 +20,10 @@ namespace BroMakerLib.Vanilla.Melees
             }
             if (brominator != null)
             {
-                soundHolder.alternateMeleeHitSound = brominator.soundHolder.alternateMeleeHitSound;
-                soundHolder.missSounds = brominator.soundHolder.missSounds;
-                soundHolder.alternateMeleeMissSound = brominator.soundHolder.alternateMeleeMissSound;
+                alternateMeleeHitSounds = brominator.soundHolder.alternateMeleeHitSound;
+                missSounds = brominator.soundHolder.missSounds;
+                alternateMeleeMissSounds = brominator.soundHolder.alternateMeleeMissSound;
+                special3Sounds = brominator.soundHolder.special3Sounds;
             }
         }
 
@@ -63,19 +64,19 @@ namespace BroMakerLib.Vanilla.Melees
         {
             if (owner.frame == 3 && !hero.MeleeHasHit && !owner.GetFieldValue<bool>("hasPlayedMissSound"))
             {
-                sound.PlaySoundEffectAt(soundHolder.alternateMeleeMissSound, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
+                sound.PlaySoundEffectAt(alternateMeleeMissSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
                 owner.SetFieldValue("hasPlayedMissSound", true);
             }
         }
 
         protected override void OnUpperCutMissSound()
         {
-            sound.PlaySoundEffectAt(soundHolder.missSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
+            sound.PlaySoundEffectAt(missSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
         }
 
         protected override void OnUpperCutTerrainHit()
         {
-            sound.PlaySoundEffectAt(soundHolder.alternateMeleeMissSound, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
+            sound.PlaySoundEffectAt(alternateMeleeMissSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
         }
     }
 
@@ -102,10 +103,11 @@ namespace BroMakerLib.Vanilla.Melees
             }
             if (tankBro != null)
             {
-                soundHolder.alternateMeleeHitSound = tankBro.soundHolder.alternateMeleeHitSound;
-                soundHolder.alternateMeleeHitSound2 = tankBro.soundHolder.alternateMeleeHitSound2;
-                soundHolder.alternateMeleeMissSound = tankBro.soundHolder.alternateMeleeMissSound;
-                soundHolder.missSounds = tankBro.soundHolder.missSounds;
+                alternateMeleeHitSounds = tankBro.soundHolder.alternateMeleeHitSound;
+                alternateMeleeHitSounds2 = tankBro.soundHolder.alternateMeleeHitSound2;
+                alternateMeleeMissSounds = tankBro.soundHolder.alternateMeleeMissSound;
+                missSounds = tankBro.soundHolder.missSounds;
+                special3Sounds = tankBro.soundHolder.special3Sounds;
             }
         }
 
@@ -121,7 +123,7 @@ namespace BroMakerLib.Vanilla.Melees
 
         protected override void OnAfterStartMeleeCommon()
         {
-            sound.PlaySoundEffectAt(soundHolder.missSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
+            sound.PlaySoundEffectAt(missSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
             owner.SetFieldValue("hasPlayedMissSound", true);
         }
 
@@ -165,7 +167,7 @@ namespace BroMakerLib.Vanilla.Melees
             List<Unit> list = new List<Unit>();
             if (Map.HitUnits(owner, PlayerNum, upperCutDamage, DamageType.Melee, 6f, X + Direction * 8f, Y + 8f, owner.xI + Direction * tankBroUpperCutXI, owner.yI + tankBroUpperCutYI, false, false, false, list, false, true))
             {
-                sound.PlaySoundEffectAt(soundHolder.alternateMeleeHitSound2, 0.5f, owner.transform.position, 1f, true, false, false, 0f);
+                sound.PlaySoundEffectAt(alternateMeleeHitSounds2, 0.5f, owner.transform.position, 1f, true, false, false, 0f);
                 hero.MeleeHasHit = true;
             }
             hero.MeleeChosenUnit = null;
@@ -189,10 +191,10 @@ namespace BroMakerLib.Vanilla.Melees
             Map.ExplodeUnits(owner, 10, DamageType.Crush, smashExplodeRange, smashExplodeHeight, xPoint, yPoint, smashExplodeXI, smashExplodeYI, PlayerNum, false, false, true);
             MapController.DamageGround(owner, 15, DamageType.Explosion, smashGroundDamageRange, xPoint, yPoint, null, false);
             EffectsController.CreateWhiteFlashPop(xPoint, yPoint);
-            owner.PlaySpecial3Sound(0.25f);
+            sound.PlaySoundEffectAt(special3Sounds, 0.25f, owner.transform.position, 1f, true, false, false, 0f);
             if (groundWave)
             {
-                float headHeight = owner.GetFieldValue<float>("headHeight");
+                float headHeight = owner.headHeight;
                 EffectsController.CreateGroundWave(xPoint, yPoint + headHeight, smashGroundWaveSize);
                 Map.ShakeTrees(X, Y, 64f, 32f, 64f);
             }

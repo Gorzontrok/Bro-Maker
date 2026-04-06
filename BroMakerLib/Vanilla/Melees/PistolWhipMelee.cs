@@ -11,6 +11,7 @@ namespace BroMakerLib.Vanilla.Melees
         public override void Initialize(TestVanDammeAnim owner)
         {
             base.Initialize(owner);
+            meleeType = BroBase.MeleeType.PistolWhip;
             meleeHitTerrainSounds = owner.soundHolder.alternateMeleeHitSound;
         }
 

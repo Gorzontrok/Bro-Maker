@@ -13,6 +13,7 @@ namespace BroMakerLib.Vanilla.Melees
         public override void Initialize(TestVanDammeAnim owner)
         {
             base.Initialize(owner);
+            meleeType = BroBase.MeleeType.VanDammeKick;
         }
 
         public override void StartMelee()

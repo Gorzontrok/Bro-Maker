@@ -204,7 +204,10 @@ csharp_preserve_single_line_blocks = true
 csharp_preserve_single_line_statements = true
 
 # ReSharper properties
+resharper_csharp_blank_lines_after_block_statements = 0
+resharper_csharp_blank_lines_before_block_statements = 0
 resharper_csharp_blank_lines_inside_region = 0
+resharper_csharp_remove_blank_lines_near_braces_in_code = false
 resharper_csharp_braces_for_dowhile = required
 resharper_csharp_braces_for_fixed = required
 resharper_csharp_braces_for_for = required
