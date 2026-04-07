@@ -185,7 +185,7 @@ namespace BroMakerLib
 
                     if (LoadHero.playCutscene)
                     {
-                        CustomCutsceneController.LoadHeroCutscene(BroMakerUtilities.GetVariantValue(choice.GetInfo().Cutscene, (bro as CustomHero).CurrentVariant));
+                        CustomCutsceneController.LoadHeroCutscene(BroMakerUtilities.GetVariantValue(choice.GetInfo().Cutscene, (bro as ICustomHero).CurrentVariant));
                         LoadHero.playCutscene = false;
                     }
                     __instance.changingBroFromTrigger = false;

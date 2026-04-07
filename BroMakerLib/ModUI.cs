@@ -252,20 +252,22 @@ namespace BroMakerLib
                                     willShowOptions = true;
                                 }
 
-                                if (horizontalIndex == _broPerLines)
+                                broIndex++;
+                                horizontalIndex++;
+                                modIndex++;
+
+                                if (horizontalIndex >= _broPerLines)
                                 {
-                                    horizontalIndex = 0;
-                                    isHorizontalOpen = false;
                                     GUILayout.EndHorizontal();
+                                    isHorizontalOpen = false;
+                                    horizontalIndex = 0;
 
                                     if (willShowOptions)
                                     {
                                         SelectedBroUI(_selectedBro, mod);
+                                        willShowOptions = false;
                                     }
                                 }
-                                broIndex++;
-                                horizontalIndex++;
-                                modIndex++;
                             }
                             // prevent any horizontal open and not closed inside the loop
                             if (isHorizontalOpen)
@@ -378,13 +380,21 @@ namespace BroMakerLib
                 {
                     throw new Exception($"'characterPreset': {preset} doesn't exist. Check if you have the preset installed or if there is a typo.");
                 }
+                Type presetType = PresetManager.heroesPreset[preset];
+                // Vanilla bro wrappers don't have the UIOptions() methods so they don't need to be instantiated
+                if (!typeof(CustomHero).IsAssignableFrom(presetType))
+                {
+                    _selectedHero = null;
+                    heroCreated = false;
+                    return;
+                }
                 if (heroHolder == null)
                 {
                     heroHolder = new GameObject();
                     heroHolder.SetActive(false);
                     UnityEngine.Object.DontDestroyOnLoad(heroHolder);
                 }
-                _selectedHero = heroHolder.AddComponent(PresetManager.heroesPreset[preset]) as CustomHero;
+                _selectedHero = heroHolder.AddComponent(presetType) as CustomHero;
                 _selectedHero.AssignDirectoryPaths(_selectedBro.info.path);
                 _selectedHero.LoadSettings();
                 _selectedHero.enabled = false;
