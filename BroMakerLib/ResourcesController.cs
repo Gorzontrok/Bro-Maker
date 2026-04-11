@@ -5,6 +5,7 @@ using System.Reflection;
 using BroMakerLib.Loggers;
 using TFBGames.Systems;
 using UnityEngine;
+// ReSharper disable ShaderLabShaderReferenceNotResolved
 
 namespace BroMakerLib
 {
@@ -13,53 +14,31 @@ namespace BroMakerLib
         /// <summary>
         /// Particles/Alpha Blended
         /// </summary>
-        public static Shader Particle_AlphaBlend
-        {
-            get
-            {
-                return Shader.Find("Particles/Alpha Blended");
-            }
-        }
+        public static Shader Particle_AlphaBlend => Shader.Find("Particles/Alpha Blended");
 
         /// <summary>
         /// Unlit/Depth Cutout With ColouredImage
         /// </summary>
-        public static Shader Unlit_DepthCutout
-        {
-            get
-            {
-                return Shader.Find("Unlit/Depth Cutout With ColouredImage");
-            }
-        }
+        public static Shader Unlit_DepthCutoutColouredImage => Shader.Find("Unlit/Depth Cutout With ColouredImage");
+
+        /// <summary>
+        /// Unlit/Depth Cutout With Image
+        /// </summary>
+        public static Shader Unlit_DepthCutoutImage => Shader.Find("Unlit/Depth Cutout With Image");
 
         /// <summary>
         /// Particle/Additive
         /// </summary>
-        public static Shader Particle
-        {
-            get
-            {
-                return Shader.Find("Particle/Additive");
-            }
-        }
-
-
-        private static string AssetsFolder
-        {
-            get
-            {
-                return Path.Combine(Directory.GetCurrentDirectory(), "assets");
-            }
-        }
+        public static Shader Particle => Shader.Find("Particle/Additive");
 
         public static string resourceFolder = "BroMaker.Assets.";
 
-        private static readonly Dictionary<string, Material> materials = new Dictionary<string, Material>();
-        private static readonly Dictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
-        private static readonly Dictionary<string, AudioClip> audioClips = new Dictionary<string, AudioClip>();
+        private static readonly Dictionary<string, Material> _materials = new Dictionary<string, Material>();
+        private static readonly Dictionary<string, Texture2D> _textures = new Dictionary<string, Texture2D>();
+        private static readonly Dictionary<string, AudioClip> _audioClips = new Dictionary<string, AudioClip>();
 
         /// <summary>
-        /// Creates a Material using the shader Unlit_DepthCutout.
+        /// Creates a Material using the shader Unlit_DepthCutoutColouredImage.
         /// Loads Material from cache if created previously.
         /// </summary>
         /// <param name="path">Path to an image or asset</param>
@@ -71,22 +50,22 @@ namespace BroMakerLib
         }
 
         /// <summary>
-        /// Creates a Material using the shader Unlit_DepthCutout.
+        /// Creates a Material using the shader Unlit_DepthCutoutColouredImage.
         /// Loads Material from cache if created previously.
         /// </summary>
         /// <param name="filePath">Path to an image or asset file</param>
         /// <returns></returns>
         public static Material GetMaterial(string filePath)
         {
-            Material result = null;
-            if (materials.ContainsKey(filePath))
+            Material result;
+            if (_materials.TryGetValue(filePath, out Material material))
             {
-                return materials[filePath];
+                return material;
             }
 
             if (File.Exists(filePath))
             {
-                result = CreateMaterial(filePath, Unlit_DepthCutout);
+                result = CreateMaterial(filePath, Unlit_DepthCutoutColouredImage);
             }
             else if (filePath.Contains(":") && filePath[1] != ':') // Second condition is here to make sure it is not a disk path
             {
@@ -94,35 +73,33 @@ namespace BroMakerLib
             }
             else
             {
-                result = CreateMaterial(filePath, Unlit_DepthCutout);
+                result = CreateMaterial(filePath, Unlit_DepthCutoutColouredImage);
             }
 
             if (result != null)
             {
-                materials.Add(filePath, result);
+                _materials.Add(filePath, result);
             }
             return result;
         }
 
         /// <summary>
-        /// Creates a Material from an array of bytes using the shader Unlit_DepthCutout.
+        /// Creates a Material from an array of bytes using the shader Unlit_DepthCutoutColouredImage.
         /// The Material is not cached, use GetMaterial if caching is desired.
         /// </summary>
         /// <param name="imageBytes">Byte array to load image from</param>
         /// <returns></returns>
         public static Material CreateMaterial(byte[] imageBytes)
         {
-            Material result = null;
-
             var tex = CreateTexture(imageBytes);
             if (tex != null)
             {
-                var mat = new Material(Unlit_DepthCutout);
+                var mat = new Material(Unlit_DepthCutoutColouredImage);
                 mat.mainTexture = tex;
                 return mat;
             }
 
-            return result;
+            return null;
         }
 
         /// <summary>
@@ -135,7 +112,7 @@ namespace BroMakerLib
         public static Material CreateMaterial(string filePath, Shader shader)
         {
             var tex = CreateTexture(filePath);
-            if (tex != null)
+            if (tex)
             {
                 var mat = new Material(shader);
                 mat.mainTexture = tex;
@@ -183,9 +160,8 @@ namespace BroMakerLib
         /// <returns></returns>
         public static Texture2D GetTexture(string filePath)
         {
-            Texture2D tex = null;
-            textures.TryGetValue(filePath, out tex);
-            if (tex != null)
+            _textures.TryGetValue(filePath, out Texture2D tex);
+            if (tex)
                 return tex;
 
             if (File.Exists(filePath))
@@ -206,8 +182,8 @@ namespace BroMakerLib
             else
                 tex = CreateTexture(filePath);
 
-            if (tex != null)
-                textures.Add(filePath, tex);
+            if (tex)
+                _textures.Add(filePath, tex);
             return tex;
         }
 
@@ -238,10 +214,6 @@ namespace BroMakerLib
 
             Texture2D tex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
             tex.LoadImage(imageBytes);
-            tex.filterMode = FilterMode.Point;
-            tex.anisoLevel = 1;
-            tex.mipMapBias = 0;
-            tex.wrapMode = TextureWrapMode.Clamp;
 
             // Textures always load as ARGB32 when loading from a png, so this is necessary to convert it to RGBA32
             Texture2D convertedTexture = new Texture2D(tex.width, tex.height, TextureFormat.RGBA32, false);
@@ -249,7 +221,9 @@ namespace BroMakerLib
             convertedTexture.anisoLevel = 1;
             convertedTexture.mipMapBias = 0;
             convertedTexture.wrapMode = TextureWrapMode.Clamp;
-            Graphics.ConvertTexture(tex, convertedTexture);
+            convertedTexture.SetPixels32(tex.GetPixels32());
+            convertedTexture.Apply();
+            UnityEngine.Object.Destroy(tex);
             return convertedTexture;
         }
 
@@ -276,10 +250,10 @@ namespace BroMakerLib
         /// <returns></returns>
         public static AudioClip GetAudioClip(string filePath)
         {
-            AudioClip result = null;
-            if (audioClips.ContainsKey(filePath))
+            AudioClip result;
+            if (_audioClips.TryGetValue(filePath, out AudioClip clip))
             {
-                return audioClips[filePath];
+                return clip;
             }
 
             if (File.Exists(filePath))
@@ -295,9 +269,9 @@ namespace BroMakerLib
                 result = CreateAudioClip(filePath);
             }
 
-            if (result != null)
+            if (result)
             {
-                audioClips.Add(filePath, result);
+                _audioClips.Add(filePath, result);
             }
             return result;
         }
@@ -353,7 +327,6 @@ namespace BroMakerLib
             while (!getClip.isDone)
             {
             }
-            ;
 
             if (getClip.error != null)
                 BMLogger.ExceptionLog(getClip.error);
@@ -379,7 +352,13 @@ namespace BroMakerLib
             {
                 if (resFilestream == null) return null;
                 byte[] ba = new byte[resFilestream.Length];
-                resFilestream.Read(ba, 0, ba.Length);
+                int offset = 0;
+                while (offset < ba.Length)
+                {
+                    int read = resFilestream.Read(ba, offset, ba.Length - offset);
+                    if (read == 0) break;
+                    offset += read;
+                }
                 return ba;
             }
         }
