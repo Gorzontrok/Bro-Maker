@@ -222,20 +222,25 @@ namespace BroMakerLib.Unlocks
             state.IsUnlocked = true;
             state.UnlockedDate = DateTime.UtcNow;
 
-            if (queueUnlock)
-            {
-                if (progressData.PendingUnlocks == null)
-                {
-                    progressData.PendingUnlocks = new List<string>();
-                }
-                progressData.PendingUnlocks.Add(state.BroName);
-            }
-
             // Update the unlocked lists
             unlockedBroNames.Add(state.BroName);
             if (BroMakerStorage.GetStoredHeroByName(state.BroName, out StoredHero bro))
             {
                 unlockedBros.Add(bro);
+            }
+
+            // Only queue as pending unlock if the bro has a cutscene
+            if (queueUnlock && bro != null)
+            {
+                var info = bro.GetInfo();
+                if (info != null && info.Cutscene.Count > 0 && info.Cutscene[0].playCutsceneOnFirstSpawn)
+                {
+                    if (progressData.PendingUnlocks == null)
+                    {
+                        progressData.PendingUnlocks = new List<string>();
+                    }
+                    progressData.PendingUnlocks.Add(state.BroName);
+                }
             }
 
             // Set bro to enabled immediately
