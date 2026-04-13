@@ -1,5 +1,6 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Loaders;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -21,6 +22,10 @@ namespace BroMakerLib.Vanilla.Specials
         public float feetForceX = 30f;
         public float feetForceY = 70f;
 
+        /// <summary>Vanilla bro to source <see cref="SpecialAbility.throwSounds" /> from. Override in
+        /// subclasses to match the bro's own throw grunts (e.g., TankBroSpecial overrides to TankBro).</summary>
+        protected override HeroType SourceBroType => HeroType.Rambro;
+
         public GrenadeThrowSpecial()
         {
             animationColumn = 17;
@@ -35,10 +40,6 @@ namespace BroMakerLib.Vanilla.Specials
         {
             base.Initialize(owner);
             grenade = LoadBroforceObjects.GetGrenadeFromName(grenadeName);
-            if (throwSounds == null)
-            {
-                throwSounds = owner.soundHolder.throwSounds;
-            }
         }
 
         public override void UseSpecial()

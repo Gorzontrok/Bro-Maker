@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
 using RocketLib.Extensions;
 using UnityEngine;
@@ -11,6 +12,7 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("TheBrolander")]
     public class TheBrolanderSpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.TheBrolander;
         public int zapRange = 100;
         public int maxSpecialAmmo = 5;
         public int enemiesSlainPerPowerValue = 5;
@@ -65,8 +67,6 @@ namespace BroMakerLib.Vanilla.Specials
                 maxSpecialAmmo = brolander.maxSpecialAmmo;
                 enemiesSlainPerPowerValue = brolander.enemiesSlainPerPowerValue;
                 zapper = brolander.zapper;
-                if (specialAttackSounds == null)
-                    specialAttackSounds = brolander.soundHolder.specialAttackSounds;
             }
 
             var ownerBrolander = owner as TheBrolander;
@@ -345,7 +345,7 @@ namespace BroMakerLib.Vanilla.Specials
                 RunQuickeningAudio();
                 immortalDeathCounter += hero.DeltaTime;
                 levelUpZapTime = 1f;
-                if (immortalDeathCounter > immortalDeathDuration - 0.1f || Time.time - owner.GetFieldValue<float>("deathTime") > 5f)
+                if (immortalDeathCounter > immortalDeathDuration - 0.1f || Time.time - hero.DeathTime > 5f)
                 {
                     owner.health = 1;
                     owner.yI = 260f;
@@ -362,7 +362,7 @@ namespace BroMakerLib.Vanilla.Specials
                         enemiesSlain = 0;
                         SyncEnemiesSlain();
                     }
-                    owner.SetFieldValue("deathType", DeathType.Unassigned);
+                    hero.CurrentDeathType = DeathType.Unassigned;
                 }
             }
             else if (quickeningAudio != null && quickeningAudio.isPlaying)
@@ -507,7 +507,7 @@ namespace BroMakerLib.Vanilla.Specials
 
         public override bool HandleCheckNotifyDeathType()
         {
-            if (Time.time - owner.GetFieldValue<float>("deathTime") > immortalDeathDuration || !CanResurrect())
+            if (Time.time - hero.DeathTime > immortalDeathDuration || !CanResurrect())
             {
                 return true;
             }

@@ -1,5 +1,6 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
 using RocketLib.Extensions;
 using UnityEngine;
@@ -9,26 +10,21 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("TimeBro")]
     public class TimeBroVanDammeSpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.TimeBroVanDamme;
+
+        protected override void CacheSoundsFromPrefab()
+        {
+            base.CacheSoundsFromPrefab();
+            var sourceBro = HeroController.GetHeroPrefab(SourceBroType);
+            if (sourceBro == null) return;
+            if (special3Sounds == null) special3Sounds = sourceBro.soundHolder.special3Sounds.CloneArray();
+        }
         public float timeBoostDuration = 2f;
         public float heroBoostDuration = 2.3f;
         public float colorShiftDuration = 2.2f;
         public float soundVolume = 0.7f;
 
         public AudioClip[] special3Sounds;
-
-        public override void Initialize(TestVanDammeAnim owner)
-        {
-            base.Initialize(owner);
-            if (special3Sounds == null)
-            {
-                var prefab = HeroController.GetHeroPrefab(HeroType.TimeBroVanDamme);
-                var sourceBro = prefab.GetComponent<TestVanDammeAnim>();
-                if (sourceBro != null)
-                {
-                    special3Sounds = sourceBro.soundHolder.special3Sounds;
-                }
-            }
-        }
 
         public TimeBroVanDammeSpecial()
         {

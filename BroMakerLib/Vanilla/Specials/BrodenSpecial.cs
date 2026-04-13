@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
 using Rogueforce;
 using UnityEngine;
@@ -10,19 +11,21 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("Broden")]
     public class BrodenSpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.Broden;
+
+        protected override void CacheSoundsFromPrefab()
+        {
+            base.CacheSoundsFromPrefab();
+            var sourceBro = HeroController.GetHeroPrefab(SourceBroType);
+            if (sourceBro == null) return;
+            if (special2Sounds == null) special2Sounds = sourceBro.soundHolder.special2Sounds.CloneArray();
+        }
+
         public override void Initialize(TestVanDammeAnim owner)
         {
             base.Initialize(owner);
             var prefab = HeroController.GetHeroPrefab(HeroType.Broden);
             var sourceBro = prefab.GetComponent<TestVanDammeAnim>();
-            if (specialAttackSounds == null)
-            {
-                specialAttackSounds = sourceBro.soundHolder.specialAttackSounds;
-            }
-            if (special2Sounds == null)
-            {
-                special2Sounds = sourceBro.soundHolder.special2Sounds;
-            }
             if (owner.faderSpritePrefab == null)
             {
                 owner.faderSpritePrefab = sourceBro.faderSpritePrefab;
@@ -86,7 +89,7 @@ namespace BroMakerLib.Vanilla.Specials
             if (owner.SpecialAmmo > 0 && Time.time - dashStartTime > dashCooldown)
             {
                 owner.actionState = ActionState.Jumping;
-                owner.CallMethod("StopAirDashing");
+                hero.StopAirDashing();
                 if (owner.attachedToZipline != null)
                 {
                     owner.attachedToZipline.DetachUnit(owner);

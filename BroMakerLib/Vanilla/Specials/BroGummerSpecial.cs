@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
 using RocketLib.Extensions;
 using UnityEngine;
@@ -10,6 +11,17 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("BroGummer")]
     public class BroGummerSpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.BroGummer;
+
+        protected override void CacheSoundsFromPrefab()
+        {
+            base.CacheSoundsFromPrefab();
+            var sourceBro = HeroController.GetHeroPrefab(SourceBroType);
+            if (sourceBro == null) return;
+            if (special2Sounds == null) special2Sounds = sourceBro.soundHolder.special2Sounds.CloneArray();
+            if (special3Sounds == null) special3Sounds = sourceBro.soundHolder.special3Sounds.CloneArray();
+            if (special4Sounds == null) special4Sounds = sourceBro.soundHolder.special4Sounds.CloneArray();
+        }
         public float targetingDuration = 5f;
         public float scanningRange = 10f;
         public float specialCooldownDelay = 0.13f;
@@ -61,11 +73,6 @@ namespace BroMakerLib.Vanilla.Specials
             {
                 targetSystemPrefab = broGummer.broGummerSniperTargetPrefab;
                 specialSniperBulletPrefab = broGummer.specialSniperBulletPrefab;
-                if (special2Sounds == null) special2Sounds = broGummer.soundHolder.special2Sounds;
-                if (special3Sounds == null) special3Sounds = broGummer.soundHolder.special3Sounds;
-                if (special4Sounds == null) special4Sounds = broGummer.soundHolder.special4Sounds;
-                if (attackSounds == null) attackSounds = broGummer.soundHolder.attackSounds;
-                if (specialAttackSounds == null) specialAttackSounds = broGummer.soundHolder.specialAttackSounds;
             }
         }
 

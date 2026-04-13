@@ -1,5 +1,6 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -8,6 +9,7 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("BroInBlack")]
     public class BrononymousSpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.Brononymous;
         public float specialSoundVolume = 0.3f;
 
         [JsonIgnore]
@@ -29,11 +31,6 @@ namespace BroMakerLib.Vanilla.Specials
             if (brononymous != null)
             {
                 neuraliserPrefab = brononymous.neuraliserPrefab;
-            }
-            if (specialAttackSounds == null)
-            {
-                var sourceBro = prefab.GetComponent<TestVanDammeAnim>();
-                specialAttackSounds = sourceBro.soundHolder.specialAttackSounds;
             }
         }
 

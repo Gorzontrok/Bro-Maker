@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
 using RocketLib.Extensions;
 using UnityEngine;
@@ -10,19 +11,21 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("BrocSnipes")]
     public class BrocSnipesSpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.Broc;
+
+        protected override void CacheSoundsFromPrefab()
+        {
+            base.CacheSoundsFromPrefab();
+            var sourceBro = HeroController.GetHeroPrefab(SourceBroType);
+            if (sourceBro == null) return;
+            if (special2Sounds == null) special2Sounds = sourceBro.soundHolder.special2Sounds.CloneArray();
+        }
+
         public override void Initialize(TestVanDammeAnim owner)
         {
             base.Initialize(owner);
             var prefab = HeroController.GetHeroPrefab(HeroType.Broc);
             var sourceBro = prefab.GetComponent<TestVanDammeAnim>();
-            if (specialAttackSounds == null)
-            {
-                specialAttackSounds = sourceBro.soundHolder.specialAttackSounds;
-            }
-            if (special2Sounds == null)
-            {
-                special2Sounds = sourceBro.soundHolder.special2Sounds;
-            }
             if (owner.faderSpritePrefab == null)
             {
                 owner.faderSpritePrefab = sourceBro.faderSpritePrefab;
@@ -74,7 +77,7 @@ namespace BroMakerLib.Vanilla.Specials
                 {
                     owner.attachedToZipline.DetachUnit(owner);
                 }
-                owner.CallMethod("StopAirDashing");
+                hero.StopAirDashing();
                 Sound.GetInstance().PlaySoundEffectAt(specialAttackSounds, specialSoundVolume, owner.transform.position);
                 owner.SpecialAmmo--;
                 HeroController.SetSpecialAmmo(PlayerNum, owner.SpecialAmmo);

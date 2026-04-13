@@ -1,5 +1,6 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
 using RocketLib.Extensions;
 using UnityEngine;
@@ -9,6 +10,7 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("CherryBroling")]
     public class CherryBrolingSpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.CherryBroling;
         public float duckingSpeedX = 400f;
         public float duckingRecoilX = 60f;
         public Vector3 fireLeftDirection = new Vector3(-160f, -330f, 0f);
@@ -32,13 +34,12 @@ namespace BroMakerLib.Vanilla.Specials
         public override void Initialize(TestVanDammeAnim owner)
         {
             base.Initialize(owner);
-            var prefab = HeroController.GetHeroPrefab(HeroType.CherryBroling);
-            var cherry = prefab.GetComponent<CherryBroling>();
+            var sourceBro = HeroController.GetHeroPrefab(HeroType.CherryBroling);
+            var cherry = sourceBro as CherryBroling;
             if (cherry != null)
             {
                 rocketGrenade = cherry.rocketGrenade;
             }
-            if (throwSounds == null) throwSounds = owner.soundHolder.throwSounds;
         }
 
         public override void PressSpecial()
@@ -99,7 +100,7 @@ namespace BroMakerLib.Vanilla.Specials
                         somersaultFrame = 0;
                     }
                     owner.actionState = ActionState.Jumping;
-                    owner.CallMethod("AnimateJumping");
+                    hero.AnimateJumping();
                     if (owner.IsMine)
                     {
                         Vector3 dir;

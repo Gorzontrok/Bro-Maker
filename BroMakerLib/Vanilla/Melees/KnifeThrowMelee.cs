@@ -1,7 +1,7 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
-using RocketLib.Extensions;
 using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
@@ -15,15 +15,25 @@ namespace BroMakerLib.Vanilla.Melees
         [JsonIgnore]
         protected bool knifeThrown;
 
+        public AudioClip[] attackSounds;
+
+        public KnifeThrowMelee()
+        {
+            meleeType = BroBase.MeleeType.ThrowingKnife;
+            startType = MeleeStartType.Custom;
+            moveType = MeleeMoveType.Punch;
+            restartFrame = 3;
+        }
+
         public override void Initialize(TestVanDammeAnim owner)
         {
             base.Initialize(owner);
-            meleeType = BroBase.MeleeType.ThrowingKnife;
 
             var bladePrefab = HeroController.GetHeroPrefab(HeroType.Blade) as Blade;
             if (bladePrefab != null)
             {
                 throwingKnife = bladePrefab.throwingKnife;
+                if (attackSounds == null) attackSounds = bladePrefab.soundHolder.attackSounds.CloneArray();
             }
         }
 
@@ -46,7 +56,7 @@ namespace BroMakerLib.Vanilla.Melees
         public override void AnimateMelee()
         {
             hero.SetSpriteOffset(0f, 0f);
-            owner.SetFieldValue("rollingFrames", 0);
+            hero.RollingFrames = 0;
             if (owner.frame == 1)
             {
                 owner.counter -= 0.0334f;
@@ -70,71 +80,19 @@ namespace BroMakerLib.Vanilla.Melees
                 owner.frame = 0;
                 hero.CancelMelee();
             }
-            if (owner.frame == 2 && owner.GetFieldValue<Mook>("nearbyMook") != null && owner.GetFieldValue<Mook>("nearbyMook").CanBeThrown() && owner.GetFieldValue<bool>("highFive"))
+            if (owner.frame == 2 && hero.NearbyMook != null && hero.NearbyMook.CanBeThrown() && hero.HighFive)
             {
                 hero.CancelMelee();
-                Mook nearbyMook = owner.GetFieldValue<Mook>("nearbyMook");
-                owner.CallMethod("ThrowBackMook", nearbyMook);
-                owner.SetFieldValue("nearbyMook", null);
-            }
-        }
-
-        public override void RunMeleeMovement()
-        {
-            owner.CallMethod("ApplyFallingGravity");
-            if (hero.JumpingMelee)
-            {
-                if (owner.yI < owner.maxFallSpeed)
-                {
-                    owner.yI = owner.maxFallSpeed;
-                }
-            }
-            else if (hero.DashingMelee)
-            {
-                if (owner.frame < 2)
-                {
-                    owner.xI = 0f;
-                    owner.yI = 0f;
-                }
-                else if (owner.frame <= 4)
-                {
-                    if (hero.MeleeChosenUnit != null)
-                    {
-                        float num = 8f;
-                        float num2 = hero.MeleeChosenUnit.X - Direction * num - X;
-                        if (!owner.GetFieldValue<bool>("isInQuicksand"))
-                        {
-                            owner.xI = num2 / 0.1f;
-                        }
-                        if (!owner.GetFieldValue<bool>("isInQuicksand"))
-                        {
-                            owner.xI = Mathf.Clamp(owner.xI, -owner.speed * 1.7f, owner.speed * 1.7f);
-                        }
-                    }
-                    else
-                    {
-                        if (!owner.GetFieldValue<bool>("isInQuicksand"))
-                        {
-                            owner.xI = owner.speed * Direction;
-                        }
-                        owner.yI = 0f;
-                    }
-                }
-                else if (owner.frame <= 7)
-                {
-                    owner.xI = 0f;
-                }
-            }
-            else if (owner.Y > owner.groundHeight + 1f)
-            {
-                hero.CancelMelee();
+                Mook nearbyMook = hero.NearbyMook;
+                hero.ThrowBackMook(nearbyMook);
+                hero.NearbyMook = null;
             }
         }
 
         protected void ThrowKnife()
         {
             knifeThrown = true;
-            hero.PlayAttackSound(0.44f);
+            sound.PlaySoundEffectAt(attackSounds, 0.44f, owner.transform.position, 1f, true, false, false, 0f);
             ProjectileController.SpawnProjectileLocally(throwingKnife, owner, X + (float)(16 * (int)Direction), Y + 10f, owner.xI + (float)(250 * (int)Direction), 0f, PlayerNum);
         }
     }

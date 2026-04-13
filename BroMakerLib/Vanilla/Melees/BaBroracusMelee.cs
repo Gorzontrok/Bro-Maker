@@ -1,6 +1,6 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
-using RocketLib.Extensions;
+using BroMakerLib.Extensions;
 using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
@@ -8,24 +8,18 @@ namespace BroMakerLib.Vanilla.Melees
     [MeleePreset("BaBroracus")]
     public class BaBroracusMelee : MeleeAbility
     {
-        public override void Initialize(TestVanDammeAnim owner)
-        {
-            base.Initialize(owner);
-            meleeType = BroBase.MeleeType.Custom;
+        protected override HeroType SourceBroType => HeroType.BaBroracus;
 
-            var baBroracus = owner as BaBroracus;
-            if (baBroracus == null)
-            {
-                var prefab = HeroController.GetHeroPrefab(HeroType.BaBroracus);
-                baBroracus = prefab as BaBroracus;
-            }
-            if (baBroracus != null)
-            {
-                meleeHitSounds = baBroracus.soundHolder.meleeHitSound;
-                missSounds = baBroracus.soundHolder.missSounds;
-                alternateMeleeHitSounds = baBroracus.soundHolder.alternateMeleeHitSound;
-                meleeHitTerrainSounds = baBroracus.soundHolder.meleeHitTerrainSound;
-            }
+        public BaBroracusMelee()
+        {
+            meleeType = BroBase.MeleeType.Custom;
+            startType = MeleeStartType.Custom;
+            restartFrame = 1;
+            animationColumn = 25;
+            animationRow = 9;
+            animationFrameCount = 9;
+            hitFrame = 4;
+            endFrame = 7;
         }
 
         public override void StartMelee()
@@ -42,7 +36,7 @@ namespace BroMakerLib.Vanilla.Melees
             }
             if (!hero.JumpingMelee)
             {
-                owner.SetFieldValue("dashingMelee", true);
+                hero.DashingMelee = true;
                 owner.xI = (float)owner.Direction * owner.speed;
             }
             hero.StartMeleeCommon();
@@ -89,98 +83,16 @@ namespace BroMakerLib.Vanilla.Melees
             }
             else
             {
-                if (playMissSound && !owner.GetFieldValue<bool>("hasPlayedMissSound"))
+                if (playMissSound && !hero.HasPlayedMissSound)
                 {
                     sound.PlaySoundEffectAt(missSounds, 0.15f, owner.transform.position, 1f, true, false, false, 0f);
                 }
-                owner.SetFieldValue("hasPlayedMissSound", true);
+                hero.HasPlayedMissSound = true;
             }
             hero.MeleeChosenUnit = null;
-            if (!hero.MeleeHasHit && shouldTryHitTerrain && TryMeleeTerrainCustom(0, 2))
+            if (!hero.MeleeHasHit && shouldTryHitTerrain && HandleTryMeleeTerrain(0, terrainDamage))
             {
                 hero.MeleeHasHit = true;
-            }
-        }
-
-        private bool TryMeleeTerrainCustom(int offset, int meleeDamage)
-        {
-            RaycastHit raycastHit;
-            if (!Physics.Raycast(new Vector3(X - owner.transform.localScale.x * 4f, Y + 8f, 0f), new Vector3(owner.transform.localScale.x, 0f, 0f), out raycastHit, (float)(16 + offset), hero.GroundLayer))
-            {
-                return false;
-            }
-            Cage cage = raycastHit.collider.GetComponent<Cage>();
-            if (cage == null && raycastHit.collider.transform.parent != null)
-            {
-                cage = raycastHit.collider.transform.parent.GetComponent<Cage>();
-            }
-            if (cage != null)
-            {
-                MapController.Damage_Networked(owner, raycastHit.collider.gameObject, cage.health, DamageType.Melee, 0f, 40f, raycastHit.point.x, raycastHit.point.y);
-                return true;
-            }
-            MapController.Damage_Networked(owner, raycastHit.collider.gameObject, 5, DamageType.Melee, 0f, 40f, raycastHit.point.x, raycastHit.point.y);
-            if (owner.GetFieldValue<BroBase.MeleeType>("currentMeleeType") == BroBase.MeleeType.Knife)
-            {
-                sound.PlaySoundEffectAt(meleeHitTerrainSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
-            }
-            else
-            {
-                sound.PlaySoundEffectAt(alternateMeleeHitSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
-            }
-            EffectsController.CreateProjectilePopWhiteEffect(X + owner.width * owner.transform.localScale.x, Y + owner.height + 8f);
-            return true;
-        }
-
-        public override void RunMeleeMovement()
-        {
-            if (!owner.useNewKnifingFrames)
-            {
-                if (owner.Y > owner.groundHeight + 1f)
-                {
-                    owner.CallMethod("ApplyFallingGravity");
-                }
-            }
-            else if (hero.JumpingMelee)
-            {
-                owner.CallMethod("ApplyFallingGravity");
-                if (owner.yI < owner.maxFallSpeed)
-                {
-                    owner.yI = owner.maxFallSpeed;
-                }
-            }
-            else if (hero.DashingMelee)
-            {
-                if (owner.frame <= 1)
-                {
-                    owner.xI = 0f;
-                    owner.yI = 0f;
-                }
-                else if (owner.frame <= 4)
-                {
-                    if (hero.MeleeChosenUnit == null)
-                    {
-                        owner.xI = owner.speed * 1f * owner.transform.localScale.x;
-                        owner.yI = 0f;
-                    }
-                    else
-                    {
-                        owner.xI = owner.speed * 0.5f * owner.transform.localScale.x + (hero.MeleeChosenUnit.X - owner.X) * 6f;
-                    }
-                }
-                else if (owner.frame <= 5)
-                {
-                    owner.xI = owner.speed * 0.3f * owner.transform.localScale.x;
-                    owner.CallMethod("ApplyFallingGravity");
-                }
-                else
-                {
-                    owner.CallMethod("ApplyFallingGravity");
-                }
-            }
-            else if (owner.Y > owner.groundHeight + 1f)
-            {
-                hero.CancelMelee();
             }
         }
     }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
+using BroMakerLib.Extensions;
 using Effects;
 using Newtonsoft.Json;
 using RocketLib.Extensions;
@@ -11,6 +12,16 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("BroHeart")]
     public class BroveHeartSpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.BroveHeart;
+
+        protected override void CacheSoundsFromPrefab()
+        {
+            base.CacheSoundsFromPrefab();
+            var sourceBro = HeroController.GetHeroPrefab(SourceBroType);
+            if (sourceBro == null) return;
+            if (special3Sounds == null) special3Sounds = sourceBro.soundHolder.special3Sounds.CloneArray();
+            if (attack4Sounds == null) attack4Sounds = sourceBro.soundHolder.attack4Sounds.CloneArray();
+        }
         public float heroBoostDuration = 5f;
         public float specialDuration = 6.7f;
         public float initialScareRadius = 24f;
@@ -75,15 +86,6 @@ namespace BroMakerLib.Vanilla.Specials
             freedomCryAudio.volume = audioVolume;
             freedomCryAudio.dopplerLevel = 0f;
             freedomCryAudio.pitch = audioPitch;
-            if (special3Sounds == null)
-            {
-                var prefab = HeroController.GetHeroPrefab(HeroType.BroveHeart);
-                var sourceBro = prefab.GetComponent<TestVanDammeAnim>();
-                if (sourceBro != null)
-                {
-                    special3Sounds = sourceBro.soundHolder.special3Sounds;
-                }
-            }
             if (special3Sounds != null && special3Sounds.Length > 0)
             {
                 freedomCryAudio.clip = special3Sounds[Random.Range(0, special3Sounds.Length)];
@@ -102,15 +104,6 @@ namespace BroMakerLib.Vanilla.Specials
                 }
             }
 
-            if (attack4Sounds == null)
-            {
-                var prefab = HeroController.GetHeroPrefab(HeroType.BroveHeart);
-                var sourceBro = prefab.GetComponent<TestVanDammeAnim>();
-                if (sourceBro != null)
-                {
-                    attack4Sounds = sourceBro.soundHolder.attack4Sounds;
-                }
-            }
         }
 
         private ReactionBubble GetFreedomBubble()

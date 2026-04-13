@@ -1,5 +1,6 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
 using RocketLib.Extensions;
 using UnityEngine;
@@ -9,20 +10,26 @@ namespace BroMakerLib.Vanilla.Melees
     [MeleePreset("Xebro")]
     public class XebroMelee : MeleeAbility
     {
-        public float flipJumpYI = 100f;
-        public float flipGravityM = 1f;
-        public float warCryVolume = 0.15f;
-        public float wallInFrontAttackDistance = 19f;
+        protected override HeroType SourceBroType => HeroType.Xebro;
+        public float flipJumpYI = 160f;
+        public float flipGravityM = 0.7f;
+        public float warCryVolume = 0.1f;
+        public float wallInFrontAttackDistance = 24f;
+        public int flipKickHitFrame = 4;
+        public int flipKickDamage = 5;
+        public float flipKickRange = 19f;
+        public float flipKickAttackVolume = 0.6f;
 
-        // Used only when owner is not Xebro — when owner is Xebro we read/write through the owner's fields directly
         [JsonIgnore] private bool isXebroFlipping;
         [JsonIgnore] private bool _hasFlipped;
+        [JsonIgnore] private bool _hasHitDuringFlip;
         [JsonIgnore] private float _lastXebroFlipAttackPressTime;
         [JsonIgnore] private float normalSpeed;
 
         [JsonIgnore] private bool ownerIsXebro;
         [JsonIgnore] private AudioSource warCryAudio;
         [JsonIgnore] private bool ownedWarCryAudio;
+        [JsonIgnore] private AudioClip[] flipKickAttackSounds;
 
         private bool IsXebroFlipping
         {
@@ -57,33 +64,37 @@ namespace BroMakerLib.Vanilla.Melees
             }
         }
 
+        public XebroMelee()
+        {
+            meleeType = BroBase.MeleeType.Custom;
+        }
+
+        protected override void CacheSoundsFromPrefab()
+        {
+            base.CacheSoundsFromPrefab();
+            var sourceBro = HeroController.GetHeroPrefab(SourceBroType);
+            if (sourceBro != null)
+            {
+                if (flipKickAttackSounds == null) flipKickAttackSounds = sourceBro.soundHolder.attackSounds.CloneArray();
+            }
+        }
+
         public override void Initialize(TestVanDammeAnim owner)
         {
             base.Initialize(owner);
-            meleeType = BroBase.MeleeType.Custom;
 
             normalSpeed = owner.speed;
 
             ownerIsXebro = owner is Xebro;
 
-            var xebro = owner as Xebro;
-            if (xebro == null)
-            {
-                var prefab = HeroController.GetHeroPrefab(HeroType.Xebro);
-                xebro = prefab as Xebro;
-            }
+            var sourceBro = HeroController.GetHeroPrefab(SourceBroType);
 
-            if (ownerIsXebro)
-            {
-                warCryAudio = owner.GetFieldValue<AudioSource>("warCryAudio");
-                ownedWarCryAudio = false;
-            }
-            else
+            if (!ownerIsXebro)
             {
                 warCryAudio = owner.gameObject.AddComponent<AudioSource>();
-                if (xebro != null)
+                if (sourceBro != null)
                 {
-                    warCryAudio.clip = xebro.soundHolder.attack3Sounds[0];
+                    warCryAudio.clip = sourceBro.soundHolder.attack3Sounds[0];
                 }
                 warCryAudio.loop = true;
                 warCryAudio.dopplerLevel = 0.06f;
@@ -97,19 +108,34 @@ namespace BroMakerLib.Vanilla.Melees
             }
         }
 
+        private void EnsureWarCryAudio()
+        {
+            if (ownerIsXebro && warCryAudio == null)
+            {
+                warCryAudio = owner.GetFieldValue<AudioSource>("warCryAudio");
+            }
+        }
+
         public override void Cleanup()
         {
-            if (ownedWarCryAudio && warCryAudio != null)
+            if (warCryAudio != null)
             {
                 warCryAudio.Stop();
-                Object.Destroy(warCryAudio);
+                if (ownedWarCryAudio)
+                {
+                    Object.Destroy(warCryAudio);
+                }
                 warCryAudio = null;
             }
         }
 
         public override void Update()
         {
-            if (IsXebroFlipping || (hero.DoingMelee && ((BroBase)owner).meleeType == BroBase.MeleeType.Custom))
+            if (ownerIsXebro) return;
+
+            if (warCryAudio == null) return;
+
+            if (IsXebroFlipping || hero.DoingMelee)
             {
                 if (!warCryAudio.isPlaying)
                 {
@@ -135,6 +161,8 @@ namespace BroMakerLib.Vanilla.Melees
 
         public override void StartMelee()
         {
+            EnsureWarCryAudio();
+
             if (owner.IsOnGround() && ((!owner.left && !owner.right) || owner.CallMethod<bool>("IsGroundBelowAtXOffset", (float)owner.Direction * (owner.GetFieldValue<float>("feetWidth") + 0.2f), true)))
             {
                 IsXebroFlipping = false;
@@ -149,6 +177,14 @@ namespace BroMakerLib.Vanilla.Melees
                 HasFlipped = true;
                 IsXebroFlipping = true;
                 owner.speed = normalSpeed * 1.33f;
+            }
+
+            _hasHitDuringFlip = false;
+
+            if (!hero.JumpingMelee)
+            {
+                hero.DashingMelee = true;
+                owner.xI = (float)owner.Direction * owner.speed;
             }
 
             hero.StartMeleeCommon();
@@ -183,6 +219,7 @@ namespace BroMakerLib.Vanilla.Melees
                 owner.yI = flipJumpYI * 1.2f;
                 IsXebroFlipping = true;
                 HasFlipped = true;
+                _hasHitDuringFlip = false;
                 Map.ForgetPlayer(owner.playerNum, owner.X, owner.Y, 32f, true, false);
                 Map.KnockMooks(owner, DamageType.Fall, 9f, 16f, owner.X + (float)(owner.Direction * 4), owner.Y, owner.xI * 0.55f, 50f + Random.value * 170f, true, true, true);
             }
@@ -205,6 +242,7 @@ namespace BroMakerLib.Vanilla.Melees
                 {
                     owner.speed = normalSpeed * 1.33f;
                     IsXebroFlipping = true;
+                    _hasHitDuringFlip = false;
                     owner.xI = owner.speed * owner.transform.localScale.x;
                     owner.yI = flipJumpYI * 1.2f;
                     owner.frame -= 12;
@@ -232,6 +270,13 @@ namespace BroMakerLib.Vanilla.Melees
                 {
                     owner.frame = 0;
                 }
+                if (!_hasHitDuringFlip && owner.frame >= flipKickHitFrame)
+                {
+                    _hasHitDuringFlip = true;
+                    EffectsController.CreateMeleeStrikeEffect(owner.X + (float)(owner.Direction * 10), owner.Y + 8f, -owner.xI * 0.2f, 0f);
+                    Map.HitUnits(owner, owner, owner.playerNum, flipKickDamage, DamageType.Melee, flipKickRange, owner.X + Mathf.Sign(owner.xI) * 5f, owner.Y - 5f, owner.transform.localScale.x * 220f, 260f, true, true);
+                    Sound.GetInstance().PlaySoundEffectAt(flipKickAttackSounds, flipKickAttackVolume, owner.transform.position, 1f, true, false, false, 0f);
+                }
                 hero.Sprite.SetLowerLeftPixel((float)((19 + owner.frame % 12) * hero.SpritePixelWidth), (float)(hero.SpritePixelHeight * 11));
             }
         }
@@ -242,8 +287,7 @@ namespace BroMakerLib.Vanilla.Melees
             {
                 if (!ownerIsXebro)
                 {
-                    // Replicate Xebro.ApplyFallingGravity for non-Xebro owners
-                    bool isInQuicksand = owner.GetFieldValue<bool>("isInQuicksand");
+                    bool isInQuicksand = hero.IsInQuicksand;
                     bool isParachuteActive = owner.IsParachuteActive;
                     if (!isInQuicksand && !isParachuteActive && hero.DoingMelee && IsXebroFlipping)
                     {
@@ -251,12 +295,12 @@ namespace BroMakerLib.Vanilla.Melees
                     }
                     else
                     {
-                        owner.CallMethod("ApplyFallingGravity");
+                        hero.ApplyFallingGravity();
                     }
                 }
                 else
                 {
-                    owner.CallMethod("ApplyFallingGravity");
+                    hero.ApplyFallingGravity();
                 }
                 if (owner.yI < owner.maxFallSpeed)
                 {
@@ -323,12 +367,71 @@ namespace BroMakerLib.Vanilla.Melees
                     hero.CancelMelee();
                 }
             }
-            return true;
+            return hero.GunFrame <= 0;
         }
 
         public override void HandleAfterHitCeiling()
         {
             LastXebroFlipAttackPressTime = -1f;
+        }
+
+        public override bool HandleDamage(int damage, DamageType damageType, float xI, float yI, int direction, MonoBehaviour damageSender, float hitX, float hitY)
+        {
+            if (ownerIsXebro) return true;
+
+            bool isAttacking = owner.fire || hero.GunFrame > 0;
+            bool meleeDamage = damageType == DamageType.Melee || damageType == DamageType.Knifed;
+            if (meleeDamage && isAttacking && Mathf.Sign(owner.transform.localScale.x) != Mathf.Sign(xI))
+            {
+                return false;
+            }
+            if (hero.InvulnerableTime > 0f)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public override bool HandleCanInseminate(ref bool result)
+        {
+            if (ownerIsXebro) return true;
+
+            bool isAttacking = owner.fire || hero.GunFrame > 0;
+            result = !isAttacking || Mathf.Sign(owner.transform.localScale.x) == Mathf.Sign(owner.xI);
+            return false;
+        }
+
+        public override bool HandleStartFiring()
+        {
+            LastXebroFlipAttackPressTime = Time.time;
+            return true;
+        }
+
+        public override bool HandleCanStartNewMelee(ref bool result)
+        {
+            result = !hero.DoingMelee;
+            return false;
+        }
+
+        public override bool HandleIsLockedInMelee(ref bool result)
+        {
+            result = false;
+            return false;
+        }
+
+        public override bool HandleApplyFallingGravity()
+        {
+            if (ownerIsXebro) return true;
+
+            if (!hero.IsInQuicksand
+                && !owner.IsParachuteActive
+                && hero.DoingMelee
+                && IsXebroFlipping)
+            {
+                owner.yI -= 1100f * hero.DeltaTime * flipGravityM;
+                return false;
+            }
+            return true;
         }
 
         public bool IsFlipping()

@@ -1,4 +1,5 @@
 using BroMakerLib.Abilities;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
 using UnityEngine;
 using RocketLib.Extensions;
@@ -31,22 +32,29 @@ namespace BroMakerLib.Vanilla.Specials
         [JsonIgnore]
         protected float currentStampDelay;
 
+        /// <summary>Vanilla bro to source sounds and faderSpritePrefab from. Override in
+        /// subclasses to match the bro's own effects (e.g., BroCeasarSpecial overrides to BroCeasar).</summary>
+        protected override HeroType SourceBroType => HeroType.BronanTheBrobarian;
+
+        protected override void CacheSoundsFromPrefab()
+        {
+            base.CacheSoundsFromPrefab();
+            var sourceBro = HeroController.GetHeroPrefab(SourceBroType);
+            if (sourceBro == null) return;
+
+            if (special3Sounds == null) special3Sounds = sourceBro.soundHolder.special3Sounds.CloneArray();
+        }
+
         public override void Initialize(TestVanDammeAnim owner)
         {
             base.Initialize(owner);
-            var prefab = HeroController.GetHeroPrefab(HeroType.BronanTheBrobarian);
-            var sourceBro = prefab.GetComponent<TestVanDammeAnim>();
-            if (special3Sounds == null)
+            var sourceBro = HeroController.GetHeroPrefab(SourceBroType);
+            if (sourceBro != null)
             {
-                special3Sounds = sourceBro.soundHolder.special3Sounds;
-            }
-            if (specialAttackSounds == null)
-            {
-                specialAttackSounds = sourceBro.soundHolder.specialAttackSounds;
-            }
-            if (owner.faderSpritePrefab == null)
-            {
-                owner.faderSpritePrefab = sourceBro.faderSpritePrefab;
+                if (owner.faderSpritePrefab == null)
+                {
+                    owner.faderSpritePrefab = sourceBro.faderSpritePrefab;
+                }
             }
         }
 
@@ -178,7 +186,7 @@ namespace BroMakerLib.Vanilla.Specials
 
         public override bool HandleApplyFallingGravity()
         {
-            if (owner.GetFieldValue<bool>("isInQuicksand"))
+            if (hero.IsInQuicksand)
             {
                 return true;
             }

@@ -1,7 +1,7 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
-using RocketLib.Extensions;
 using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
@@ -9,45 +9,41 @@ namespace BroMakerLib.Vanilla.Melees
     [MeleePreset("IndianaBrones")]
     public class IndianaBronesMelee : MeleeAbility
     {
+        protected override HeroType SourceBroType => HeroType.IndianaBrones;
+
         public float meleeFrameRate = 0.03334f;
         public float wallHitVolume = 0.2f;
 
         public AudioClip[] wallHitSounds;
+        public AudioClip[] specialAttackSounds;
 
         [JsonIgnore] private int meleeFrame;
         [JsonIgnore] private float meleeCounter;
         [JsonIgnore] private bool wallHasHit;
         [JsonIgnore] private bool wallHasHitForward;
 
-        public override void Initialize(TestVanDammeAnim owner)
+        protected override void CacheSoundsFromPrefab()
         {
-            base.Initialize(owner);
+            var sourceBro = HeroController.GetHeroPrefab(SourceBroType);
+            if (sourceBro == null) return;
 
-            var indiana = owner as IndianaBrones;
-            if (indiana == null)
-            {
-                var prefab = HeroController.GetHeroPrefab(HeroType.IndianaBrones);
-                indiana = prefab as IndianaBrones;
-            }
-            if (indiana != null)
-            {
-                meleeHitSounds = indiana.soundHolder.meleeHitSound;
-                missSounds = indiana.soundHolder.missSounds;
-                meleeHitTerrainSounds = indiana.soundHolder.meleeHitTerrainSound;
-                wallHitSounds = indiana.soundHolder.special3Sounds;
-            }
+            if (meleeHitSounds == null) meleeHitSounds = sourceBro.soundHolder.meleeHitSound.CloneArray();
+            if (missSounds == null) missSounds = sourceBro.soundHolder.missSounds.CloneArray();
+            if (meleeHitTerrainSounds == null) meleeHitTerrainSounds = sourceBro.soundHolder.meleeHitTerrainSound.CloneArray();
+            if (wallHitSounds == null) wallHitSounds = sourceBro.soundHolder.special3Sounds.CloneArray();
+            if (specialAttackSounds == null) specialAttackSounds = sourceBro.soundHolder.specialAttackSounds.CloneArray();
         }
 
         public override void StartMelee()
         {
-            owner.SetFieldValue("cancelMeleeOnChangeDirection", true);
+            hero.CancelMeleeOnChangeDirection = true;
             var indianaCheck = owner as IndianaBrones;
             bool whippingAnimation = indianaCheck != null && indianaCheck.GetFieldValue<bool>("whippingAnimation");
             if (owner.GetFieldValue<bool>("wallClimbing") || whippingAnimation)
             {
                 return;
             }
-            owner.SetFieldValue("showHighFiveAfterMeleeTimer", 0f);
+            hero.ShowHighFiveAfterMeleeTimer = 0f;
             hero.SetMeleeType();
             hero.MeleeHasHit = false;
             if (!hero.DoingMelee || meleeFrame > 3)
@@ -96,7 +92,7 @@ namespace BroMakerLib.Vanilla.Melees
         public override void AnimateMelee()
         {
             hero.SetSpriteOffset(0f, 0f);
-            owner.SetFieldValue("rollingFrames", 0);
+            hero.RollingFrames = 0;
             if (meleeFrame == 1)
             {
                 meleeCounter -= 0.06667f;
@@ -161,7 +157,7 @@ namespace BroMakerLib.Vanilla.Melees
                     sound.PlaySoundEffectAt(missSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
                 }
                 hero.MeleeChosenUnit = null;
-                if (TryMeleeTerrainInline(0, 2))
+                if (HandleTryMeleeTerrain(0, terrainDamage))
                 {
                     hero.MeleeHasHit = true;
                 }
@@ -178,21 +174,21 @@ namespace BroMakerLib.Vanilla.Melees
                 hero.CancelMelee();
                 return;
             }
-            Mook nearbyMook = owner.GetFieldValue<Mook>("nearbyMook");
-            if (meleeFrame == 2 && nearbyMook != null && nearbyMook.CanBeThrown() && owner.GetFieldValue<bool>("highFive"))
+            Mook nearbyMook = hero.NearbyMook;
+            if (meleeFrame == 2 && nearbyMook != null && nearbyMook.CanBeThrown() && hero.HighFive)
             {
                 hero.CancelMelee();
-                owner.CallMethod("ThrowBackMook", nearbyMook);
+                hero.ThrowBackMook(nearbyMook);
                 Transform parentedToTransform = nearbyMook.GetParentedToTransform();
                 if (parentedToTransform != null && parentedToTransform.name.IndexOf("BOSS", System.StringComparison.OrdinalIgnoreCase) >= 0)
                 {
                     Utility.AchievementManager.AwardAchievement(Utility.Achievement.noticket, PlayerNum);
                 }
-                owner.SetFieldValue("nearbyMook", null);
+                hero.NearbyMook = null;
             }
             else if (meleeFrame == 2)
             {
-                owner.PlaySpecialAttackSound(0.2f);
+                sound.PlaySoundEffectAt(specialAttackSounds, 0.2f, owner.transform.position, 1f + owner.pitchShiftAmount, true, false, false, 0f);
             }
         }
 
@@ -201,91 +197,10 @@ namespace BroMakerLib.Vanilla.Melees
             owner.canDoIndependentMeleeAnimation = false;
         }
 
-        public override void RunMeleeMovement()
-        {
-            if (!owner.useNewKnifingFrames)
-            {
-                if (owner.Y > owner.groundHeight + 1f)
-                {
-                    owner.CallMethod("ApplyFallingGravity");
-                }
-            }
-            else if (hero.JumpingMelee)
-            {
-                owner.CallMethod("ApplyFallingGravity");
-                if (owner.yI < owner.maxFallSpeed)
-                {
-                    owner.yI = owner.maxFallSpeed;
-                }
-            }
-            else if (hero.DashingMelee)
-            {
-                if (owner.frame <= 1)
-                {
-                    owner.xI = 0f;
-                    owner.yI = 0f;
-                }
-                else if (owner.frame <= 3)
-                {
-                    if (hero.MeleeChosenUnit == null)
-                    {
-                        if (!owner.GetFieldValue<bool>("isInQuicksand"))
-                        {
-                            owner.xI = owner.speed * 1f * owner.transform.localScale.x;
-                        }
-                        owner.yI = 0f;
-                    }
-                    else if (!owner.GetFieldValue<bool>("isInQuicksand"))
-                    {
-                        owner.xI = owner.speed * 0.5f * owner.transform.localScale.x + (hero.MeleeChosenUnit.X - owner.X) * 6f;
-                    }
-                }
-                else if (owner.frame <= 5)
-                {
-                    if (!owner.GetFieldValue<bool>("isInQuicksand"))
-                    {
-                        owner.xI = owner.speed * 0.3f * owner.transform.localScale.x;
-                    }
-                    owner.CallMethod("ApplyFallingGravity");
-                }
-                else
-                {
-                    owner.CallMethod("ApplyFallingGravity");
-                }
-            }
-            else if (owner.Y > owner.groundHeight + 1f)
-            {
-                hero.CancelMelee();
-            }
-        }
-
         private void PlayWallSound()
         {
             if (sound == null) return;
             sound.PlaySoundEffectAt(wallHitSounds, wallHitVolume, owner.transform.position, 1f, true, false, false, 0f);
-        }
-
-        private bool TryMeleeTerrainInline(int offset, int meleeDamage)
-        {
-            RaycastHit raycastHit;
-            if (!Physics.Raycast(new Vector3(X - owner.transform.localScale.x * 4f, Y + 4f, 0f), new Vector3(owner.transform.localScale.x, 0f, 0f), out raycastHit, (float)(16 + offset), hero.GroundLayer))
-            {
-                return false;
-            }
-            Cage cage = raycastHit.collider.GetComponent<Cage>();
-            if (cage == null && raycastHit.collider.transform.parent != null)
-            {
-                cage = raycastHit.collider.transform.parent.GetComponent<Cage>();
-            }
-            if (cage != null)
-            {
-                MapController.Damage_Networked(owner, raycastHit.collider.gameObject, cage.health, DamageType.Melee, 0f, 40f, raycastHit.point.x, raycastHit.point.y);
-                return true;
-            }
-            MapController.Damage_Networked(owner, raycastHit.collider.gameObject, meleeDamage, DamageType.Melee, 0f, 40f, raycastHit.point.x, raycastHit.point.y);
-            sound.PlaySoundEffectAt(meleeHitTerrainSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
-            EffectsController.CreateProjectilePopWhiteEffect(X + owner.width * owner.transform.localScale.x, Y + owner.height + 4f);
-            return true;
         }
     }
 }

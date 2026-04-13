@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
 using RocketLib.Extensions;
 using UnityEngine;
@@ -10,6 +11,15 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("BroniversalSoldier")]
     public class BroniversalSoldierSpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.BroniversalSoldier;
+
+        protected override void CacheSoundsFromPrefab()
+        {
+            base.CacheSoundsFromPrefab();
+            var sourceBro = HeroController.GetHeroPrefab(SourceBroType);
+            if (sourceBro == null) return;
+            if (special4Sounds == null) special4Sounds = sourceBro.soundHolder.special4Sounds.CloneArray();
+        }
         public float serumDuration = 6.5f;
         public float deathGracePeriod = 0.66f;
         public float reviveRadius = 15f;
@@ -46,8 +56,8 @@ namespace BroMakerLib.Vanilla.Specials
 
         private float OwnerDeathTime
         {
-            get => owner.GetFieldValue<float>("deathTime");
-            set => owner.SetFieldValue("deathTime", value);
+            get => hero.DeathTime;
+            set => hero.DeathTime = value;
         }
 
         public override void Initialize(TestVanDammeAnim owner)
@@ -66,10 +76,6 @@ namespace BroMakerLib.Vanilla.Specials
                 reviveBlastPrefab = soldier.reviveBlastPrefab;
                 if (reviveClips == null)
                     reviveClips = soldier.reviveClips;
-                if (special4Sounds == null)
-                {
-                    special4Sounds = soldier.soundHolder.special4Sounds;
-                }
             }
 
             var ownerSoldier = owner as BroniversalSoldier;
@@ -189,7 +195,7 @@ namespace BroMakerLib.Vanilla.Specials
             {
                 return false;
             }
-            if (owner.GetFieldValue<DeathType>("deathType") == DeathType.Unassigned || Time.time - OwnerDeathTime < 0.33f)
+            if (hero.CurrentDeathType == DeathType.Unassigned || Time.time - OwnerDeathTime < 0.33f)
             {
                 owner.CallMethod("SetDeathType", damageType, -100);
                 owner.CallMethod("NotifyDeathType");

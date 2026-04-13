@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using BroMakerLib.Abilities;
 using BroMakerLib.Extensions;
 using BroMakerLib.Infos;
 using BroMakerLib.Loaders;
@@ -442,118 +441,6 @@ namespace BroMakerLib.CustomObjects.Bros
         {
             gunSprite.transform.localPosition = new Vector3(xOffset + CurrentGunSpriteOffset.x, yOffset + CurrentGunSpriteOffset.y, -.001f);
         }
-
-        #endregion
-
-        #region ICustomHero Ability Accessors
-
-        SpecialAbility ICustomHero.SpecialAbility => null;
-        MeleeAbility ICustomHero.MeleeAbility => null;
-
-        // Shared field accessors
-        SpriteSM ICustomHero.Sprite => sprite;
-        int ICustomHero.SpritePixelWidth => spritePixelWidth;
-        int ICustomHero.SpritePixelHeight => spritePixelHeight;
-        bool ICustomHero.Ducking => ducking;
-        float ICustomHero.DeltaTime => t;
-        Sound ICustomHero.Sound => sound;
-        LayerMask ICustomHero.GroundLayer => groundLayer;
-        bool ICustomHero.WallDrag => wallDrag;
-
-        float ICustomHero.FrameRate
-        {
-            get => frameRate;
-            set => frameRate = value;
-        }
-
-        int ICustomHero.GunFrame
-        {
-            get => gunFrame;
-            set => gunFrame = value;
-        }
-
-        float ICustomHero.InvulnerableTime
-        {
-            get => invulnerableTime;
-            set => invulnerableTime = value;
-        }
-
-        float ICustomHero.JumpTime
-        {
-            set => jumpTime = value;
-        }
-
-        // Special ability state
-        bool ICustomHero.UsingSpecial
-        {
-            get => usingSpecial;
-            set => usingSpecial = value;
-        }
-
-        bool ICustomHero.UsingPockettedSpecial
-        {
-            get => usingPockettedSpecial;
-            set => usingPockettedSpecial = value;
-        }
-
-        int ICustomHero.PressSpecialFacingDirection
-        {
-            get => pressSpecialFacingDirection;
-            set => pressSpecialFacingDirection = value;
-        }
-
-        // Melee ability state
-        bool ICustomHero.DoingMelee
-        {
-            get => doingMelee;
-            set => doingMelee = value;
-        }
-
-        bool ICustomHero.MeleeHasHit
-        {
-            get => meleeHasHit;
-            set => meleeHasHit = value;
-        }
-
-        bool ICustomHero.MeleeFollowUp
-        {
-            get => meleeFollowUp;
-            set => meleeFollowUp = value;
-        }
-
-        bool ICustomHero.StandingMelee => standingMelee;
-        bool ICustomHero.JumpingMelee => jumpingMelee;
-        bool ICustomHero.DashingMelee => dashingMelee;
-
-        Unit ICustomHero.MeleeChosenUnit
-        {
-            get => meleeChosenUnit;
-            set => meleeChosenUnit = value;
-        }
-
-        // Shared method accessors
-        void ICustomHero.SetSpriteOffset(float x, float y) => SetSpriteOffset(x, y);
-        void ICustomHero.DeactivateGun() => DeactivateGun();
-        void ICustomHero.ActivateGun() => ActivateGun();
-        void ICustomHero.ChangeFrame() => ChangeFrame();
-        void ICustomHero.SetGunSprite(int spriteFrame, int spriteRow) => SetGunSprite(spriteFrame, spriteRow);
-        void ICustomHero.CreateFaderTrailInstance() => CreateFaderTrailInstance();
-        void ICustomHero.SetInvulnerable(float time, bool dvOverride, bool dvNetwork) => SetInvulnerable(time, dvOverride, dvNetwork);
-
-        // Special ability methods
-        void ICustomHero.TriggerBroSpecialEvent() => TriggerBroSpecialEvent();
-        void ICustomHero.PlayAttackSound() => PlayAttackSound();
-        void ICustomHero.PlayAttackSound(float v) => PlayAttackSound(v);
-
-        // Melee ability methods
-        void ICustomHero.AnimateMeleeCommon() => AnimateMeleeCommon();
-        void ICustomHero.CancelMelee() => CancelMelee();
-        void ICustomHero.SetMeleeType() => SetMeleeType();
-        bool ICustomHero.TryMeleeTerrain(int offset, int damage) => TryMeleeTerrain(offset, damage);
-        void ICustomHero.KickDoors(float range) => KickDoors(range);
-        void ICustomHero.TriggerBroMeleeEvent() => TriggerBroMeleeEvent();
-        void ICustomHero.ResetMeleeValues() => ResetMeleeValues();
-        void ICustomHero.StartMeleeCommon() => StartMeleeCommon();
 
         #endregion
 

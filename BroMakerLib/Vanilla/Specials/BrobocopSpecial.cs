@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -10,6 +11,7 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("Brobocop")]
     public class BrobocopSpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.Brobocop;
         public BrobocopSpecial()
         {
             instantUse = true;
@@ -65,10 +67,6 @@ namespace BroMakerLib.Vanilla.Specials
             if (remoteProjectilePrefab == null && brobocop != null)
             {
                 remoteProjectilePrefab = brobocop.remoteProjectile;
-            }
-            if (attackSounds == null && brobocop != null)
-            {
-                attackSounds = brobocop.soundHolder.attackSounds;
             }
         }
 

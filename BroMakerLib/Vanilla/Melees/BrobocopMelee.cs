@@ -1,7 +1,6 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
-using Newtonsoft.Json;
-using RocketLib.Extensions;
+using BroMakerLib.Extensions;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,40 +9,25 @@ namespace BroMakerLib.Vanilla.Melees
     [MeleePreset("Brobocop")]
     public class BrobocopMelee : MeleeAbility
     {
+        protected override HeroType SourceBroType => HeroType.Brobocop;
+
         public AudioClip[] alternateMeleeHitSounds2;
         public AudioClip[] missSounds2;
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public BrobocopMelee()
         {
-            base.Initialize(owner);
             meleeType = BroBase.MeleeType.BrobocopPunch;
-
-            var brobocop = owner as Brobocop;
-            if (brobocop == null)
-            {
-                var prefab = HeroController.GetHeroPrefab(HeroType.Brobocop);
-                brobocop = prefab as Brobocop;
-            }
-            if (brobocop != null)
-            {
-                alternateMeleeHitSounds2 = brobocop.soundHolder.alternateMeleeHitSound;
-                missSounds2 = brobocop.soundHolder.missSounds;
-            }
+            startType = MeleeStartType.Custom;
+            restartFrame = 0;
         }
 
-        public override void StartMelee()
+        protected override void CacheSoundsFromPrefab()
         {
-            if (!hero.DoingMelee || owner.frame > 4)
-            {
-                owner.frame = 0;
-                owner.counter = -0.05f;
-                AnimateMelee();
-            }
-            else
-            {
-                hero.MeleeFollowUp = true;
-            }
-            hero.StartMeleeCommon();
+            var sourceBro = HeroController.GetHeroPrefab(SourceBroType);
+            if (sourceBro == null) return;
+
+            if (alternateMeleeHitSounds2 == null) alternateMeleeHitSounds2 = sourceBro.soundHolder.alternateMeleeHitSound.CloneArray();
+            if (missSounds2 == null) missSounds2 = sourceBro.soundHolder.missSounds.CloneArray();
         }
 
         public override void AnimateMelee()
@@ -75,7 +59,7 @@ namespace BroMakerLib.Vanilla.Melees
         {
             if (hero.JumpingMelee)
             {
-                owner.CallMethod("ApplyFallingGravity");
+                hero.ApplyFallingGravity();
                 if (owner.yI < owner.maxFallSpeed)
                 {
                     owner.yI = owner.maxFallSpeed;
@@ -117,11 +101,11 @@ namespace BroMakerLib.Vanilla.Melees
                         owner.xI = 0f;
                     }
                 }
-                owner.CallMethod("ApplyFallingGravity");
+                hero.ApplyFallingGravity();
             }
             if (!hero.JumpingMelee && !hero.DashingMelee && hero.MeleeChosenUnit == null)
             {
-                owner.CallMethod("ApplyFallingGravity");
+                hero.ApplyFallingGravity();
                 if (owner.yI < owner.maxFallSpeed)
                 {
                     owner.yI = owner.maxFallSpeed;
@@ -151,14 +135,14 @@ namespace BroMakerLib.Vanilla.Melees
             }
             else
             {
-                if (playMissSound && !owner.GetFieldValue<bool>("hasPlayedMissSound"))
+                if (playMissSound && !hero.HasPlayedMissSound)
                 {
                     sound.PlaySoundEffectAt(missSounds2, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
                 }
-                owner.SetFieldValue("hasPlayedMissSound", true);
+                hero.HasPlayedMissSound = true;
             }
             hero.MeleeChosenUnit = null;
-            if (!hero.MeleeHasHit && shouldTryHitTerrain && hero.TryMeleeTerrain(0, 2))
+            if (!hero.MeleeHasHit && shouldTryHitTerrain && HandleTryMeleeTerrain(0, terrainDamage))
             {
                 hero.MeleeHasHit = true;
             }

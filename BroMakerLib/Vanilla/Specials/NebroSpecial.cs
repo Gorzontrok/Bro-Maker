@@ -9,6 +9,7 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("MrAnderbro")]
     public class NebroSpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.Nebro;
         public float zoneCooldown = 0.33f;
         public float invulnerableOnUse = 0.2f;
 

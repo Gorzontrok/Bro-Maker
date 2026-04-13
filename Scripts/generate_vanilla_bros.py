@@ -34,7 +34,7 @@ def load_template(config):
         return f.read()
 
 
-def generate_fix_body(bro):
+def generate_fix_body(bro, common_null_fixes=None):
     """Generate the C# code for the FixNullVariableLocal() marker block."""
     lines = []
 
@@ -51,17 +51,26 @@ def generate_fix_body(bro):
     has_ref_fixes = any(fix["type"] != "setValue" for fix in fixes)
 
     if has_ref_fixes:
+        prefab_var = "bro"
         lines.append(
             f"            var bro = HeroController.GetHeroPrefab(HeroType.{hero_type}).As<{cast_class}>();"
         )
         lines.append(f"            if (bro == null) return;")
         lines.append(f"            CopySerializedValues(bro);")
     else:
+        prefab_var = "prefab"
         lines.append(
             f"            var prefab = HeroController.GetHeroPrefab(HeroType.{hero_type});"
         )
         lines.append(f"            if (prefab == null) return;")
         lines.append(f"            CopySerializedValues(prefab);")
+
+    # Common null-checks for reference-type fields shared across all bros
+    if common_null_fixes:
+        for field in common_null_fixes:
+            lines.append(
+                f"            if ({field} == null) {field} = {prefab_var}.{field};"
+            )
 
     for fix in fixes:
         fix_type = fix["type"]
@@ -102,14 +111,44 @@ def generate_fix_body(bro):
     return "\n".join(lines)
 
 
-def generate_bro(template, bro):
+def generate_awake_body(bro):
+    """Generate the C# code for the AWAKE_FIXES marker block."""
+    awake_fixes = bro.get("awakeFixes", [])
+    if not awake_fixes:
+        return None
+
+    hero_type = bro.get("prefabSource", {}).get("heroType", bro["heroType"]) if bro.get("prefabSource") else bro["heroType"]
+
+    lines = []
+    lines.append(
+        f"                var awakePrefab = HeroController.GetHeroPrefab(HeroType.{hero_type});"
+    )
+    lines.append(f"                if (awakePrefab != null)")
+    lines.append(f"                {{")
+
+    for fix in awake_fixes:
+        fix_type = fix["type"]
+        if fix_type == "prefabCopy":
+            for field in fix["fields"]:
+                lines.append(f"                    {field} = awakePrefab.{field};")
+        elif fix_type == "setValue":
+            field = fix["field"]
+            value = fix["value"]
+            lines.append(f"                    {field} = {value};")
+
+    lines.append(f"                }}")
+
+    return "\n".join(lines)
+
+
+def generate_bro(template, bro, common_null_fixes=None):
     """Generate a single bro wrapper class from the template."""
     result = template
 
     # Replace class declaration
     result = re.sub(
-        r"public class RambroM : Rambro, ICustomHero",
-        f"public class {bro['className']} : {bro['baseClass']}, ICustomHero",
+        r"public class RambroM : Rambro, ICustomHero, IAbilityOwner",
+        f"public class {bro['className']} : {bro['baseClass']}, ICustomHero, IAbilityOwner",
         result,
     )
 
@@ -121,13 +160,30 @@ def generate_bro(template, bro):
     )
 
     # Replace FixNullVariableLocal marker block
-    fix_body = generate_fix_body(bro)
+    fix_body = generate_fix_body(bro, common_null_fixes)
     result = re.sub(
         r"            // GENERATOR:FIXES\n.*?            // GENERATOR:END",
         fix_body,
         result,
         flags=re.DOTALL,
     )
+
+    # Replace Awake fixes marker block
+    awake_body = generate_awake_body(bro)
+    if awake_body:
+        result = re.sub(
+            r"                // GENERATOR:AWAKE_FIXES\n.*?                // GENERATOR:AWAKE_END",
+            awake_body,
+            result,
+            flags=re.DOTALL,
+        )
+    else:
+        # Remove empty marker block
+        result = re.sub(
+            r"\n                // GENERATOR:AWAKE_FIXES\n                // GENERATOR:AWAKE_END\n",
+            "\n",
+            result,
+        )
 
     # Add header
     result = HEADER + result
@@ -142,10 +198,11 @@ def main():
 
     os.makedirs(output_dir, exist_ok=True)
 
+    common_null_fixes = config.get("commonNullFixes", [])
     generated = 0
     for bro in config["bros"]:
         output_path = os.path.join(output_dir, f"{bro['className']}.cs")
-        content = generate_bro(template, bro)
+        content = generate_bro(template, bro, common_null_fixes)
 
         with open(output_path, "w") as f:
             f.write(content)

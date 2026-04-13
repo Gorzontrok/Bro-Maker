@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
 using RocketLib.Extensions;
 using Rogueforce;
@@ -11,6 +12,18 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("BroLee")]
     public class BroLeeSpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.BroLee;
+
+        protected override void CacheSoundsFromPrefab()
+        {
+            base.CacheSoundsFromPrefab();
+            var sourceBro = HeroController.GetHeroPrefab(SourceBroType) as BroLee;
+            if (sourceBro == null) return;
+            if (special4Sounds == null) special4Sounds = sourceBro.soundHolder.special4Sounds.CloneArray();
+            if (special2Sounds == null) special2Sounds = sourceBro.soundHolder.special2Sounds.CloneArray();
+            if (attack2Sounds == null) attack2Sounds = sourceBro.soundHolder.attack2Sounds.CloneArray();
+            if (attack3Sounds == null) attack3Sounds = sourceBro.soundHolder.attack3Sounds.CloneArray();
+        }
         public int maxHits = 15;
         public int enemySwordDamage = 5;
         public int groundSwordDamage = 1;
@@ -88,18 +101,6 @@ namespace BroMakerLib.Vanilla.Specials
             {
                 shrapnelSpark = broLee.shrapnelSpark;
                 hitPuff = broLee.hitPuff;
-                if (special4Sounds == null)
-                    special4Sounds = broLee.soundHolder.special4Sounds;
-                if (attackSounds == null)
-                    attackSounds = broLee.soundHolder.attackSounds;
-                if (specialAttackSounds == null)
-                    specialAttackSounds = broLee.soundHolder.specialAttackSounds;
-                if (special2Sounds == null)
-                    special2Sounds = broLee.soundHolder.special2Sounds;
-                if (attack2Sounds == null)
-                    attack2Sounds = broLee.soundHolder.attack2Sounds;
-                if (attack3Sounds == null)
-                    attack3Sounds = broLee.soundHolder.attack3Sounds;
                 if (owner.faderSpritePrefab == null)
                     owner.faderSpritePrefab = broLee.faderSpritePrefab;
             }
@@ -246,7 +247,7 @@ namespace BroMakerLib.Vanilla.Specials
             owner.SetFieldValue("airdashTime", 0f);
             if (Y < owner.groundHeight + 1f)
             {
-                owner.CallMethod("StopAirDashing");
+                hero.StopAirDashing();
             }
 
             if (attackForwards || attackDownwards || attackUpwards)
@@ -268,7 +269,7 @@ namespace BroMakerLib.Vanilla.Specials
                 hero.ChangeFrame();
                 ClearCurrentAttackVariables();
                 groundSwordDamage = 5;
-                owner.SetFieldValue("airdashDirection", DirectionEnum.Up);
+                hero.AirdashDirection = DirectionEnum.Up;
             }
             else if (owner.down && !hasAttackedDownwards)
             {
@@ -293,7 +294,7 @@ namespace BroMakerLib.Vanilla.Specials
                 hero.ChangeFrame();
                 ClearCurrentAttackVariables();
                 groundSwordDamage = 5;
-                owner.SetFieldValue("airdashDirection", DirectionEnum.Down);
+                hero.AirdashDirection = DirectionEnum.Down;
             }
             else if (owner.left && !hasAttackedForwards)
             {
@@ -328,7 +329,7 @@ namespace BroMakerLib.Vanilla.Specials
                 CreateFaderTrailInstance();
                 ClearCurrentAttackVariables();
                 groundSwordDamage = 5;
-                owner.SetFieldValue("airdashDirection", DirectionEnum.Left);
+                hero.AirdashDirection = DirectionEnum.Left;
             }
             else if (owner.right && !hasAttackedForwards)
             {
@@ -363,7 +364,7 @@ namespace BroMakerLib.Vanilla.Specials
                 CreateFaderTrailInstance();
                 ClearCurrentAttackVariables();
                 groundSwordDamage = 5;
-                owner.SetFieldValue("airdashDirection", DirectionEnum.Right);
+                hero.AirdashDirection = DirectionEnum.Right;
             }
         }
 
@@ -391,7 +392,7 @@ namespace BroMakerLib.Vanilla.Specials
             }
             if (Y < owner.groundHeight + 1f)
             {
-                owner.CallMethod("StopAirDashing");
+                hero.StopAirDashing();
                 hasAttackedDownwards = false;
                 hasAttackedUpwards = false;
                 hasAttackedForwards = false;

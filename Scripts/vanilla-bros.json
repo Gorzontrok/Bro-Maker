@@ -2,6 +2,11 @@
     "templateClass": "RambroM",
     "templateFile": "../BroMakerLib/Vanilla/Bros/RambroM.cs",
     "outputDirectory": "../BroMakerLib/Vanilla/Bros/",
+    "commonNullFixes": [
+        "faderSpritePrefab",
+        "disarmedGunMaterial",
+        "parachute"
+    ],
     "bros": [
         {
             "presetName": "AshBrolliams",
@@ -23,22 +28,15 @@
             ]
         },
         {
-            "presetName": "BillyConnolly",
-            "className": "BillyConnollyM",
-            "baseClass": "BillyConnolly",
-            "heroType": "BoondockBros",
-            "prefabSource": {"heroType": "BoondockBros", "castClass": "BoondockBro"},
-            "nullFixes": [
-                {"type": "prefabCopy", "fields": ["billyConnollyPrefab", "secondBroMaterial", "avatar1", "avatar2"]}
-            ]
-        },
-        {
             "presetName": "Brade",
             "className": "BladeM",
             "baseClass": "Blade",
             "heroType": "Blade",
             "nullFixes": [
                 {"type": "prefabCopy", "fields": ["shrapnelSpark", "hitPuff", "throwingKnife"]}
+            ],
+            "awakeFixes": [
+                {"type": "prefabCopy", "fields": ["doRollOnLand"]}
             ]
         },
         {
@@ -233,17 +231,6 @@
             ]
         },
         {
-            "presetName": "BroshipTrooper",
-            "className": "BroshipTrooperM",
-            "baseClass": "BroshipTrooper",
-            "heroType": "Rambro",
-            "prefabSource": {"heroType": "Rambro", "castClass": "Rambro"},
-            "nullFixes": [
-                {"type": "prefabCopy", "fields": ["bulletShell"]},
-                {"type": "raw", "code": ["var bro2 = HeroController.GetHeroPrefab(HeroType.DoubleBroSeven).As<DoubleBroSeven>();", "liftOffBlastFlameWall = bro2.liftOffBlastFlameWall;"]}
-            ]
-        },
-        {
             "presetName": "BroHeart",
             "className": "BroveHeartM",
             "baseClass": "BroveHeart",
@@ -376,20 +363,6 @@
             "nullFixes": [
                 {"type": "prefabCopy", "fields": ["returnZonePrefab", "materialArmless", "faderSpriteDownPrefab", "faderSpritePrefab", "faderSpriteRightPrefab", "faderSpriteUpPrefab", "shrapnelSpark", "hitPuff", "throwingKnife"]}
             ]
-        },
-        {
-            "presetName": "NorrisBro",
-            "className": "NorrisBroM",
-            "baseClass": "NorrisBro",
-            "heroType": "Rambro",
-            "nullFixes": []
-        },
-        {
-            "presetName": "PistolWhipBro",
-            "className": "PistolWhipBroM",
-            "baseClass": "PistolWhipBro",
-            "heroType": "BroHard",
-            "nullFixes": []
         },
         {
             "presetName": "Brodator",

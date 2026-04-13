@@ -1,5 +1,6 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
 using RocketLib.Extensions;
 using UnityEngine;
@@ -29,7 +30,7 @@ namespace BroMakerLib.Vanilla.Melees
 
         public override void RunMeleeMovement()
         {
-            owner.CallMethod("ApplyFallingGravity");
+            hero.ApplyFallingGravity();
             if (hero.JumpingMelee)
             {
                 if (owner.yI < owner.maxFallSpeed)
@@ -83,6 +84,8 @@ namespace BroMakerLib.Vanilla.Melees
     [MeleePreset("Brochete")]
     public class BrocheteMelee : DisembowelMelee
     {
+        protected override HeroType SourceBroType => HeroType.Brochete;
+
         /// <summary>Sprite sheet column for the start of the disembowel animation.</summary>
         public int animColumn = 25;
 
@@ -94,23 +97,29 @@ namespace BroMakerLib.Vanilla.Melees
         [JsonIgnore]
         private SpriteSM disembowelmentViscera;
 
+        public BrocheteMelee()
+        {
+            meleeType = BroBase.MeleeType.Disembowel;
+        }
+
         public override void Initialize(TestVanDammeAnim owner)
         {
             base.Initialize(owner);
-            meleeType = BroBase.MeleeType.Disembowel;
 
-            Brochete brochete = owner as Brochete;
-            if (brochete == null)
+            var sourceBro = HeroController.GetHeroPrefab(SourceBroType) as Brochete;
+            if (sourceBro != null)
             {
-                var prefab = HeroController.GetHeroPrefab(HeroType.Brochete);
-                brochete = prefab as Brochete;
+                disembowelmentViscera = sourceBro.disembowelmentViscera;
             }
-            if (brochete != null)
+        }
+
+        protected override void CacheSoundsFromPrefab()
+        {
+            base.CacheSoundsFromPrefab();
+            var sourceBro = HeroController.GetHeroPrefab(SourceBroType);
+            if (sourceBro != null)
             {
-                alternateMeleeHitSounds = brochete.soundHolder.alternateMeleeHitSound;
-                alternateMeleeHitSounds2 = brochete.soundHolder.alternateMeleeHitSound2;
-                missSounds = brochete.soundHolder.missSounds;
-                disembowelmentViscera = brochete.disembowelmentViscera;
+                if (alternateMeleeHitSounds2 == null) alternateMeleeHitSounds2 = sourceBro.soundHolder.alternateMeleeHitSound2.CloneArray();
             }
         }
 
@@ -123,7 +132,7 @@ namespace BroMakerLib.Vanilla.Melees
             if (owner.frame >= 4)
             {
                 PerformDisembowelAttack(true, true);
-                if (owner.GetFieldValue<bool>("highFive") && !hero.JumpingMelee && hero.MeleeChosenUnit != null)
+                if (hero.HighFive && !hero.JumpingMelee && hero.MeleeChosenUnit != null)
                 {
                     owner.frame = 3;
                 }
@@ -162,7 +171,7 @@ namespace BroMakerLib.Vanilla.Melees
         {
             if (hero.JumpingMelee)
             {
-                owner.CallMethod("ApplyFallingGravity");
+                hero.ApplyFallingGravity();
                 if (owner.yI < owner.maxFallSpeed)
                 {
                     owner.yI = owner.maxFallSpeed;
@@ -204,11 +213,11 @@ namespace BroMakerLib.Vanilla.Melees
                         owner.xI = 0f;
                     }
                 }
-                owner.CallMethod("ApplyFallingGravity");
+                hero.ApplyFallingGravity();
             }
             if (!hero.JumpingMelee && !hero.DashingMelee && hero.MeleeChosenUnit == null)
             {
-                owner.CallMethod("ApplyFallingGravity");
+                hero.ApplyFallingGravity();
                 if (owner.yI < owner.maxFallSpeed)
                 {
                     owner.yI = owner.maxFallSpeed;
@@ -247,11 +256,11 @@ namespace BroMakerLib.Vanilla.Melees
             }
             else
             {
-                if (!owner.GetFieldValue<bool>("hasPlayedMissSound"))
+                if (!hero.HasPlayedMissSound)
                 {
                     sound.PlaySoundEffectAt(missSounds, 0.5f, owner.transform.position, 1f, true, false, false, 0f);
                 }
-                owner.SetFieldValue("hasPlayedMissSound", true);
+                hero.HasPlayedMissSound = true;
             }
             if (shouldTryHitTerrain && hero.TryMeleeTerrain(0, 2))
             {

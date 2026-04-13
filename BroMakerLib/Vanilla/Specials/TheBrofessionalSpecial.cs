@@ -10,6 +10,7 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("TheBrofessional")]
     public class TheBrofessionalSpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.TheBrofessional;
         [JsonIgnore]
         protected MatildaTargettingWave matildaWavePrefab;
         [JsonIgnore]

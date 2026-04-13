@@ -6,17 +6,17 @@ using BroMakerLib.Abilities;
 using BroMakerLib.CustomObjects;
 using BroMakerLib.Extensions;
 using BroMakerLib.Infos;
-using RocketLib;
 using BroMakerLib.Loggers;
 using HarmonyLib;
 using Newtonsoft.Json;
+using RocketLib;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace BroMakerLib.Vanilla.Bros
 {
     [HeroPreset("TheBrolander", HeroType.TheBrolander)]
-    public class TheBrolanderM : TheBrolander, ICustomHero
+    public class TheBrolanderM : TheBrolander, ICustomHero, IAbilityOwner
     {
         [Syncronize] public CustomBroInfo Info { get; set; }
         [Syncronize] public BroBase Character { get; set; }
@@ -33,13 +33,53 @@ namespace BroMakerLib.Vanilla.Bros
 
         protected bool blockGesturesDuringMelee = true;
 
-        #region BroBase Methods
+        #region ICustomHero Setup
+        void ICustomHero.PrefabSetup()
+        {
+            FixNullVariableLocal();
+        }
 
+        protected void CopySerializedValues(TestVanDammeAnim prefab)
+        {
+            Type type = prefab.GetType();
+            while (type != null && type != typeof(MonoBehaviour))
+            {
+                foreach (FieldInfo field in type.GetFields(
+                             BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly))
+                {
+                    if (field.FieldType.IsValueType || field.FieldType == typeof(string))
+                    {
+                        field.SetValue(this, field.GetValue(prefab));
+                    }
+                }
+
+                type = type.BaseType;
+            }
+        }
+
+        protected virtual void FixNullVariableLocal()
+        {
+            var bro = HeroController.GetHeroPrefab(HeroType.TheBrolander).As<TheBrolander>();
+            if (bro == null) return;
+            CopySerializedValues(bro);
+            if (faderSpritePrefab == null) faderSpritePrefab = bro.faderSpritePrefab;
+            if (disarmedGunMaterial == null) disarmedGunMaterial = bro.disarmedGunMaterial;
+            if (parachute == null) parachute = bro.parachute;
+            zapper = this.FindChildOfName("ElectricZap").GetComponent<ElectricZap>();
+            quickeningAudio = GetComponent<AudioSource>();
+            shrapnelSpark = bro.shrapnelSpark;
+            hitPuff = bro.hitPuff;
+            throwingKnife = bro.throwingKnife;
+        }
+        #endregion
+
+        #region BroBase Methods
         protected override void Awake()
         {
             try
             {
                 this.StandardBeforeAwake();
+
 
                 specialAbility = AbilityFactory.CreateSpecial(Info.special, this);
                 meleeAbility = AbilityFactory.CreateMelee(Info.melee, this);
@@ -75,50 +115,12 @@ namespace BroMakerLib.Vanilla.Bros
 
         protected override void Update()
         {
-            if (specialAbility != null && !specialAbility.HandleUpdate())
-            {
-                specialAbility.Update();
-                meleeAbility?.Update();
-                return;
-            }
-            base.Update();
+            bool runBase = true;
+            if (specialAbility != null && !specialAbility.HandleUpdate()) runBase = false;
+            if (meleeAbility != null && !meleeAbility.HandleUpdate()) runBase = false;
+            if (runBase) base.Update();
             specialAbility?.Update();
             meleeAbility?.Update();
-        }
-
-        void ICustomHero.PrefabSetup()
-        {
-            FixNullVariableLocal();
-        }
-
-        protected void CopySerializedValues(TestVanDammeAnim prefab)
-        {
-            Type type = prefab.GetType();
-            while (type != null && type != typeof(MonoBehaviour))
-            {
-                foreach (FieldInfo field in type.GetFields(
-                             BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly))
-                {
-                    if (field.FieldType.IsValueType || field.FieldType == typeof(string))
-                    {
-                        field.SetValue(this, field.GetValue(prefab));
-                    }
-                }
-
-                type = type.BaseType;
-            }
-        }
-
-        protected virtual void FixNullVariableLocal()
-        {
-            var bro = HeroController.GetHeroPrefab(HeroType.TheBrolander).As<TheBrolander>();
-            if (bro == null) return;
-            CopySerializedValues(bro);
-            zapper = this.FindChildOfName("ElectricZap").GetComponent<ElectricZap>();
-            quickeningAudio = GetComponent<AudioSource>();
-            shrapnelSpark = bro.shrapnelSpark;
-            hitPuff = bro.hitPuff;
-            throwingKnife = bro.throwingKnife;
         }
 
         public override void SetGestureAnimation(GestureElement.Gestures gesture)
@@ -133,12 +135,13 @@ namespace BroMakerLib.Vanilla.Bros
 
         protected override void SetGunPosition(float xOffset, float yOffset)
         {
-            gunSprite.transform.localPosition = new Vector3(xOffset + CurrentGunSpriteOffset.x, yOffset + CurrentGunSpriteOffset.y, -.001f);
+            base.SetGunPosition(xOffset + CurrentGunSpriteOffset.x, yOffset + CurrentGunSpriteOffset.y);
         }
 
         protected override void CheckForTraps(ref float yIT)
         {
             if (specialAbility != null && !specialAbility.HandleCheckForTraps()) return;
+            if (meleeAbility != null && !meleeAbility.HandleCheckForTraps()) return;
 
             var num = Y + yIT;
             if (num <= groundHeight + 1f)
@@ -308,7 +311,7 @@ namespace BroMakerLib.Vanilla.Bros
                     var num = 8 + Random.Range(0, 5);
                     for (var i = 0; i < num; i++)
                     {
-                        var angle = -1.88495576f + 1.2f / (float)(num - 1) * 3.14159274f * (float)i;
+                        var angle = -1.88495576f + (1.2f / (float)(num - 1) * 3.14159274f * (float)i);
                         var vector = Math.Point2OnCircle(angle, 1f);
                         ProjectileController.SpawnProjectileLocally(ProjectileController.instance.goldenLightProjectile, this, X, Y + 12f, vector.x * 400f, vector.y * 400f, true, 15, false, true, -15f);
                     }
@@ -319,123 +322,89 @@ namespace BroMakerLib.Vanilla.Bros
                 FlexEffect.PlaySoundEffect();
             }
         }
-
         #endregion
 
-        #region ICustomHero Ability Accessors
+        #region IAbilityOwner
+        SpecialAbility IAbilityOwner.SpecialAbility => specialAbility;
+        MeleeAbility IAbilityOwner.MeleeAbility => meleeAbility;
 
-        SpecialAbility ICustomHero.SpecialAbility => specialAbility;
-        MeleeAbility ICustomHero.MeleeAbility => meleeAbility;
+        SpriteSM IAbilityOwner.Sprite => sprite;
+        int IAbilityOwner.SpritePixelWidth => spritePixelWidth;
+        int IAbilityOwner.SpritePixelHeight => spritePixelHeight;
+        bool IAbilityOwner.Ducking => ducking;
+        float IAbilityOwner.DeltaTime => t;
+        Sound IAbilityOwner.Sound => sound;
+        LayerMask IAbilityOwner.GroundLayer => groundLayer;
+        bool IAbilityOwner.WallDrag => wallDrag;
+        bool IAbilityOwner.IsInQuicksand => isInQuicksand;
+        float IAbilityOwner.HalfWidth => halfWidth;
+        float IAbilityOwner.CeilingHeight => ceilingHeight;
+        LayerMask IAbilityOwner.FragileLayer => fragileLayer;
+        bool IAbilityOwner.HighFive => highFive;
 
-        // Shared field accessors
-        SpriteSM ICustomHero.Sprite => sprite;
-        int ICustomHero.SpritePixelWidth => spritePixelWidth;
-        int ICustomHero.SpritePixelHeight => spritePixelHeight;
-        bool ICustomHero.Ducking => ducking;
-        float ICustomHero.DeltaTime => t;
-        Sound ICustomHero.Sound => sound;
-        LayerMask ICustomHero.GroundLayer => groundLayer;
-        bool ICustomHero.WallDrag => wallDrag;
+        float IAbilityOwner.FrameRate { get => frameRate; set => frameRate = value; }
+        int IAbilityOwner.GunFrame { get => gunFrame; set => gunFrame = value; }
+        float IAbilityOwner.InvulnerableTime { get => invulnerableTime; set => invulnerableTime = value; }
+        float IAbilityOwner.JumpTime { set => jumpTime = value; }
+        float IAbilityOwner.DeathTime { get => deathTime; set => deathTime = value; }
+        DeathType IAbilityOwner.CurrentDeathType { get => deathType; set => deathType = value; }
+        Mook IAbilityOwner.NearbyMook { get => nearbyMook; set => nearbyMook = value; }
+        bool IAbilityOwner.HasPlayedMissSound { get => hasPlayedMissSound; set => hasPlayedMissSound = value; }
 
-        float ICustomHero.FrameRate
+        bool IAbilityOwner.UsingSpecial { get => usingSpecial; set => usingSpecial = value; }
+        bool IAbilityOwner.UsingPockettedSpecial { get => usingPockettedSpecial; set => usingPockettedSpecial = value; }
+        int IAbilityOwner.PressSpecialFacingDirection { get => pressSpecialFacingDirection; set => pressSpecialFacingDirection = value; }
+
+        bool IAbilityOwner.DoingMelee { get => doingMelee; set => doingMelee = value; }
+        bool IAbilityOwner.MeleeHasHit { get => meleeHasHit; set => meleeHasHit = value; }
+        bool IAbilityOwner.MeleeFollowUp { get => meleeFollowUp; set => meleeFollowUp = value; }
+        bool IAbilityOwner.StandingMelee => standingMelee;
+        bool IAbilityOwner.JumpingMelee { get => jumpingMelee; set => jumpingMelee = value; }
+        bool IAbilityOwner.DashingMelee { get => dashingMelee; set => dashingMelee = value; }
+        Unit IAbilityOwner.MeleeChosenUnit { get => meleeChosenUnit; set => meleeChosenUnit = value; }
+        int IAbilityOwner.RollingFrames { set => rollingFrames = value; }
+        float IAbilityOwner.ShowHighFiveAfterMeleeTimer { set => showHighFiveAfterMeleeTimer = value; }
+        bool IAbilityOwner.HasJumpedForKick { get => hasJumpedForKick; set => hasJumpedForKick = value; }
+        bool IAbilityOwner.SplitKick { get => splitkick; set => splitkick = value; }
+        float IAbilityOwner.HangGrace { set => hangGrace = value; }
+        bool IAbilityOwner.CancelMeleeOnChangeDirection { set => cancelMeleeOnChangeDirection = value; }
+        bool IAbilityOwner.PerformedMeleeAttack { set => performedMeleeAttack = value; }
+        DirectionEnum IAbilityOwner.AirdashDirection { get => airdashDirection; set => airdashDirection = value; }
+
+        void IAbilityOwner.SetSpriteOffset(float x, float y) => SetSpriteOffset(x, y);
+        void IAbilityOwner.DeactivateGun() => DeactivateGun();
+        void IAbilityOwner.ActivateGun() => ActivateGun();
+        void IAbilityOwner.ChangeFrame() => ChangeFrame();
+        void IAbilityOwner.SetGunSprite(int spriteFrame, int spriteRow) => SetGunSprite(spriteFrame, spriteRow);
+        void IAbilityOwner.CreateFaderTrailInstance() => CreateFaderTrailInstance();
+        void IAbilityOwner.SetInvulnerable(float time, bool dvOverride, bool dvNetwork) => SetInvulnerable(time, dvOverride, dvNetwork);
+        void IAbilityOwner.ApplyFallingGravity() => ApplyFallingGravity();
+        void IAbilityOwner.Jump(bool wallJump) => Jump(wallJump);
+        void IAbilityOwner.AnimateJumping() => AnimateJumping();
+
+        void IAbilityOwner.TriggerBroSpecialEvent() => TriggerBroSpecialEvent();
+        void IAbilityOwner.PlayAttackSound() => PlayAttackSound();
+        void IAbilityOwner.PlayAttackSound(float v) => PlayAttackSound(v);
+        void IAbilityOwner.StopAirDashing() => StopAirDashing();
+        void IAbilityOwner.StopHanging() => StopHanging();
+        void IAbilityOwner.StartHanging() => StartHanging();
+
+        void IAbilityOwner.AnimateMeleeCommon() => AnimateMeleeCommon();
+        void IAbilityOwner.CancelMelee() => CancelMelee();
+        void IAbilityOwner.SetMeleeType() => SetMeleeType();
+        bool IAbilityOwner.TryMeleeTerrain(int offset, int damage)
         {
-            get => frameRate;
-            set => frameRate = value;
+            if (meleeAbility != null) return meleeAbility.HandleTryMeleeTerrain(offset, damage);
+            return TryMeleeTerrain(offset, damage);
         }
-
-        int ICustomHero.GunFrame
-        {
-            get => gunFrame;
-            set => gunFrame = value;
-        }
-
-        float ICustomHero.InvulnerableTime
-        {
-            get => invulnerableTime;
-            set => invulnerableTime = value;
-        }
-
-        float ICustomHero.JumpTime
-        {
-            set => jumpTime = value;
-        }
-
-        // Special ability state
-        bool ICustomHero.UsingSpecial
-        {
-            get => usingSpecial;
-            set => usingSpecial = value;
-        }
-
-        bool ICustomHero.UsingPockettedSpecial
-        {
-            get => usingPockettedSpecial;
-            set => usingPockettedSpecial = value;
-        }
-
-        int ICustomHero.PressSpecialFacingDirection
-        {
-            get => pressSpecialFacingDirection;
-            set => pressSpecialFacingDirection = value;
-        }
-
-        // Melee ability state
-        bool ICustomHero.DoingMelee
-        {
-            get => doingMelee;
-            set => doingMelee = value;
-        }
-
-        bool ICustomHero.MeleeHasHit
-        {
-            get => meleeHasHit;
-            set => meleeHasHit = value;
-        }
-
-        bool ICustomHero.MeleeFollowUp
-        {
-            get => meleeFollowUp;
-            set => meleeFollowUp = value;
-        }
-
-        bool ICustomHero.StandingMelee => standingMelee;
-        bool ICustomHero.JumpingMelee => jumpingMelee;
-        bool ICustomHero.DashingMelee => dashingMelee;
-
-        Unit ICustomHero.MeleeChosenUnit
-        {
-            get => meleeChosenUnit;
-            set => meleeChosenUnit = value;
-        }
-
-        // Shared method accessors
-        void ICustomHero.SetSpriteOffset(float x, float y) => SetSpriteOffset(x, y);
-        void ICustomHero.DeactivateGun() => DeactivateGun();
-        void ICustomHero.ActivateGun() => ActivateGun();
-        void ICustomHero.ChangeFrame() => ChangeFrame();
-        void ICustomHero.SetGunSprite(int spriteFrame, int spriteRow) => SetGunSprite(spriteFrame, spriteRow);
-        void ICustomHero.CreateFaderTrailInstance() => CreateFaderTrailInstance();
-        void ICustomHero.SetInvulnerable(float time, bool dvOverride, bool dvNetwork) => SetInvulnerable(time, dvOverride, dvNetwork);
-
-        // Special ability methods
-        void ICustomHero.TriggerBroSpecialEvent() => TriggerBroSpecialEvent();
-        void ICustomHero.PlayAttackSound() => PlayAttackSound();
-        void ICustomHero.PlayAttackSound(float v) => PlayAttackSound(v);
-
-        // Melee ability methods
-        void ICustomHero.AnimateMeleeCommon() => AnimateMeleeCommon();
-        void ICustomHero.CancelMelee() => CancelMelee();
-        void ICustomHero.SetMeleeType() => SetMeleeType();
-        bool ICustomHero.TryMeleeTerrain(int offset, int damage) => TryMeleeTerrain(offset, damage);
-        void ICustomHero.KickDoors(float range) => KickDoors(range);
-        void ICustomHero.TriggerBroMeleeEvent() => TriggerBroMeleeEvent();
-        void ICustomHero.ResetMeleeValues() => ResetMeleeValues();
-        void ICustomHero.StartMeleeCommon() => StartMeleeCommon();
-
+        void IAbilityOwner.KickDoors(float range) => KickDoors(range);
+        void IAbilityOwner.TriggerBroMeleeEvent() => TriggerBroMeleeEvent();
+        void IAbilityOwner.ResetMeleeValues() => ResetMeleeValues();
+        void IAbilityOwner.StartMeleeCommon() => StartMeleeCommon();
+        void IAbilityOwner.ThrowBackMook(Mook mook) => ThrowBackMook(mook);
         #endregion
 
         #region Ability Forwarding
-
         protected override void PressSpecial()
         {
             if (specialAbility != null)
@@ -468,36 +437,39 @@ namespace BroMakerLib.Vanilla.Bros
 
         protected override void ReleaseSpecial()
         {
-            if (specialAbility != null && !specialAbility.HandleReleaseSpecial())
-            {
-                return;
-            }
+            if (specialAbility != null && !specialAbility.HandleReleaseSpecial()) return;
+            if (meleeAbility != null && !meleeAbility.HandleReleaseSpecial()) return;
             base.ReleaseSpecial();
         }
 
         protected override bool MustIgnoreHighFiveMeleePress()
         {
             specialAbility?.HandleMustIgnoreHighFiveMeleePress();
+            meleeAbility?.HandleMustIgnoreHighFiveMeleePress();
             return base.MustIgnoreHighFiveMeleePress();
         }
 
         protected override void CalculateMovement()
         {
-            if (specialAbility != null)
+            float xI = this.xI;
+            float yI = this.yI;
+            if (specialAbility != null && !specialAbility.HandleCalculateMovement(ref xI, ref yI))
             {
-                float xI = this.xI;
-                float yI = this.yI;
-                if (!specialAbility.HandleCalculateMovement(ref xI, ref yI))
-                {
-                    this.xI = xI;
-                    this.yI = yI;
-                    return;
-                }
                 this.xI = xI;
                 this.yI = yI;
+                return;
             }
+            if (meleeAbility != null && !meleeAbility.HandleCalculateMovement(ref xI, ref yI))
+            {
+                this.xI = xI;
+                this.yI = yI;
+                return;
+            }
+            this.xI = xI;
+            this.yI = yI;
             base.CalculateMovement();
             specialAbility?.HandleAfterCalculateMovement();
+            meleeAbility?.HandleAfterCalculateMovement();
         }
 
         public override void Damage(int damage, DamageType damageType, float xI, float yI, int direction, MonoBehaviour damageSender, float hitX, float hitY)
@@ -533,70 +505,57 @@ namespace BroMakerLib.Vanilla.Bros
             if (specialAbility != null)
             {
                 bool result = false;
-                if (!specialAbility.HandleCanReduceLives(ref result))
-                {
-                    return result;
-                }
+                if (!specialAbility.HandleCanReduceLives(ref result)) return result;
+            }
+            if (meleeAbility != null)
+            {
+                bool result = false;
+                if (!meleeAbility.HandleCanReduceLives(ref result)) return result;
             }
             return base.CanReduceLives();
         }
 
         protected override void FireWeapon(float x, float y, float xSpeed, float ySpeed)
         {
-            if (specialAbility != null && !specialAbility.HandleFireWeapon())
-            {
-                return;
-            }
+            if (specialAbility != null && !specialAbility.HandleFireWeapon()) return;
+            if (meleeAbility != null && !meleeAbility.HandleFireWeapon()) return;
             base.FireWeapon(x, y, xSpeed, ySpeed);
             specialAbility?.HandleAfterFireWeapon(x, y, xSpeed, ySpeed);
+            meleeAbility?.HandleAfterFireWeapon(x, y, xSpeed, ySpeed);
         }
 
         protected override void Jump(bool wallJump)
         {
-            if (specialAbility != null && !specialAbility.HandleJump(wallJump))
-            {
-                return;
-            }
+            if (specialAbility != null && !specialAbility.HandleJump(wallJump)) return;
+            if (meleeAbility != null && !meleeAbility.HandleJump(wallJump)) return;
             base.Jump(wallJump);
         }
 
         protected override void RunMovement()
         {
-            if (specialAbility != null && !specialAbility.HandleRunMovement())
-            {
-                return;
-            }
+            if (specialAbility != null && !specialAbility.HandleRunMovement()) return;
+            if (meleeAbility != null && !meleeAbility.HandleRunMovement()) return;
             base.RunMovement();
         }
 
         protected override void ApplyNormalGravity()
         {
-            if (specialAbility != null && !specialAbility.HandleApplyNormalGravity())
-            {
-                return;
-            }
+            if (specialAbility != null && !specialAbility.HandleApplyNormalGravity()) return;
+            if (meleeAbility != null && !meleeAbility.HandleApplyNormalGravity()) return;
             base.ApplyNormalGravity();
         }
 
         protected override void StartFiring()
         {
-            if (specialAbility != null && !specialAbility.HandleStartFiring())
-            {
-                return;
-            }
-            if (meleeAbility != null && !meleeAbility.HandleStartFiring())
-            {
-                return;
-            }
+            if (specialAbility != null && !specialAbility.HandleStartFiring()) return;
+            if (meleeAbility != null && !meleeAbility.HandleStartFiring()) return;
             base.StartFiring();
         }
 
         protected override void StartMelee()
         {
-            if (specialAbility != null && !specialAbility.HandleStartMelee())
-            {
-                return;
-            }
+            if (specialAbility != null && !specialAbility.HandleStartMelee()) return;
+            if (meleeAbility != null && !meleeAbility.HandleStartMelee()) return;
             base.StartMelee();
         }
 
@@ -611,75 +570,115 @@ namespace BroMakerLib.Vanilla.Bros
 
         protected override void StartKnifeMelee()
         {
-            if (meleeAbility != null) { meleeAbility.StartMelee(); return; }
+            if (meleeAbility != null)
+            {
+                meleeAbility.StartMelee();
+                return;
+            }
             base.StartKnifeMelee();
         }
 
         protected override void AnimateKnifeMelee()
         {
-            if (meleeAbility != null) { meleeAbility.AnimateMelee(); return; }
+            if (meleeAbility != null)
+            {
+                meleeAbility.AnimateMelee();
+                return;
+            }
             base.AnimateKnifeMelee();
         }
 
         protected override void RunKnifeMeleeMovement()
         {
-            if (meleeAbility != null) { meleeAbility.RunMeleeMovement(); return; }
+            if (meleeAbility != null)
+            {
+                meleeAbility.RunMeleeMovement();
+                return;
+            }
             base.RunKnifeMeleeMovement();
         }
 
         protected override void StartPunch()
         {
-            if (meleeAbility != null) { meleeAbility.StartMelee(); return; }
+            if (meleeAbility != null)
+            {
+                meleeAbility.StartMelee();
+                return;
+            }
             base.StartPunch();
         }
 
         protected override void AnimatePunch()
         {
-            if (meleeAbility != null) { meleeAbility.AnimateMelee(); return; }
+            if (meleeAbility != null)
+            {
+                meleeAbility.AnimateMelee();
+                return;
+            }
             base.AnimatePunch();
         }
 
         protected override void RunPunchMovement()
         {
-            if (meleeAbility != null) { meleeAbility.RunMeleeMovement(); return; }
+            if (meleeAbility != null)
+            {
+                meleeAbility.RunMeleeMovement();
+                return;
+            }
             base.RunPunchMovement();
         }
 
         protected override void RunJetPackPunchMovement()
         {
-            if (meleeAbility != null) { meleeAbility.RunMeleeMovement(); return; }
+            if (meleeAbility != null)
+            {
+                meleeAbility.RunMeleeMovement();
+                return;
+            }
             base.RunJetPackPunchMovement();
         }
 
         protected override void StartCustomMelee()
         {
-            if (meleeAbility != null) { meleeAbility.StartMelee(); return; }
+            if (meleeAbility != null)
+            {
+                meleeAbility.StartMelee();
+                return;
+            }
             base.StartCustomMelee();
         }
 
         protected override void AnimateCustomMelee()
         {
-            if (meleeAbility != null) { meleeAbility.AnimateMelee(); return; }
+            if (meleeAbility != null)
+            {
+                meleeAbility.AnimateMelee();
+                return;
+            }
             base.AnimateCustomMelee();
         }
 
         protected override void RunCustomMeleeMovement()
         {
-            if (meleeAbility != null) { meleeAbility.RunMeleeMovement(); return; }
+            if (meleeAbility != null)
+            {
+                meleeAbility.RunMeleeMovement();
+                return;
+            }
             base.RunCustomMeleeMovement();
         }
 
         protected override void CancelMelee()
         {
+            base.CancelMelee();
             if (meleeAbility != null)
             {
                 meleeAbility.CancelMelee();
             }
-            base.CancelMelee();
         }
 
         /// <summary>
-        /// Assigns a special ability at runtime. Calls <see cref="SpecialAbility.Initialize"/> on the new ability.
+        /// Assigns a special ability at runtime. Calls <see cref="SpecialAbility.Initialize" /> on the new ability.
         /// </summary>
         /// <param name="ability">The ability to assign, or null to clear.</param>
         public void SetSpecialAbility(SpecialAbility ability)
@@ -690,8 +689,8 @@ namespace BroMakerLib.Vanilla.Bros
         }
 
         /// <summary>
-        /// Assigns a melee ability at runtime. Calls <see cref="MeleeAbility.Initialize"/> on the new ability
-        /// and sets <c>meleeType</c> to the ability's declared <see cref="MeleeAbility.meleeType"/>.
+        /// Assigns a melee ability at runtime. Calls <see cref="MeleeAbility.Initialize" /> on the new ability
+        /// and sets <c>meleeType</c> to the ability's declared <see cref="MeleeAbility.meleeType" />.
         /// </summary>
         /// <param name="ability">The ability to assign, or null to clear.</param>
         public void SetMeleeAbility(MeleeAbility ability)
@@ -707,48 +706,38 @@ namespace BroMakerLib.Vanilla.Bros
 
         protected override void ChangeFrame()
         {
-            if (specialAbility != null && !specialAbility.HandleChangeFrame())
-            {
-                return;
-            }
+            if (specialAbility != null && !specialAbility.HandleChangeFrame()) return;
+            if (meleeAbility != null && !meleeAbility.HandleChangeFrame()) return;
             base.ChangeFrame();
             specialAbility?.HandleAfterChangeFrame();
+            meleeAbility?.HandleAfterChangeFrame();
         }
 
         protected override void IncreaseFrame()
         {
             base.IncreaseFrame();
             specialAbility?.HandleAfterIncreaseFrame();
+            meleeAbility?.HandleAfterIncreaseFrame();
         }
 
         protected override void RunGun()
         {
-            if (specialAbility != null && !specialAbility.HandleRunGun())
-            {
-                return;
-            }
+            if (specialAbility != null && !specialAbility.HandleRunGun()) return;
+            if (meleeAbility != null && !meleeAbility.HandleRunGun()) return;
             base.RunGun();
         }
 
         protected override void RunFiring()
         {
-            if (specialAbility != null && !specialAbility.HandleRunFiring())
-            {
-                return;
-            }
+            if (specialAbility != null && !specialAbility.HandleRunFiring()) return;
+            if (meleeAbility != null && !meleeAbility.HandleRunFiring()) return;
             base.RunFiring();
         }
 
         protected override void Land()
         {
-            if (specialAbility != null && !specialAbility.HandleLand())
-            {
-                return;
-            }
-            if (meleeAbility != null && !meleeAbility.HandleLand())
-            {
-                return;
-            }
+            if (specialAbility != null && !specialAbility.HandleLand()) return;
+            if (meleeAbility != null && !meleeAbility.HandleLand()) return;
             base.Land();
             specialAbility?.HandleAfterLand();
             meleeAbility?.HandleAfterLand();
@@ -756,19 +745,15 @@ namespace BroMakerLib.Vanilla.Bros
 
         protected override void RunAvatarFiring()
         {
-            if (specialAbility != null && !specialAbility.HandleRunAvatarFiring())
-            {
-                return;
-            }
+            if (specialAbility != null && !specialAbility.HandleRunAvatarFiring()) return;
+            if (meleeAbility != null && !meleeAbility.HandleRunAvatarFiring()) return;
             base.RunAvatarFiring();
         }
 
         protected override bool IsOverLadder(float xOffset, ref float ladderXPos)
         {
-            if (specialAbility != null && !specialAbility.HandleIsOverLadder())
-            {
-                return false;
-            }
+            if (specialAbility != null && !specialAbility.HandleIsOverLadder()) return false;
+            if (meleeAbility != null && !meleeAbility.HandleIsOverLadder()) return false;
             return base.IsOverLadder(xOffset, ref ladderXPos);
         }
 
@@ -777,24 +762,16 @@ namespace BroMakerLib.Vanilla.Bros
             get => base.WallDrag;
             set
             {
-                if (specialAbility != null && !specialAbility.HandleWallDrag(value))
-                {
-                    return;
-                }
-                if (meleeAbility != null && !meleeAbility.HandleWallDrag(value))
-                {
-                    return;
-                }
+                if (specialAbility != null && !specialAbility.HandleWallDrag(value)) return;
+                if (meleeAbility != null && !meleeAbility.HandleWallDrag(value)) return;
                 base.WallDrag = value;
             }
         }
 
         protected override void AnimateActualJumpingFrames()
         {
-            if (specialAbility != null && !specialAbility.HandleAnimateActualJumpingFrames())
-            {
-                return;
-            }
+            if (specialAbility != null && !specialAbility.HandleAnimateActualJumpingFrames()) return;
+            if (meleeAbility != null && !meleeAbility.HandleAnimateActualJumpingFrames()) return;
             base.AnimateActualJumpingFrames();
         }
 
@@ -802,32 +779,27 @@ namespace BroMakerLib.Vanilla.Bros
         {
             base.AnimateActualNewRunningFrames();
             specialAbility?.HandleAfterAnimateNewRunningFrames();
+            meleeAbility?.HandleAfterAnimateNewRunningFrames();
         }
 
         protected override bool ConstrainToFloor(ref float yIT)
         {
-            if (specialAbility != null && !specialAbility.HandleConstrainToFloor())
-            {
-                return false;
-            }
+            if (specialAbility != null && !specialAbility.HandleConstrainToFloor()) return false;
+            if (meleeAbility != null && !meleeAbility.HandleConstrainToFloor()) return false;
             return base.ConstrainToFloor(ref yIT);
         }
 
         protected override bool ConstrainToCeiling(ref float yIT)
         {
-            if (specialAbility != null && !specialAbility.HandleConstrainToCeiling())
-            {
-                return false;
-            }
+            if (specialAbility != null && !specialAbility.HandleConstrainToCeiling()) return false;
+            if (meleeAbility != null && !meleeAbility.HandleConstrainToCeiling()) return false;
             return base.ConstrainToCeiling(ref yIT);
         }
 
         protected override bool ConstrainToWalls(ref float yIT, ref float xIT)
         {
-            if (specialAbility != null && !specialAbility.HandleConstrainToWalls())
-            {
-                return false;
-            }
+            if (specialAbility != null && !specialAbility.HandleConstrainToWalls()) return false;
+            if (meleeAbility != null && !meleeAbility.HandleConstrainToWalls()) return false;
             return base.ConstrainToWalls(ref yIT, ref xIT);
         }
 
@@ -836,10 +808,12 @@ namespace BroMakerLib.Vanilla.Bros
             if (specialAbility != null)
             {
                 Vector3 result = Vector3.zero;
-                if (!specialAbility.HandleGetFollowPosition(ref result))
-                {
-                    return result;
-                }
+                if (!specialAbility.HandleGetFollowPosition(ref result)) return result;
+            }
+            if (meleeAbility != null)
+            {
+                Vector3 result = Vector3.zero;
+                if (!meleeAbility.HandleGetFollowPosition(ref result)) return result;
             }
             return base.GetFollowPosition();
         }
@@ -872,42 +846,31 @@ namespace BroMakerLib.Vanilla.Bros
 
         protected override void Gib(DamageType damageType, float xI, float yI)
         {
-            if (specialAbility != null && !specialAbility.HandleGib(damageType, xI, yI))
-            {
-                return;
-            }
+            if (specialAbility != null && !specialAbility.HandleGib(damageType, xI, yI)) return;
+            if (meleeAbility != null && !meleeAbility.HandleGib(damageType, xI, yI)) return;
             base.Gib(damageType, xI, yI);
         }
 
         public override void RecallBro()
         {
-            if (specialAbility != null && !specialAbility.HandleRecallBro())
-            {
-                return;
-            }
+            if (specialAbility != null && !specialAbility.HandleRecallBro()) return;
+            if (meleeAbility != null && !meleeAbility.HandleRecallBro()) return;
             base.RecallBro();
             specialAbility?.HandleAfterRecallBro();
+            meleeAbility?.HandleAfterRecallBro();
         }
 
         public override void AttachToHeli()
         {
-            if (specialAbility != null && !specialAbility.HandleAttachToHeli())
-            {
-                return;
-            }
+            if (specialAbility != null && !specialAbility.HandleAttachToHeli()) return;
+            if (meleeAbility != null && !meleeAbility.HandleAttachToHeli()) return;
             base.AttachToHeli();
         }
 
         protected override void HitCeiling(RaycastHit ceilingHit)
         {
-            if (specialAbility != null && !specialAbility.HandleHitCeiling())
-            {
-                return;
-            }
-            if (meleeAbility != null && !meleeAbility.HandleHitCeiling())
-            {
-                return;
-            }
+            if (specialAbility != null && !specialAbility.HandleHitCeiling()) return;
+            if (meleeAbility != null && !meleeAbility.HandleHitCeiling()) return;
             base.HitCeiling(ceilingHit);
             specialAbility?.HandleAfterHitCeiling();
             meleeAbility?.HandleAfterHitCeiling();
@@ -915,39 +878,33 @@ namespace BroMakerLib.Vanilla.Bros
 
         protected override void HitLeftWall()
         {
-            if (specialAbility != null && !specialAbility.HandleHitLeftWall())
-            {
-                return;
-            }
+            if (specialAbility != null && !specialAbility.HandleHitLeftWall()) return;
+            if (meleeAbility != null && !meleeAbility.HandleHitLeftWall()) return;
             base.HitLeftWall();
             specialAbility?.HandleAfterHitLeftWall();
+            meleeAbility?.HandleAfterHitLeftWall();
         }
 
         protected override void HitRightWall()
         {
-            if (specialAbility != null && !specialAbility.HandleHitRightWall())
-            {
-                return;
-            }
+            if (specialAbility != null && !specialAbility.HandleHitRightWall()) return;
+            if (meleeAbility != null && !meleeAbility.HandleHitRightWall()) return;
             base.HitRightWall();
             specialAbility?.HandleAfterHitRightWall();
+            meleeAbility?.HandleAfterHitRightWall();
         }
 
         protected override void ClampWallDragYI(ref float yIT)
         {
-            if (specialAbility != null && !specialAbility.HandleClampWallDragYI(ref yIT))
-            {
-                return;
-            }
+            if (specialAbility != null && !specialAbility.HandleClampWallDragYI(ref yIT)) return;
+            if (meleeAbility != null && !meleeAbility.HandleClampWallDragYI(ref yIT)) return;
             base.ClampWallDragYI(ref yIT);
         }
 
         protected override void RunHanging()
         {
-            if (specialAbility != null && !specialAbility.HandleRunHanging())
-            {
-                return;
-            }
+            if (specialAbility != null && !specialAbility.HandleRunHanging()) return;
+            if (meleeAbility != null && !meleeAbility.HandleRunHanging()) return;
             base.RunHanging();
         }
 
@@ -956,20 +913,20 @@ namespace BroMakerLib.Vanilla.Bros
             if (specialAbility != null)
             {
                 bool result = false;
-                if (!specialAbility.HandleCanCheckClimbAlongCeiling(ref result))
-                {
-                    return result;
-                }
+                if (!specialAbility.HandleCanCheckClimbAlongCeiling(ref result)) return result;
+            }
+            if (meleeAbility != null)
+            {
+                bool result = false;
+                if (!meleeAbility.HandleCanCheckClimbAlongCeiling(ref result)) return result;
             }
             return base.CanCheckClimbAlongCeiling();
         }
 
         protected override void CheckClimbAlongCeiling()
         {
-            if (specialAbility != null && !specialAbility.HandleCheckClimbAlongCeiling())
-            {
-                return;
-            }
+            if (specialAbility != null && !specialAbility.HandleCheckClimbAlongCeiling()) return;
+            if (meleeAbility != null && !meleeAbility.HandleCheckClimbAlongCeiling()) return;
             base.CheckClimbAlongCeiling();
         }
 
@@ -977,25 +934,45 @@ namespace BroMakerLib.Vanilla.Bros
         {
             base.CheckInput();
             specialAbility?.HandleAfterCheckInput();
+            meleeAbility?.HandleAfterCheckInput();
         }
 
         protected override void AirDashDown()
         {
-            if (specialAbility != null && !specialAbility.HandleAirDashDown())
-            {
-                return;
-            }
+            if (specialAbility != null && !specialAbility.HandleAirDashDown()) return;
+            if (meleeAbility != null && !meleeAbility.HandleAirDashDown()) return;
             base.AirDashDown();
         }
 
         protected override void RunDownwardDash()
         {
-            if (specialAbility != null && !specialAbility.HandleRunDownwardDash())
-            {
-                return;
-            }
+            if (specialAbility != null && !specialAbility.HandleRunDownwardDash()) return;
+            if (meleeAbility != null && !meleeAbility.HandleRunDownwardDash()) return;
             base.RunDownwardDash();
             specialAbility?.HandleAfterRunDownwardDash();
+            meleeAbility?.HandleAfterRunDownwardDash();
+        }
+
+        protected override void AnimateIdle()
+        {
+            if (specialAbility != null && !specialAbility.HandleAnimateIdle()) return;
+            if (meleeAbility != null && !meleeAbility.HandleAnimateIdle()) return;
+            base.AnimateIdle();
+        }
+
+        public override LayerMask GetGroundLayer()
+        {
+            if (specialAbility != null)
+            {
+                int result = 0;
+                if (!specialAbility.HandleGetGroundLayer(ref result)) return result;
+            }
+            if (meleeAbility != null)
+            {
+                int result = 0;
+                if (!meleeAbility.HandleGetGroundLayer(ref result)) return result;
+            }
+            return base.GetGroundLayer();
         }
 
         public override bool IsAlive()
@@ -1003,63 +980,53 @@ namespace BroMakerLib.Vanilla.Bros
             if (specialAbility != null)
             {
                 bool result = false;
-                if (!specialAbility.HandleIsAlive(ref result))
-                {
-                    return result;
-                }
+                if (!specialAbility.HandleIsAlive(ref result)) return result;
+            }
+            if (meleeAbility != null)
+            {
+                bool result = false;
+                if (!meleeAbility.HandleIsAlive(ref result)) return result;
             }
             return base.IsAlive();
         }
 
         public override bool Revive(int playerNum, bool isUnderPlayerControl, TestVanDammeAnim reviveSource)
         {
-            if (specialAbility != null && !specialAbility.HandleRevive(playerNum, isUnderPlayerControl, reviveSource))
-            {
-                return false;
-            }
+            if (specialAbility != null && !specialAbility.HandleRevive(playerNum, isUnderPlayerControl, reviveSource)) return false;
+            if (meleeAbility != null && !meleeAbility.HandleRevive(playerNum, isUnderPlayerControl, reviveSource)) return false;
             bool result = base.Revive(playerNum, isUnderPlayerControl, reviveSource);
             specialAbility?.HandleAfterRevive(playerNum, isUnderPlayerControl, reviveSource);
+            meleeAbility?.HandleAfterRevive(playerNum, isUnderPlayerControl, reviveSource);
             return result;
         }
 
         public override void UseSteroids()
         {
-            if (specialAbility != null && !specialAbility.HandleUseSteroids())
-            {
-                return;
-            }
+            if (specialAbility != null && !specialAbility.HandleUseSteroids()) return;
+            if (meleeAbility != null && !meleeAbility.HandleUseSteroids()) return;
             base.UseSteroids();
             specialAbility?.HandleAfterUseSteroids();
+            meleeAbility?.HandleAfterUseSteroids();
         }
 
         protected override void CheckNotifyDeathType()
         {
-            if (specialAbility != null && !specialAbility.HandleCheckNotifyDeathType())
-            {
-                return;
-            }
+            if (specialAbility != null && !specialAbility.HandleCheckNotifyDeathType()) return;
+            if (meleeAbility != null && !meleeAbility.HandleCheckNotifyDeathType()) return;
             base.CheckNotifyDeathType();
         }
 
         protected override void ApplyFallingGravity()
         {
-            if (specialAbility != null && !specialAbility.HandleApplyFallingGravity())
-            {
-                return;
-            }
-            if (meleeAbility != null && !meleeAbility.HandleApplyFallingGravity())
-            {
-                return;
-            }
+            if (specialAbility != null && !specialAbility.HandleApplyFallingGravity()) return;
+            if (meleeAbility != null && !meleeAbility.HandleApplyFallingGravity()) return;
             base.ApplyFallingGravity();
         }
 
         protected override void SetDeltaTime()
         {
-            if (specialAbility != null && !specialAbility.HandleSetDeltaTime())
-            {
-                return;
-            }
+            if (specialAbility != null && !specialAbility.HandleSetDeltaTime()) return;
+            if (meleeAbility != null && !meleeAbility.HandleSetDeltaTime()) return;
             base.SetDeltaTime();
         }
 
@@ -1068,47 +1035,86 @@ namespace BroMakerLib.Vanilla.Bros
             if (specialAbility != null)
             {
                 bool result = false;
-                if (!specialAbility.HandleCanInseminate(ref result))
-                {
-                    return result;
-                }
+                if (!specialAbility.HandleCanInseminate(ref result)) return result;
             }
             if (meleeAbility != null)
             {
                 bool result = false;
-                if (!meleeAbility.HandleCanInseminate(ref result))
-                {
-                    return result;
-                }
+                if (!meleeAbility.HandleCanInseminate(ref result)) return result;
             }
             return base.CanInseminate(xI, yI);
         }
 
+        protected override bool CanStartNewMelee()
+        {
+            if (specialAbility != null)
+            {
+                bool result = false;
+                if (!specialAbility.HandleCanStartNewMelee(ref result)) return result;
+            }
+            if (meleeAbility != null)
+            {
+                bool result = false;
+                if (!meleeAbility.HandleCanStartNewMelee(ref result)) return result;
+            }
+            return base.CanStartNewMelee();
+        }
+
+        protected override bool IsLockedInMelee()
+        {
+            if (specialAbility != null)
+            {
+                bool result = false;
+                if (!specialAbility.HandleIsLockedInMelee(ref result)) return result;
+            }
+            if (meleeAbility != null)
+            {
+                bool result = false;
+                if (!meleeAbility.HandleIsLockedInMelee(ref result)) return result;
+            }
+            return base.IsLockedInMelee();
+        }
+
         public override void StartPilotingUnit(Unit pilottedUnit)
         {
-            if (specialAbility != null && !specialAbility.HandleStartPilotingUnit())
-            {
-                return;
-            }
+            if (specialAbility != null && !specialAbility.HandleStartPilotingUnit()) return;
+            if (meleeAbility != null && !meleeAbility.HandleStartPilotingUnit()) return;
             base.StartPilotingUnit(pilottedUnit);
+        }
+
+        public override void DischargePilotingUnit(float newX, float newY, float xI, float yI, bool stunPilot)
+        {
+            base.DischargePilotingUnit(newX, newY, xI, yI, stunPilot);
+            specialAbility?.HandleAfterDischargePilotingUnit();
+            meleeAbility?.HandleAfterDischargePilotingUnit();
+        }
+
+        public override void DestroyUnit()
+        {
+            specialAbility?.HandleDestroyUnit();
+            meleeAbility?.HandleDestroyUnit();
+            base.DestroyUnit();
         }
 
         protected override void LateUpdate()
         {
             base.LateUpdate();
             specialAbility?.HandleLateUpdate();
+            meleeAbility?.HandleLateUpdate();
         }
 
         protected override void AddSpeedLeft()
         {
             base.AddSpeedLeft();
             specialAbility?.HandleAfterAddSpeedLeft();
+            meleeAbility?.HandleAfterAddSpeedLeft();
         }
 
         protected override void AddSpeedRight()
         {
             base.AddSpeedRight();
             specialAbility?.HandleAfterAddSpeedRight();
+            meleeAbility?.HandleAfterAddSpeedRight();
         }
 
         protected virtual bool CanBeImpaledByGroundSpikes()
@@ -1116,14 +1122,15 @@ namespace BroMakerLib.Vanilla.Bros
             if (specialAbility != null)
             {
                 bool result = false;
-                if (!specialAbility.HandleCanBeImpaledByGroundSpikes(ref result))
-                {
-                    return result;
-                }
+                if (!specialAbility.HandleCanBeImpaledByGroundSpikes(ref result)) return result;
+            }
+            if (meleeAbility != null)
+            {
+                bool result = false;
+                if (!meleeAbility.HandleCanBeImpaledByGroundSpikes(ref result)) return result;
             }
             return !invulnerable && !wallDrag;
         }
-
         #endregion
     }
 }

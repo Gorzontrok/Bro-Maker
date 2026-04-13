@@ -1,88 +1,15 @@
 using System.Collections.Generic;
-using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
-using Newtonsoft.Json;
-using RocketLib.Extensions;
+using BroMakerLib.Extensions;
 using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
-    [MeleePreset("Brominator")]
-    public class BrominatorMelee : SmashMelee
-    {
-        public override void Initialize(TestVanDammeAnim owner)
-        {
-            base.Initialize(owner);
-            var brominator = owner as Brominator;
-            if (brominator == null)
-            {
-                brominator = HeroController.GetHeroPrefab(HeroType.Brominator) as Brominator;
-            }
-            if (brominator != null)
-            {
-                alternateMeleeHitSounds = brominator.soundHolder.alternateMeleeHitSound;
-                missSounds = brominator.soundHolder.missSounds;
-                alternateMeleeMissSounds = brominator.soundHolder.alternateMeleeMissSound;
-                special3Sounds = brominator.soundHolder.special3Sounds;
-            }
-        }
-
-        protected override void SetPunchAnimationRow()
-        {
-            if (Random.value > 0.5f)
-            {
-                currentPunchAnimationRow = 9;
-            }
-            else
-            {
-                currentPunchAnimationRow = 10;
-            }
-        }
-
-        protected override bool ShouldSmash()
-        {
-            return owner.actionState != ActionState.ClimbingLadder;
-        }
-
-        protected override void SmashPerformAttackCheck()
-        {
-            if (owner.frame == 4 && !hero.MeleeHasHit && !owner.IsOnGround())
-            {
-                PerformSmashAttack();
-            }
-        }
-
-        protected override void AnimatePunchHitDetection()
-        {
-            if (owner.frame == 3 && !hero.MeleeHasHit)
-            {
-                PerformUpperCut(true, true);
-            }
-        }
-
-        protected override void AnimatePunchMissSound()
-        {
-            if (owner.frame == 3 && !hero.MeleeHasHit && !owner.GetFieldValue<bool>("hasPlayedMissSound"))
-            {
-                sound.PlaySoundEffectAt(alternateMeleeMissSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
-                owner.SetFieldValue("hasPlayedMissSound", true);
-            }
-        }
-
-        protected override void OnUpperCutMissSound()
-        {
-            sound.PlaySoundEffectAt(missSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
-        }
-
-        protected override void OnUpperCutTerrainHit()
-        {
-            sound.PlaySoundEffectAt(alternateMeleeMissSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
-        }
-    }
-
     [MeleePreset("TankBro")]
     public class TankBroMelee : SmashMelee
     {
+        protected override HeroType SourceBroType => HeroType.TankBro;
+
         public float tankBroUpperCutXI = 50f;
         public float tankBroUpperCutYI = 550f;
 
@@ -93,21 +20,13 @@ namespace BroMakerLib.Vanilla.Melees
             smashGroundWaveSize = 128f;
         }
 
-        public override void Initialize(TestVanDammeAnim owner)
+        protected override void CacheSoundsFromPrefab()
         {
-            base.Initialize(owner);
-            var tankBro = owner as TankBro;
-            if (tankBro == null)
+            base.CacheSoundsFromPrefab();
+            var sourceBro = HeroController.GetHeroPrefab(SourceBroType);
+            if (sourceBro != null)
             {
-                tankBro = HeroController.GetHeroPrefab(HeroType.TankBro) as TankBro;
-            }
-            if (tankBro != null)
-            {
-                alternateMeleeHitSounds = tankBro.soundHolder.alternateMeleeHitSound;
-                alternateMeleeHitSounds2 = tankBro.soundHolder.alternateMeleeHitSound2;
-                alternateMeleeMissSounds = tankBro.soundHolder.alternateMeleeMissSound;
-                missSounds = tankBro.soundHolder.missSounds;
-                special3Sounds = tankBro.soundHolder.special3Sounds;
+                if (alternateMeleeHitSounds2 == null) alternateMeleeHitSounds2 = sourceBro.soundHolder.alternateMeleeHitSound2.CloneArray();
             }
         }
 
@@ -124,7 +43,7 @@ namespace BroMakerLib.Vanilla.Melees
         protected override void OnAfterStartMeleeCommon()
         {
             sound.PlaySoundEffectAt(missSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
-            owner.SetFieldValue("hasPlayedMissSound", true);
+            hero.HasPlayedMissSound = true;
         }
 
         protected override void OnAfterSmashSetup()
@@ -145,9 +64,9 @@ namespace BroMakerLib.Vanilla.Melees
 
         protected override void AnimatePunchMissSound()
         {
-            if (!hero.MeleeHasHit && !owner.GetFieldValue<bool>("hasPlayedMissSound"))
+            if (!hero.MeleeHasHit && !hero.HasPlayedMissSound)
             {
-                owner.SetFieldValue("hasPlayedMissSound", true);
+                hero.HasPlayedMissSound = true;
             }
         }
 

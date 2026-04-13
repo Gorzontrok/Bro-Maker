@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.Emit;
 using BroMakerLib.CustomObjects;
 using BroMakerLib.CustomObjects.Bros;
 using BroMakerLib.CustomObjects.Projectiles;
@@ -13,7 +12,6 @@ using BroMakerLib.Loggers;
 using BroMakerLib.Storages;
 using BroMakerLib.Unlocks;
 using HarmonyLib;
-using Networking;
 using UnityEngine;
 using BSett = BroMakerLib.Settings;
 using Object = UnityEngine.Object;
@@ -927,123 +925,6 @@ namespace BroMakerLib
             }
 
             return true;
-        }
-    }
-
-    // Fix RPC security check to find private [AllowedRPC] methods on base classes
-    [HarmonyPatch(typeof(RPCSecurity), "IsAllowed", new Type[] { typeof(Type), typeof(string) })]
-    static class RPCSecurity_IsAllowed_Patch
-    {
-        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-        {
-            var getMethodCall = AccessTools.Method(typeof(Type), "GetMethod",
-                new Type[] { typeof(string), typeof(BindingFlags) });
-            var replacement = AccessTools.Method(typeof(RPCInheritanceHelper),
-                nameof(RPCInheritanceHelper.FindMethodIncludingBasePrivate));
-
-            var codeMatcher = new CodeMatcher(instructions);
-            codeMatcher.MatchStartForward(new CodeMatch(i => i.Calls(getMethodCall)));
-            if (!codeMatcher.IsValid)
-            {
-                BMLogger.Warning("RPCSecurity_IsAllowed_Patch: Could not find Type.GetMethod call");
-                return instructions;
-            }
-
-            codeMatcher.Advance(-1);
-            codeMatcher.RemoveInstruction();
-            codeMatcher.Set(OpCodes.Call, replacement);
-
-            return codeMatcher.InstructionEnumeration();
-        }
-    }
-
-    // Fix RPC invocation to find private methods on base classes and log exceptions
-    [HarmonyPatch(typeof(NonStaticRPCObject), "Execute")]
-    static class NonStaticRPCObject_Execute_Patch
-    {
-        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
-        {
-            var invokeMemberCall = AccessTools.Method(typeof(Type), "InvokeMember",
-                new Type[] { typeof(string), typeof(BindingFlags), typeof(Binder), typeof(object), typeof(object[]) });
-            var replacement = AccessTools.Method(typeof(RPCInheritanceHelper),
-                nameof(RPCInheritanceHelper.FindAndInvoke));
-            var getTypeCall = AccessTools.Method(typeof(object), "GetType");
-
-            var codeMatcher = new CodeMatcher(instructions, generator);
-            codeMatcher.MatchStartForward(new CodeMatch(i => i.Calls(invokeMemberCall)));
-            if (!codeMatcher.IsValid)
-            {
-                BMLogger.Warning("NonStaticRPCObject_Execute_Patch: Could not find Type.InvokeMember call");
-                return instructions;
-            }
-
-            codeMatcher.MatchStartBackwards(new CodeMatch(i => i.Calls(getTypeCall)));
-            if (!codeMatcher.IsValid)
-            {
-                BMLogger.Warning("NonStaticRPCObject_Execute_Patch: Could not find GetType call before InvokeMember");
-                return instructions;
-            }
-
-            // Remove: GetType, ldarg.0, ldfld methodName, ldloc.2, get_DefaultBinder, ldloc.0, ldloc.1, InvokeMember, pop
-            codeMatcher.RemoveInstructions(9);
-            codeMatcher.Insert(
-                new CodeInstruction(OpCodes.Ldarg_0),
-                new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(RPCObject), "methodName")),
-                new CodeInstruction(OpCodes.Ldloc_1),
-                new CodeInstruction(OpCodes.Call, replacement)
-            );
-
-            return codeMatcher.InstructionEnumeration();
-        }
-
-        static Exception Finalizer(Exception __exception, NonStaticRPCObject __instance)
-        {
-            if (__exception != null)
-            {
-                var targetName = Registry.GetObject(__instance.targetID)?.GetType().Name ?? "NULL";
-                BMLogger.ExceptionLog($"[RPC] {__instance.methodName} on {targetName}", __exception);
-            }
-            return null;
-        }
-    }
-
-    // Walks the inheritance chain to find methods, including private ones on base classes
-    static class RPCInheritanceHelper
-    {
-        private const BindingFlags AllDeclared = BindingFlags.Instance | BindingFlags.Static
-            | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
-
-        public static MethodInfo FindMethodIncludingBasePrivate(Type type, string methodName)
-        {
-            Type current = type;
-            while (current != null)
-            {
-                try
-                {
-                    var method = current.GetMethod(methodName, AllDeclared);
-                    if (method != null)
-                        return method;
-                }
-                catch (AmbiguousMatchException)
-                {
-                    foreach (var m in current.GetMethods(AllDeclared))
-                    {
-                        if (m.Name == methodName)
-                            return m;
-                    }
-                }
-                current = current.BaseType;
-            }
-            return null;
-        }
-
-        public static void FindAndInvoke(object target, string methodName, object[] parameters)
-        {
-            var method = FindMethodIncludingBasePrivate(target.GetType(), methodName);
-            if (method != null)
-            {
-                method.Invoke(target, parameters);
-            }
         }
     }
 }

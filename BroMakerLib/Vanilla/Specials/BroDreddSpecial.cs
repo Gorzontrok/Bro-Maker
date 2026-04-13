@@ -9,6 +9,7 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("BroDredd")]
     public class BroDreddSpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.BroDredd;
         public float rocketSpeed = 90f;
 
         [JsonIgnore]

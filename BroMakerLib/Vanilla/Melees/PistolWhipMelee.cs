@@ -1,6 +1,6 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
-using RocketLib.Extensions;
+using BroMakerLib.Extensions;
 using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
@@ -8,26 +8,26 @@ namespace BroMakerLib.Vanilla.Melees
     [MeleePreset("PistolWhipMelee")]
     public class PistolWhipMelee : MeleeAbility
     {
-        public override void Initialize(TestVanDammeAnim owner)
+        protected override HeroType SourceBroType => HeroType.BroHard;
+
+        public PistolWhipMelee()
         {
-            base.Initialize(owner);
             meleeType = BroBase.MeleeType.PistolWhip;
-            meleeHitTerrainSounds = owner.soundHolder.alternateMeleeHitSound;
+            animationColumn = 27;
+            animationRow = 9;
+            animationFrameCount = 7;
+            endFrame = 4;
+            restartFrame = 4;
         }
 
-        public override void StartMelee()
+        protected override void CacheSoundsFromPrefab()
         {
-            if (!hero.DoingMelee || owner.frame > 4)
-            {
-                owner.frame = 0;
-                owner.counter = -0.05f;
-                AnimateMelee();
-            }
-            else
-            {
-                hero.MeleeFollowUp = true;
-            }
-            hero.StartMeleeCommon();
+            var sourceBro = HeroController.GetHeroPrefab(SourceBroType);
+            if (sourceBro == null) return;
+
+            if (alternateMeleeHitSounds == null) alternateMeleeHitSounds = sourceBro.soundHolder.alternateMeleeHitSound.CloneArray();
+            if (missSounds == null) missSounds = sourceBro.soundHolder.missSounds.CloneArray();
+            if (meleeHitTerrainSounds == null) meleeHitTerrainSounds = sourceBro.soundHolder.alternateMeleeHitSound.CloneArray();
         }
 
         public override void AnimateMelee()
@@ -52,64 +52,6 @@ namespace BroMakerLib.Vanilla.Melees
             }
         }
 
-        public override void RunMeleeMovement()
-        {
-            if (!owner.useNewKnifingFrames)
-            {
-                if (owner.Y > owner.groundHeight + 1f)
-                {
-                    owner.CallMethod("ApplyFallingGravity");
-                }
-            }
-            else if (hero.JumpingMelee)
-            {
-                owner.CallMethod("ApplyFallingGravity");
-                if (owner.yI < owner.maxFallSpeed)
-                {
-                    owner.yI = owner.maxFallSpeed;
-                }
-            }
-            else if (hero.DashingMelee)
-            {
-                if (owner.frame <= 1)
-                {
-                    owner.xI = 0f;
-                    owner.yI = 0f;
-                }
-                else if (owner.frame <= 3)
-                {
-                    if (hero.MeleeChosenUnit == null)
-                    {
-                        if (!owner.GetFieldValue<bool>("isInQuicksand"))
-                        {
-                            owner.xI = owner.speed * 1f * owner.transform.localScale.x;
-                        }
-                        owner.yI = 0f;
-                    }
-                    else if (!owner.GetFieldValue<bool>("isInQuicksand"))
-                    {
-                        owner.xI = owner.speed * 0.5f * owner.transform.localScale.x + (hero.MeleeChosenUnit.X - owner.X) * 6f;
-                    }
-                }
-                else if (owner.frame <= 5)
-                {
-                    if (!owner.GetFieldValue<bool>("isInQuicksand"))
-                    {
-                        owner.xI = owner.speed * 0.3f * owner.transform.localScale.x;
-                    }
-                    owner.CallMethod("ApplyFallingGravity");
-                }
-                else
-                {
-                    owner.CallMethod("ApplyFallingGravity");
-                }
-            }
-            else if (owner.Y > owner.groundHeight + 1f)
-            {
-                hero.CancelMelee();
-            }
-        }
-
         private void PerformPistolWhip(bool shouldTryHitTerrain, bool playMissSound)
         {
             float num = 8f;
@@ -119,45 +61,22 @@ namespace BroMakerLib.Vanilla.Melees
             hero.KickDoors(26f);
             if (Map.HitClosestUnit(owner, PlayerNum, 4, DamageType.Melee, num, num * 2f, vector.x, vector.y, owner.transform.localScale.x * 150f, 0f, true, false, owner.IsMine, false, true))
             {
-                sound.PlaySoundEffectAt(owner.soundHolder.alternateMeleeHitSound, 0.8f, owner.transform.position, Random.Range(0.9f, 1.1f), true, false, false, 0f);
+                sound.PlaySoundEffectAt(alternateMeleeHitSounds, 0.8f, owner.transform.position, Random.Range(0.9f, 1.1f), true, false, false, 0f);
                 hero.MeleeHasHit = true;
             }
             hero.MeleeChosenUnit = null;
-            if (!hero.MeleeHasHit && shouldTryHitTerrain && TryPistolWhipHitTerrain())
+            if (!hero.MeleeHasHit && shouldTryHitTerrain && HandleTryMeleeTerrain(0, terrainDamage))
             {
                 hero.MeleeHasHit = true;
             }
             if (!hero.MeleeHasHit)
             {
-                if (!owner.GetFieldValue<bool>("hasPlayedMissSound"))
+                if (!hero.HasPlayedMissSound)
                 {
-                    sound.PlaySoundEffectAt(owner.soundHolder.missSounds, 0.15f, owner.transform.position, 1f, true, false, false, 0f);
+                    sound.PlaySoundEffectAt(missSounds, 0.15f, owner.transform.position, 1f, true, false, false, 0f);
                 }
-                owner.SetFieldValue("hasPlayedMissSound", true);
+                hero.HasPlayedMissSound = true;
             }
-        }
-
-        private bool TryPistolWhipHitTerrain()
-        {
-            RaycastHit raycastHit;
-            if (!Physics.Raycast(new Vector3(X - owner.transform.localScale.x * 4f, Y + 4f, 0f), new Vector3(owner.transform.localScale.x, 0f, 0f), out raycastHit, 16f, hero.GroundLayer))
-            {
-                return false;
-            }
-            Cage cage = raycastHit.collider.GetComponent<Cage>();
-            if (cage == null && raycastHit.collider.transform.parent != null)
-            {
-                cage = raycastHit.collider.transform.parent.GetComponent<Cage>();
-            }
-            if (cage != null)
-            {
-                MapController.Damage_Networked(owner, raycastHit.collider.gameObject, cage.health, DamageType.Melee, 0f, 40f, raycastHit.point.x, raycastHit.point.y);
-                return true;
-            }
-            MapController.Damage_Networked(owner, raycastHit.collider.gameObject, terrainDamage, DamageType.Melee, 0f, 40f, raycastHit.point.x, raycastHit.point.y);
-            sound.PlaySoundEffectAt(meleeHitTerrainSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
-            EffectsController.CreateProjectilePopWhiteEffect(X + owner.width * owner.transform.localScale.x, Y + owner.height + 4f);
-            return true;
         }
     }
 }

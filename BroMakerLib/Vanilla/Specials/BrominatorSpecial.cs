@@ -12,6 +12,7 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("Brominator")]
     public class BrominatorSpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.Brominator;
         public float normalDuration = 5.5f;
         public float deathMatchDuration = 4.5f;
         public float procGenDuration = 2f;

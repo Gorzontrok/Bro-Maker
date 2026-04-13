@@ -1,5 +1,6 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -8,6 +9,7 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("McBrover")]
     public class McBroverSpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.McBrover;
         public float specialSoundVolume = 0.5f;
         public float standingSpeedX = 100f;
         public float standingSpeedY = 100f;
@@ -36,11 +38,6 @@ namespace BroMakerLib.Vanilla.Specials
             if (mcBrover != null)
             {
                 turkeyProjectile = mcBrover.turkeyProjectile;
-            }
-            if (specialAttackSounds == null)
-            {
-                var sourceBro = prefab.GetComponent<TestVanDammeAnim>();
-                specialAttackSounds = sourceBro.soundHolder.specialAttackSounds;
             }
         }
 

@@ -1,7 +1,7 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
-using RocketLib.Extensions;
 using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
@@ -9,28 +9,28 @@ namespace BroMakerLib.Vanilla.Melees
     [MeleePreset("BroGummer")]
     public class BroGummerMelee : MeleeAbility
     {
+        protected override HeroType SourceBroType => HeroType.BroGummer;
+
         [JsonIgnore] private float sachelPackCooldown;
         [JsonIgnore] private Projectile sachelPackProjectile;
         [JsonIgnore] private RaycastHit raycastHit;
 
+        public BroGummerMelee()
+        {
+            meleeType = BroBase.MeleeType.Punch;
+            startType = MeleeStartType.Custom;
+            moveType = MeleeMoveType.Punch;
+            restartFrame = 0;
+        }
+
         public override void Initialize(TestVanDammeAnim owner)
         {
             base.Initialize(owner);
-            meleeType = BroBase.MeleeType.Punch;
 
-            var broGummer = owner as BroGummer;
-            if (broGummer == null)
+            var sourceBro = HeroController.GetHeroPrefab(HeroType.BroGummer) as BroGummer;
+            if (sourceBro != null)
             {
-                var prefab = HeroController.GetHeroPrefab(HeroType.BroGummer);
-                broGummer = prefab as BroGummer;
-            }
-            if (broGummer != null)
-            {
-                sachelPackProjectile = broGummer.sachelPackProjectile;
-                meleeHitSounds = broGummer.soundHolder.meleeHitSound;
-                missSounds = broGummer.soundHolder.missSounds;
-                alternateMeleeHitSounds = broGummer.soundHolder.alternateMeleeHitSound;
-                meleeHitTerrainSounds = broGummer.soundHolder.meleeHitTerrainSound;
+                sachelPackProjectile = sourceBro.sachelPackProjectile;
             }
         }
 
@@ -39,27 +39,12 @@ namespace BroMakerLib.Vanilla.Melees
             sachelPackCooldown -= hero.DeltaTime;
         }
 
-        public override void StartMelee()
-        {
-            if (!hero.DoingMelee || owner.frame > 4)
-            {
-                owner.frame = 0;
-                owner.counter = -0.05f;
-                AnimateMelee();
-            }
-            else if (hero.DoingMelee)
-            {
-                hero.MeleeFollowUp = true;
-            }
-            hero.StartMeleeCommon();
-        }
-
         public override void AnimateMelee()
         {
             if (owner.frame == 2)
             {
-                Mook nearbyMook = owner.GetFieldValue<Mook>("nearbyMook");
-                if (nearbyMook != null && nearbyMook.CanBeThrown() && owner.GetFieldValue<bool>("highFive"))
+                Mook nearbyMook = hero.NearbyMook;
+                if (nearbyMook != null && nearbyMook.CanBeThrown() && hero.HighFive)
                 {
                     hero.CancelMelee();
                     if (!(owner is BroGummer) && sachelPackProjectile != null && owner.IsMine)
@@ -74,8 +59,8 @@ namespace BroMakerLib.Vanilla.Melees
                             sachelPack.TryStickToUnit(nearbyMook, true);
                         }
                     }
-                    owner.CallMethod("ThrowBackMook", nearbyMook);
-                    owner.SetFieldValue("nearbyMook", null);
+                    hero.ThrowBackMook(nearbyMook);
+                    hero.NearbyMook = null;
                     return;
                 }
             }
@@ -117,12 +102,12 @@ namespace BroMakerLib.Vanilla.Melees
                 ProjectileController.SpawnProjectileOverNetwork(sachelPackProjectile, owner, unit.X, unit.Y + 6f, 0f, 0f, false, owner.playerNum, false, false, 0f);
                 sachelPackCooldown = 0.5f;
             }
-            else if (owner.Direction < 0 && Physics.Raycast(new Vector3(owner.X + 6f, owner.Y + 10f, 0f), Vector3.left, out raycastHit, 16f, hero.GroundLayer | owner.GetFieldValue<LayerMask>("fragileLayer")))
+            else if (owner.Direction < 0 && Physics.Raycast(new Vector3(owner.X + 6f, owner.Y + 10f, 0f), Vector3.left, out raycastHit, 16f, hero.GroundLayer | hero.FragileLayer))
             {
                 ProjectileController.SpawnProjectileOverNetwork(sachelPackProjectile, owner, owner.X - 6f, owner.Y + 10f, -10f, 10f, false, owner.playerNum, false, false, 0f);
                 sachelPackCooldown = 0.5f;
             }
-            else if (owner.Direction > 0 && Physics.Raycast(new Vector3(owner.X - 6f, owner.Y + 10f, 0f), Vector3.right, out raycastHit, 12f, hero.GroundLayer | owner.GetFieldValue<LayerMask>("fragileLayer")))
+            else if (owner.Direction > 0 && Physics.Raycast(new Vector3(owner.X - 6f, owner.Y + 10f, 0f), Vector3.right, out raycastHit, 12f, hero.GroundLayer | hero.FragileLayer))
             {
                 ProjectileController.SpawnProjectileOverNetwork(sachelPackProjectile, owner, owner.X + 6f, owner.Y + 10f, 10f, 10f, false, owner.playerNum, false, false, 0f);
                 sachelPackCooldown = 0.5f;
@@ -142,76 +127,24 @@ namespace BroMakerLib.Vanilla.Melees
             hero.KickDoors(25);
             if (Map.HitClosestUnit(owner, PlayerNum, 4, DamageType.Melee, num, num * 2f, vector.x, vector.y, owner.transform.localScale.x * 250f, 250f, true, false, owner.IsMine, false, true))
             {
-                sound.PlaySoundEffectAt(soundHolder.alternateMeleeHitSound, 0.5f, owner.transform.position, 1f, true, false, false, 0f);
+                sound.PlaySoundEffectAt(alternateMeleeHitSounds, 0.5f, owner.transform.position, 1f, true, false, false, 0f);
                 hero.MeleeHasHit = true;
                 EffectsController.CreateProjectilePopWhiteEffect(X + (owner.width + 4f) * owner.transform.localScale.x, Y + owner.height + 4f);
             }
             else
             {
-                if (playMissSound && !owner.GetFieldValue<bool>("hasPlayedMissSound"))
+                if (playMissSound && !hero.HasPlayedMissSound)
                 {
-                    sound.PlaySoundEffectAt(soundHolder.missSounds, 0.15f, owner.transform.position, 1f, true, false, false, 0f);
+                    sound.PlaySoundEffectAt(missSounds, 0.15f, owner.transform.position, 1f, true, false, false, 0f);
                 }
-                owner.SetFieldValue("hasPlayedMissSound", true);
+                hero.HasPlayedMissSound = true;
             }
             hero.MeleeChosenUnit = null;
-            if (!hero.MeleeHasHit && shouldTryHitTerrain && hero.TryMeleeTerrain(0, 2))
+            if (!hero.MeleeHasHit && shouldTryHitTerrain && HandleTryMeleeTerrain(0, terrainDamage))
             {
                 hero.MeleeHasHit = true;
             }
             hero.TriggerBroMeleeEvent();
-        }
-
-        public override void RunMeleeMovement()
-        {
-            owner.CallMethod("ApplyFallingGravity");
-            if (hero.JumpingMelee)
-            {
-                if (owner.yI < owner.maxFallSpeed)
-                {
-                    owner.yI = owner.maxFallSpeed;
-                }
-            }
-            else if (hero.DashingMelee)
-            {
-                if (owner.frame < 2)
-                {
-                    owner.xI = 0f;
-                    owner.yI = 0f;
-                }
-                else if (owner.frame <= 4)
-                {
-                    if (hero.MeleeChosenUnit != null)
-                    {
-                        float num = 8f;
-                        float num2 = hero.MeleeChosenUnit.X - (float)owner.Direction * num - owner.X;
-                        if (!owner.GetFieldValue<bool>("isInQuicksand"))
-                        {
-                            owner.xI = num2 / 0.1f;
-                        }
-                        if (!owner.GetFieldValue<bool>("isInQuicksand"))
-                        {
-                            owner.xI = Mathf.Clamp(owner.xI, -owner.speed * 1.7f, owner.speed * 1.7f);
-                        }
-                    }
-                    else
-                    {
-                        if (!owner.GetFieldValue<bool>("isInQuicksand"))
-                        {
-                            owner.xI = owner.speed * (float)owner.Direction;
-                        }
-                        owner.yI = 0f;
-                    }
-                }
-                else if (owner.frame <= 7)
-                {
-                    owner.xI = 0f;
-                }
-            }
-            else if (owner.Y > owner.groundHeight + 1f)
-            {
-                hero.CancelMelee();
-            }
         }
     }
 }

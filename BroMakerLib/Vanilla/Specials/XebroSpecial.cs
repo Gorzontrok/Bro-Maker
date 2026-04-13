@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("Xebro")]
     public class XebroSpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.Xebro;
         public float throwSoundVolume = 0.5f;
 
         [JsonIgnore]
@@ -34,10 +36,6 @@ namespace BroMakerLib.Vanilla.Specials
             if (xebro != null)
             {
                 chakramPrefab = xebro.chakramPrefab;
-                if (throwSounds == null)
-                {
-                    throwSounds = xebro.soundHolder.throwSounds;
-                }
             }
         }
 
@@ -74,6 +72,29 @@ namespace BroMakerLib.Vanilla.Specials
             if (broBase != null) broBase.meleeType = BroBase.MeleeType.Punch;
             owner.SpecialAmmo++;
             thrownChakram.Remove(chakram);
+        }
+
+        public override void HandleAfterDeath()
+        {
+            KillThrownChakrams();
+        }
+
+        public override void HandleAfterRecallBro()
+        {
+            KillThrownChakrams();
+        }
+
+        private void KillThrownChakrams()
+        {
+            if (owner is Xebro) return;
+            for (int i = 0; i < thrownChakram.Count; i++)
+            {
+                if (thrownChakram[i] != null)
+                {
+                    thrownChakram[i].Death();
+                }
+            }
+            thrownChakram.Clear();
         }
     }
 }

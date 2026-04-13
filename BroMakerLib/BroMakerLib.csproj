@@ -169,7 +169,8 @@
         <Compile Include="Vanilla\Melees\RoundhouseKickMelee.cs"/>
         <Compile Include="Vanilla\Melees\SplitKickMelee.cs"/>
         <Compile Include="Vanilla\Melees\SmashMelee.cs"/>
-        <Compile Include="Vanilla\Melees\SmashMeleeSubclasses.cs"/>
+        <Compile Include="Vanilla\Melees\BrominatorMelee.cs"/>
+        <Compile Include="Vanilla\Melees\TankBroMelee.cs"/>
         <Compile Include="Vanilla\Melees\DisembowelMelee.cs"/>
         <Compile Include="Vanilla\Melees\BaBroracusMelee.cs"/>
         <Compile Include="Vanilla\Melees\IndianaBronesMelee.cs"/>
@@ -185,11 +186,13 @@
         <Compile Include="Vanilla\Melees\SnakeBroskinMelee.cs"/>
         <Compile Include="Vanilla\Melees\TheBrodeMelee.cs"/>
         <Compile Include="Vanilla\Melees\TheBrolanderMelee.cs"/>
+        <Compile Include="Vanilla\Melees\TheBrocketeerMelee.cs"/>
         <Compile Include="Vanilla\Melees\BroniversalSoldierMelee.cs"/>
         <Compile Include="Vanilla\Melees\TheBrofessionalMelee.cs"/>
         <Compile Include="Vanilla\Melees\BrodenMelee.cs"/>
         <Compile Include="Vanilla\Melees\DirtyHarryMelee.cs"/>
         <Compile Include="Vanilla\Melees\BroveHeartMelee.cs"/>
+        <Compile Include="Abilities\AbilityBase.cs"/>
         <Compile Include="Abilities\AbilityFactory.cs"/>
         <Compile Include="Attributes\SpecialPresetAttribute.cs"/>
         <Compile Include="Attributes\MeleePresetAttribute.cs"/>
@@ -217,6 +220,7 @@
         <Compile Include="Cutscenes\CustomIntroCutscene.cs"/>
         <Compile Include="Cutscenes\CutscenePatches.cs"/>
         <Compile Include="Attributes\EditorIgnoreAttribute.cs"/>
+        <Compile Include="Extensions\AudioClipExtensions.cs"/>
         <Compile Include="Extensions\ICustomHeroExtensions.cs"/>
         <Compile Include="Extensions\InvulnerabilityFlashExtensions.cs"/>
         <Compile Include="Infos\CustomBroforceObjectInfo.cs"/>
@@ -226,6 +230,7 @@
         <Compile Include="Storages\BroMakerStorage.cs"/>
         <Compile Include="Storages\BroSpawnManager.cs"/>
         <Compile Include="Storages\DirectoriesManager.cs"/>
+        <Compile Include="CustomObjects\IAbilityOwner.cs"/>
         <Compile Include="CustomObjects\ICustomHero.cs"/>
         <Compile Include="Infos\CustomBroInfo.cs"/>
         <Compile Include="Loaders\LoadHero.cs"/>
@@ -248,7 +253,7 @@
         <Compile Include="Unlocks\UnlockPatches.cs"/>
         <Compile Include="Vanilla\Bros\AshBrolliamsM.cs"/>
         <Compile Include="Vanilla\Bros\BaBroracusM.cs"/>
-        <Compile Include="Vanilla\Bros\BillyConnollyM.cs"/>
+
         <Compile Include="Vanilla\Bros\BladeM.cs"/>
         <Compile Include="Vanilla\Bros\BoondockBroM.cs"/>
         <Compile Include="Vanilla\Bros\BrobocopM.cs"/>
@@ -271,7 +276,7 @@
         <Compile Include="Vanilla\Bros\BroniversalSoldierM.cs"/>
         <Compile Include="Vanilla\Bros\BronnarJensenM.cs"/>
         <Compile Include="Vanilla\Bros\BrononymousM.cs"/>
-        <Compile Include="Vanilla\Bros\BroshipTrooperM.cs"/>
+
         <Compile Include="Vanilla\Bros\BroveHeartM.cs"/>
         <Compile Include="Vanilla\Bros\CaseyBrobackM.cs"/>
         <Compile Include="Vanilla\Bros\CherryBrolingM.cs"/>
@@ -286,8 +291,7 @@
         <Compile Include="Vanilla\Bros\LeeBroxmasM.cs"/>
         <Compile Include="Vanilla\Bros\McBroverM.cs"/>
         <Compile Include="Vanilla\Bros\NebroM.cs"/>
-        <Compile Include="Vanilla\Bros\NorrisBroM.cs"/>
-        <Compile Include="Vanilla\Bros\PistolWhipBroM.cs"/>
+
         <Compile Include="Vanilla\Bros\PredabroM.cs"/>
         <Compile Include="Vanilla\Bros\RambroM.cs"/>
         <Compile Include="Vanilla\Bros\ScorpionBroM.cs"/>

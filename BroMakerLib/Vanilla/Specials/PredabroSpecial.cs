@@ -10,6 +10,7 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("Brodator")]
     public class PredabroSpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.Predabro;
         private enum SpecialState
         {
             WaitForTarget,
@@ -89,7 +90,6 @@ namespace BroMakerLib.Vanilla.Specials
         [JsonIgnore]
         private bool selfDestructed;
 
-        // Prefab references
         [JsonIgnore]
         private Material stealthMaterial;
         [JsonIgnore]
@@ -143,8 +143,6 @@ namespace BroMakerLib.Vanilla.Specials
             }
             else if (prefab != null)
             {
-                // Instantiate child objects from prefab for non-Predabro owners
-                // Base sprite must be created first as parent for the cannon
                 Transform cannonParent = owner.transform;
                 if (prefab.shoulderCannonBaseSprite != null)
                 {
@@ -171,8 +169,6 @@ namespace BroMakerLib.Vanilla.Specials
                 }
                 if (prefab.laserSightLazers != null && prefab.laserSightLazers.Length > 0 && shoulderCannonSprite != null)
                 {
-                    // Find the lazers inside the already-instantiated cannon hierarchy
-                    // rather than creating separate copies
                     laserSightLazers = new SpriteSM[prefab.laserSightLazers.Length];
                     var allLazers = shoulderCannonSprite.GetComponentsInChildren<SpriteSM>(true);
                     int found = 0;

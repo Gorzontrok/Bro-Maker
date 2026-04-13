@@ -1,6 +1,7 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
 using BroMakerLib.Loaders;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
 using RocketLib.Extensions;
 using UnityEngine;
@@ -10,6 +11,19 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("DoubleBroSeven")]
     public class DoubleBroSevenSpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.DoubleBroSeven;
+
+        protected override void CacheSoundsFromPrefab()
+        {
+            base.CacheSoundsFromPrefab();
+            var sourceBro = HeroController.GetHeroPrefab(SourceBroType);
+            if (sourceBro == null) return;
+            if (special3Sounds == null) special3Sounds = sourceBro.soundHolder.special3Sounds.CloneArray();
+            if (special2Sounds == null) special2Sounds = sourceBro.soundHolder.special2Sounds.CloneArray();
+            if (attack3Sounds == null) attack3Sounds = sourceBro.soundHolder.attack3Sounds.CloneArray();
+            if (attack2Sounds == null) attack2Sounds = sourceBro.soundHolder.attack2Sounds.CloneArray();
+            if (attack4Sounds == null) attack4Sounds = sourceBro.soundHolder.attack4Sounds.CloneArray();
+        }
         public float balaclavaTimeDuration = 5f;
         public float jetPackFuelDuration = 0.8f;
         public float startLaserAngle = 265f;
@@ -57,7 +71,6 @@ namespace BroMakerLib.Vanilla.Specials
         [JsonIgnore]
         private LayerMask unitsLayer;
 
-        // Prefab references
         [JsonIgnore]
         private Grenade martiniGlass;
         [JsonIgnore]
@@ -101,15 +114,8 @@ namespace BroMakerLib.Vanilla.Specials
                 laserAngleSpeed = dbs.laserAngleSpeed;
                 laserAngleAcceleration = dbs.laserAngleAcceleration;
                 startAngleSpeed = laserAngleSpeed;
-                if (special3Sounds == null) special3Sounds = dbs.soundHolder.special3Sounds;
-                if (special2Sounds == null) special2Sounds = dbs.soundHolder.special2Sounds;
-                if (attack3Sounds == null) attack3Sounds = dbs.soundHolder.attack3Sounds;
-                if (attack2Sounds == null) attack2Sounds = dbs.soundHolder.attack2Sounds;
-                if (attack4Sounds == null) attack4Sounds = dbs.soundHolder.attack4Sounds;
-                if (throwSounds == null) throwSounds = dbs.soundHolder.throwSounds;
             }
 
-            // Laser line and audio — get from owner instance or create
             var ownerDbs = owner as DoubleBroSeven;
             if (ownerDbs != null)
             {

@@ -10,34 +10,6 @@ namespace BroMakerLib.Abilities
 {
     public static class AbilityPatches
     {
-        // Uses IL emit to bypass the type system and set BoondockBro.leadingBro (typed BoondockBro)
-        // to a TestVanDammeAnim reference. All companion AI methods only access base-class fields
-        // on leadingBro, so this is safe. Methods that access BoondockBro-specific members
-        // (ReduceLives, SwitchToLeadBro) are guarded with clear/restore prefix/postfix patches.
-        private static readonly Action<BoondockBro, TestVanDammeAnim> _setLeadingBro;
-
-        static AbilityPatches()
-        {
-            var dm = new DynamicMethod(
-                "SetLeadingBro",
-                null,
-                new[] { typeof(BoondockBro), typeof(TestVanDammeAnim) },
-                typeof(BoondockBro).Module,
-                true);
-            var il = dm.GetILGenerator();
-            il.Emit(OpCodes.Ldarg_0);
-            il.Emit(OpCodes.Ldarg_1);
-            il.Emit(OpCodes.Stfld, typeof(BoondockBro).GetField("leadingBro"));
-            il.Emit(OpCodes.Ret);
-            _setLeadingBro = (Action<BoondockBro, TestVanDammeAnim>)dm.CreateDelegate(
-                typeof(Action<BoondockBro, TestVanDammeAnim>));
-        }
-
-        internal static void SetBoondockLeadingBro(BoondockBro companion, TestVanDammeAnim owner)
-        {
-            _setLeadingBro(companion, owner);
-        }
-
         #region Boomerang/Chakram patches
 
         [HarmonyPatch(typeof(Boomerang), "ReturnBoomerang")]
@@ -50,7 +22,7 @@ namespace BroMakerLib.Abilities
                     return;
                 }
 
-                var customHero = __instance.firedBy as ICustomHero;
+                var customHero = __instance.firedBy as IAbilityOwner;
                 if (customHero == null)
                 {
                     return;
@@ -73,7 +45,7 @@ namespace BroMakerLib.Abilities
                     return true;
                 }
 
-                var customHero = __instance.firedBy as ICustomHero;
+                var customHero = __instance.firedBy as IAbilityOwner;
                 if (customHero == null)
                 {
                     return false;
@@ -108,8 +80,35 @@ namespace BroMakerLib.Abilities
 
         #region BoondockBro companion patches
 
-        // When the ability owner isn't a BoondockBro, the RPC passes null for LeadingBro.
-        // Force-set it to the player's actual character so the companion AI works.
+        // IL emit to bypass the type system: stores a TestVanDammeAnim into the
+        // BoondockBro-typed leadingBro field. Safe because all companion AI methods
+        // only access base-class fields on leadingBro.
+        private static readonly Action<BoondockBro, TestVanDammeAnim> _setLeadingBro;
+
+        static AbilityPatches()
+        {
+            var dm = new DynamicMethod(
+                "SetLeadingBro",
+                null,
+                new[] { typeof(BoondockBro), typeof(TestVanDammeAnim) },
+                typeof(BoondockBro).Module,
+                true);
+            var il = dm.GetILGenerator();
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Ldarg_1);
+            il.Emit(OpCodes.Stfld, typeof(BoondockBro).GetField("leadingBro"));
+            il.Emit(OpCodes.Ret);
+            _setLeadingBro = (Action<BoondockBro, TestVanDammeAnim>)dm.CreateDelegate(
+                typeof(Action<BoondockBro, TestVanDammeAnim>));
+        }
+
+        internal static void SetBoondockLeadingBro(BoondockBro companion, TestVanDammeAnim owner)
+        {
+            _setLeadingBro(companion, owner);
+        }
+
+        // When the ability owner isn't a BoondockBro, LeadingBro is null.
+        // Set it to the player's actual character so the companion AI works.
         [HarmonyPatch(typeof(BoondockBro), "SetUpTrailingBro")]
         static class BoondockBro_SetUpTrailingBro_Patch
         {
@@ -138,9 +137,8 @@ namespace BroMakerLib.Abilities
             }
         }
 
-        // Guard patches: skip the original method when leadingBro is force-set to a
-        // non-BoondockBro, and replicate only the safe parts of the vanilla logic.
-        // We can't use clear/restore because clearing leadingBro to null causes
+        // Guard patches for methods that access BoondockBro-specific fields on leadingBro.
+        // Can't use clear/restore because clearing leadingBro to null causes
         // ReduceLives to enter the wrong branch (base.ReduceLives → life loss).
         [HarmonyPatch(typeof(BoondockBro), "ReduceLives")]
         static class BoondockBro_ReduceLives_Patch
@@ -152,8 +150,6 @@ namespace BroMakerLib.Abilities
                 {
                     return true;
                 }
-                // Non-lead bro with force-set leadingBro: replicate vanilla non-lead branch
-                // without accessing BoondockBro-specific fields (trailingBro, SetEnraged)
                 if (__instance.connollyBro != null)
                 {
                     __instance.connollyBro.SetEnraged(true);
@@ -175,8 +171,6 @@ namespace BroMakerLib.Abilities
                 {
                     return true;
                 }
-                // Vanilla BillyConnolly.ReduceLives only enrages leadingBro and trailingBro —
-                // both BoondockBro-specific. Skip entirely for non-BoondockBro leaders.
                 return false;
             }
         }
@@ -188,7 +182,6 @@ namespace BroMakerLib.Abilities
             {
                 if (__instance.leadingBro != null && !((object)__instance.leadingBro is BoondockBro))
                 {
-                    // Can't access leadingBro.isLeadBro — just promote this bro
                     __instance.isLeadBro = true;
                     return false;
                 }

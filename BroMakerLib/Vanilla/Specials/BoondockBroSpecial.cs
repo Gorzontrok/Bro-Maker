@@ -1,5 +1,8 @@
+using System;
+using System.Reflection;
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
+using HarmonyLib;
 using Newtonsoft.Json;
 using RocketLib.Extensions;
 using UnityEngine;
@@ -9,6 +12,7 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("BoondockBro")]
     public class BoondockBroSpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.BoondockBros;
         [JsonIgnore]
         private BoondockBro trailingBro;
         [JsonIgnore]
@@ -19,6 +23,13 @@ namespace BroMakerLib.Vanilla.Specials
         private float defaultSpeed;
         [JsonIgnore]
         private float defaultFireRate;
+
+        private static readonly MethodInfo setupTrailingBro = AccessTools.Method(typeof(BoondockBro), "SetUpTrailingBro",
+            new Type[] { typeof(BoondockBro), typeof(int), typeof(float), typeof(float), typeof(bool) });
+        private static readonly MethodInfo setupConnollyBro = AccessTools.Method(typeof(BoondockBro), "SetUpConnollyBro",
+            new Type[] { typeof(BoondockBro), typeof(BoondockBro), typeof(int) });
+        private static readonly MethodInfo setConnollyBro = AccessTools.Method(typeof(BoondockBro), "SetConnollyBro",
+            new Type[] { typeof(BoondockBro) });
 
         public override void Initialize(TestVanDammeAnim owner)
         {
@@ -50,7 +61,7 @@ namespace BroMakerLib.Vanilla.Specials
                     {
                         connollyBro = Networking.Networking.InstantiateBuffered<BillyConnolly>(billyConnollyPrefab,
                             owner.transform.position, owner.transform.rotation, false);
-                        connollyBro.CallMethod("SetUpConnollyBro", connollyBro, owner as BoondockBro, PlayerNum);
+                        setupConnollyBro.Invoke(null, new object[] { connollyBro, owner as BoondockBro, PlayerNum });
                         trailingBro.connollyBro = connollyBro;
                     }
                 }
@@ -77,21 +88,53 @@ namespace BroMakerLib.Vanilla.Specials
                 owner.transform.position, owner.transform.rotation, new object[0], false) as BoondockBro;
             if (trailingBro != null)
             {
-                trailingBro.CallMethod("SetUpTrailingBro", owner as BoondockBro, PlayerNum, defaultSpeed, defaultFireRate, !owner.usePrimaryAvatar);
+                setupTrailingBro.Invoke(trailingBro, new object[] { owner as BoondockBro, PlayerNum, defaultSpeed, defaultFireRate, !owner.usePrimaryAvatar });
                 trailingBro.xI = owner.xI;
                 trailingBro.yI = owner.yI;
                 if (connollyBro != null)
                 {
-                    trailingBro.CallMethod("SetConnollyBro", connollyBro);
+                    setConnollyBro.Invoke(trailingBro, new object[] { connollyBro });
                 }
             }
         }
 
+        private void RecallCompanion(BoondockBro companion)
+        {
+            if (companion != null && companion.health > 0)
+            {
+                companion.RecallBro();
+            }
+        }
+
+        private void DestroyCompanion(ref BoondockBro companion)
+        {
+            if (companion != null)
+            {
+                UnityEngine.Object.Destroy(companion.gameObject);
+                companion = null;
+            }
+        }
+
+        private void HideCompanion(BoondockBro companion)
+        {
+            if (companion == null) return;
+            companion.enabled = false;
+            companion.GetComponent<Renderer>().enabled = false;
+            companion.gunSprite.GetComponent<Renderer>().enabled = false;
+            companion.gunSprite.enabled = false;
+            companion.invulnerable = true;
+            companion.health = 10000;
+        }
+
+        private void RestoreCompanion(BoondockBro companion, float x, float y, float xI, float yI)
+        {
+            if (companion == null) return;
+            companion.DischargePilotingUnit(x, y, xI, yI, false);
+            companion.GetComponent<Renderer>().enabled = true;
+        }
+
         public override bool HandleDeath()
         {
-            // For BoondockBro owners, let vanilla ReduceLives handle the death-transfer
-            // mechanic (trailing bro becomes new lead without losing a life).
-            // For non-BoondockBro owners, kill companions since there's no transfer.
             if (!(owner is BoondockBro))
             {
                 if (trailingBro != null && trailingBro.health > 0)
@@ -106,6 +149,56 @@ namespace BroMakerLib.Vanilla.Specials
             trailingBro = null;
             connollyBro = null;
             return true;
+        }
+
+        public override bool HandleRecallBro()
+        {
+            if (!(owner is BoondockBro))
+            {
+                RecallCompanion(trailingBro);
+                RecallCompanion(connollyBro);
+                trailingBro = null;
+                connollyBro = null;
+            }
+            return true;
+        }
+
+        public override bool HandleStartPilotingUnit()
+        {
+            if (!(owner is BoondockBro))
+            {
+                HideCompanion(trailingBro);
+                HideCompanion(connollyBro);
+            }
+            return true;
+        }
+
+        public override void HandleAfterDischargePilotingUnit()
+        {
+            if (!(owner is BoondockBro))
+            {
+                RestoreCompanion(trailingBro, owner.X, owner.Y, owner.xI, owner.yI);
+                RestoreCompanion(connollyBro, owner.X, owner.Y, owner.xI, owner.yI);
+            }
+        }
+
+        public override void HandleDestroyUnit()
+        {
+            if (!(owner is BoondockBro))
+            {
+                DestroyCompanion(ref trailingBro);
+                DestroyCompanion(ref connollyBro);
+            }
+        }
+
+        public override void Cleanup()
+        {
+            if (!(owner is BoondockBro))
+            {
+                DestroyCompanion(ref trailingBro);
+                DestroyCompanion(ref connollyBro);
+            }
+            base.Cleanup();
         }
     }
 }

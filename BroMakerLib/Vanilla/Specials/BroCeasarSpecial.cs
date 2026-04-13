@@ -11,6 +11,8 @@ namespace BroMakerLib.Vanilla.Specials
         [JsonIgnore]
         private float specialShootBoostTime;
 
+        protected override HeroType SourceBroType => HeroType.Broc;
+
         public BroCeasarSpecial()
         {
             lethal = false;

@@ -1,5 +1,6 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
 using RocketLib.Extensions;
 using Rogueforce;
@@ -10,6 +11,15 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("AshBrolliams")]
     public class AshBrolliamsSpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.AshBrolliams;
+
+        protected override void CacheSoundsFromPrefab()
+        {
+            base.CacheSoundsFromPrefab();
+            var sourceBro = HeroController.GetHeroPrefab(SourceBroType);
+            if (sourceBro == null) return;
+            if (effortSounds == null) effortSounds = sourceBro.soundHolder.effortSounds.CloneArray();
+        }
         public float rampageDuration = 5.5f;
         public float rampageDamageRate = 0.03334f;
         public int chainsawDamage = 1;
@@ -82,8 +92,6 @@ namespace BroMakerLib.Vanilla.Specials
                 if (chainsawWindDown == null)
                     chainsawWindDown = ashBrolliams.chainsawWindDown;
                 bloodyAvatar = ashBrolliams.bloodyAvatar;
-                if (effortSounds == null)
-                    effortSounds = ashBrolliams.soundHolder.effortSounds;
             }
         }
 

@@ -1,6 +1,7 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
 using BroMakerLib.Loaders;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("Brommando")]
     public class BrommandoSpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.Brommando;
         public string barageProjectileName = "DrunkRocket";
         public float rocketSpeed = 150f;
         public float rocketSpeedY = 0f;
@@ -44,12 +46,6 @@ namespace BroMakerLib.Vanilla.Specials
         {
             base.Initialize(owner);
             barageProjectile = LoadBroforceObjects.GetProjectileFromName(barageProjectileName);
-            if (attackSounds == null)
-            {
-                var prefab = HeroController.GetHeroPrefab(HeroType.Brommando);
-                var sourceBro = prefab.GetComponent<TestVanDammeAnim>();
-                attackSounds = sourceBro.soundHolder.attackSounds;
-            }
         }
 
         public override void UseSpecial()

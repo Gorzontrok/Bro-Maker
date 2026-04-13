@@ -1,6 +1,7 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
 using BroMakerLib.Loaders;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("BroneyRoss")]
     public class BroneyRossSpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.BroneyRoss;
         public string grenadeName = "Sticky";
         public int grenadeCount = 3;
 
@@ -31,7 +33,6 @@ namespace BroMakerLib.Vanilla.Specials
         {
             base.Initialize(owner);
             grenade = LoadBroforceObjects.GetGrenadeFromName(grenadeName);
-            if (throwSounds == null) throwSounds = owner.soundHolder.throwSounds;
         }
 
         public override void AnimateSpecial()

@@ -9,6 +9,8 @@ namespace BroMakerLib.Vanilla.Specials
     {
         public AudioClip whistle;
 
+        protected override HeroType SourceBroType => HeroType.TankBro;
+
         public TankBroSpecial()
         {
             grenadeName = "SummonTank";

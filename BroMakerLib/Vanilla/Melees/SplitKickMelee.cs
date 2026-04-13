@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
-using RocketLib.Extensions;
 using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
@@ -10,10 +10,22 @@ namespace BroMakerLib.Vanilla.Melees
     [MeleePreset("SplitKickMelee")]
     public class SplitKickMelee : MeleeAbility
     {
-        public override void Initialize(TestVanDammeAnim owner)
+        protected override HeroType SourceBroType => HeroType.TimeBroVanDamme;
+
+        public AudioClip[] alternateMeleeMissSounds;
+
+        public SplitKickMelee()
         {
-            base.Initialize(owner);
             meleeType = BroBase.MeleeType.VanDammeKick;
+        }
+
+        protected override void CacheSoundsFromPrefab()
+        {
+            var sourceBro = HeroController.GetHeroPrefab(SourceBroType);
+            if (sourceBro == null) return;
+
+            if (alternateMeleeHitSounds == null) alternateMeleeHitSounds = sourceBro.soundHolder.alternateMeleeHitSound.CloneArray();
+            if (alternateMeleeMissSounds == null) alternateMeleeMissSounds = sourceBro.soundHolder.alternateMeleeMissSound.CloneArray();
         }
 
         public override void StartMelee()
@@ -29,15 +41,15 @@ namespace BroMakerLib.Vanilla.Melees
                 hero.MeleeFollowUp = true;
             }
             hero.StartMeleeCommon();
-            owner.SetFieldValue("splitkick", Mathf.Abs(owner.xI) < 30f);
-            owner.SetFieldValue("hasJumpedForKick", !owner.IsOnGround());
+            hero.SplitKick = Mathf.Abs(owner.xI) < 30f;
+            hero.HasJumpedForKick = !owner.IsOnGround();
         }
 
         public override void AnimateMelee()
         {
             hero.FrameRate = 0.05f;
             hero.SetSpriteOffset(0f, 0f);
-            owner.SetFieldValue("rollingFrames", 0);
+            hero.RollingFrames = 0;
             if (owner.frame == 7 && hero.MeleeFollowUp)
             {
                 owner.counter -= 0.08f;
@@ -46,11 +58,11 @@ namespace BroMakerLib.Vanilla.Melees
                 hero.ResetMeleeValues();
             }
             hero.FrameRate = 0.025f;
-            if (owner.frame == 2 && owner.GetFieldValue<Mook>("nearbyMook") != null && owner.GetFieldValue<Mook>("nearbyMook").CanBeThrown() && owner.GetFieldValue<bool>("highFive"))
+            if (owner.frame == 2 && hero.NearbyMook != null && hero.NearbyMook.CanBeThrown() && hero.HighFive)
             {
                 hero.CancelMelee();
-                owner.CallMethod("ThrowBackMook", owner.GetFieldValue<Mook>("nearbyMook"));
-                owner.SetFieldValue("nearbyMook", (Mook)null);
+                hero.ThrowBackMook(hero.NearbyMook);
+                hero.NearbyMook = null;
             }
             if (hero.JumpingMelee)
             {
@@ -58,7 +70,7 @@ namespace BroMakerLib.Vanilla.Melees
                 {
                     owner.counter -= 0.066f;
                 }
-                if (owner.GetFieldValue<bool>("highFive") && !owner.IsOnGround() && owner.frame > 6)
+                if (hero.HighFive && !owner.IsOnGround() && owner.frame > 6)
                 {
                     owner.frame = 6;
                 }
@@ -71,13 +83,13 @@ namespace BroMakerLib.Vanilla.Melees
             {
                 PerformVanDammeKickMelee(true, true);
             }
-            if (owner.frame == 2 && !owner.GetFieldValue<bool>("hasJumpedForKick"))
+            if (owner.frame == 2 && !hero.HasJumpedForKick)
             {
                 if (owner.IsOnGround())
                 {
                     owner.yI = 150f;
                 }
-                owner.SetFieldValue("hasJumpedForKick", true);
+                hero.HasJumpedForKick = true;
             }
             int num = 9;
             if (hero.JumpingMelee)
@@ -91,7 +103,7 @@ namespace BroMakerLib.Vanilla.Melees
                     num = 9;
                 }
             }
-            if (owner.GetFieldValue<bool>("splitkick"))
+            if (hero.SplitKick)
             {
                 num = 10;
             }
@@ -106,7 +118,7 @@ namespace BroMakerLib.Vanilla.Melees
 
         public override void RunMeleeMovement()
         {
-            owner.CallMethod("ApplyFallingGravity");
+            hero.ApplyFallingGravity();
             if (owner.yI < owner.maxFallSpeed)
             {
                 owner.yI = owner.maxFallSpeed;
@@ -145,7 +157,7 @@ namespace BroMakerLib.Vanilla.Melees
             List<Unit> list = new List<Unit>();
             hero.KickDoors(24f);
             hero.MeleeChosenUnit = null;
-            if (shouldTryHitTerrain && TryVanDammeKickHitTerrain())
+            if (shouldTryHitTerrain && HandleTryMeleeTerrain(0, terrainDamage))
             {
                 hero.MeleeHasHit = true;
             }
@@ -154,7 +166,7 @@ namespace BroMakerLib.Vanilla.Melees
             int num3 = num2 + num2 + 1;
             float num4 = CalculateKickForce();
             float num5 = 250f;
-            bool splitkick = owner.GetFieldValue<bool>("splitkick");
+            bool splitkick = hero.SplitKick;
             if (owner.yI < 0f && hero.JumpingMelee && !splitkick)
             {
                 num5 = -250f;
@@ -162,7 +174,7 @@ namespace BroMakerLib.Vanilla.Melees
             BloodColor bloodColor = BloodColor.None;
             if (Map.HitUnits(owner, owner, PlayerNum, 5, DamageType.Melee, (float)num2, 9f, X + (float)(num * num3), Y, (float)num * num4, num5, false, true, false, false, ref bloodColor, list, false))
             {
-                sound.PlaySoundEffectAt(soundHolder.alternateMeleeHitSound, 1f, owner.transform.position, 1f, true, false, false, 0f);
+                sound.PlaySoundEffectAt(alternateMeleeHitSounds, 1f, owner.transform.position, 1f, true, false, false, 0f);
                 hero.MeleeHasHit = true;
             }
             if (splitkick)
@@ -170,7 +182,7 @@ namespace BroMakerLib.Vanilla.Melees
                 num = -num;
                 if (Map.HitUnits(owner, owner, PlayerNum, 5, DamageType.Melee, (float)num2, 9f, X + (float)(num * (num3 + 4)), Y, (float)num * num4, 250f, false, true, false, false, ref bloodColor, list, false))
                 {
-                    sound.PlaySoundEffectAt(soundHolder.alternateMeleeHitSound, 1f, owner.transform.position, 1f, true, false, false, 0f);
+                    sound.PlaySoundEffectAt(alternateMeleeHitSounds, 1f, owner.transform.position, 1f, true, false, false, 0f);
                     hero.MeleeHasHit = true;
                 }
             }
@@ -196,10 +208,10 @@ namespace BroMakerLib.Vanilla.Melees
                     }
                 }
             }
-            if (!hero.MeleeHasHit && !owner.GetFieldValue<bool>("hasPlayedMissSound"))
+            if (!hero.MeleeHasHit && !hero.HasPlayedMissSound)
             {
-                sound.PlaySoundEffectAt(soundHolder.alternateMeleeMissSound, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
-                owner.SetFieldValue("hasPlayedMissSound", true);
+                sound.PlaySoundEffectAt(alternateMeleeMissSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
+                hero.HasPlayedMissSound = true;
             }
         }
 
@@ -211,29 +223,6 @@ namespace BroMakerLib.Vanilla.Melees
                 return vanDammeBro.CallMethod<float>("CalculateKickForce");
             }
             return 350f + Mathf.Abs(owner.xI);
-        }
-
-        private bool TryVanDammeKickHitTerrain()
-        {
-            RaycastHit raycastHit;
-            if (!Physics.Raycast(new Vector3(X - owner.transform.localScale.x * 4f, Y + 4f, 0f), new Vector3(owner.transform.localScale.x, 0f, 0f), out raycastHit, 16f, hero.GroundLayer))
-            {
-                return false;
-            }
-            Cage cage = raycastHit.collider.GetComponent<Cage>();
-            if (cage == null && raycastHit.collider.transform.parent != null)
-            {
-                cage = raycastHit.collider.transform.parent.GetComponent<Cage>();
-            }
-            if (cage != null)
-            {
-                MapController.Damage_Networked(owner, raycastHit.collider.gameObject, cage.health, DamageType.Melee, 0f, 40f, raycastHit.point.x, raycastHit.point.y);
-                return true;
-            }
-            MapController.Damage_Networked(owner, raycastHit.collider.gameObject, terrainDamage, DamageType.Melee, 0f, 40f, raycastHit.point.x, raycastHit.point.y);
-            sound.PlaySoundEffectAt(soundHolder.alternateMeleeHitSound, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
-            EffectsController.CreateProjectilePopWhiteEffect(X + owner.width * owner.transform.localScale.x, Y + owner.height + 4f);
-            return true;
         }
     }
 }

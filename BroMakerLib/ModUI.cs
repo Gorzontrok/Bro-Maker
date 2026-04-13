@@ -376,11 +376,10 @@ namespace BroMakerLib
                 {
                     throw new NullReferenceException("'characterPreset' is null or empty");
                 }
-                if (!PresetManager.heroesPreset.ContainsKey(preset))
+                if (!PresetManager.heroesPreset.TryGetValue(preset, out Type presetType))
                 {
                     throw new Exception($"'characterPreset': {preset} doesn't exist. Check if you have the preset installed or if there is a typo.");
                 }
-                Type presetType = PresetManager.heroesPreset[preset];
                 // Vanilla bro wrappers don't have the UIOptions() methods so they don't need to be instantiated
                 if (!typeof(CustomHero).IsAssignableFrom(presetType))
                 {

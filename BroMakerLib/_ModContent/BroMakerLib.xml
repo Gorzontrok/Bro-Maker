@@ -4,1123 +4,1095 @@
         <name>BroMakerLib</name>
     </assembly>
     <members>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleDeath">
-            <summary>Called when the bro dies.</summary>
-            <returns>True to run original, false to skip.</returns>
+        <member name="P:BroMakerLib.Abilities.SpecialAbility.SourceBroType">
+            <summary>Vanilla bro to source special sounds from. Override in subclasses. Defaults to <c>HeroType.Rambro</c>.</summary>
         </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleAfterDeath">
-            <summary>Called after Death has run.</summary>
+        <member name="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)">
+            <summary>Called once when the bro spawns. Also calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.CacheSoundsFromPrefab" />.</summary>
         </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleCanReduceLives(System.Boolean@)">
-            <summary>Called during CanReduceLives check.</summary>
-            <returns>True to run original, false to force the provided result.</returns>
+        <member name="M:BroMakerLib.Abilities.SpecialAbility.CacheSoundsFromPrefab">
+            <summary>Loads special sound clips from the <see cref="P:BroMakerLib.Abilities.SpecialAbility.SourceBroType" /> prefab's soundHolder.
+            Each array is null-guarded so JSON overrides aren't stomped. Override in subclasses to
+            load additional bro-specific sounds (call <c>base.CacheSoundsFromPrefab()</c> first).</summary>
         </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleUpdate">
-            <summary>Called before the bro's base Update. Return false to skip base.Update() entirely.</summary>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleCalculateMovement(System.Single@,System.Single@)">
-            <summary>Called during movement processing.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleAfterCalculateMovement">
-            <summary>Called after CalculateMovement has run.</summary>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleDamage(System.Int32,DamageType,System.Single,System.Single,System.Int32,UnityEngine.MonoBehaviour,System.Single,System.Single)">
-            <summary>Called when the bro takes damage.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleFireWeapon">
-            <summary>Called during firing logic.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleAfterFireWeapon(System.Single,System.Single,System.Single,System.Single)">
-            <summary>Called after FireWeapon has run.</summary>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleAfterAddSpeedLeft">
-            <summary>Called after AddSpeedLeft has run.</summary>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleAfterAddSpeedRight">
-            <summary>Called after AddSpeedRight has run.</summary>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleCanBeImpaledByGroundSpikes(System.Boolean@)">
-            <summary>Called during CanBeImpaledByGroundSpikes check.</summary>
-            <returns>True to run original, false to force the provided result.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleJump(System.Boolean)">
-            <summary>Called when the bro jumps.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleRunMovement">
-            <summary>Called during RunMovement.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleApplyNormalGravity">
-            <summary>Called during gravity application.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleStartFiring">
-            <summary>Called when the bro starts firing.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleStartMelee">
-            <summary>Called when the bro starts a melee attack.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleChangeFrame">
-            <summary>Called during ChangeFrame.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleRunGun">
-            <summary>Called during RunGun.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleRunFiring">
-            <summary>Called during RunFiring.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleRunAvatarFiring">
-            <summary>Called during RunAvatarFiring.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleConstrainToFloor">
-            <summary>Called during floor constraint check.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleConstrainToCeiling">
-            <summary>Called during ceiling constraint check.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleConstrainToWalls">
-            <summary>Called during wall constraint check.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleIsOverLadder">
-            <summary>Called during IsOverLadder check.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleWallDrag(System.Boolean)">
-            <summary>Called when WallDrag is being set.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleAnimateActualJumpingFrames">
-            <summary>Called during jumping frame animation.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleLand">
-            <summary>Called before Land.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleAfterLand">
-            <summary>Called after Land has run.</summary>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleAfterChangeFrame">
-            <summary>Called after ChangeFrame has run.</summary>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleAfterIncreaseFrame">
-            <summary>Called after IncreaseFrame has run (once per animation frame advance).</summary>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleReleaseSpecial">
-            <summary>Called when the special button is released.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleMustIgnoreHighFiveMeleePress">
-            <summary>Called during MustIgnoreHighFiveMeleePress to allow side effects before the base check runs.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleAfterAnimateNewRunningFrames">
-            <summary>Called after AnimateActualNewRunningFrames has run.</summary>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleGetFollowPosition(UnityEngine.Vector3@)">
-            <summary>Called when the camera queries the bro's follow position.</summary>
-            <returns>True to run original, false to use the provided result.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleIsInStealthMode">
-            <summary>Called during IsInStealthMode check.</summary>
-            <returns>True to run original, false to force stealth mode active.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleAlertNearbyMooks">
-            <summary>Called during AlertNearbyMooks.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleGib(DamageType,System.Single,System.Single)">
-            <summary>Called when the bro is gibbed.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleRecallBro">
-            <summary>Called when the bro is recalled (e.g., level extraction).</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleAfterRecallBro">
-            <summary>Called after RecallBro has run.</summary>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleAttachToHeli">
-            <summary>Called when the bro attaches to the extraction helicopter.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleHitCeiling">
-            <summary>Called when the bro hits a ceiling.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleAfterHitCeiling">
-            <summary>Called after HitCeiling has run.</summary>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleHitLeftWall">
-            <summary>Called when the bro hits a left wall.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleAfterHitLeftWall">
-            <summary>Called after HitLeftWall has run.</summary>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleHitRightWall">
-            <summary>Called when the bro hits a right wall.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleAfterHitRightWall">
-            <summary>Called after HitRightWall has run.</summary>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleClampWallDragYI(System.Single@)">
-            <summary>Called during wall drag Y velocity clamping.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleRunHanging">
-            <summary>Called during RunHanging.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleCanCheckClimbAlongCeiling(System.Boolean@)">
-            <summary>Called during CanCheckClimbAlongCeiling.</summary>
-            <returns>True to run original, false to use the provided result.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleCheckClimbAlongCeiling">
-            <summary>Called during CheckClimbAlongCeiling.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleAfterCheckInput">
-            <summary>Called after CheckInput has run.</summary>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleAirDashDown">
-            <summary>Called during AirDashDown.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleRunDownwardDash">
-            <summary>Called during RunDownwardDash.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleAfterRunDownwardDash">
-            <summary>Called after RunDownwardDash has run.</summary>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleIsAlive(System.Boolean@)">
-            <summary>Called during IsAlive check.</summary>
-            <returns>True to run original, false to use the provided result.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleRevive(System.Int32,System.Boolean,TestVanDammeAnim)">
-            <summary>Called during Revive.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleAfterRevive(System.Int32,System.Boolean,TestVanDammeAnim)">
-            <summary>Called after Revive has run.</summary>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleUseSteroids">
-            <summary>Called during UseSteroids.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleAfterUseSteroids">
-            <summary>Called after UseSteroids has run.</summary>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleCheckNotifyDeathType">
-            <summary>Called during CheckNotifyDeathType.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleApplyFallingGravity">
-            <summary>Called during ApplyFallingGravity.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleSetDeltaTime">
-            <summary>Called during SetDeltaTime.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleCanInseminate(System.Boolean@)">
-            <summary>Called during CanInseminate check.</summary>
-            <returns>True to run original, false to use the provided result.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleStartPilotingUnit">
-            <summary>Called when the bro starts piloting a unit.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleLateUpdate">
-            <summary>Called during LateUpdate.</summary>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.HandleCheckForTraps">
-            <summary>Called during CheckForTraps.</summary>
-            <returns>True to run original, false to skip.</returns>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.Cleanup">
-            <summary>Called before this ability is replaced by another. Override to destroy any
-            components or child objects created during Initialize.</summary>
-        </member>
-        <member name="T:BroMakerLib.Abilities.MeleeAbility">
+        <member name="T:BroMakerLib.Abilities.MeleeStartType">
             <summary>
-            Base class for all melee abilities. Subclasses implement specific vanilla melees
-            (knife slash, punch, roundhouse kick, etc.) and are registered via <see cref="T:BroMakerLib.Attributes.MeleePresetAttribute" />.
-            Not a MonoBehaviour — instantiated as a plain C# object and configured via JSON deserialization.
-            Public fields are the JSON parameter schema; override defaults in subclass constructors for bro-specific values.
+            Controls how <see cref="M:BroMakerLib.Abilities.MeleeAbility.StartMelee" /> initializes the melee.
             </summary>
         </member>
-        <member name="F:BroMakerLib.Abilities.MeleeAbility.owner">
-            <summary>The bro that owns this ability. Set by <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" />.</summary>
+        <member name="F:BroMakerLib.Abilities.MeleeStartType.Knife">
+            <summary>Standard knife start. Matches <c>BroBase.StartKnifeMelee</c>.</summary>
         </member>
-        <member name="P:BroMakerLib.Abilities.MeleeAbility.PlayerNum">
-            <summary>Owner's player number.</summary>
+        <member name="F:BroMakerLib.Abilities.MeleeStartType.Custom">
+            <summary>Custom start. Matches <c>BroBase.StartCustomMelee</c>.</summary>
         </member>
-        <member name="P:BroMakerLib.Abilities.MeleeAbility.Direction">
-            <summary>Owner's facing direction: 1 = right, -1 = left.</summary>
+        <member name="T:BroMakerLib.Abilities.MeleeMoveType">
+            <summary>
+            Controls how <see cref="M:BroMakerLib.Abilities.MeleeAbility.RunMeleeMovement" /> handles movement during the melee.
+            </summary>
         </member>
-        <member name="P:BroMakerLib.Abilities.MeleeAbility.X">
-            <summary>Owner's X world position.</summary>
+        <member name="F:BroMakerLib.Abilities.MeleeMoveType.Knife">
+            <summary>Standard knife movement. Matches <c>TestVanDammeAnim.RunKnifeMeleeMovement</c>.</summary>
         </member>
-        <member name="P:BroMakerLib.Abilities.MeleeAbility.Y">
-            <summary>Owner's Y world position.</summary>
+        <member name="F:BroMakerLib.Abilities.MeleeMoveType.Punch">
+            <summary>Punch movement. Matches <c>BroBase.RunPunchMovement</c>.</summary>
         </member>
-        <member name="P:BroMakerLib.Abilities.MeleeAbility.sound">
-            <summary>The Sound singleton for playing audio. Cached from owner's protected field.</summary>
+        <member name="T:BroMakerLib.Abilities.MeleeAbility">
+            <summary>Base class for all melee abilities. Public fields are the JSON parameter schema.</summary>
         </member>
-        <member name="P:BroMakerLib.Abilities.MeleeAbility.soundHolder">
-            <summary>Owner's SoundHolder containing AudioClip arrays for SFX (meleeHitSound, attackSounds, etc.).</summary>
+        <member name="P:BroMakerLib.Abilities.MeleeAbility.SourceBroType">
+            <summary>Vanilla bro to source melee sounds from. Override in subclasses. Defaults to <c>HeroType.Rambro</c>.</summary>
+        </member>
+        <member name="F:BroMakerLib.Abilities.MeleeAbility.startType">
+            <summary>Controls how <see cref="M:BroMakerLib.Abilities.MeleeAbility.StartMelee" /> initializes the melee. Defaults to <see cref="F:BroMakerLib.Abilities.MeleeStartType.Knife" />.</summary>
+        </member>
+        <member name="F:BroMakerLib.Abilities.MeleeAbility.moveType">
+            <summary>Controls how <see cref="M:BroMakerLib.Abilities.MeleeAbility.RunMeleeMovement" /> handles movement. Defaults to <see cref="F:BroMakerLib.Abilities.MeleeMoveType.Knife" />.</summary>
         </member>
         <member name="F:BroMakerLib.Abilities.MeleeAbility.animationRow">
-            <summary>Sprite sheet row for standing melee animation.</summary>
+            <summary>Sprite sheet row for standing melee animation. Defaults to 1 (standard knife row).</summary>
         </member>
         <member name="F:BroMakerLib.Abilities.MeleeAbility.animationColumn">
-            <summary>Starting column for standing melee animation.</summary>
+            <summary>Starting column for standing melee animation. Defaults to 25 (standard knife column).</summary>
         </member>
         <member name="F:BroMakerLib.Abilities.MeleeAbility.jumpingAnimationRow">
-            <summary>Sprite sheet row for jumping/dashing melee. -1 = use <see cref="F:BroMakerLib.Abilities.MeleeAbility.animationRow" />.</summary>
+            <summary>Sprite sheet row for jumping/dashing melee. Defaults to 6 (standard knife jumping row).</summary>
         </member>
         <member name="F:BroMakerLib.Abilities.MeleeAbility.jumpingAnimationColumn">
-            <summary>Starting column for jumping/dashing melee. -1 = use <see cref="F:BroMakerLib.Abilities.MeleeAbility.animationColumn" />.</summary>
+            <summary>Starting column for jumping/dashing melee. Defaults to 17 (standard knife jumping column).</summary>
         </member>
         <member name="F:BroMakerLib.Abilities.MeleeAbility.animationFrameCount">
-            <summary>Number of frames in the melee animation.</summary>
+            <summary>Number of frames in the melee animation. Defaults to 7.</summary>
         </member>
         <member name="F:BroMakerLib.Abilities.MeleeAbility.frameRate">
-            <summary>Seconds per animation frame.</summary>
+            <summary>Seconds per animation frame. Defaults to 0.025.</summary>
         </member>
         <member name="F:BroMakerLib.Abilities.MeleeAbility.hitFrame">
-            <summary>Which animation frame triggers the hit detection.</summary>
+            <summary>Which animation frame triggers the hit detection. Defaults to 3.</summary>
+        </member>
+        <member name="F:BroMakerLib.Abilities.MeleeAbility.restartFrame">
+            <summary>Frame at which a combo restart is allowed during <see cref="F:BroMakerLib.Abilities.MeleeStartType.Knife" /> start.
+            If the player re-presses melee after this frame, the animation restarts. Defaults to 3.</summary>
+        </member>
+        <member name="F:BroMakerLib.Abilities.MeleeAbility.endFrame">
+            <summary>Frame at which the melee animation ends and <see cref="M:BroMakerLib.CustomObjects.IAbilityOwner.CancelMelee" /> is called.
+            Defaults to 6.</summary>
+        </member>
+        <member name="F:BroMakerLib.Abilities.MeleeAbility.hitFrameCounterDelay">
+            <summary>Extra time subtracted from the frame counter on <see cref="F:BroMakerLib.Abilities.MeleeAbility.hitFrame" />, creating a brief
+            pause on the attack frame. Defaults to 0.066.</summary>
+        </member>
+        <member name="F:BroMakerLib.Abilities.MeleeAbility.attackOnFollowUpFrames">
+            <summary>Whether to continue calling <see cref="M:BroMakerLib.Abilities.MeleeAbility.PerformMeleeAttack(System.Boolean,System.Boolean)" /> on frames after
+            <see cref="F:BroMakerLib.Abilities.MeleeAbility.hitFrame" /> if the attack hasn't hit yet. Defaults to true.</summary>
         </member>
         <member name="F:BroMakerLib.Abilities.MeleeAbility.damage">
-            <summary>Damage dealt to units on hit.</summary>
+            <summary>Damage dealt to units on hit. Defaults to 4 (standard knife damage).</summary>
         </member>
         <member name="F:BroMakerLib.Abilities.MeleeAbility.damageType">
             <summary>DamageType enum name (e.g., "Knifed", "Crush", "Electrocution"). Parsed at initialization.</summary>
         </member>
         <member name="F:BroMakerLib.Abilities.MeleeAbility.knockbackX">
-            <summary>Horizontal knockback force applied to hit units.</summary>
+            <summary>Horizontal knockback force applied to hit units. Defaults to 200.</summary>
         </member>
         <member name="F:BroMakerLib.Abilities.MeleeAbility.knockbackY">
-            <summary>Vertical knockback force applied to hit units.</summary>
+            <summary>Vertical knockback force applied to hit units. Defaults to 500.</summary>
         </member>
         <member name="F:BroMakerLib.Abilities.MeleeAbility.hitRangeX">
-            <summary>Horizontal range of the hit detection box.</summary>
+            <summary>Horizontal range of the hit detection box. Defaults to 14.</summary>
         </member>
         <member name="F:BroMakerLib.Abilities.MeleeAbility.hitRangeY">
-            <summary>Vertical range of the hit detection box.</summary>
+            <summary>Vertical range of the hit detection box. Defaults to 24.</summary>
         </member>
         <member name="F:BroMakerLib.Abilities.MeleeAbility.hitOffsetX">
-            <summary>X offset from owner position for the hit detection center.</summary>
+            <summary>X offset from owner position for the hit detection center. Defaults to 8.</summary>
         </member>
         <member name="F:BroMakerLib.Abilities.MeleeAbility.hitOffsetY">
-            <summary>Y offset from owner position for the hit detection center.</summary>
+            <summary>Y offset from owner position for the hit detection center. Defaults to 8.</summary>
         </member>
         <member name="F:BroMakerLib.Abilities.MeleeAbility.hitTerrain">
-            <summary>Whether melee damages terrain and doors.</summary>
+            <summary>Whether melee damages terrain and doors. Defaults to true.</summary>
         </member>
         <member name="F:BroMakerLib.Abilities.MeleeAbility.terrainDamage">
-            <summary>Damage dealt to terrain blocks on hit.</summary>
+            <summary>Damage dealt to terrain blocks on hit. Defaults to 2.</summary>
+        </member>
+        <member name="F:BroMakerLib.Abilities.MeleeAbility.meleeType">
+            <summary>Controls BroBase dispatch routing and TryMeleeTerrain sounds.</summary>
+        </member>
+        <member name="F:BroMakerLib.Abilities.MeleeAbility.meleeHitTerrainSounds">
+            <summary>Sounds played when melee hits terrain (knife-type melees).</summary>
+        </member>
+        <member name="F:BroMakerLib.Abilities.MeleeAbility.alternateMeleeHitSounds">
+            <summary>Alternate hit sounds used by non-knife melees and terrain hits.</summary>
         </member>
         <member name="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)">
-            <summary>Called once when the bro spawns. Sets <see cref="F:BroMakerLib.Abilities.MeleeAbility.owner" /> and caches protected field references.</summary>
             <param name="owner">The bro instance that owns this ability.</param>
         </member>
+        <member name="M:BroMakerLib.Abilities.MeleeAbility.CacheSoundsFromPrefab">
+            <summary>Loads melee sound clips from the <see cref="P:BroMakerLib.Abilities.MeleeAbility.SourceBroType" /> prefab's soundHolder.
+            Each array is null-guarded so JSON overrides aren't stomped. Override in subclasses to
+            load additional bro-specific sounds (call <c>base.CacheSoundsFromPrefab()</c> first).</summary>
+        </member>
         <member name="M:BroMakerLib.Abilities.MeleeAbility.StartMelee">
-            <summary>Called when the player presses melee. Initializes state and sets animation parameters.</summary>
+            <summary>Called when the player presses melee. Behavior depends on <see cref="F:BroMakerLib.Abilities.MeleeAbility.startType" />.</summary>
         </member>
         <member name="M:BroMakerLib.Abilities.MeleeAbility.AnimateMelee">
-            <summary>Called each frame during the melee animation. Controls sprite frames and performs hit detection on <see cref="F:BroMakerLib.Abilities.MeleeAbility.hitFrame" />.</summary>
+            <summary>Called each frame during the melee animation.</summary>
         </member>
         <member name="M:BroMakerLib.Abilities.MeleeAbility.RunMeleeMovement">
-            <summary>Called each frame to handle movement during the melee animation (e.g., dash forward, lunge).</summary>
+            <summary>Called each frame to handle movement. Behavior depends on <see cref="F:BroMakerLib.Abilities.MeleeAbility.moveType" />.</summary>
+        </member>
+        <member name="M:BroMakerLib.Abilities.MeleeAbility.RunKnifeMeleeMovement">
+            <summary>Standard knife melee movement. Matches <c>TestVanDammeAnim.RunKnifeMeleeMovement</c>.</summary>
+        </member>
+        <member name="M:BroMakerLib.Abilities.MeleeAbility.RunPunchMeleeMovement">
+            <summary>Punch-style melee movement. Matches <c>BroBase.RunPunchMovement</c>.</summary>
+        </member>
+        <member name="M:BroMakerLib.Abilities.MeleeAbility.PerformMeleeAttack(System.Boolean,System.Boolean)">
+            <summary>Override for custom hit detection (e.g., multi-hit, special effects).</summary>
         </member>
         <member name="M:BroMakerLib.Abilities.MeleeAbility.CancelMelee">
-            <summary>Called when the melee is interrupted (e.g., taking damage, falling).</summary>
+            <summary>Called when the melee is interrupted (e.g., taking damage, falling).
+            IMPORTANT: Do NOT call <c>hero.CancelMelee()</c> from this method — the wrapper
+            already calls both this callback and <c>base.CancelMelee()</c> in sequence.</summary>
         </member>
-        <member name="M:BroMakerLib.Abilities.MeleeAbility.Update">
-            <summary>Called every frame. Use for timers and other per-frame logic.</summary>
+        <member name="M:BroMakerLib.Abilities.MeleeAbility.HandleTryMeleeTerrain(System.Int32,System.Int32)">
+            <summary>Performs terrain damage and plays the ability's
+            cached sounds instead of the owner's soundHolder. Returns true if terrain was hit.</summary>
         </member>
-        <member name="M:BroMakerLib.Abilities.MeleeAbility.Cleanup">
-            <summary>Called before this ability is replaced by another. Override to destroy any
-            components or child objects created during Initialize.</summary>
+        <member name="T:BroMakerLib.Abilities.AbilityBase">
+            <summary>
+            Shared base class for <see cref="T:BroMakerLib.Abilities.SpecialAbility" /> and <see cref="T:BroMakerLib.Abilities.MeleeAbility" />.
+            </summary>
+        </member>
+        <member name="P:BroMakerLib.Abilities.AbilityBase.Direction">
+            <summary>Facing direction: 1 = right, -1 = left.</summary>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.Initialize(TestVanDammeAnim)">
+            <summary>Called once when the bro spawns.</summary>
+            <param name="owner">The bro instance that owns this ability.</param>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.Cleanup">
+            <summary>Called before this ability is replaced by another.</summary>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleUpdate">
+            <returns>Return false to skip base.Update() entirely.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleCheckForTraps">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleReleaseSpecial">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleMustIgnoreHighFiveMeleePress">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleCalculateMovement(System.Single@,System.Single@)">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleDamage(System.Int32,DamageType,System.Single,System.Single,System.Int32,UnityEngine.MonoBehaviour,System.Single,System.Single)">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleDeath">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleCanReduceLives(System.Boolean@)">
+            <returns>True to run original, false to force the provided result.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleFireWeapon">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleJump(System.Boolean)">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleRunMovement">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleApplyNormalGravity">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleStartFiring">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleStartMelee">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleChangeFrame">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleRunGun">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleRunFiring">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleLand">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleRunAvatarFiring">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleIsOverLadder">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleWallDrag(System.Boolean)">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleAnimateActualJumpingFrames">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleConstrainToFloor">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleConstrainToCeiling">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleConstrainToWalls">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleGetFollowPosition(UnityEngine.Vector3@)">
+            <returns>True to run original, false to use the provided result.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleIsInStealthMode">
+            <returns>True to run original, false to force stealth mode active.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleAlertNearbyMooks">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleGib(DamageType,System.Single,System.Single)">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleRecallBro">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleAttachToHeli">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleHitCeiling">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleHitLeftWall">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleHitRightWall">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleClampWallDragYI(System.Single@)">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleRunHanging">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleCanCheckClimbAlongCeiling(System.Boolean@)">
+            <returns>True to run original, false to use the provided result.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleCheckClimbAlongCeiling">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleAirDashDown">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleRunDownwardDash">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleIsAlive(System.Boolean@)">
+            <returns>True to run original, false to use the provided result.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleRevive(System.Int32,System.Boolean,TestVanDammeAnim)">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleUseSteroids">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleCheckNotifyDeathType">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleApplyFallingGravity">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleSetDeltaTime">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleCanInseminate(System.Boolean@)">
+            <returns>True to run original, false to use the provided result.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleStartPilotingUnit">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleAnimateIdle">
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleGetGroundLayer(System.Int32@)">
+            <summary>Override to change which ground layers the bro collides with.</summary>
+            <returns>True to use base result, false to use the modified result.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleCanBeImpaledByGroundSpikes(System.Boolean@)">
+            <returns>True to run original, false to force the provided result.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleCanStartNewMelee(System.Boolean@)">
+            <summary>Override to gate when the player can re-trigger a melee mid-melee.</summary>
+            <param name="result">Modify to override the default.</param>
+            <returns>True to use base result, false to use the modified result.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleIsLockedInMelee(System.Boolean@)">
+            <summary>Override to control whether the player is movement-locked during a melee.</summary>
+            <param name="result">Modify to override the default.</param>
+            <returns>True to use base result, false to use the modified result.</returns>
         </member>
         <member name="T:BroMakerLib.Abilities.AbilityFactory">
-            <summary>
-            Factory for instantiating ability instances from JSON configuration.
-            Reads the "preset" field to determine the concrete type, creates the instance via
-            <c>Activator.CreateInstance</c> (which runs the constructor for bro-specific defaults),
-            then applies JSON overrides using <see cref="M:BroMakerLib.Infos.CustomBroforceObjectInfo.SetFieldDataStatic(HarmonyLib.Traverse,System.String,System.Object,System.String)"/>
-            for full Unity type support (AudioClip, Texture, Material, Projectile, Grenade, etc.).
-            </summary>
+            <summary>Creates ability instances from JSON configuration.</summary>
         </member>
         <member name="M:BroMakerLib.Abilities.AbilityFactory.CreateSpecial(Newtonsoft.Json.Linq.JObject,TestVanDammeAnim)">
-            <summary>
-            Creates a <see cref="T:BroMakerLib.Abilities.SpecialAbility"/> from JSON config.
-            Returns null if config is null, preset is missing, preset type is not registered, or instantiation fails.
-            </summary>
-            <param name="config">JSON object containing a "preset" key and optional parameter overrides.</param>
-            <param name="owner">The bro instance that will own this ability.</param>
-            <returns>The instantiated and initialized ability, or null on failure.</returns>
+            <returns>The instantiated ability, or null on failure.</returns>
         </member>
         <member name="M:BroMakerLib.Abilities.AbilityFactory.CreateMelee(Newtonsoft.Json.Linq.JObject,TestVanDammeAnim)">
-            <summary>
-            Creates a <see cref="T:BroMakerLib.Abilities.MeleeAbility"/> from JSON config.
-            Returns null if config is null, preset is missing, preset type is not registered, or instantiation fails.
-            </summary>
-            <param name="config">JSON object containing a "preset" key and optional parameter overrides.</param>
-            <param name="owner">The bro instance that will own this ability.</param>
-            <returns>The instantiated and initialized ability, or null on failure.</returns>
+            <returns>The instantiated ability, or null on failure.</returns>
         </member>
-        <member name="M:BroMakerLib.Abilities.AbilityFactory.ApplyJsonOverrides(System.Object,Newtonsoft.Json.Linq.JObject,TestVanDammeAnim)">
+        <member name="P:BroMakerLib.Vanilla.Specials.GrenadeThrowSpecial.SourceBroType">
+            <summary>Vanilla bro to source <see cref="F:BroMakerLib.Abilities.SpecialAbility.throwSounds" /> from. Override in
+            subclasses to match the bro's own throw grunts (e.g., TankBroSpecial overrides to TankBro).</summary>
+        </member>
+        <member name="P:BroMakerLib.Vanilla.Specials.ShockwaveSpecial.SourceBroType">
+            <summary>Vanilla bro to source sounds and faderSpritePrefab from. Override in
+            subclasses to match the bro's own effects (e.g., BroCeasarSpecial overrides to BroCeasar).</summary>
+        </member>
+        <member name="T:BroMakerLib.Vanilla.Melees.KnifeMelee">
             <summary>
-            Applies JSON overrides to an ability instance using the type-aware field setter.
-            Skips the "preset" key. Resolves file paths relative to the bro's mod directory.
+            Standard knife melee shared by 17 bros. Uses all base class defaults —
+            no overrides needed. Knife animation (row 1/col 25 standing, row 6/col 17 jumping),
+            standard hit detection, and Rambro sounds are all base class defaults.
             </summary>
-            <param name="ability">The ability instance to apply overrides to.</param>
-            <param name="config">JSON config object.</param>
-            <param name="owner">The bro owner, used to resolve the mod path for file references.</param>
+        </member>
+        <member name="T:BroMakerLib.Vanilla.Melees.SmashMelee">
+            <summary>
+            Shared base for the dual-mode smash melee used by BronanTheBrobarian, Brominator, and TankBro.
+            Ground mode plays an uppercut punch animation; aerial mode performs a targeted dive smash.
+            Subclasses set per-bro defaults via public configurable fields and virtual hook methods.
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.Vanilla.Melees.SmashMelee.currentPunchAnimationRow">
+            <summary>The sprite sheet row used by the current punch animation. Set by <see cref="M:BroMakerLib.Vanilla.Melees.SmashMelee.SetPunchAnimationRow"/> each time StartMelee fires.</summary>
+        </member>
+        <member name="M:BroMakerLib.Vanilla.Melees.SmashMelee.OnAfterSmashSetup">
+            <summary>Called after the smash target search in StartMelee. Override to add post-setup logic (e.g., drift velocity when no target found).</summary>
+        </member>
+        <member name="M:BroMakerLib.Vanilla.Melees.SmashMelee.SetPunchAnimationRow">
+            <summary>Called at the start of StartMelee to choose the punch animation row for this melee. Sets <see cref="F:BroMakerLib.Vanilla.Melees.SmashMelee.currentPunchAnimationRow"/>.</summary>
+        </member>
+        <member name="M:BroMakerLib.Vanilla.Melees.SmashMelee.OnAfterStartMeleeCommon">
+            <summary>Called after StartMeleeCommon inside StartMelee. Override to play sounds or set state flags.</summary>
+        </member>
+        <member name="M:BroMakerLib.Vanilla.Melees.SmashMelee.ShouldSmash">
+            <summary>Returns whether aerial smash mode should activate. Override to restrict smash (e.g., disallow from ladder).</summary>
+        </member>
+        <member name="M:BroMakerLib.Vanilla.Melees.SmashMelee.AnimatePunchHitDetection">
+            <summary>Called inside AnimateBronanPunch to run hit detection. Override to change which frames fire the uppercut.</summary>
+        </member>
+        <member name="M:BroMakerLib.Vanilla.Melees.SmashMelee.AnimatePunchMissSound">
+            <summary>Called at the end of AnimateBronanPunch for miss sound logic. Default is no-op; override per bro.</summary>
+        </member>
+        <member name="M:BroMakerLib.Vanilla.Melees.SmashMelee.SmashPerformAttackCheck">
+            <summary>Called each frame while smashing to decide when to fire PerformSmashAttack. Override to add additional guards (e.g., must not be grounded).</summary>
+        </member>
+        <member name="M:BroMakerLib.Vanilla.Melees.SmashMelee.OnUpperCutMissSound">
+            <summary>Called when the uppercut misses all units and playMissSound is true. Override to play a miss sound.</summary>
+        </member>
+        <member name="M:BroMakerLib.Vanilla.Melees.SmashMelee.OnUpperCutTerrainHit">
+            <summary>Called after TryMeleeTerrain succeeds in the uppercut. Override to play a terrain-hit sound.</summary>
+        </member>
+        <member name="T:BroMakerLib.Vanilla.Melees.DisembowelMelee">
+            <summary>
+            Shared base class for bro melees that use the Brochete/SnakeBroskin StartCustomMelee and
+            RunCustomMeleeMovement patterns. Subclasses supply the animation and attack logic.
+            </summary>
+        </member>
+        <member name="M:BroMakerLib.Vanilla.Melees.DisembowelMelee.GetDisembowelOffset">
+            <summary>Returns the X offset used when homing toward the chosen unit during frames 2-4.</summary>
+        </member>
+        <member name="T:BroMakerLib.Vanilla.Melees.BrocheteMelee">
+            <summary>
+            Implements the Brochete disembowel melee: a grab-and-gut animation with viscera on kill.
+            </summary>
+        </member>
+        <member name="F:BroMakerLib.Vanilla.Melees.BrocheteMelee.animColumn">
+            <summary>Sprite sheet column for the start of the disembowel animation.</summary>
+        </member>
+        <member name="F:BroMakerLib.Vanilla.Melees.BrocheteMelee.animRow">
+            <summary>Sprite sheet row for the disembowel animation.</summary>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.AshBrolliamsM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.AshBrolliamsM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BaBroracusM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BaBroracusM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
-            </summary>
-            <param name="ability">The ability to assign, or null to clear.</param>
-        </member>
-        <member name="M:BroMakerLib.Vanilla.Bros.BillyConnollyM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
-            <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
-            </summary>
-            <param name="ability">The ability to assign, or null to clear.</param>
-        </member>
-        <member name="M:BroMakerLib.Vanilla.Bros.BillyConnollyM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
-            <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BladeM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BladeM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BoondockBroM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BoondockBroM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BrobocopM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BrobocopM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BroCeasarM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BroCeasarM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BrocheteM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BrocheteM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BrocSnipesM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BrocSnipesM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BrodellWalkerM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BrodellWalkerM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BrodenM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BrodenM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BroDreddM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BroDreddM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BroffyM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BroffyM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BroGummerM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BroGummerM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BroHardM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BroHardM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BroLeeM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BroLeeM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BroMaxM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BroMaxM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BrominatorM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BrominatorM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BrommandoM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BrommandoM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BronanTheBrobarianM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BronanTheBrobarianM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BrondleFlyM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BrondleFlyM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BroneyRossM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BroneyRossM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BroniversalSoldierM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BroniversalSoldierM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BronnarJensenM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BronnarJensenM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BrononymousM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BrononymousM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
-            </summary>
-            <param name="ability">The ability to assign, or null to clear.</param>
-        </member>
-        <member name="M:BroMakerLib.Vanilla.Bros.BroshipTrooperM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
-            <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
-            </summary>
-            <param name="ability">The ability to assign, or null to clear.</param>
-        </member>
-        <member name="M:BroMakerLib.Vanilla.Bros.BroshipTrooperM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
-            <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BroveHeartM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.BroveHeartM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.CaseyBrobackM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.CaseyBrobackM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.CherryBrolingM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.CherryBrolingM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.ChevBroliosM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.ChevBroliosM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.ColJamesBrodockM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.ColJamesBrodockM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.DemolitionBroM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.DemolitionBroM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.DesperabroM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.DesperabroM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.DirtyHarryM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.DirtyHarryM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.DoubleBroSevenM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.DoubleBroSevenM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.EllenRipbroM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.EllenRipbroM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.IndianaBronesM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.IndianaBronesM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.LeeBroxmasM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.LeeBroxmasM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.McBroverM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.McBroverM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.NebroM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.NebroM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
-            </summary>
-            <param name="ability">The ability to assign, or null to clear.</param>
-        </member>
-        <member name="M:BroMakerLib.Vanilla.Bros.NorrisBroM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
-            <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
-            </summary>
-            <param name="ability">The ability to assign, or null to clear.</param>
-        </member>
-        <member name="M:BroMakerLib.Vanilla.Bros.NorrisBroM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
-            <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
-            </summary>
-            <param name="ability">The ability to assign, or null to clear.</param>
-        </member>
-        <member name="M:BroMakerLib.Vanilla.Bros.PistolWhipBroM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
-            <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
-            </summary>
-            <param name="ability">The ability to assign, or null to clear.</param>
-        </member>
-        <member name="M:BroMakerLib.Vanilla.Bros.PistolWhipBroM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
-            <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.PredabroM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.PredabroM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.RambroM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.RambroM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.ScorpionBroM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.ScorpionBroM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.SnakeBroskinM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.SnakeBroskinM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.TankBroM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.TankBroM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.TheBrocketeerM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.TheBrocketeerM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.TheBrodeM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.TheBrodeM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.TheBrofessionalM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.TheBrofessionalM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.TheBrolanderM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.TheBrolanderM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.TimeBroVanDammeM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.TimeBroVanDammeM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.TollBroadM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.TollBroadM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.TrentBroserM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.TrentBroserM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.VanDammeBroM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.VanDammeBroM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.XebroM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
             <summary>
-            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)"/> on the new ability.
+            Assigns a special ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)" /> on the new ability.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.XebroM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
             <summary>
-            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)"/> on the new ability
-            and sets <c>meleeType</c> to <c>MeleeType.Custom</c>.
+            Assigns a melee ability at runtime. Calls <see cref="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)" /> on the new ability
+            and sets <c>meleeType</c> to the ability's declared <see cref="F:BroMakerLib.Abilities.MeleeAbility.meleeType" />.
             </summary>
             <param name="ability">The ability to assign, or null to clear.</param>
         </member>
@@ -1947,11 +1919,25 @@
             - Useful for application shutdown or periodic auto-saves
             </remarks>
         </member>
+        <member name="T:BroMakerLib.CustomObjects.IAbilityOwner">
+            <summary>
+            Interface for bros that host the ability system. Provides direct access to protected
+            fields and methods that abilities need, avoiding reflection overhead. Implemented by
+            vanilla bro wrappers (generated from RambroM template).
+            </summary>
+        </member>
         <member name="M:BroMakerLib.CustomObjects.ICustomHero.PrefabSetup">
             <summary>
             Called once at prefab creation time to set up fields that would otherwise be lost
             during the component swap. Runs before any Awake calls.
             </summary>
+        </member>
+        <member name="M:BroMakerLib.Extensions.AudioClipExtensions.CloneArray(UnityEngine.AudioClip[])">
+            <summary>Returns a shallow copy of the array. Safe on null (returns null).
+            Use when caching <see cref="T:UnityEngine.AudioClip"/> arrays from a prefab's SoundHolder so that
+            accidental writes through the cached field cannot mutate the shared prefab data.</summary>
+            <param name="source">Source array (typically from a prefab's SoundHolder field).</param>
+            <returns>A new array containing the same AudioClip references, or null if source was null.</returns>
         </member>
         <member name="M:BroMakerLib.Extensions.ICustomHeroExtensions.AssignNullVariables(BroMakerLib.CustomObjects.ICustomHero,BroBase)">
             <summary>
@@ -2041,9 +2027,14 @@
             Particles/Alpha Blended
             </summary>
         </member>
-        <member name="P:BroMakerLib.ResourcesController.Unlit_DepthCutout">
+        <member name="P:BroMakerLib.ResourcesController.Unlit_DepthCutoutColouredImage">
             <summary>
             Unlit/Depth Cutout With ColouredImage
+            </summary>
+        </member>
+        <member name="P:BroMakerLib.ResourcesController.Unlit_DepthCutoutImage">
+            <summary>
+            Unlit/Depth Cutout With Image
             </summary>
         </member>
         <member name="P:BroMakerLib.ResourcesController.Particle">
@@ -2053,7 +2044,7 @@
         </member>
         <member name="M:BroMakerLib.ResourcesController.GetMaterial(System.String,System.String)">
             <summary>
-            Creates a Material using the shader Unlit_DepthCutout.
+            Creates a Material using the shader Unlit_DepthCutoutColouredImage.
             Loads Material from cache if created previously.
             </summary>
             <param name="path">Path to an image or asset</param>
@@ -2062,7 +2053,7 @@
         </member>
         <member name="M:BroMakerLib.ResourcesController.GetMaterial(System.String)">
             <summary>
-            Creates a Material using the shader Unlit_DepthCutout.
+            Creates a Material using the shader Unlit_DepthCutoutColouredImage.
             Loads Material from cache if created previously.
             </summary>
             <param name="filePath">Path to an image or asset file</param>
@@ -2070,7 +2061,7 @@
         </member>
         <member name="M:BroMakerLib.ResourcesController.CreateMaterial(System.Byte[])">
             <summary>
-            Creates a Material from an array of bytes using the shader Unlit_DepthCutout.
+            Creates a Material from an array of bytes using the shader Unlit_DepthCutoutColouredImage.
             The Material is not cached, use GetMaterial if caching is desired.
             </summary>
             <param name="imageBytes">Byte array to load image from</param>

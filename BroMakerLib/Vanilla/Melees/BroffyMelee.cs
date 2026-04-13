@@ -1,7 +1,6 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
-using Newtonsoft.Json;
-using RocketLib.Extensions;
+using BroMakerLib.Extensions;
 using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
@@ -9,42 +8,21 @@ namespace BroMakerLib.Vanilla.Melees
     [MeleePreset("Broffy")]
     public class BroffyMelee : MeleeAbility
     {
-        public override void Initialize(TestVanDammeAnim owner)
-        {
-            base.Initialize(owner);
+        protected override HeroType SourceBroType => HeroType.Broffy;
 
-            Broffy broffy = owner as Broffy;
-            if (broffy == null)
-            {
-                var prefab = HeroController.GetHeroPrefab(HeroType.Broffy);
-                broffy = prefab as Broffy;
-            }
-            if (broffy != null)
-            {
-                meleeHitSounds = broffy.soundHolder.meleeHitSound;
-                missSounds = broffy.soundHolder.missSounds;
-                meleeHitTerrainSounds = broffy.soundHolder.meleeHitTerrainSound;
-            }
+        public BroffyMelee()
+        {
+            meleeType = BroBase.MeleeType.Knife;
         }
 
-        public override void StartMelee()
+        protected override void CacheSoundsFromPrefab()
         {
-            owner.SetFieldValue("showHighFiveAfterMeleeTimer", 0f);
-            hero.JumpTime = 0f;
-            hero.DeactivateGun();
-            hero.SetMeleeType();
-            hero.MeleeHasHit = false;
-            if (!hero.DoingMelee || owner.frame > 3)
-            {
-                owner.frame = 0;
-                owner.counter = -0.05f;
-                AnimateMelee();
-            }
-            else if (hero.DoingMelee)
-            {
-                hero.MeleeFollowUp = true;
-            }
-            hero.DoingMelee = true;
+            var sourceBro = HeroController.GetHeroPrefab(SourceBroType);
+            if (sourceBro == null) return;
+
+            if (meleeHitSounds == null) meleeHitSounds = sourceBro.soundHolder.meleeHitSound.CloneArray();
+            if (missSounds == null) missSounds = sourceBro.soundHolder.missSounds.CloneArray();
+            if (meleeHitTerrainSounds == null) meleeHitTerrainSounds = sourceBro.soundHolder.meleeHitTerrainSound.CloneArray();
         }
 
         public override void AnimateMelee()
@@ -117,29 +95,10 @@ namespace BroMakerLib.Vanilla.Melees
                 sound.PlaySoundEffectAt(missSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
             }
             hero.MeleeChosenUnit = null;
-            if (shouldTryHitTerrain && TryKnifeHitTerrain())
+            if (shouldTryHitTerrain && HandleTryMeleeTerrain(0, terrainDamage))
             {
                 hero.MeleeHasHit = true;
             }
-        }
-
-        private bool TryKnifeHitTerrain()
-        {
-            RaycastHit raycastHit;
-            if (!Physics.Raycast(new Vector3(X - owner.transform.localScale.x * 4f, Y + 4f, 0f), new Vector3(owner.transform.localScale.x, 0f, 0f), out raycastHit, 16f, hero.GroundLayer))
-                return false;
-            Cage cage = raycastHit.collider.GetComponent<Cage>();
-            if (cage == null && raycastHit.collider.transform.parent != null)
-                cage = raycastHit.collider.transform.parent.GetComponent<Cage>();
-            if (cage != null)
-            {
-                MapController.Damage_Networked(owner, raycastHit.collider.gameObject, cage.health, DamageType.Melee, 0f, 40f, raycastHit.point.x, raycastHit.point.y);
-                return true;
-            }
-            MapController.Damage_Networked(owner, raycastHit.collider.gameObject, terrainDamage, DamageType.Melee, 0f, 40f, raycastHit.point.x, raycastHit.point.y);
-            sound.PlaySoundEffectAt(meleeHitTerrainSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
-            EffectsController.CreateProjectilePopWhiteEffect(X + owner.width * owner.transform.localScale.x, Y + owner.height + 4f);
-            return true;
         }
 
         public override void RunMeleeMovement()
@@ -148,12 +107,12 @@ namespace BroMakerLib.Vanilla.Melees
             {
                 if (owner.Y > owner.groundHeight + 1f)
                 {
-                    owner.CallMethod("ApplyFallingGravity");
+                    hero.ApplyFallingGravity();
                 }
             }
             else if (hero.JumpingMelee)
             {
-                owner.CallMethod("ApplyFallingGravity");
+                hero.ApplyFallingGravity();
                 if (owner.yI < owner.maxFallSpeed)
                 {
                     owner.yI = owner.maxFallSpeed;
@@ -165,28 +124,28 @@ namespace BroMakerLib.Vanilla.Melees
                 {
                     if (hero.MeleeChosenUnit == null)
                     {
-                        if (!owner.GetFieldValue<bool>("isInQuicksand"))
+                        if (!hero.IsInQuicksand)
                         {
                             owner.xI = owner.speed * 1f * owner.transform.localScale.x;
                         }
                         owner.yI = 0f;
                     }
-                    else if (!owner.GetFieldValue<bool>("isInQuicksand"))
+                    else if (!hero.IsInQuicksand)
                     {
                         owner.xI = owner.speed * 0.5f * owner.transform.localScale.x + (hero.MeleeChosenUnit.X - owner.X) * 6f;
                     }
                 }
                 else if (owner.frame <= 5)
                 {
-                    if (!owner.GetFieldValue<bool>("isInQuicksand"))
+                    if (!hero.IsInQuicksand)
                     {
                         owner.xI = owner.speed * 0.3f * owner.transform.localScale.x;
                     }
-                    owner.CallMethod("ApplyFallingGravity");
+                    hero.ApplyFallingGravity();
                 }
                 else
                 {
-                    owner.CallMethod("ApplyFallingGravity");
+                    hero.ApplyFallingGravity();
                 }
             }
             else if (owner.Y > owner.groundHeight + 1f)

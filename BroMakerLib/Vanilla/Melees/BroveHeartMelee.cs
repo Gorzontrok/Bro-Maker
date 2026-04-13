@@ -10,10 +10,11 @@ namespace BroMakerLib.Vanilla.Melees
     [MeleePreset("BroveHeart")]
     public class BroveHeartMelee : MeleeAbility
     {
+        protected override HeroType SourceBroType => HeroType.BroveHeart;
         public float sliceVolume = 0.7f;
         public float wallHitVolume = 0.6f;
-        public int groundSwordDamage = 3;
-        public int enemySwordDamage = 5;
+        public int groundSwordDamage = 10;
+        public int enemySwordDamage = 8;
 
         [JsonIgnore] private List<Unit> alreadyHit = new List<Unit>();
         [JsonIgnore] private bool throwingSword;
@@ -25,26 +26,25 @@ namespace BroMakerLib.Vanilla.Melees
         [JsonIgnore] private FlickerFader hitPuff;
         [JsonIgnore] private BroveheartSword swordPrefab;
 
+        public BroveHeartMelee()
+        {
+            meleeType = BroBase.MeleeType.Punch;
+        }
+
         public override void Initialize(TestVanDammeAnim owner)
         {
             base.Initialize(owner);
-            meleeType = BroBase.MeleeType.Punch;
 
-            var broveHeart = owner as BroveHeart;
-            if (broveHeart == null)
+            var sourceBro = HeroController.GetHeroPrefab(SourceBroType) as BroveHeart;
+            if (sourceBro != null)
             {
-                var prefab = HeroController.GetHeroPrefab(HeroType.BroveHeart);
-                broveHeart = prefab as BroveHeart;
-            }
-            if (broveHeart != null)
-            {
-                shrapnelSpark = broveHeart.shrapnelSpark;
-                hitPuff = broveHeart.hitPuff;
-                swordPrefab = broveHeart.swordPrefab;
-                groundSwordDamage = broveHeart.groundSwordDamage;
-                enemySwordDamage = broveHeart.enemySwordDamage;
-                sliceVolume = broveHeart.sliceVolume;
-                wallHitVolume = broveHeart.wallHitVolume;
+                shrapnelSpark = sourceBro.shrapnelSpark;
+                hitPuff = sourceBro.hitPuff;
+                swordPrefab = sourceBro.swordPrefab;
+                groundSwordDamage = sourceBro.groundSwordDamage;
+                enemySwordDamage = sourceBro.enemySwordDamage;
+                sliceVolume = sourceBro.sliceVolume;
+                wallHitVolume = sourceBro.wallHitVolume;
             }
         }
 
@@ -58,7 +58,7 @@ namespace BroMakerLib.Vanilla.Melees
             bool isDisarmed = GetDisarmed();
             if (isDisarmed)
             {
-                owner.SetFieldValue("showHighFiveAfterMeleeTimer", 0f);
+                hero.ShowHighFiveAfterMeleeTimer = 0f;
                 hero.JumpTime = 0f;
                 hero.DeactivateGun();
                 hero.SetMeleeType();
@@ -77,7 +77,7 @@ namespace BroMakerLib.Vanilla.Melees
             }
             else
             {
-                owner.SetFieldValue("showHighFiveAfterMeleeTimer", 0f);
+                hero.ShowHighFiveAfterMeleeTimer = 0f;
                 hero.DoingMelee = true;
                 hero.MeleeHasHit = false;
                 if (owner.frame > 3)
@@ -92,7 +92,7 @@ namespace BroMakerLib.Vanilla.Melees
                 }
                 if (!owner.IsOnGround())
                 {
-                    owner.SetFieldValue("jumpingMelee", true);
+                    hero.JumpingMelee = true;
                 }
             }
         }
@@ -128,7 +128,7 @@ namespace BroMakerLib.Vanilla.Melees
                 }
                 hero.Sprite.SetLowerLeftPixel((float)(num * hero.SpritePixelWidth), (float)(num2 * hero.SpritePixelHeight));
                 hero.SetSpriteOffset(0f, 0f);
-                owner.SetFieldValue("rollingFrames", 0);
+                hero.RollingFrames = 0;
                 if (owner.frame == 3)
                 {
                     owner.counter -= 0.066f;
@@ -148,7 +148,7 @@ namespace BroMakerLib.Vanilla.Melees
             {
                 owner.gunSprite.gameObject.SetActive(true);
                 hero.SetSpriteOffset(0f, 0f);
-                owner.SetFieldValue("rollingFrames", 0);
+                hero.RollingFrames = 0;
                 if (owner.frame == 1)
                 {
                     owner.counter -= 0.0334f;
@@ -191,11 +191,11 @@ namespace BroMakerLib.Vanilla.Melees
                     SetDisarmed(true);
                     hero.CancelMelee();
                 }
-                if (owner.frame == 2 && owner.GetFieldValue<Mook>("nearbyMook") != null && owner.GetFieldValue<Mook>("nearbyMook").CanBeThrown() && owner.GetFieldValue<bool>("highFive"))
+                if (owner.frame == 2 && hero.NearbyMook != null && hero.NearbyMook.CanBeThrown() && hero.HighFive)
                 {
                     hero.CancelMelee();
-                    owner.CallMethod("ThrowBackMook", owner.GetFieldValue<Mook>("nearbyMook"));
-                    owner.SetFieldValue("nearbyMook", null);
+                    hero.ThrowBackMook(hero.NearbyMook);
+                    hero.NearbyMook = null;
                     throwingSword = false;
                 }
                 if (owner.frame == 2 && owner.buttonHighFive)
@@ -209,7 +209,7 @@ namespace BroMakerLib.Vanilla.Melees
         {
             if (owner.Y > owner.groundHeight + 1f)
             {
-                owner.CallMethod("ApplyFallingGravity");
+                hero.ApplyFallingGravity();
             }
         }
 
@@ -225,12 +225,12 @@ namespace BroMakerLib.Vanilla.Melees
             hero.KickDoors(24f);
             if (Map.HitClosestUnit(owner, owner.playerNum, 4, DamageType.Knifed, 14f, 24f, owner.X + owner.transform.localScale.x * 8f, owner.Y + 8f, owner.transform.localScale.x * 200f, 500f, true, false, owner.IsMine, false, true))
             {
-                sound.PlaySoundEffectAt(soundHolder.meleeHitSound, 1f, owner.transform.position, 1f, true, false, false, 0f);
+                sound.PlaySoundEffectAt(meleeHitSounds, 1f, owner.transform.position, 1f, true, false, false, 0f);
                 hero.MeleeHasHit = true;
             }
             else if (playMissSound)
             {
-                sound.PlaySoundEffectAt(soundHolder.missSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
+                sound.PlaySoundEffectAt(missSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
             }
             hero.MeleeChosenUnit = null;
             if (shouldTryHitTerrain && hero.TryMeleeTerrain(0, 2))
@@ -259,8 +259,6 @@ namespace BroMakerLib.Vanilla.Melees
             return disarmed;
         }
 
-        /// <summary>Called when the sword is thrown. On BroveHeart owners, calls the vanilla SetDisarmed
-        /// which swaps the gun sprite. On other owners, just tracks the disarmed state internally.</summary>
         private void SetDisarmed(bool value)
         {
             disarmed = value;
@@ -271,8 +269,6 @@ namespace BroMakerLib.Vanilla.Melees
             }
         }
 
-        /// <summary>Called when the thrown sword returns or is destroyed. Re-arms the bro.
-        /// Stub for Phase 8: extend to support disarmed visuals on sword-wielding bros (Blade, TheBrode, etc.).</summary>
         private void ReArm()
         {
             SetDisarmed(false);

@@ -1,5 +1,6 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
 using Rogueforce;
 using UnityEngine;
@@ -9,19 +10,13 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("Brade")]
     public class BladeSpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.Blade;
+
         public override void Initialize(TestVanDammeAnim owner)
         {
             base.Initialize(owner);
             var prefab = HeroController.GetHeroPrefab(HeroType.Blade);
             var sourceBro = prefab.GetComponent<TestVanDammeAnim>();
-            if (specialAttackSounds == null)
-            {
-                specialAttackSounds = sourceBro.soundHolder.specialAttackSounds;
-            }
-            if (attackSounds == null)
-            {
-                attackSounds = sourceBro.soundHolder.attackSounds;
-            }
             if (owner.faderSpritePrefab == null)
             {
                 owner.faderSpritePrefab = sourceBro.faderSpritePrefab;

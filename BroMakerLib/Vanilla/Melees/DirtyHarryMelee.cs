@@ -1,7 +1,6 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
-using Newtonsoft.Json;
-using RocketLib.Extensions;
+using BroMakerLib.Extensions;
 using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
@@ -9,38 +8,26 @@ namespace BroMakerLib.Vanilla.Melees
     [MeleePreset("DirtyHarry")]
     public class DirtyHarryMelee : MeleeAbility
     {
+        protected override HeroType SourceBroType => HeroType.DirtyHarry;
+
         public AudioClip[] alternateMeleeHitSound2;
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public DirtyHarryMelee()
         {
-            base.Initialize(owner);
             meleeType = BroBase.MeleeType.Punch;
-
-            var harry = owner as DirtyHarry;
-            if (harry == null)
-            {
-                var prefab = HeroController.GetHeroPrefab(HeroType.DirtyHarry);
-                harry = prefab as DirtyHarry;
-            }
-            if (harry != null)
-            {
-                alternateMeleeHitSound2 = harry.soundHolder.alternateMeleeHitSound2;
-            }
+            startType = MeleeStartType.Custom;
+            moveType = MeleeMoveType.Punch;
+            restartFrame = 0;
         }
 
-        public override void StartMelee()
+        protected override void CacheSoundsFromPrefab()
         {
-            if (!hero.DoingMelee || owner.frame > 4)
-            {
-                owner.frame = 0;
-                owner.counter = -0.05f;
-                AnimateMelee();
-            }
-            else
-            {
-                hero.MeleeFollowUp = true;
-            }
-            hero.StartMeleeCommon();
+            base.CacheSoundsFromPrefab();
+
+            var sourceBro = HeroController.GetHeroPrefab(SourceBroType);
+            if (sourceBro == null) return;
+
+            if (alternateMeleeHitSound2 == null) alternateMeleeHitSound2 = sourceBro.soundHolder.alternateMeleeHitSound2.CloneArray();
         }
 
         public override void AnimateMelee()
@@ -77,70 +64,23 @@ namespace BroMakerLib.Vanilla.Melees
             hero.KickDoors(25f);
             if (Map.HitClosestUnit(owner, owner.playerNum, 4, DamageType.Melee, num, num * 2f, vector.x, vector.y, owner.transform.localScale.x * 250f, 250f, true, false, owner.IsMine, false, true))
             {
-                sound.PlaySoundEffectAt(soundHolder.alternateMeleeHitSound, 0.3f, owner.transform.position, 0.6f, true, false, false, 0f);
+                sound.PlaySoundEffectAt(alternateMeleeHitSounds, 0.3f, owner.transform.position, 0.6f, true, false, false, 0f);
                 sound.PlaySoundEffectAt(alternateMeleeHitSound2, 0.5f, owner.transform.position, 0.6f, true, false, false, 0f);
                 hero.MeleeHasHit = true;
                 EffectsController.CreateProjectilePopWhiteEffect(owner.X + (owner.width + 10f) * owner.transform.localScale.x, owner.Y + owner.height + 4f);
             }
             else
             {
-                if (!owner.GetFieldValue<bool>("hasPlayedMissSound"))
+                if (!hero.HasPlayedMissSound)
                 {
-                    sound.PlaySoundEffectAt(soundHolder.missSounds, 0.15f, owner.transform.position, 1f, true, false, false, 0f);
+                    sound.PlaySoundEffectAt(missSounds, 0.15f, owner.transform.position, 1f, true, false, false, 0f);
                 }
-                owner.SetFieldValue("hasPlayedMissSound", true);
+                hero.HasPlayedMissSound = true;
             }
             hero.MeleeChosenUnit = null;
-            if (!hero.MeleeHasHit && hero.TryMeleeTerrain(0, 2))
+            if (!hero.MeleeHasHit && HandleTryMeleeTerrain(0, terrainDamage))
             {
                 hero.MeleeHasHit = true;
-            }
-        }
-
-        public override void RunMeleeMovement()
-        {
-            owner.CallMethod("ApplyFallingGravity");
-            if (hero.JumpingMelee)
-            {
-                if (owner.yI < owner.maxFallSpeed)
-                {
-                    owner.yI = owner.maxFallSpeed;
-                }
-            }
-            else if (hero.DashingMelee)
-            {
-                if (owner.frame < 2)
-                {
-                    owner.xI = 0f;
-                    owner.yI = 0f;
-                }
-                else if (owner.frame <= 4)
-                {
-                    if (hero.MeleeChosenUnit != null)
-                    {
-                        float num = 8f;
-                        if (owner.GetFieldValue<BroBase.MeleeType>("meleeType") == BroBase.MeleeType.Disembowel)
-                        {
-                            num = 14f;
-                        }
-                        float num2 = hero.MeleeChosenUnit.X - (float)owner.Direction * num - owner.X;
-                        owner.xI = num2 / 0.1f;
-                        owner.xI = Mathf.Clamp(owner.xI, -owner.speed * 1.7f, owner.speed * 1.7f);
-                    }
-                    else
-                    {
-                        owner.xI = owner.speed * (float)owner.Direction;
-                        owner.yI = 0f;
-                    }
-                }
-                else if (owner.frame <= 7)
-                {
-                    owner.xI = 0f;
-                }
-            }
-            else if (owner.Y > owner.groundHeight + 1f)
-            {
-                hero.CancelMelee();
             }
         }
     }

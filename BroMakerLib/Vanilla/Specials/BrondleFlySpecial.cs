@@ -10,6 +10,7 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("SethBrondle")]
     public class BrondleFlySpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.BrondleFly;
         public float cooldownTime = 0.12f;
         public float targetRange = 80f;
         public float maxTargetAngle = 50f;

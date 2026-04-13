@@ -1,7 +1,7 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
-using RocketLib.Extensions;
 using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
@@ -9,6 +9,8 @@ namespace BroMakerLib.Vanilla.Melees
     [MeleePreset("BroDredd")]
     public class BroDreddMelee : MeleeAbility
     {
+        protected override HeroType SourceBroType => HeroType.BroDredd;
+
         public AudioClip[] alternateMeleeHitSounds2;
 
         [JsonIgnore]
@@ -18,21 +20,19 @@ namespace BroMakerLib.Vanilla.Melees
         [JsonIgnore]
         private int tasedCount;
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public BroDreddMelee()
         {
-            base.Initialize(owner);
             meleeType = BroBase.MeleeType.Tazer;
+            startType = MeleeStartType.Custom;
+            restartFrame = 0;
+        }
 
-            var broDredd = owner as BroDredd;
-            if (broDredd == null)
-            {
-                var prefab = HeroController.GetHeroPrefab(HeroType.BroDredd);
-                broDredd = prefab as BroDredd;
-            }
-            if (broDredd != null)
-            {
-                alternateMeleeHitSounds2 = broDredd.soundHolder.alternateMeleeHitSound;
-            }
+        protected override void CacheSoundsFromPrefab()
+        {
+            var sourceBro = HeroController.GetHeroPrefab(SourceBroType);
+            if (sourceBro == null) return;
+
+            if (alternateMeleeHitSounds2 == null) alternateMeleeHitSounds2 = sourceBro.soundHolder.alternateMeleeHitSound.CloneArray();
         }
 
         public override void StartMelee()
@@ -92,7 +92,7 @@ namespace BroMakerLib.Vanilla.Melees
             if (owner.frame > 2 && owner.frame % 2 == 1)
             {
                 PerformTazerMeleeAttack(true, false);
-                owner.SetFieldValue("performedMeleeAttack", true);
+                hero.PerformedMeleeAttack = true;
                 sound.PlaySoundEffectAt(alternateMeleeHitSounds2, 0.35f, owner.transform.position, Random.Range(0.9f, 1.1f), true, false, false, 0f);
             }
             if (shockFrameCounter > 5 && !owner.buttonHighFive)
@@ -103,7 +103,7 @@ namespace BroMakerLib.Vanilla.Melees
 
         public override void RunMeleeMovement()
         {
-            owner.CallMethod("ApplyFallingGravity");
+            hero.ApplyFallingGravity();
             if (owner.yI < owner.maxFallSpeed)
             {
                 owner.yI = owner.maxFallSpeed;
@@ -112,7 +112,7 @@ namespace BroMakerLib.Vanilla.Melees
             {
                 if (owner.IsOnGround())
                 {
-                    owner.SetFieldValue("jumpingMelee", false);
+                    hero.JumpingMelee = false;
                 }
             }
             else if (hero.DashingMelee)
@@ -197,7 +197,7 @@ namespace BroMakerLib.Vanilla.Melees
             {
                 sound.PlaySoundEffectAt(alternateMeleeHitSounds2, 0.3f, owner.transform.position, Random.Range(0.9f, 1.1f), true, false, false, 0f);
             }
-            if (shouldTryHitTerrain && hero.TryMeleeTerrain(0, 2))
+            if (shouldTryHitTerrain && HandleTryMeleeTerrain(0, terrainDamage))
             {
                 hero.MeleeHasHit = true;
             }

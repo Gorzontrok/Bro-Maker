@@ -9,6 +9,7 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("EllenRipbro")]
     public class EllenRipbroSpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.EllenRipbro;
         public float ammoDecrementDelay = 0.2f;
 
         [JsonIgnore]

@@ -1,5 +1,6 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
 using RocketLib.Extensions;
 using UnityEngine;
@@ -9,6 +10,7 @@ namespace BroMakerLib.Vanilla.Melees
     [MeleePreset("AshBrolliams")]
     public class AshBrolliamsMelee : MeleeAbility
     {
+        protected override HeroType SourceBroType => HeroType.AshBrolliams;
         public AudioClip chainsawStart;
         public AudioClip chainsawSpin;
         public AudioClip chainsawWindDown;
@@ -25,23 +27,31 @@ namespace BroMakerLib.Vanilla.Melees
         [JsonIgnore]
         private Unit chainSawMeleedUnit;
 
+        public AshBrolliamsMelee()
+        {
+            meleeType = BroBase.MeleeType.ChainSaw;
+        }
+
+        protected override void CacheSoundsFromPrefab()
+        {
+            base.CacheSoundsFromPrefab();
+            var sourceBro = HeroController.GetHeroPrefab(SourceBroType);
+            if (sourceBro != null)
+            {
+                if (alternateMeleeHitSounds2 == null) alternateMeleeHitSounds2 = sourceBro.soundHolder.alternateMeleeHitSound.CloneArray();
+            }
+        }
+
         public override void Initialize(TestVanDammeAnim owner)
         {
             base.Initialize(owner);
-            meleeType = BroBase.MeleeType.ChainSaw;
 
-            var ashBrolliams = owner as AshBrolliams;
-            if (ashBrolliams == null)
+            var sourceBro = HeroController.GetHeroPrefab(SourceBroType) as AshBrolliams;
+            if (sourceBro != null)
             {
-                var prefab = HeroController.GetHeroPrefab(HeroType.AshBrolliams);
-                ashBrolliams = prefab as AshBrolliams;
-            }
-            if (ashBrolliams != null)
-            {
-                chainsawStart = ashBrolliams.chainsawStart;
-                chainsawSpin = ashBrolliams.chainsawSpin;
-                chainsawWindDown = ashBrolliams.chainsawWindDown;
-                alternateMeleeHitSounds2 = ashBrolliams.soundHolder.alternateMeleeHitSound;
+                chainsawStart = sourceBro.chainsawStart;
+                chainsawSpin = sourceBro.chainsawSpin;
+                chainsawWindDown = sourceBro.chainsawWindDown;
             }
 
             chainsawAudio = owner.GetComponent<AudioSource>();
@@ -73,7 +83,7 @@ namespace BroMakerLib.Vanilla.Melees
             }
             initialDirection = owner.Direction;
             hero.StartMeleeCommon();
-            owner.SetFieldValue("cancelMeleeOnChangeDirection", true);
+            hero.CancelMeleeOnChangeDirection = true;
             if (!chainsawAudio.isPlaying || chainsawAudio.clip != chainsawSpin)
             {
                 chainsawAudio.loop = true;
@@ -142,7 +152,7 @@ namespace BroMakerLib.Vanilla.Melees
             {
                 if (!owner.IsOnGround())
                 {
-                    if (owner.GetFieldValue<bool>("highFive") && owner.frame > 5)
+                    if (hero.HighFive && owner.frame > 5)
                     {
                         owner.frame = 5;
                     }
@@ -164,7 +174,7 @@ namespace BroMakerLib.Vanilla.Melees
             owner.ForceFaceDirection(initialDirection);
             if (hero.JumpingMelee)
             {
-                owner.CallMethod("ApplyFallingGravity");
+                hero.ApplyFallingGravity();
                 if (owner.yI < owner.maxFallSpeed)
                 {
                     owner.yI = owner.maxFallSpeed;
@@ -206,7 +216,7 @@ namespace BroMakerLib.Vanilla.Melees
                 }
                 else
                 {
-                    owner.CallMethod("ApplyFallingGravity");
+                    hero.ApplyFallingGravity();
                 }
             }
             else

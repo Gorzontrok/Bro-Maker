@@ -1,5 +1,6 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
 using RocketLib.Extensions;
 using UnityEngine;
@@ -9,19 +10,21 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("TheBrode")]
     public class TheBrodeSpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.TheBrode;
+
+        protected override void CacheSoundsFromPrefab()
+        {
+            base.CacheSoundsFromPrefab();
+            var sourceBro = HeroController.GetHeroPrefab(SourceBroType);
+            if (sourceBro == null) return;
+            if (special3Sounds == null) special3Sounds = sourceBro.soundHolder.special3Sounds.CloneArray();
+        }
+
         public override void Initialize(TestVanDammeAnim owner)
         {
             base.Initialize(owner);
             var prefab = HeroController.GetHeroPrefab(HeroType.TheBrode);
             var sourceBro = prefab.GetComponent<TestVanDammeAnim>();
-            if (specialAttackSounds == null)
-            {
-                specialAttackSounds = sourceBro.soundHolder.specialAttackSounds;
-            }
-            if (special3Sounds == null)
-            {
-                special3Sounds = sourceBro.soundHolder.special3Sounds;
-            }
             if (owner.faderSpritePrefab == null)
             {
                 owner.faderSpritePrefab = sourceBro.faderSpritePrefab;

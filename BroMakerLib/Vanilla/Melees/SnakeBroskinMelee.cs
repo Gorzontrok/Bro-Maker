@@ -1,5 +1,6 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
+using BroMakerLib.Extensions;
 using RocketLib.Extensions;
 using UnityEngine;
 
@@ -8,24 +9,11 @@ namespace BroMakerLib.Vanilla.Melees
     [MeleePreset("SnakeBroskin")]
     public class SnakeBroskinMelee : DisembowelMelee
     {
-        public override void Initialize(TestVanDammeAnim owner)
-        {
-            base.Initialize(owner);
-            meleeType = BroBase.MeleeType.Custom;
+        protected override HeroType SourceBroType => HeroType.SnakeBroSkin;
 
-            SnakeBroskin snakeBroskin = owner as SnakeBroskin;
-            if (snakeBroskin == null)
-            {
-                var prefab = HeroController.GetHeroPrefab(HeroType.SnakeBroSkin);
-                snakeBroskin = prefab as SnakeBroskin;
-            }
-            if (snakeBroskin != null)
-            {
-                meleeHitSounds = snakeBroskin.soundHolder.meleeHitSound;
-                missSounds = snakeBroskin.soundHolder.missSounds;
-                alternateMeleeHitSounds = snakeBroskin.soundHolder.alternateMeleeHitSound;
-                meleeHitTerrainSounds = snakeBroskin.soundHolder.meleeHitTerrainSound;
-            }
+        public SnakeBroskinMelee()
+        {
+            meleeType = BroBase.MeleeType.Custom;
         }
 
         public override void AnimateMelee()
@@ -52,7 +40,7 @@ namespace BroMakerLib.Vanilla.Melees
 
         public override void RunMeleeMovement()
         {
-            owner.CallMethod("ApplyFallingGravity");
+            hero.ApplyFallingGravity();
             if (hero.JumpingMelee)
             {
                 if (owner.yI < owner.maxFallSpeed)
@@ -112,11 +100,11 @@ namespace BroMakerLib.Vanilla.Melees
             }
             else
             {
-                if (!owner.GetFieldValue<bool>("hasPlayedMissSound"))
+                if (!hero.HasPlayedMissSound)
                 {
                     sound.PlaySoundEffectAt(missSounds, 0.15f, owner.transform.position, 1f, true, false, false, 0f);
                 }
-                owner.SetFieldValue("hasPlayedMissSound", true);
+                hero.HasPlayedMissSound = true;
             }
             hero.MeleeChosenUnit = null;
             if (!hero.MeleeHasHit && hero.TryMeleeTerrain(0, 2))

@@ -1,6 +1,7 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
 using BroMakerLib.Loaders;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("IndianaBrones")]
     public class IndianaBronesSpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.IndianaBrones;
         public string projectileName = "IndianaBrones";
         public float fireSpeedX = 800f;
         public float fireSpeedYVariance = 10f;
@@ -29,12 +31,6 @@ namespace BroMakerLib.Vanilla.Specials
         {
             base.Initialize(owner);
             projectile = LoadBroforceObjects.GetProjectileFromName(projectileName);
-            if (attackSounds == null)
-            {
-                var prefab = HeroController.GetHeroPrefab(HeroType.IndianaBrones);
-                var sourceBro = prefab.GetComponent<TestVanDammeAnim>();
-                attackSounds = sourceBro.soundHolder.attackSounds;
-            }
         }
 
         public override void PressSpecial()

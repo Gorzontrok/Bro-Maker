@@ -1,7 +1,6 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
-using Newtonsoft.Json;
-using RocketLib.Extensions;
+using BroMakerLib.Extensions;
 using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
@@ -9,25 +8,25 @@ namespace BroMakerLib.Vanilla.Melees
     [MeleePreset("CherryBroling")]
     public class CherryBrolingMelee : MeleeAbility
     {
+        protected override HeroType SourceBroType => HeroType.CherryBroling;
+
         public AudioClip[] alternateMeleeHitSounds2;
         public AudioClip[] alternateMeleeMissSounds;
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public CherryBrolingMelee()
         {
-            base.Initialize(owner);
             meleeType = BroBase.MeleeType.FlipKick;
+            startType = MeleeStartType.Custom;
+            restartFrame = 3;
+        }
 
-            var cherryBroling = owner as CherryBroling;
-            if (cherryBroling == null)
-            {
-                var prefab = HeroController.GetHeroPrefab(HeroType.CherryBroling);
-                cherryBroling = prefab as CherryBroling;
-            }
-            if (cherryBroling != null)
-            {
-                alternateMeleeHitSounds2 = cherryBroling.soundHolder.alternateMeleeHitSound;
-                alternateMeleeMissSounds = cherryBroling.soundHolder.alternateMeleeMissSound;
-            }
+        protected override void CacheSoundsFromPrefab()
+        {
+            var sourceBro = HeroController.GetHeroPrefab(SourceBroType);
+            if (sourceBro == null) return;
+
+            if (alternateMeleeHitSounds2 == null) alternateMeleeHitSounds2 = sourceBro.soundHolder.alternateMeleeHitSound.CloneArray();
+            if (alternateMeleeMissSounds == null) alternateMeleeMissSounds = sourceBro.soundHolder.alternateMeleeMissSound.CloneArray();
         }
 
         public override void StartMelee()
@@ -47,15 +46,15 @@ namespace BroMakerLib.Vanilla.Melees
             }
             if (!hero.JumpingMelee)
             {
-                owner.SetFieldValue("dashingMelee", true);
+                hero.DashingMelee = true;
                 owner.xI = (float)owner.Direction * owner.speed;
             }
             owner.SetFieldValue("lerpToMeleeTargetPos", 0f);
             hero.DoingMelee = true;
             hero.MeleeHasHit = false;
-            owner.SetFieldValue("performedMeleeAttack", false);
-            owner.SetFieldValue("hasPlayedMissSound", false);
-            owner.SetFieldValue("showHighFiveAfterMeleeTimer", 0f);
+            hero.PerformedMeleeAttack = false;
+            hero.HasPlayedMissSound = false;
+            hero.ShowHighFiveAfterMeleeTimer = 0f;
             hero.DeactivateGun();
             hero.SetMeleeType();
             owner.SetFieldValue("meleeStartPos", owner.transform.position);
@@ -94,7 +93,7 @@ namespace BroMakerLib.Vanilla.Melees
         {
             if (hero.JumpingMelee)
             {
-                owner.CallMethod("ApplyFallingGravity");
+                hero.ApplyFallingGravity();
                 if (owner.yI < owner.maxFallSpeed)
                 {
                     owner.yI = owner.maxFallSpeed;
@@ -120,11 +119,11 @@ namespace BroMakerLib.Vanilla.Melees
             else if (owner.frame <= 13)
             {
                 owner.xI = owner.speed * 0.8f * owner.transform.localScale.x;
-                owner.CallMethod("ApplyFallingGravity");
+                hero.ApplyFallingGravity();
             }
             else
             {
-                owner.CallMethod("ApplyFallingGravity");
+                hero.ApplyFallingGravity();
             }
         }
 
@@ -143,14 +142,14 @@ namespace BroMakerLib.Vanilla.Melees
                 owner.actionState = ActionState.Jumping;
                 owner.yI = 400f;
                 hero.InvulnerableTime = 0.2f;
-                owner.CallMethod("AnimateJumping");
+                hero.AnimateJumping();
             }
             else if (playMissSound)
             {
                 sound.PlaySoundEffectAt(alternateMeleeMissSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
             }
             hero.MeleeChosenUnit = null;
-            if (shouldTryHitTerrain && hero.TryMeleeTerrain(0, 2))
+            if (shouldTryHitTerrain && HandleTryMeleeTerrain(0, terrainDamage))
             {
                 hero.MeleeHasHit = true;
             }

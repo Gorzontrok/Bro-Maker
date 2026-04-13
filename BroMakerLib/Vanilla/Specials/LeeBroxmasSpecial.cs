@@ -1,6 +1,7 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
 using BroMakerLib.Loaders;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("LeeBroxmas")]
     public class LeeBroxmasSpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.LeeBroxmas;
         public string projectileName = "KnifeSpray";
         public float knifeSpraySpeed = 420f;
         public int knifeSprayCount = 4;
@@ -45,15 +47,6 @@ namespace BroMakerLib.Vanilla.Specials
         {
             base.Initialize(owner);
             projectile = LoadBroforceObjects.GetProjectileFromName(projectileName);
-            if (attackSounds == null)
-            {
-                var prefab = HeroController.GetHeroPrefab(HeroType.LeeBroxmas);
-                var sourceBro = prefab.GetComponent<TestVanDammeAnim>();
-                if (sourceBro != null)
-                {
-                    attackSounds = sourceBro.soundHolder.attackSounds;
-                }
-            }
         }
 
         public override void PressSpecial()

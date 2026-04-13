@@ -1,6 +1,7 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
 using BroMakerLib.Loaders;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
 using RocketLib.Extensions;
 using UnityEngine;
@@ -10,6 +11,15 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("SnakeBroskin")]
     public class SnakeBroskinSpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.SnakeBroSkin;
+
+        protected override void CacheSoundsFromPrefab()
+        {
+            base.CacheSoundsFromPrefab();
+            var sourceBro = HeroController.GetHeroPrefab(SourceBroType);
+            if (sourceBro == null) return;
+            if (special2Sounds == null) special2Sounds = sourceBro.soundHolder.special2Sounds.CloneArray();
+        }
         public string grenadeName = "Hologram";
         public float throwSoundVolume = 0.4f;
         public float teleportSoundVolume = 0.4f;
@@ -17,25 +27,21 @@ namespace BroMakerLib.Vanilla.Specials
         public int teleportExplosionDamage = 20;
         public float teleportExplosionRange = 16f;
 
-        // Standing throw
         public float standingXOffset = 8f;
         public float standingYOffset = 8f;
         public float standingThrowXI = 200f;
         public float standingThrowYI = 150f;
 
-        // Ducking throw
         public float duckingXOffset = 6f;
         public float duckingYOffset = 3f;
         public float duckingThrowXI = 30f;
         public float duckingThrowYI = 70f;
 
-        // Flipping off animation (when hologram active)
         public int flipAnimationRow = 11;
         public int flipAnimationColumn = 25;
         public int flipAnimationFrameCount = 5;
         public float flipFrameRate = 0.075f;
 
-        // Normal throw animation
         public int throwAnimationRow = 5;
         public int throwAnimationColumn = 17;
         public int throwAnimationFrameCount = 8;
@@ -75,8 +81,6 @@ namespace BroMakerLib.Vanilla.Specials
                 hologramMaterial = snakeBroskin.hologramMaterial;
                 if (faderSpritePrefab == null)
                     faderSpritePrefab = snakeBroskin.faderSpritePrefab;
-                if (throwSounds == null) throwSounds = snakeBroskin.soundHolder.throwSounds;
-                if (special2Sounds == null) special2Sounds = snakeBroskin.soundHolder.special2Sounds;
             }
         }
 

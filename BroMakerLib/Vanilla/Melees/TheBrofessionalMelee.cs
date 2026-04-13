@@ -1,5 +1,6 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
 using RocketLib.Extensions;
 using UnityEngine;
@@ -9,6 +10,7 @@ namespace BroMakerLib.Vanilla.Melees
     [MeleePreset("TheBrofessional")]
     public class TheBrofessionalMelee : MeleeAbility
     {
+        protected override HeroType SourceBroType => HeroType.TheBrofessional;
         [JsonIgnore] private bool teleporting;
         [JsonIgnore] private bool teleported;
         [JsonIgnore] private float _lastTeleportTime;
@@ -20,22 +22,35 @@ namespace BroMakerLib.Vanilla.Melees
         [JsonIgnore] private Unit teleportTargetEnemy;
         [JsonIgnore] private float meleeDelay;
 
-        public int maxTeleportHoldFrames = 20;
+        public int maxTeleportHoldFrames = 30;
+
+        public AudioClip[] attack2Sounds;
+        public AudioClip[] attack3Sounds;
+
+        public TheBrofessionalMelee()
+        {
+            meleeType = BroBase.MeleeType.TeleportStab;
+        }
 
         public override void Initialize(TestVanDammeAnim owner)
         {
             base.Initialize(owner);
-            meleeType = BroBase.MeleeType.TeleportStab;
 
-            var brofessional = owner as TheBrofessional;
-            if (brofessional == null)
+            var sourceBro = HeroController.GetHeroPrefab(SourceBroType) as TheBrofessional;
+            if (sourceBro != null)
             {
-                var prefab = HeroController.GetHeroPrefab(HeroType.TheBrofessional);
-                brofessional = prefab as TheBrofessional;
+                maxTeleportHoldFrames = sourceBro.maxTeleportHoldFrames;
             }
-            if (brofessional != null)
+        }
+
+        protected override void CacheSoundsFromPrefab()
+        {
+            base.CacheSoundsFromPrefab();
+            var sourceBro = HeroController.GetHeroPrefab(SourceBroType);
+            if (sourceBro != null)
             {
-                maxTeleportHoldFrames = brofessional.maxTeleportHoldFrames;
+                if (attack2Sounds == null) attack2Sounds = sourceBro.soundHolder.attack2Sounds.CloneArray();
+                if (attack3Sounds == null) attack3Sounds = sourceBro.soundHolder.attack3Sounds.CloneArray();
             }
         }
 
@@ -49,8 +64,8 @@ namespace BroMakerLib.Vanilla.Melees
             if (owner.skinnedMookOnMyBack != null)
             {
                 hero.CancelMelee();
-                owner.CallMethod("ThrowBackMook", owner.skinnedMookOnMyBack);
-                owner.SetFieldValue("nearbyMook", null);
+                hero.ThrowBackMook(owner.skinnedMookOnMyBack);
+                hero.NearbyMook = null;
                 return;
             }
             if (meleeDelay > 0f && !owner.IsOnGround())
@@ -81,7 +96,7 @@ namespace BroMakerLib.Vanilla.Melees
                 CalculateTeleportTarget();
                 if (teleportTargetEnemy == null || Mathf.Abs(teleportTargetEnemy.X - owner.X) > 12f || Mathf.Abs(teleportTargetEnemy.Y - owner.Y) > 12f)
                 {
-                    owner.PlayAttack2Sound(0.14f);
+                    sound.PlaySoundEffectAt(attack2Sounds, 0.14f, owner.transform.position, 1f + owner.pitchShiftAmount, true, false, false, 0f);
                     teleporting = true;
                     teleported = false;
                     teleportDirection = (int)owner.transform.localScale.x;
@@ -105,13 +120,13 @@ namespace BroMakerLib.Vanilla.Melees
             {
                 hero.DeactivateGun();
                 hero.SetSpriteOffset(0f, 0f);
-                owner.SetFieldValue("rollingFrames", 0);
+                hero.RollingFrames = 0;
                 hero.FrameRate = 0.025f;
                 if (teleportFrame == 2)
                 {
                     owner.invulnerable = true;
                 }
-                if (owner.GetFieldValue<bool>("highFive") && teleportFrame == 9)
+                if (hero.HighFive && teleportFrame == 9)
                 {
                     teleportHoldFrames++;
                     if (teleportHoldFrames < maxTeleportHoldFrames)
@@ -159,7 +174,7 @@ namespace BroMakerLib.Vanilla.Melees
             {
                 hero.DeactivateGun();
                 hero.SetSpriteOffset(0f, 0f);
-                owner.SetFieldValue("rollingFrames", 0);
+                hero.RollingFrames = 0;
                 hero.FrameRate = 0.033f;
                 if (teleportFrame == 5)
                 {
@@ -169,9 +184,9 @@ namespace BroMakerLib.Vanilla.Melees
                         owner.right = false;
                         owner.left = false;
                         hero.MeleeChosenUnit = null;
-                        owner.CallMethod("StartKnifeMelee");
-                        owner.SetFieldValue("meleeFollowUp", false);
-                        owner.SetFieldValue("dashingMelee", false);
+                        hero.StartMeleeCommon();
+                        hero.MeleeFollowUp = false;
+                        hero.DashingMelee = false;
                         owner.SetFieldValue("standingMelee", true);
                         owner.SetFieldValue("holdStillTime", 0.24f);
                         owner.frame = 2;
@@ -250,12 +265,12 @@ namespace BroMakerLib.Vanilla.Melees
             hero.KickDoors(24f);
             if (Map.HitClosestUnit(owner, owner.playerNum, 8, DamageType.SilencedBullet, 24f, 24f, owner.X + owner.transform.localScale.x * 8f, owner.Y + 8f, owner.transform.localScale.x * 200f, 0f, false, false, owner.IsMine, false, true))
             {
-                sound.PlaySoundEffectAt(soundHolder.meleeHitSound, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
+                sound.PlaySoundEffectAt(meleeHitSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
                 hero.MeleeHasHit = true;
             }
             else if (playMissSound)
             {
-                sound.PlaySoundEffectAt(soundHolder.missSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
+                sound.PlaySoundEffectAt(missSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
             }
             hero.MeleeChosenUnit = null;
             if (shouldTryHitTerrain && hero.TryMeleeTerrain(0, 2))
@@ -268,7 +283,7 @@ namespace BroMakerLib.Vanilla.Melees
         {
             if (!teleporting || teleported)
             {
-                owner.CallMethod("ApplyFallingGravity");
+                hero.ApplyFallingGravity();
             }
             if (owner.yI < owner.maxFallSpeed)
             {
@@ -440,7 +455,7 @@ namespace BroMakerLib.Vanilla.Melees
         private void Teleport()
         {
             float headHeight = owner.headHeight;
-            float halfWidth = owner.GetFieldValue<float>("halfWidth");
+            float halfWidth = hero.HalfWidth;
             LayerMask groundLayer = hero.GroundLayer;
 
             if (teleportTargetEnemy != null)
@@ -546,7 +561,7 @@ namespace BroMakerLib.Vanilla.Melees
             teleported = true;
             _lastTeleportTime = Time.time;
             owner.dashing = false;
-            owner.PlayAttack3Sound(0.14f);
+            sound.PlaySoundEffectAt(attack3Sounds, 0.14f, owner.transform.position, 0.9f + owner.pitchShiftAmount, true, false, false, 0f);
         }
     }
 }

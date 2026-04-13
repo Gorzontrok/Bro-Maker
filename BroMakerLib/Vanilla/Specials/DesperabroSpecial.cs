@@ -1,5 +1,6 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
 using RocketLib.Extensions;
 using UnityEngine;
@@ -9,6 +10,16 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("Desperabro")]
     public class DesperabroSpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.Desperabro;
+
+        protected override void CacheSoundsFromPrefab()
+        {
+            base.CacheSoundsFromPrefab();
+            var sourceBro = HeroController.GetHeroPrefab(SourceBroType);
+            if (sourceBro == null) return;
+            if (special4Sounds == null) special4Sounds = sourceBro.soundHolder.special4Sounds.CloneArray();
+        }
+
         public float blindRange = 200f;
         public float blindDuration = 9f;
         public float shockWaveRange = 64f;
@@ -49,16 +60,12 @@ namespace BroMakerLib.Vanilla.Specials
             {
                 musicParticles = desperabro.musicParticles;
                 guitarGunSprite = desperabro.guitarGunSprite;
-                if (special4Sounds == null)
-                    special4Sounds = desperabro.soundHolder.special4Sounds;
             }
             else
             {
                 var prefab = HeroController.GetHeroPrefab(HeroType.Desperabro) as Desperabro;
                 if (prefab != null)
                 {
-                    if (special4Sounds == null)
-                        special4Sounds = prefab.soundHolder.special4Sounds;
                     if (prefab.musicParticles != null)
                     {
                         musicParticles = Object.Instantiate(prefab.musicParticles, owner.transform);
@@ -206,7 +213,7 @@ namespace BroMakerLib.Vanilla.Specials
             wave.origins = owner;
             if (owner.IsOnGround())
             {
-                owner.CallMethod("Jump", false);
+                hero.Jump(false);
             }
         }
 

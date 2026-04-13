@@ -1,5 +1,5 @@
 using BroMakerLib.Attributes;
-using RocketLib.Extensions;
+using BroMakerLib.Extensions;
 using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
@@ -7,27 +7,26 @@ namespace BroMakerLib.Vanilla.Melees
     [MeleePreset("TheBrode")]
     public class TheBrodeMelee : KnifeThrowMelee
     {
+        public TheBrodeMelee()
+        {
+            meleeType = BroBase.MeleeType.Custom;
+        }
+
         public override void Initialize(TestVanDammeAnim owner)
         {
             base.Initialize(owner);
-            meleeType = BroBase.MeleeType.Custom;
 
-            TheBrode theBrode = owner as TheBrode;
-            if (theBrode == null)
+            var sourceBro = HeroController.GetHeroPrefab(HeroType.TheBrode) as TheBrode;
+            if (sourceBro != null)
             {
-                var prefab = HeroController.GetHeroPrefab(HeroType.TheBrode);
-                theBrode = prefab as TheBrode;
-            }
-            if (theBrode != null)
-            {
-                throwingKnife = theBrode.throwingKnife;
+                throwingKnife = sourceBro.throwingKnife;
             }
         }
 
         public override void AnimateMelee()
         {
             hero.SetSpriteOffset(0f, 0f);
-            owner.SetFieldValue("rollingFrames", 0);
+            hero.RollingFrames = 0;
             if (owner.frame == 1)
             {
                 owner.counter -= 0.0334f;
@@ -51,12 +50,12 @@ namespace BroMakerLib.Vanilla.Melees
                 owner.frame = 0;
                 hero.CancelMelee();
             }
-            if (owner.frame == 2 && owner.GetFieldValue<Mook>("nearbyMook") != null && owner.GetFieldValue<Mook>("nearbyMook").CanBeThrown() && owner.GetFieldValue<bool>("highFive"))
+            if (owner.frame == 2 && hero.NearbyMook != null && hero.NearbyMook.CanBeThrown() && hero.HighFive)
             {
                 hero.CancelMelee();
-                Mook nearbyMook = owner.GetFieldValue<Mook>("nearbyMook");
-                owner.CallMethod("ThrowBackMook", nearbyMook);
-                owner.SetFieldValue("nearbyMook", null);
+                Mook nearbyMook = hero.NearbyMook;
+                hero.ThrowBackMook(nearbyMook);
+                hero.NearbyMook = null;
             }
         }
     }

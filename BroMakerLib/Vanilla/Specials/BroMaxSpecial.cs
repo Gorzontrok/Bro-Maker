@@ -1,6 +1,7 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
 using BroMakerLib.Loaders;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("BroMax")]
     public class BroMaxSpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.BroMax;
         public string boomerangName = "Boomerang";
         public float boomerangSpeed = 240f;
         public float boomerangSpeedY = 0f;
@@ -35,7 +37,6 @@ namespace BroMakerLib.Vanilla.Specials
         {
             base.Initialize(owner);
             boomerang = LoadBroforceObjects.GetProjectileFromName(boomerangName);
-            if (throwSounds == null) throwSounds = owner.soundHolder.throwSounds;
         }
 
         public override void PressSpecial()

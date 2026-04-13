@@ -8,22 +8,10 @@ using Newtonsoft.Json.Linq;
 
 namespace BroMakerLib.Abilities
 {
-    /// <summary>
-    /// Factory for instantiating ability instances from JSON configuration.
-    /// Reads the "preset" field to determine the concrete type, creates the instance via
-    /// <c>Activator.CreateInstance</c> (which runs the constructor for bro-specific defaults),
-    /// then applies JSON overrides using <see cref="CustomBroforceObjectInfo.SetFieldDataStatic"/>
-    /// for full Unity type support (AudioClip, Texture, Material, Projectile, Grenade, etc.).
-    /// </summary>
+    /// <summary>Creates ability instances from JSON configuration.</summary>
     public static class AbilityFactory
     {
-        /// <summary>
-        /// Creates a <see cref="SpecialAbility"/> from JSON config.
-        /// Returns null if config is null, preset is missing, preset type is not registered, or instantiation fails.
-        /// </summary>
-        /// <param name="config">JSON object containing a "preset" key and optional parameter overrides.</param>
-        /// <param name="owner">The bro instance that will own this ability.</param>
-        /// <returns>The instantiated and initialized ability, or null on failure.</returns>
+        /// <returns>The instantiated ability, or null on failure.</returns>
         public static SpecialAbility CreateSpecial(JObject config, TestVanDammeAnim owner)
         {
             if (config == null) return null;
@@ -52,13 +40,7 @@ namespace BroMakerLib.Abilities
             }
         }
 
-        /// <summary>
-        /// Creates a <see cref="MeleeAbility"/> from JSON config.
-        /// Returns null if config is null, preset is missing, preset type is not registered, or instantiation fails.
-        /// </summary>
-        /// <param name="config">JSON object containing a "preset" key and optional parameter overrides.</param>
-        /// <param name="owner">The bro instance that will own this ability.</param>
-        /// <returns>The instantiated and initialized ability, or null on failure.</returns>
+        /// <returns>The instantiated ability, or null on failure.</returns>
         public static MeleeAbility CreateMelee(JObject config, TestVanDammeAnim owner)
         {
             if (config == null) return null;
@@ -87,13 +69,6 @@ namespace BroMakerLib.Abilities
             }
         }
 
-        /// <summary>
-        /// Applies JSON overrides to an ability instance using the type-aware field setter.
-        /// Skips the "preset" key. Resolves file paths relative to the bro's mod directory.
-        /// </summary>
-        /// <param name="ability">The ability instance to apply overrides to.</param>
-        /// <param name="config">JSON config object.</param>
-        /// <param name="owner">The bro owner, used to resolve the mod path for file references.</param>
         private static void ApplyJsonOverrides(object ability, JObject config, TestVanDammeAnim owner)
         {
             var dict = config.ToObject<Dictionary<string, object>>();

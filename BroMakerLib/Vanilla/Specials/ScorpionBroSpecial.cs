@@ -9,6 +9,7 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("ScorpionBro")]
     public class ScorpionBroSpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.ScorpionBro;
         public float launchForce = 250f;
         public float launchDuration = 1f;
 
@@ -113,7 +114,7 @@ namespace BroMakerLib.Vanilla.Specials
             isLaunching = false;
             if (owner.IsHanging())
             {
-                owner.CallMethod("StopHanging");
+                hero.StopHanging();
             }
             launchDirection = direction.normalized;
             RaycastHit hit;
@@ -132,7 +133,7 @@ namespace BroMakerLib.Vanilla.Specials
             isLaunching = false;
             if (isCeiling)
             {
-                owner.CallMethod("StartHanging");
+                hero.StartHanging();
             }
         }
 
@@ -247,7 +248,7 @@ namespace BroMakerLib.Vanilla.Specials
             if (!canClimb || owner.down)
             {
                 owner.SetFieldValue("hangGrace", 0f);
-                owner.CallMethod("StopHanging");
+                hero.StopHanging();
             }
             else
             {
@@ -262,7 +263,7 @@ namespace BroMakerLib.Vanilla.Specials
                 }
                 else
                 {
-                    owner.CallMethod("StopHanging");
+                    hero.StopHanging();
                     owner.SetFieldValue("currentFootStepGroundType", "Stone");
                 }
             }

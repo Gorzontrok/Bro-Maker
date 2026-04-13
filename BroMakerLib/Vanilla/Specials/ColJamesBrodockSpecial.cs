@@ -1,6 +1,7 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
 using BroMakerLib.Loaders;
+using BroMakerLib.Extensions;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("ColJamesBrodock")]
     public class ColJamesBrodockSpecial : SpecialAbility
     {
+        protected override HeroType SourceBroType => HeroType.ColJamesBroddock;
         public string grenadeName = "Cluster";
         public float shootSpeedX = 250f;
         public float shootSpeedY = 60f;
@@ -31,12 +33,6 @@ namespace BroMakerLib.Vanilla.Specials
         {
             base.Initialize(owner);
             grenade = LoadBroforceObjects.GetGrenadeFromName(grenadeName);
-            if (attackSounds == null)
-            {
-                var prefab = HeroController.GetHeroPrefab(HeroType.ColJamesBroddock);
-                var sourceBro = prefab.GetComponent<TestVanDammeAnim>();
-                attackSounds = sourceBro.soundHolder.attackSounds;
-            }
         }
 
         public override void PressSpecial()
