@@ -15,7 +15,7 @@ using Random = UnityEngine.Random;
 
 namespace BroMakerLib.Vanilla.Bros
 {
-    [HeroPreset("BoondockBro", HeroType.BoondockBros)]
+    [HeroPreset("BoondockBros", HeroType.BoondockBros)]
     public class BoondockBroM : BoondockBro, ICustomHero, IAbilityOwner
     {
         [Syncronize] public CustomBroInfo Info { get; set; }

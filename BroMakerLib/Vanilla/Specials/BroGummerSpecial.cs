@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
-    [SpecialPreset("BroGummer")]
+    [SpecialPreset("BurtBrommer")]
     public class BroGummerSpecial : SpecialAbility
     {
         protected override HeroType SourceBroType => HeroType.BroGummer;

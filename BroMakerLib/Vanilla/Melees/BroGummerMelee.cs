@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
-    [MeleePreset("BroGummer")]
+    [MeleePreset("BurtBrommer")]
     public class BroGummerMelee : MeleeAbility
     {
         protected override HeroType SourceBroType => HeroType.BroGummer;

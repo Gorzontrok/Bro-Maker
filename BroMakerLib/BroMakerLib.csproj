@@ -153,6 +153,7 @@
         <Compile Include="Vanilla\Specials\BrominatorSpecial.cs"/>
         <Compile Include="Vanilla\Specials\BrondleFlySpecial.cs"/>
         <Compile Include="Vanilla\Specials\BroniversalSoldierSpecial.cs"/>
+        <Compile Include="Vanilla\Specials\BronnarJensenSpecial.cs"/>
         <Compile Include="Vanilla\Specials\DesperabroSpecial.cs"/>
         <Compile Include="Vanilla\Specials\DoubleBroSevenSpecial.cs"/>
         <Compile Include="Vanilla\Specials\NebroSpecial.cs"/>

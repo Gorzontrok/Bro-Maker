@@ -15,7 +15,7 @@ using Random = UnityEngine.Random;
 
 namespace BroMakerLib.Vanilla.Bros
 {
-    [HeroPreset("BroGummer", HeroType.BroGummer)]
+    [HeroPreset("BurtBrommer", HeroType.BroGummer)]
     public class BroGummerM : BroGummer, ICustomHero, IAbilityOwner
     {
         [Syncronize] public CustomBroInfo Info { get; set; }

@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
-    [SpecialPreset("BrocSnipes")]
+    [SpecialPreset("BroctorDeath")]
     public class BrocSnipesSpecial : SpecialAbility
     {
         protected override HeroType SourceBroType => HeroType.Broc;

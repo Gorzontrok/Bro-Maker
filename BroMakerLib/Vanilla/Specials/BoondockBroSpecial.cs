@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
-    [SpecialPreset("BoondockBro")]
+    [SpecialPreset("BoondockBros")]
     public class BoondockBroSpecial : SpecialAbility
     {
         protected override HeroType SourceBroType => HeroType.BoondockBros;

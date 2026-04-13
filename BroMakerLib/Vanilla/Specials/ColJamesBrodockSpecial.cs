@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
-    [SpecialPreset("ColJamesBrodock")]
+    [SpecialPreset("ColonelJamesBroddock")]
     public class ColJamesBrodockSpecial : SpecialAbility
     {
         protected override HeroType SourceBroType => HeroType.ColJamesBroddock;

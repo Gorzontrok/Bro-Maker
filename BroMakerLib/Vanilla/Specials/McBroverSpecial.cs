@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
-    [SpecialPreset("McBrover")]
+    [SpecialPreset("MacBrover")]
     public class McBroverSpecial : SpecialAbility
     {
         protected override HeroType SourceBroType => HeroType.McBrover;
