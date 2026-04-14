@@ -85,6 +85,11 @@ namespace BroMakerLib.Vanilla.Bros
             {
                 this.StandardBeforeAwake();
 
+                var awakePrefab = HeroController.GetHeroPrefab(HeroType.Brominator);
+                if (awakePrefab != null)
+                {
+                    doRollOnLand = awakePrefab.doRollOnLand;
+                }
 
                 specialAbility = AbilityFactory.CreateSpecial(Info.special, this);
                 meleeAbility = AbilityFactory.CreateMelee(Info.melee, this);
@@ -1120,6 +1125,27 @@ namespace BroMakerLib.Vanilla.Bros
             base.AddSpeedRight();
             specialAbility?.HandleAfterAddSpeedRight();
             meleeAbility?.HandleAfterAddSpeedRight();
+        }
+
+        public override void Knock(DamageType damageType, float xI, float yI, bool forceTumble)
+        {
+            if (specialAbility != null && !specialAbility.HandleKnock(damageType, xI, yI, forceTumble)) return;
+            if (meleeAbility != null && !meleeAbility.HandleKnock(damageType, xI, yI, forceTumble)) return;
+            base.Knock(damageType, xI, yI, forceTumble);
+        }
+
+        protected override void FixedUpdate()
+        {
+            base.FixedUpdate();
+            specialAbility?.HandleAfterFixedUpdate();
+            meleeAbility?.HandleAfterFixedUpdate();
+        }
+
+        protected override void CopyInput(TestVanDammeAnim zombie, ref float zombieDelay, ref bool up, ref bool down, ref bool left, ref bool right, ref bool fire, ref bool buttonJump, ref bool special, ref bool highFive)
+        {
+            base.CopyInput(zombie, ref zombieDelay, ref up, ref down, ref left, ref right, ref fire, ref buttonJump, ref special, ref highFive);
+            specialAbility?.HandleAfterCopyInput(zombie, ref zombieDelay, ref up, ref down, ref left, ref right, ref fire, ref buttonJump);
+            meleeAbility?.HandleAfterCopyInput(zombie, ref zombieDelay, ref up, ref down, ref left, ref right, ref fire, ref buttonJump);
         }
 
         protected virtual bool CanBeImpaledByGroundSpikes()

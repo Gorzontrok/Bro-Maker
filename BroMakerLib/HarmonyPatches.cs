@@ -919,8 +919,7 @@ namespace BroMakerLib
                     __instance.ResetSpecialAmmo();
                 }
 
-                // Call private method SetPlayerHUDAmmo
-                typeof(BroBase).GetMethod("SetPlayerHUDAmmo", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { });
+                __instance.CallMethod("SetPlayerHUDAmmo");
                 return false;
             }
 

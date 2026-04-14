@@ -1121,6 +1121,27 @@ namespace BroMakerLib.Vanilla.Bros
             meleeAbility?.HandleAfterAddSpeedRight();
         }
 
+        public override void Knock(DamageType damageType, float xI, float yI, bool forceTumble)
+        {
+            if (specialAbility != null && !specialAbility.HandleKnock(damageType, xI, yI, forceTumble)) return;
+            if (meleeAbility != null && !meleeAbility.HandleKnock(damageType, xI, yI, forceTumble)) return;
+            base.Knock(damageType, xI, yI, forceTumble);
+        }
+
+        protected override void FixedUpdate()
+        {
+            base.FixedUpdate();
+            specialAbility?.HandleAfterFixedUpdate();
+            meleeAbility?.HandleAfterFixedUpdate();
+        }
+
+        protected override void CopyInput(TestVanDammeAnim zombie, ref float zombieDelay, ref bool up, ref bool down, ref bool left, ref bool right, ref bool fire, ref bool buttonJump, ref bool special, ref bool highFive)
+        {
+            base.CopyInput(zombie, ref zombieDelay, ref up, ref down, ref left, ref right, ref fire, ref buttonJump, ref special, ref highFive);
+            specialAbility?.HandleAfterCopyInput(zombie, ref zombieDelay, ref up, ref down, ref left, ref right, ref fire, ref buttonJump);
+            meleeAbility?.HandleAfterCopyInput(zombie, ref zombieDelay, ref up, ref down, ref left, ref right, ref fire, ref buttonJump);
+        }
+
         protected virtual bool CanBeImpaledByGroundSpikes()
         {
             if (specialAbility != null)

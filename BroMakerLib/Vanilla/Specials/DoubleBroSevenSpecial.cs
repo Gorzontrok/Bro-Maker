@@ -8,10 +8,20 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    public enum SpecialOverflowMode
+    {
+        Wrap,
+        Clamp,
+        Fallback,
+        Skip
+    }
+
     [SpecialPreset("DoubleBroSeven")]
     public class DoubleBroSevenSpecial : SpecialAbility
     {
         protected override HeroType SourceBroType => HeroType.DoubleBroSeven;
+
+        private const int MaxGadgetType = 5;
 
         protected override void CacheSoundsFromPrefab()
         {
@@ -24,6 +34,8 @@ namespace BroMakerLib.Vanilla.Specials
             if (attack2Sounds == null) attack2Sounds = sourceBro.soundHolder.attack2Sounds.CloneArray();
             if (attack4Sounds == null) attack4Sounds = sourceBro.soundHolder.attack4Sounds.CloneArray();
         }
+        public SpecialOverflowMode overflowMode = SpecialOverflowMode.Wrap;
+        public string overflowSpecialType = "TearGas";
         public float balaclavaTimeDuration = 5f;
         public float jetPackFuelDuration = 0.8f;
         public float startLaserAngle = 265f;
@@ -153,6 +165,28 @@ namespace BroMakerLib.Vanilla.Specials
             }
         }
 
+        private DoubleBroSevenSpecialType ResolveSpecialType(int ammo)
+        {
+            if (ammo >= 1 && ammo <= MaxGadgetType)
+                return (DoubleBroSevenSpecialType)ammo;
+
+            switch (overflowMode)
+            {
+                case SpecialOverflowMode.Wrap:
+                    return (DoubleBroSevenSpecialType)(((ammo - 1) % MaxGadgetType) + 1);
+                case SpecialOverflowMode.Clamp:
+                    return (DoubleBroSevenSpecialType)MaxGadgetType;
+                case SpecialOverflowMode.Fallback:
+                    DoubleBroSevenSpecialType parsed;
+                    try { parsed = (DoubleBroSevenSpecialType)System.Enum.Parse(typeof(DoubleBroSevenSpecialType), overflowSpecialType, true); }
+                    catch { parsed = DoubleBroSevenSpecialType.TearGas; }
+                    return parsed;
+                case SpecialOverflowMode.Skip:
+                default:
+                    return (DoubleBroSevenSpecialType)ammo;
+            }
+        }
+
         public override void PressSpecial()
         {
             if (normalMaterial == null)
@@ -164,7 +198,7 @@ namespace BroMakerLib.Vanilla.Specials
                 if (owner.SpecialAmmo > 0)
                 {
                     hero.PressSpecialFacingDirection = (int)owner.transform.localScale.x;
-                    SetSpecialType((DoubleBroSevenSpecialType)owner.SpecialAmmo);
+                    SetSpecialType(ResolveSpecialType(owner.SpecialAmmo));
                     if (hero.UsingSpecial)
                     {
                         if (currentSpecialType == DoubleBroSevenSpecialType.Jetpack)

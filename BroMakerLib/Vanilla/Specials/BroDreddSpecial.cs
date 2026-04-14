@@ -36,6 +36,27 @@ namespace BroMakerLib.Vanilla.Specials
             }
         }
 
+        public override void PressSpecial()
+        {
+            if (owner.remoteProjectile != null && owner.remoteProjectile.gameObject.activeInHierarchy)
+                return;
+            base.PressSpecial();
+        }
+
+        public override void HandleAfterCheckInput()
+        {
+            if (owner.remoteProjectile == null || !owner.remoteProjectile.gameObject.activeInHierarchy)
+                return;
+
+            // Boost RPC fails (no NID on locally-spawned projectile), call directly
+            bool special = owner.GetFieldValue<bool>("special");
+            bool wasSpecial = owner.GetFieldValue<bool>("wasSpecial");
+            if (special && !wasSpecial && !owner.remoteProjectile.doubleSpeed)
+            {
+                owner.remoteProjectile.SetDoubleSpeed();
+            }
+        }
+
         public override void UseSpecial()
         {
             if (owner.SpecialAmmo > 0)

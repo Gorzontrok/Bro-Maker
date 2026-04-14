@@ -164,6 +164,9 @@
             "nullFixes": [
                 {"type": "prefabCopy", "fields": ["miniGunSoundWindup", "miniGunSoundSpinning", "miniGunSoundWindDown", "metalBrominator", "humanBrominator", "metalGunBrominator", "brominatorHumanAvatar", "brominatorRobotAvatar", "bulletShell"]},
                 {"type": "raw", "code": ["humanGunBrominator = bro.humanGunBrominator;"]}
+            ],
+            "awakeFixes": [
+                {"type": "prefabCopy", "fields": ["doRollOnLand"]}
             ]
         },
         {

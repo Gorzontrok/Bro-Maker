@@ -115,7 +115,6 @@
         <Compile Include="Vanilla\Specials\RambroSpecial.cs"/>
         <Compile Include="Vanilla\Specials\BroHardSpecial.cs"/>
         <Compile Include="Vanilla\Specials\BrodellWalkerSpecial.cs"/>
-        <Compile Include="Vanilla\Specials\CaseyBrobackSpecial.cs"/>
         <Compile Include="Vanilla\Specials\TrentBroserSpecial.cs"/>
         <Compile Include="Vanilla\Specials\TollBroadSpecial.cs"/>
         <Compile Include="Vanilla\Specials\DemolitionBroSpecial.cs"/>
@@ -158,7 +157,6 @@
         <Compile Include="Vanilla\Specials\DoubleBroSevenSpecial.cs"/>
         <Compile Include="Vanilla\Specials\NebroSpecial.cs"/>
         <Compile Include="Vanilla\Specials\PredabroSpecial.cs"/>
-        <Compile Include="Vanilla\Specials\ScorpionBroSpecial.cs"/>
         <Compile Include="Vanilla\Specials\SnakeBroskinSpecial.cs"/>
         <Compile Include="Vanilla\Specials\TheBrocketeerSpecial.cs"/>
         <Compile Include="Vanilla\Specials\TheBrodeSpecial.cs"/>
@@ -175,7 +173,6 @@
         <Compile Include="Vanilla\Melees\DisembowelMelee.cs"/>
         <Compile Include="Vanilla\Melees\BaBroracusMelee.cs"/>
         <Compile Include="Vanilla\Melees\IndianaBronesMelee.cs"/>
-        <Compile Include="Vanilla\Melees\CaseyBrobackMelee.cs"/>
         <Compile Include="Vanilla\Melees\BroffyMelee.cs"/>
         <Compile Include="Vanilla\Melees\DesperabroMelee.cs"/>
         <Compile Include="Vanilla\Melees\CherryBrolingMelee.cs"/>

@@ -339,6 +339,9 @@
             <param name="result">Modify to override the default.</param>
             <returns>True to use base result, false to use the modified result.</returns>
         </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleKnock(DamageType,System.Single,System.Single,System.Boolean)">
+            <returns>True to run original, false to skip.</returns>
+        </member>
         <member name="T:BroMakerLib.Abilities.AbilityFactory">
             <summary>Creates ability instances from JSON configuration.</summary>
         </member>

@@ -11,8 +11,16 @@ namespace BroMakerLib.Vanilla.Melees
     {
         protected override HeroType SourceBroType => HeroType.TheBrolander;
 
+        public float electricPunchChargeRate = 1f;
+        public float electricPunchChargeThreshold = 1.5f;
+        public int electricPunchDamage = 1;
+        public float electricPunchRangeX = 22f;
+        public float electricPunchRangeY = 14f;
+
         [JsonIgnore]
         private ElectricZap zapper;
+        [JsonIgnore]
+        private float electricPunchCharge = 1f;
 
         public TheBrolanderMelee()
         {
@@ -31,6 +39,11 @@ namespace BroMakerLib.Vanilla.Melees
             {
                 zapper = sourceBro.zapper;
             }
+        }
+
+        public override void Update()
+        {
+            electricPunchCharge += hero.DeltaTime * electricPunchChargeRate;
         }
 
         public override void AnimateMelee()
@@ -89,12 +102,11 @@ namespace BroMakerLib.Vanilla.Melees
                 }
                 hero.HasPlayedMissSound = true;
             }
-            float electricPunchCharge = owner.GetFieldValue<float>("electricPunchCharge");
-            if (electricPunchCharge > 1.5f)
+            if (electricPunchCharge > electricPunchChargeThreshold)
             {
-                owner.SetFieldValue("electricPunchCharge", 0f);
+                electricPunchCharge = 0f;
                 FullScreenFlashEffect.FlashLightning(0.3f);
-                if (!Map.HitAllLivingUnits(owner, owner.playerNum, 1, DamageType.Shock, 22f, 14f, vector.x, vector.y, (float)(owner.Direction * 100), 50f, true, false))
+                if (!Map.HitAllLivingUnits(owner, owner.playerNum, electricPunchDamage, DamageType.Shock, electricPunchRangeX, electricPunchRangeY, vector.x, vector.y, (float)(owner.Direction * 100), 50f, true, false))
                 {
                     if (playMissSound && !hero.HasPlayedMissSound)
                     {

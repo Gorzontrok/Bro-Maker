@@ -53,6 +53,8 @@ namespace BroMakerLib.Vanilla.Specials
         public AudioClip[] reviveClips;
         [JsonIgnore]
         private List<ReviveBlast> reviveQueue = new List<ReviveBlast>();
+        [JsonIgnore]
+        private List<bool> firingInputs = new List<bool>(60);
 
         private float OwnerDeathTime
         {
@@ -308,6 +310,76 @@ namespace BroMakerLib.Vanilla.Specials
                 return false;
             }
             return true;
+        }
+
+        public override void HandleAfterFixedUpdate()
+        {
+            if (firingInputs.Count > 55)
+            {
+                firingInputs.RemoveAt(firingInputs.Count - 1);
+            }
+            firingInputs.Insert(0, owner.health > 0 ? owner.fire : false);
+        }
+
+        public override void HandleAfterCopyInput(TestVanDammeAnim zombie, ref float zombieDelay, ref bool up, ref bool down, ref bool left, ref bool right, ref bool fire, ref bool buttonJump)
+        {
+            if (owner.health > 0 && firingInputs.Count > zombie.zombieTimerOffset)
+            {
+                fire = firingInputs[zombie.zombieTimerOffset];
+            }
+            else
+            {
+                fire = false;
+            }
+
+            // Facing correction when firing
+            if (fire)
+            {
+                if (owner.transform.localScale.x < 0f && zombie.transform.localScale.x > 0f)
+                {
+                    left = true;
+                    zombieDelay = 0.25f;
+                }
+                if (owner.transform.localScale.x > 0f && zombie.transform.localScale.x < 0f)
+                {
+                    right = true;
+                    zombieDelay = 0.25f;
+                }
+            }
+
+            // Horizontal position correction (when idle)
+            if (zombieDelay <= 0f)
+            {
+                if (!owner.left && !owner.right && !fire)
+                {
+                    if (owner.up || owner.down)
+                    {
+                        if (zombie.X < X - 5f) right = true;
+                        else if (zombie.X > X + 5f) left = true;
+                    }
+                    else if (zombie.X < X - zombie.speed * 0.2f + owner.transform.localScale.x * zombie.zombieOffset)
+                    {
+                        right = true;
+                    }
+                    else if (zombie.X > X + zombie.speed * 0.2f + owner.transform.localScale.x * zombie.zombieOffset)
+                    {
+                        left = true;
+                    }
+                }
+
+                // Vertical position correction (when idle)
+                if (!owner.up && !owner.down && !fire)
+                {
+                    if (zombie.Y > Y - 32f && zombie.Y < Y - 2f)
+                    {
+                        up = true;
+                    }
+                    else if (zombie.Y < Y + 32f && zombie.Y > Y + 2f)
+                    {
+                        down = true;
+                    }
+                }
+            }
         }
 
         private void StopSerumFrenzy()

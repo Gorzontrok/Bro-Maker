@@ -1,8 +1,6 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
-using BroMakerLib.Extensions;
 using Newtonsoft.Json;
-using RocketLib.Extensions;
 using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
@@ -161,6 +159,15 @@ namespace BroMakerLib.Vanilla.Specials
         {
             somersaulting = false;
             somersaultFrame = 0;
+        }
+
+        public override bool HandleKnock(DamageType damageType, float xI, float yI, bool forceTumble)
+        {
+            owner.xI = Mathf.Clamp(owner.xI + xI / 2f, -200f, 200f);
+            bool dashing = owner.GetFieldValue<bool>("dashing");
+            owner.xIBlast = Mathf.Clamp(owner.xIBlast + xI / (2 + (dashing ? 1 : 0)), -200f, 200f);
+            owner.yI = Mathf.Clamp(owner.yI + yI, -20000f, 400f);
+            return false;
         }
 
         public override bool HandleWallDrag(bool value)

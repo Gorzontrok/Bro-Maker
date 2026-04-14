@@ -454,6 +454,20 @@ namespace BroMakerLib.Abilities
         {
             return true;
         }
+
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleKnock(DamageType damageType, float xI, float yI, bool forceTumble)
+        {
+            return true;
+        }
+
+        public virtual void HandleAfterCopyInput(TestVanDammeAnim zombie, ref float zombieDelay, ref bool up, ref bool down, ref bool left, ref bool right, ref bool fire, ref bool buttonJump)
+        {
+        }
+
+        public virtual void HandleAfterFixedUpdate()
+        {
+        }
         #endregion
     }
 }

@@ -1,6 +1,7 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
 using BroMakerLib.Extensions;
+using HarmonyLib;
 using Newtonsoft.Json;
 using RocketLib.Extensions;
 using UnityEngine;
@@ -22,6 +23,8 @@ namespace BroMakerLib.Vanilla.Specials
         public float timeBoostDuration = 2f;
         public float heroBoostDuration = 2.3f;
         public float colorShiftDuration = 2.2f;
+        public float timeScale = 0.35f;
+        public float soundPitch = 0.5f;
         public float soundVolume = 0.7f;
 
         public AudioClip[] special3Sounds;
@@ -42,7 +45,9 @@ namespace BroMakerLib.Vanilla.Specials
                 owner.SpecialAmmo--;
                 if (owner.IsMine)
                 {
-                    HeroController.TimeBroBoost(timeBoostDuration);
+                    Traverse.Create(typeof(HeroController)).Field("timeBoostTime").SetValue(timeBoostDuration);
+                    Time.timeScale = timeScale;
+                    Sound.SetPitch(soundPitch);
                     if (!GameModeController.IsDeathMatchMode && GameModeController.GameMode != GameMode.BroDown)
                     {
                         HeroController.TimeBroBoostHeroes(heroBoostDuration);
@@ -74,6 +79,19 @@ namespace BroMakerLib.Vanilla.Specials
                 owner.SetFieldValue("t", 0f);
             }
             return false;
+        }
+
+        public override void Update()
+        {
+            // Compensates scaled Time.time so jump cooldowns elapse at real-time rate. Not in HandleSetDeltaTime: base routes to SetHighFiveBoostDeltaTime during timeBroBoost, skipping the hook.
+            if (Time.timeScale > 0f && Time.timeScale < 1f)
+            {
+                float compensation = Time.deltaTime * (1f - Time.timeScale) / Time.timeScale;
+                owner.SetFieldValue("lastJumpTime",
+                    owner.GetFieldValue<float>("lastJumpTime") - compensation);
+                owner.SetFieldValue("lastButtonJumpTime",
+                    owner.GetFieldValue<float>("lastButtonJumpTime") - compensation);
+            }
         }
 
         public override bool HandleDeath()
