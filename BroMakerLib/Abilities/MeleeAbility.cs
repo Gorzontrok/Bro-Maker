@@ -5,132 +5,110 @@ using UnityEngine;
 
 namespace BroMakerLib.Abilities
 {
-    /// <summary>
-    /// Controls how <see cref="MeleeAbility.StartMelee" /> initializes the melee.
-    /// </summary>
+    /// <summary>Controls how `StartMelee` initializes the melee.</summary>
     public enum MeleeStartType
     {
-        /// <summary>Standard knife start. Matches <c>BroBase.StartKnifeMelee</c>.</summary>
         Knife,
-
-        /// <summary>Custom start. Matches <c>BroBase.StartCustomMelee</c>.</summary>
         Custom
     }
 
-    /// <summary>
-    /// Controls how <see cref="MeleeAbility.RunMeleeMovement" /> handles movement during the melee.
-    /// </summary>
+    /// <summary>Controls how `RunMeleeMovement` handles movement during the melee.</summary>
     public enum MeleeMoveType
     {
-        /// <summary>Standard knife movement. Matches <c>TestVanDammeAnim.RunKnifeMeleeMovement</c>.</summary>
         Knife,
-
-        /// <summary>Punch movement. Matches <c>BroBase.RunPunchMovement</c>.</summary>
         Punch
     }
 
     /// <summary>Base class for all melee abilities. Public fields are the JSON parameter schema.</summary>
     public abstract class MeleeAbility : AbilityBase
     {
-        /// <summary>Vanilla bro to source melee sounds from. Override in subclasses. Defaults to <c>HeroType.Rambro</c>.</summary>
+        /// <summary>Vanilla bro to source melee sounds from.</summary>
         protected virtual HeroType SourceBroType => HeroType.Rambro;
 
-        /// <summary>Controls how <see cref="StartMelee" /> initializes the melee. Defaults to <see cref="MeleeStartType.Knife" />.</summary>
+        /// <summary>Controls how `StartMelee` initializes the melee.</summary>
         [JsonIgnore]
         public MeleeStartType startType = MeleeStartType.Knife;
 
-        /// <summary>Controls how <see cref="RunMeleeMovement" /> handles movement. Defaults to <see cref="MeleeMoveType.Knife" />.</summary>
+        /// <summary>Controls how `RunMeleeMovement` handles movement.</summary>
         [JsonIgnore]
         public MeleeMoveType moveType = MeleeMoveType.Knife;
 
-        /// <summary>Sprite sheet row for standing melee animation. Defaults to 1 (standard knife row).</summary>
-        public int animationRow = 1;
-
-        /// <summary>Starting column for standing melee animation. Defaults to 25 (standard knife column).</summary>
-        public int animationColumn = 25;
-
-        /// <summary>Sprite sheet row for jumping/dashing melee. Defaults to 6 (standard knife jumping row).</summary>
+        /// <summary>Sprite sheet row for jumping/dashing melee.</summary>
         public int jumpingAnimationRow = 6;
 
-        /// <summary>Starting column for jumping/dashing melee. Defaults to 17 (standard knife jumping column).</summary>
+        /// <summary>Starting column for jumping/dashing melee.</summary>
         public int jumpingAnimationColumn = 17;
 
-        /// <summary>Number of frames in the melee animation. Defaults to 7.</summary>
-        public int animationFrameCount = 7;
-
-        /// <summary>Seconds per animation frame. Defaults to 0.025.</summary>
-        public float frameRate = 0.025f;
-
-        /// <summary>Which animation frame triggers the hit detection. Defaults to 3.</summary>
+        /// <summary>Which animation frame triggers the hit detection.</summary>
         public int hitFrame = 3;
 
-        /// <summary>Frame at which a combo restart is allowed during <see cref="MeleeStartType.Knife" /> start.
-        /// If the player re-presses melee after this frame, the animation restarts. Defaults to 3.</summary>
+        /// <summary>Frame at which a combo restart is allowed during `MeleeStartType.Knife` start.
+        /// If the player re-presses melee after this frame, the animation restarts.</summary>
         public int restartFrame = 3;
 
-        /// <summary>Frame at which the melee animation ends and <see cref="IAbilityOwner.CancelMelee" /> is called.
-        /// Defaults to 6.</summary>
+        /// <summary>Frame at which the melee animation ends and `CancelMelee` is called.</summary>
         public int endFrame = 6;
 
-        /// <summary>Extra time subtracted from the frame counter on <see cref="hitFrame" />, creating a brief
-        /// pause on the attack frame. Defaults to 0.066.</summary>
+        /// <summary>Extra time subtracted from the frame counter on `hitFrame`, creating a brief
+        /// pause on the attack frame.</summary>
         public float hitFrameCounterDelay = 0.066f;
 
-        /// <summary>Whether to continue calling <see cref="PerformMeleeAttack" /> on frames after
-        /// <see cref="hitFrame" /> if the attack hasn't hit yet. Defaults to true.</summary>
+        /// <summary>Whether to continue calling `PerformMeleeAttack` on frames after `hitFrame` if the attack hasn't hit yet.</summary>
         public bool attackOnFollowUpFrames = true;
 
-        /// <summary>Damage dealt to units on hit. Defaults to 4 (standard knife damage).</summary>
+        /// <summary>Damage dealt to units on hit.</summary>
         public int damage = 4;
 
         /// <summary>DamageType enum name (e.g., "Knifed", "Crush", "Electrocution"). Parsed at initialization.</summary>
         public string damageType = "Knifed";
 
-        /// <summary>Horizontal knockback force applied to hit units. Defaults to 200.</summary>
+        /// <summary>Horizontal knockback force applied to hit units.</summary>
         public float knockbackX = 200f;
 
-        /// <summary>Vertical knockback force applied to hit units. Defaults to 500.</summary>
+        /// <summary>Vertical knockback force applied to hit units.</summary>
         public float knockbackY = 500f;
 
-        /// <summary>Horizontal range of the hit detection box. Defaults to 14.</summary>
+        /// <summary>Horizontal range of the hit detection box.</summary>
         public float hitRangeX = 14f;
 
-        /// <summary>Vertical range of the hit detection box. Defaults to 24.</summary>
+        /// <summary>Vertical range of the hit detection box.</summary>
         public float hitRangeY = 24f;
 
-        /// <summary>X offset from owner position for the hit detection center. Defaults to 8.</summary>
+        /// <summary>X offset from owner position for the hit detection center.</summary>
         public float hitOffsetX = 8f;
 
-        /// <summary>Y offset from owner position for the hit detection center. Defaults to 8.</summary>
+        /// <summary>Y offset from owner position for the hit detection center.</summary>
         public float hitOffsetY = 8f;
 
-        /// <summary>Whether melee damages terrain and doors. Defaults to true.</summary>
+        /// <summary>Whether melee damages terrain and doors.</summary>
         public bool hitTerrain = true;
 
-        /// <summary>Damage dealt to terrain blocks on hit. Defaults to 2.</summary>
+        /// <summary>Damage dealt to terrain blocks on hit.</summary>
         public int terrainDamage = 2;
 
         /// <summary>Controls BroBase dispatch routing and TryMeleeTerrain sounds.</summary>
         [JsonIgnore]
         public BroBase.MeleeType meleeType = BroBase.MeleeType.Knife;
 
+        /// <summary>Sounds played when the melee strike connects with a unit.</summary>
         public AudioClip[] meleeHitSounds;
+        /// <summary>Sounds played when the melee swing misses.</summary>
         public AudioClip[] missSounds;
         /// <summary>Sounds played when melee hits terrain (knife-type melees).</summary>
         public AudioClip[] meleeHitTerrainSounds;
         /// <summary>Alternate hit sounds used by non-knife melees and terrain hits.</summary>
         public AudioClip[] alternateMeleeHitSounds;
 
-        /// <param name="owner">The bro instance that owns this ability.</param>
+        /// <summary>Called once when the bro spawns. Also calls `CacheSoundsFromPrefab`.</summary>
         public override void Initialize(TestVanDammeAnim owner)
         {
             base.Initialize(owner);
             CacheSoundsFromPrefab();
         }
 
-        /// <summary>Loads melee sound clips from the <see cref="SourceBroType" /> prefab's soundHolder.
+        /// <summary>Loads melee sound clips from the `SourceBroType` prefab's soundHolder.
         /// Each array is null-guarded so JSON overrides aren't stomped. Override in subclasses to
-        /// load additional bro-specific sounds (call <c>base.CacheSoundsFromPrefab()</c> first).</summary>
+        /// load additional bro-specific sounds (call `base.CacheSoundsFromPrefab()` first).</summary>
         protected virtual void CacheSoundsFromPrefab()
         {
             var sourceBro = HeroController.GetHeroPrefab(SourceBroType);
@@ -142,7 +120,7 @@ namespace BroMakerLib.Abilities
             if (alternateMeleeHitSounds == null) alternateMeleeHitSounds = sourceBro.soundHolder.alternateMeleeHitSound.CloneArray();
         }
 
-        /// <summary>Called when the player presses melee. Behavior depends on <see cref="startType" />.</summary>
+        /// <summary>Called when the player presses melee. Behavior depends on `startType`.</summary>
         public virtual void StartMelee()
         {
             if (startType == MeleeStartType.Knife)
@@ -232,7 +210,7 @@ namespace BroMakerLib.Abilities
             }
         }
 
-        /// <summary>Called each frame to handle movement. Behavior depends on <see cref="moveType" />.</summary>
+        /// <summary>Called each frame to handle movement. Behavior depends on `moveType`.</summary>
         public virtual void RunMeleeMovement()
         {
             if (moveType == MeleeMoveType.Knife)
@@ -241,7 +219,7 @@ namespace BroMakerLib.Abilities
                 RunPunchMeleeMovement();
         }
 
-        /// <summary>Standard knife melee movement. Matches <c>TestVanDammeAnim.RunKnifeMeleeMovement</c>.</summary>
+        /// <summary>Standard knife melee movement. Matches `TestVanDammeAnim.RunKnifeMeleeMovement`.</summary>
         protected virtual void RunKnifeMeleeMovement()
         {
             if (!owner.useNewKnifingFrames)
@@ -300,7 +278,7 @@ namespace BroMakerLib.Abilities
             }
         }
 
-        /// <summary>Punch-style melee movement. Matches <c>BroBase.RunPunchMovement</c>.</summary>
+        /// <summary>Punch-style melee movement. Matches `BroBase.RunPunchMovement`.</summary>
         protected virtual void RunPunchMeleeMovement()
         {
             hero.ApplyFallingGravity();
@@ -381,8 +359,8 @@ namespace BroMakerLib.Abilities
         }
 
         /// <summary>Called when the melee is interrupted (e.g., taking damage, falling).
-        /// IMPORTANT: Do NOT call <c>hero.CancelMelee()</c> from this method — the wrapper
-        /// already calls both this callback and <c>base.CancelMelee()</c> in sequence.</summary>
+        /// Do NOT call `hero.CancelMelee()` from this method — the wrapper
+        /// already calls both this callback and `base.CancelMelee()` in sequence.</summary>
         public virtual void CancelMelee()
         {
         }

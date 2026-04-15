@@ -6,21 +6,36 @@ using RocketLib.Extensions;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>Shared base for shockwave specials. Extended by: BroCeasarSpecial, BronanSpecial.</summary>
     public class ShockwaveSpecial : SpecialAbility
     {
+        /// <summary>When false, the shockwave stuns but does not kill enemies.</summary>
         public bool lethal = true;
+        /// <summary>Sound played on shockwave impact.</summary>
         public AudioClip[] special3Sounds;
+        /// <summary>Radius of the shockwave explosion, in world units.</summary>
         public float shockwaveRange = 144f;
+        /// <summary>Radius of the ground-tile damage applied on takeoff, in world units.</summary>
         public float groundDamageRange = 16f;
+        /// <summary>Damage dealt to ground tiles on takeoff.</summary>
         public int groundDamage = 20;
+        /// <summary>Upward launch force applied when activating without a dash.</summary>
         public float jumpForceNormal = 210f;
+        /// <summary>Upward launch force applied when activating while dashing.</summary>
         public float jumpForceDashing = 280f;
+        /// <summary>Horizontal blast force added to the bro's velocity when activating without a dash.</summary>
         public float blastForceNormal = 90f;
+        /// <summary>Horizontal blast force added to the bro's velocity when activating while dashing.</summary>
         public float blastForceDashing = 200f;
+        /// <summary>Playback volume for the sound played when the special is pressed.</summary>
         public float pressSpecialSoundVolume = 0.5f;
+        /// <summary>Playback volume for the shockwave impact sound.</summary>
         public float useSpecialSoundVolume = 0.4f;
+        /// <summary>Animation frame index at which the shockwave triggers on landing.</summary>
         public int useSpecialAttackFrame = 2;
+        /// <summary>Seconds after landing during which player input is suppressed.</summary>
         public float stampDelay = 0f;
+        /// <summary>Gravity multiplier applied during the downward slam phase (lower values slow the descent).</summary>
         public float slamGravityMultiplier = 0.5f;
 
         [JsonIgnore]
@@ -32,8 +47,13 @@ namespace BroMakerLib.Vanilla.Specials
         [JsonIgnore]
         protected float currentStampDelay;
 
-        /// <summary>Vanilla bro to source sounds and faderSpritePrefab from. Override in
-        /// subclasses to match the bro's own effects (e.g., BroCeasarSpecial overrides to BroCeasar).</summary>
+        public ShockwaveSpecial()
+        {
+            animationRow = 8;
+        }
+
+        /// <summary>Vanilla bro to source sounds and `faderSpritePrefab` from. Override in
+        /// subclasses to match the bro's own effects (e.g., `BroCeasarSpecial` overrides to `BroCeasar`).</summary>
         protected override HeroType SourceBroType => HeroType.BronanTheBrobarian;
 
         protected override void CacheSoundsFromPrefab()
@@ -105,9 +125,9 @@ namespace BroMakerLib.Vanilla.Specials
         {
             hero.SetSpriteOffset(0f, 0f);
             hero.DeactivateGun();
-            hero.FrameRate = 0.0334f;
+            hero.FrameRate = frameRate;
             int column = Mathf.Clamp(owner.frame, 0, 8);
-            hero.Sprite.SetLowerLeftPixel(column * hero.SpritePixelWidth, hero.SpritePixelHeight * 8);
+            hero.Sprite.SetLowerLeftPixel(column * hero.SpritePixelWidth, hero.SpritePixelHeight * animationRow);
             if (owner.frame == 0)
             {
                 hero.FrameRate = 0.18f;

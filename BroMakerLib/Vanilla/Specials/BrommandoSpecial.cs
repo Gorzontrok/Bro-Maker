@@ -7,14 +7,19 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>Brommando's rapid-fire rocket barrage special.</summary>
     [SpecialPreset("Brommando")]
     public class BrommandoSpecial : SpecialAbility
     {
         protected override HeroType SourceBroType => HeroType.Brommando;
+        /// <summary>Name of the projectile prefab used for each barrage rocket.</summary>
         public string barageProjectileName = "DrunkRocket";
+        /// <summary>Horizontal speed of each barrage rocket.</summary>
         public float rocketSpeed = 150f;
+        /// <summary>Vertical speed of each barrage rocket.</summary>
         public float rocketSpeedY = 0f;
         public int barageCount = 4;
+        /// <summary>Time in seconds between successive rockets in a barrage.</summary>
         public float barageInterval = 0.1333f;
 
         [JsonIgnore]

@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>Bro Gummer's targeting-system sniper shot.</summary>
     [SpecialPreset("BurtBrommer")]
     public class BroGummerSpecial : SpecialAbility
     {
@@ -22,14 +23,21 @@ namespace BroMakerLib.Vanilla.Specials
             if (special3Sounds == null) special3Sounds = sourceBro.soundHolder.special3Sounds.CloneArray();
             if (special4Sounds == null) special4Sounds = sourceBro.soundHolder.special4Sounds.CloneArray();
         }
+        /// <summary>How long the targeting cursor stays active before auto-firing.</summary>
         public float targetingDuration = 5f;
+        /// <summary>Radius used when scanning for the next target to lock onto.</summary>
         public float scanningRange = 10f;
+        /// <summary>Minimum time between successive special uses.</summary>
         public float specialCooldownDelay = 0.13f;
         public float remoteProjectileSpeed = 800f;
+        /// <summary>Horizontal impulse applied backward on the bro when the shot fires.</summary>
         public float recoilForce = 110f;
 
+        /// <summary>Sound played when the targeting system activates.</summary>
         public AudioClip[] special2Sounds;
+        /// <summary>Heartbeat sound looped during targeting.</summary>
         public AudioClip[] special3Sounds;
+        /// <summary>Sound played when the shot fires.</summary>
         public AudioClip[] special4Sounds;
 
         [JsonIgnore]
@@ -58,6 +66,11 @@ namespace BroMakerLib.Vanilla.Specials
         private List<Unit> currentTargetingUnitStreak = new List<Unit>();
         [JsonIgnore]
         private List<TargetableObject> currentTargetingObjectStreak = new List<TargetableObject>();
+
+        public BroGummerSpecial()
+        {
+            animationRow = 10;
+        }
 
         public override void Initialize(TestVanDammeAnim owner)
         {
@@ -288,7 +301,7 @@ namespace BroMakerLib.Vanilla.Specials
         {
             if (usingTargetingSystem)
             {
-                hero.Sprite.SetLowerLeftPixel(0f, hero.SpritePixelHeight * 10);
+                hero.Sprite.SetLowerLeftPixel(0f, hero.SpritePixelHeight * animationRow);
             }
         }
 

@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>Broden's impaling dash with explosive finish.</summary>
     [SpecialPreset("Broden")]
     public class BrodenSpecial : SpecialAbility
     {
@@ -32,22 +33,37 @@ namespace BroMakerLib.Vanilla.Specials
             }
         }
 
+        /// <summary>Horizontal speed during the dash.</summary>
         public float dashSpeed = 240f;
+        /// <summary>How long the dash lasts in seconds.</summary>
         public float dashDuration = 0.5f;
+        /// <summary>Minimum time between consecutive dashes.</summary>
         public float dashCooldown = 0.55f;
+        /// <summary>Volume of the dash initiation sound.</summary>
         public float specialSoundVolume = 0.7f;
+        /// <summary>Radius within which incoming projectiles are deflected during the dash.</summary>
         public float deflectRange = 16f;
+        /// <summary>Damage dealt to terrain per dash tick.</summary>
         public int terrainDamage = 3;
+        /// <summary>Damage dealt to terrain by the explosion at the end of the dash.</summary>
         public int explosiveEndDamage = 15;
+        /// <summary>Blast radius of the end-of-dash explosion.</summary>
         public float explosiveEndRange = 24f;
+        /// <summary>Radius used when checking for impale targets laterally.</summary>
         public float impaleRange = 8f;
+        /// <summary>How far ahead of the bro to probe for the next impale target.</summary>
         public float impaleSearchAhead = 12f;
         public float sliceVolume = 0.7f;
         public AudioClip[] special2Sounds;
+        /// <summary>Horizontal blast impulse applied to the bro after the dash ends.</summary>
         public float postDashXIBlast = -170f;
+        /// <summary>Duration of the upward spin-up phase after the dash ends.</summary>
         public float postDashSpinUpTime = 0.11f;
+        /// <summary>Sprite sheet column for the dash spin animation.</summary>
         public int spinSpriteColumn = 11;
+        /// <summary>Sprite sheet row for the grounded spin animation after the dash.</summary>
         public int spinSpriteRow = 9;
+        /// <summary>Sprite sheet row for the airborne spin animation after the dash.</summary>
         public int spinJumpSpriteRow = 10;
 
         [JsonIgnore]

@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
+    /// <summary>Dirty Harry's baseball bat melee.</summary>
     [MeleePreset("DirtyHarry")]
     public class DirtyHarryMelee : MeleeAbility
     {
@@ -18,6 +19,7 @@ namespace BroMakerLib.Vanilla.Melees
             startType = MeleeStartType.Custom;
             moveType = MeleeMoveType.Punch;
             restartFrame = 0;
+            animationRow = 9;
         }
 
         protected override void CacheSoundsFromPrefab()
@@ -33,8 +35,8 @@ namespace BroMakerLib.Vanilla.Melees
         public override void AnimateMelee()
         {
             hero.AnimateMeleeCommon();
-            int num = 25 + Mathf.Clamp(owner.frame, 0, 8);
-            int num2 = 9;
+            int num = animationColumn + Mathf.Clamp(owner.frame, 0, 8);
+            int num2 = animationRow;
             if (owner.frame == 5)
             {
                 owner.counter -= 0.0334f;

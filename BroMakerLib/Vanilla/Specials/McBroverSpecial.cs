@@ -6,17 +6,26 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>MacBrover's turkey-bomb throw special.</summary>
     [SpecialPreset("MacBrover")]
     public class McBroverSpecial : SpecialAbility
     {
         protected override HeroType SourceBroType => HeroType.McBrover;
+        /// <summary>Playback volume for the throw sound.</summary>
         public float specialSoundVolume = 0.5f;
+        /// <summary>Horizontal launch speed when standing.</summary>
         public float standingSpeedX = 100f;
+        /// <summary>Vertical launch speed when standing.</summary>
         public float standingSpeedY = 100f;
+        /// <summary>Horizontal launch speed when ducking.</summary>
         public float duckingSpeedX = 35f;
+        /// <summary>Vertical launch speed when ducking.</summary>
         public float duckingSpeedY = 70f;
+        /// <summary>Fraction of the bro's horizontal velocity added to the turkey's launch speed when standing.</summary>
         public float momentumX = 0.7f;
+        /// <summary>Fraction of the bro's upward velocity added to the turkey's launch speed when standing.</summary>
         public float momentumY = 0.5f;
+        /// <summary>Fraction of the bro's horizontal velocity added to the turkey's launch speed when ducking.</summary>
         public float duckingMomentumX = 0.3f;
 
         [JsonIgnore]

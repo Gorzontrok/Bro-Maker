@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
+    /// <summary>TheBrofessional's teleport-stab melee.</summary>
     [MeleePreset("TheBrofessional")]
     public class TheBrofessionalMelee : MeleeAbility
     {
@@ -22,6 +23,9 @@ namespace BroMakerLib.Vanilla.Melees
         [JsonIgnore] private Unit teleportTargetEnemy;
         [JsonIgnore] private float meleeDelay;
 
+        public int teleportRow = 7;
+        public int teleportInColumn = 23;
+        public int teleportOutColumn = 28;
         public int maxTeleportHoldFrames = 30;
 
         public AudioClip[] attack2Sounds;
@@ -30,6 +34,7 @@ namespace BroMakerLib.Vanilla.Melees
         public TheBrofessionalMelee()
         {
             meleeType = BroBase.MeleeType.TeleportStab;
+            animationColumn = 21;
         }
 
         public override void Initialize(TestVanDammeAnim owner)
@@ -121,7 +126,7 @@ namespace BroMakerLib.Vanilla.Melees
                 hero.DeactivateGun();
                 hero.SetSpriteOffset(0f, 0f);
                 hero.RollingFrames = 0;
-                hero.FrameRate = 0.025f;
+                hero.FrameRate = frameRate;
                 if (teleportFrame == 2)
                 {
                     owner.invulnerable = true;
@@ -166,8 +171,8 @@ namespace BroMakerLib.Vanilla.Melees
                 }
                 else
                 {
-                    int num = 23 + Mathf.Clamp(teleportFrame, 0, 8);
-                    hero.Sprite.SetLowerLeftPixel((float)(num * hero.SpritePixelWidth), (float)(7 * hero.SpritePixelHeight));
+                    int num = teleportInColumn + Mathf.Clamp(teleportFrame, 0, 8);
+                    hero.Sprite.SetLowerLeftPixel((float)(num * hero.SpritePixelWidth), (float)(teleportRow * hero.SpritePixelHeight));
                 }
             }
             else if (teleporting && teleported)
@@ -206,8 +211,8 @@ namespace BroMakerLib.Vanilla.Melees
                 }
                 else
                 {
-                    int num2 = 28 - Mathf.Clamp(teleportFrame, 0, 6);
-                    hero.Sprite.SetLowerLeftPixel((float)(num2 * hero.SpritePixelWidth), (float)(7 * hero.SpritePixelHeight));
+                    int num2 = teleportOutColumn - Mathf.Clamp(teleportFrame, 0, 6);
+                    hero.Sprite.SetLowerLeftPixel((float)(num2 * hero.SpritePixelWidth), (float)(teleportRow * hero.SpritePixelHeight));
                 }
             }
             else
@@ -219,8 +224,8 @@ namespace BroMakerLib.Vanilla.Melees
         private void AnimateKnifeMelee()
         {
             hero.AnimateMeleeCommon();
-            int num = 21 + Mathf.Clamp(owner.frame, 0, 10);
-            int num2 = 1;
+            int num = animationColumn + Mathf.Clamp(owner.frame, 0, 10);
+            int num2 = animationRow;
             if (owner.frame < 4)
             {
                 hero.FrameRate = 0.025f;

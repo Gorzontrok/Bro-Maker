@@ -57,6 +57,9 @@
             "heroType": "Brobocop",
             "nullFixes": [
                 {"type": "prefabCopy", "fields": ["targetSystemPrefab", "chargingSound", "finishedChargingSound", "gunMaterialDefault", "gunMaterialOneLight", "gunMaterialOtherLight", "gunMaterialBothLights"]}
+            ],
+            "awakeFixes": [
+                {"type": "prefabCopy", "fields": ["doRollOnLand"]}
             ]
         },
         {
@@ -66,6 +69,9 @@
             "heroType": "HaleTheBro",
             "nullFixes": [
                 {"type": "prefabCopy", "fields": ["bulletShell", "miniGunSoundSpinning", "miniGunSoundWindDown", "miniGunSoundWindup"]}
+            ],
+            "awakeFixes": [
+                {"type": "prefabCopy", "fields": ["useNewHighFivingFrames", "hasNewAirFlexFrames"]}
             ]
         },
         {
@@ -84,6 +90,9 @@
             "heroType": "Broc",
             "nullFixes": [
                 {"type": "prefabCopy", "fields": ["shrapnelSpark", "hitPuff"]}
+            ],
+            "awakeFixes": [
+                {"type": "prefabCopy", "fields": ["doRollOnLand", "useNewHighFivingFrames", "hasNewAirFlexFrames"]}
             ]
         },
         {
@@ -102,6 +111,9 @@
             "heroType": "Broden",
             "nullFixes": [
                 {"type": "findChild", "field": "zapper", "childName": "ElectricZap", "component": "ElectricZap"}
+            ],
+            "awakeFixes": [
+                {"type": "prefabCopy", "fields": ["doRollOnLand"]}
             ]
         },
         {
@@ -129,6 +141,9 @@
             "heroType": "BroGummer",
             "nullFixes": [
                 {"type": "prefabCopy", "fields": ["specialSniperBulletPrefab", "sachelPackProjectile", "broGummerSniperTargetPrefab"]}
+            ],
+            "awakeFixes": [
+                {"type": "prefabCopy", "fields": ["doRollOnLand"]}
             ]
         },
         {
@@ -185,6 +200,9 @@
             "heroType": "BronanTheBrobarian",
             "nullFixes": [
                 {"type": "prefabCopy", "fields": ["shrapnelSpark", "hitPuff", "throwingKnife"]}
+            ],
+            "awakeFixes": [
+                {"type": "prefabCopy", "fields": ["doRollOnLand"]}
             ]
         },
         {
@@ -202,7 +220,10 @@
             "className": "BroneyRossM",
             "baseClass": "BroneyRoss",
             "heroType": "BroneyRoss",
-            "nullFixes": []
+            "nullFixes": [],
+            "awakeFixes": [
+                {"type": "prefabCopy", "fields": ["useNewHighFivingFrames", "hasNewAirFlexFrames"]}
+            ]
         },
         {
             "presetName": "BroniversalSoldier",
@@ -222,6 +243,9 @@
             "heroType": "BronnarJensen",
             "nullFixes": [
                 {"type": "prefabCopy", "fields": ["primaryGrenade", "remoteControlVehiclePrefab"]}
+            ],
+            "awakeFixes": [
+                {"type": "prefabCopy", "fields": ["useNewHighFivingFrames", "hasNewAirFlexFrames"]}
             ]
         },
         {
@@ -241,6 +265,9 @@
             "nullFixes": [
                 {"type": "prefabCopy", "fields": ["shrapnelSpark", "hitPuff", "swordPrefab"]},
                 {"type": "findChild", "field": "freedomBubble", "childName": "AmericaFlagBubble", "component": "ReactionBubble"}
+            ],
+            "awakeFixes": [
+                {"type": "prefabCopy", "fields": ["doRollOnLand"]}
             ]
         },
         {
@@ -338,6 +365,9 @@
                 {"type": "prefabCopy", "fields": ["whipHitPuff"]},
                 {"type": "findChild", "field": "whipSprite", "childName": "Whip", "component": "SpriteSM"},
                 {"type": "prefabCopy", "fields": ["materialArmless", "ropeStretchSound"]}
+            ],
+            "awakeFixes": [
+                {"type": "prefabCopy", "fields": ["useNewDuckingFrames"]}
             ]
         },
         {
@@ -347,6 +377,9 @@
             "heroType": "LeeBroxmas",
             "nullFixes": [
                 {"type": "prefabCopy", "fields": ["macheteSprayProjectile"]}
+            ],
+            "awakeFixes": [
+                {"type": "prefabCopy", "fields": ["useNewHighFivingFrames", "hasNewAirFlexFrames"]}
             ]
         },
         {
@@ -415,6 +448,9 @@
             "heroType": "ScorpionBro",
             "nullFixes": [
                 {"type": "prefabCopy", "fields": ["scorpionModeMaterial"]}
+            ],
+            "awakeFixes": [
+                {"type": "prefabCopy", "fields": ["hasNewAirFlexFrames"]}
             ]
         },
         {
@@ -452,6 +488,9 @@
             "heroType": "TheBrode",
             "nullFixes": [
                 {"type": "prefabCopy", "fields": ["throwingKnife", "shrapnelSpark", "hitPuff"]}
+            ],
+            "awakeFixes": [
+                {"type": "prefabCopy", "fields": ["doRollOnLand"]}
             ]
         },
         {
@@ -472,6 +511,9 @@
                 {"type": "findChild", "field": "zapper", "childName": "ElectricZap", "component": "ElectricZap"},
                 {"type": "getComponent", "field": "quickeningAudio", "component": "AudioSource"},
                 {"type": "prefabCopy", "fields": ["shrapnelSpark", "hitPuff", "throwingKnife"]}
+            ],
+            "awakeFixes": [
+                {"type": "prefabCopy", "fields": ["doRollOnLand"]}
             ]
         },
         {
@@ -488,6 +530,9 @@
             "heroType": "TollBroad",
             "nullFixes": [
                 {"type": "prefabCopy", "fields": ["flameProjectiles"]}
+            ],
+            "awakeFixes": [
+                {"type": "prefabCopy", "fields": ["useNewHighFivingFrames", "hasNewAirFlexFrames"]}
             ]
         },
         {
@@ -495,7 +540,10 @@
             "className": "TrentBroserM",
             "baseClass": "TrentBroser",
             "heroType": "TrentBroser",
-            "nullFixes": []
+            "nullFixes": [],
+            "awakeFixes": [
+                {"type": "prefabCopy", "fields": ["useNewHighFivingFrames", "hasNewAirFlexFrames"]}
+            ]
         },
         {
             "presetName": "VanDammeBro",

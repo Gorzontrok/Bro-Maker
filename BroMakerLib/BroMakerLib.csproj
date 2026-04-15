@@ -33,6 +33,8 @@
         <DefineConstants>TRACE</DefineConstants>
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
+        <DocumentationFile>bin\Release\BroMakerLib.xml</DocumentationFile>
+        <NoWarn>1591</NoWarn>
     </PropertyGroup>
     <ItemGroup>
         <Reference Include="0Harmony, Version=2.2.2.0, Culture=neutral, processorArchitecture=MSIL">
@@ -180,6 +182,7 @@
         <Compile Include="Vanilla\Melees\BroDreddMelee.cs"/>
         <Compile Include="Vanilla\Melees\BrobocopMelee.cs"/>
         <Compile Include="Vanilla\Melees\XebroMelee.cs"/>
+        <Compile Include="Vanilla\Melees\PunchMelee.cs"/>
         <Compile Include="Vanilla\Melees\BroGummerMelee.cs"/>
         <Compile Include="Vanilla\Melees\SnakeBroskinMelee.cs"/>
         <Compile Include="Vanilla\Melees\TheBrodeMelee.cs"/>
@@ -192,8 +195,19 @@
         <Compile Include="Vanilla\Melees\BroveHeartMelee.cs"/>
         <Compile Include="Abilities\AbilityBase.cs"/>
         <Compile Include="Abilities\AbilityFactory.cs"/>
+        <Compile Include="Abilities\PassiveAbility.cs"/>
+        <Compile Include="Vanilla\Passives\TheBrocketeerPassive.cs"/>
+        <Compile Include="Vanilla\Passives\SnakeBroskinPassive.cs"/>
+        <Compile Include="Vanilla\Passives\BrondleFlyPassive.cs"/>
+        <Compile Include="Vanilla\Passives\BrodenPassive.cs"/>
+        <Compile Include="Vanilla\Passives\AirdashPassive.cs"/>
+        <Compile Include="Vanilla\Passives\NebroPassive.cs"/>
+        <Compile Include="Vanilla\Passives\BroLeePassive.cs"/>
         <Compile Include="Attributes\SpecialPresetAttribute.cs"/>
         <Compile Include="Attributes\MeleePresetAttribute.cs"/>
+        <Compile Include="Attributes\PassivePresetAttribute.cs"/>
+        <Compile Include="Attributes\ConflictsWithPresetAttribute.cs"/>
+        <Compile Include="Attributes\ConflictsWithPresetsAttribute.cs"/>
         <Compile Include="Attributes\HeroPresetAttribute.cs"/>
         <Compile Include="Attributes\ParameterAttribute.cs"/>
         <Compile Include="BroMaker.cs"/>

@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
+    /// <summary>SnakeBroSkin's baseball bat melee.</summary>
     [MeleePreset("SnakeBroskin")]
     public class SnakeBroskinMelee : DisembowelMelee
     {
@@ -14,14 +15,16 @@ namespace BroMakerLib.Vanilla.Melees
         public SnakeBroskinMelee()
         {
             meleeType = BroBase.MeleeType.Custom;
+            animationColumn = 24;
+            animationRow = 10;
         }
 
         public override void AnimateMelee()
         {
             hero.AnimateMeleeCommon();
-            hero.FrameRate = 0.025f;
-            int num = 24 + Mathf.Clamp(owner.frame, 0, 8);
-            int num2 = 10;
+            hero.FrameRate = frameRate;
+            int num = animationColumn + Mathf.Clamp(owner.frame, 0, 8);
+            int num2 = animationRow;
             if (owner.frame == 2)
             {
                 owner.counter -= 0.0334f;

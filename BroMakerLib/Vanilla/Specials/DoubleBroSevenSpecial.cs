@@ -8,14 +8,20 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>Controls which gadget type is selected when `SpecialAmmo` falls outside the 1–5 gadget range.</summary>
     public enum SpecialOverflowMode
     {
+        /// <summary>Wraps ammo into the 1–5 range using modulo arithmetic.</summary>
         Wrap,
+        /// <summary>Clamps to the highest gadget type (5).</summary>
         Clamp,
+        /// <summary>Parses `overflowSpecialType` by name; falls back to TearGas if parsing fails.</summary>
         Fallback,
+        /// <summary>Passes the raw ammo value through unchanged; may resolve to `None` if out of range.</summary>
         Skip
     }
 
+    /// <summary>Double Bro Seven's rotating gadget special with balaclava, jetpack, laser, martini, and tear gas modes.</summary>
     [SpecialPreset("DoubleBroSeven")]
     public class DoubleBroSevenSpecial : SpecialAbility
     {
@@ -34,25 +40,43 @@ namespace BroMakerLib.Vanilla.Specials
             if (attack2Sounds == null) attack2Sounds = sourceBro.soundHolder.attack2Sounds.CloneArray();
             if (attack4Sounds == null) attack4Sounds = sourceBro.soundHolder.attack4Sounds.CloneArray();
         }
+        public int martiniRow = 7;
+        public int jetpackRow = 8;
+        public int laserRow = 8;
+        public int balaclavaRow = 8;
+        public int balaclavaRemoveRow = 8;
+        public int jetpackSpriteColumn = 14;
+        public int balaclavaColumn = 26;
+        /// <summary>How to resolve the gadget type when `SpecialAmmo` is outside the 1–5 range.</summary>
         public SpecialOverflowMode overflowMode = SpecialOverflowMode.Wrap;
+        /// <summary>Gadget name used when `overflowMode` is `Fallback` and parsing fails.</summary>
         public string overflowSpecialType = "TearGas";
+        /// <summary>Duration in seconds of the balaclava stealth mode.</summary>
         public float balaclavaTimeDuration = 5f;
+        /// <summary>Duration in seconds of the jetpack fuel after activation.</summary>
         public float jetPackFuelDuration = 0.8f;
         public float startLaserAngle = 265f;
         public float endLaserAngle = 120f;
+        /// <summary>Angular step in degrees per raycast iteration while sweeping the laser.</summary>
         public float laserStepM = 0.33f;
         public float minSquareLaserDist = 5f;
         public float laserAngleSpeed = 120f;
         public float laserAngleAcceleration = 80f;
         public float laserVolume = 0.25f;
+        /// <summary>Name of the martini glass grenade prefab.</summary>
         public string martiniGrenadeName = "MartiniGlass";
+        /// <summary>Name of the tear gas grenade prefab.</summary>
         public string tearGasGrenadeName = "TearGas";
 
+        /// <summary>Sounds played when activating the jetpack gadget.</summary>
         public AudioClip[] special3Sounds;
+        /// <summary>Sounds played when activating the laser wristwatch gadget.</summary>
         public AudioClip[] special2Sounds;
+        /// <summary>Sounds played when the jetpack fires its liftoff blast.</summary>
         public AudioClip[] attack3Sounds;
+        /// <summary>Sounds played during the martini-drinking animation.</summary>
         public AudioClip[] attack2Sounds;
-
+        /// <summary>Sounds played when equipping and removing the balaclava.</summary>
         public AudioClip[] attack4Sounds;
         [JsonIgnore]
         private DoubleBroSevenSpecialType currentSpecialType;
@@ -309,9 +333,9 @@ namespace BroMakerLib.Vanilla.Specials
                 case DoubleBroSevenSpecialType.Martini:
                     hero.SetSpriteOffset(0f, 0f);
                     hero.DeactivateGun();
-                    hero.FrameRate = 0.0334f;
+                    hero.FrameRate = frameRate;
                     int martiniCol = Mathf.Clamp(usingSpecialFrame, 0, 10);
-                    hero.Sprite.SetLowerLeftPixel(martiniCol * hero.SpritePixelWidth, hero.SpritePixelHeight * 7);
+                    hero.Sprite.SetLowerLeftPixel(martiniCol * hero.SpritePixelWidth, hero.SpritePixelHeight * martiniRow);
                     if (usingSpecialFrame < 10 && isWalking) owner.speed = 0f;
                     else owner.speed = originalSpeed;
                     if (usingSpecialFrame == 5)
@@ -328,9 +352,9 @@ namespace BroMakerLib.Vanilla.Specials
                 case DoubleBroSevenSpecialType.Jetpack:
                     hero.SetSpriteOffset(0f, 0f);
                     hero.DeactivateGun();
-                    hero.FrameRate = 0.0334f;
-                    int jetCol = 14 + Mathf.Clamp(usingSpecialFrame, 0, 6);
-                    hero.Sprite.SetLowerLeftPixel(jetCol * hero.SpritePixelWidth, hero.SpritePixelHeight * 8);
+                    hero.FrameRate = frameRate;
+                    int jetCol = jetpackSpriteColumn + Mathf.Clamp(usingSpecialFrame, 0, 6);
+                    hero.Sprite.SetLowerLeftPixel(jetCol * hero.SpritePixelWidth, hero.SpritePixelHeight * jetpackRow);
                     if (usingSpecialFrame < 5 && isWalking) owner.speed = 0f;
                     else owner.speed = originalSpeed;
                     if (usingSpecialFrame == 5 && !jetpackActivated) UseSpecial();
@@ -340,9 +364,9 @@ namespace BroMakerLib.Vanilla.Specials
                 case DoubleBroSevenSpecialType.LaserWristWatch:
                     hero.SetSpriteOffset(0f, 0f);
                     hero.DeactivateGun();
-                    hero.FrameRate = 0.0334f;
+                    hero.FrameRate = frameRate;
                     int laserCol = Mathf.Clamp(usingSpecialFrame, 0, 12);
-                    hero.Sprite.SetLowerLeftPixel(laserCol * hero.SpritePixelWidth, hero.SpritePixelHeight * 8);
+                    hero.Sprite.SetLowerLeftPixel(laserCol * hero.SpritePixelWidth, hero.SpritePixelHeight * laserRow);
                     if (isWalking) owner.speed = 0f;
                     if (usingSpecialFrame == 9) UseSpecial();
                     usingSpecialFrame++;
@@ -351,9 +375,9 @@ namespace BroMakerLib.Vanilla.Specials
                 case DoubleBroSevenSpecialType.Balaclava:
                     hero.SetSpriteOffset(0f, 0f);
                     hero.DeactivateGun();
-                    hero.FrameRate = 0.0334f;
-                    int balaCol = 26 + Mathf.Clamp(usingSpecialFrame, 0, 5);
-                    hero.Sprite.SetLowerLeftPixel(balaCol * hero.SpritePixelWidth, hero.SpritePixelHeight * 8);
+                    hero.FrameRate = frameRate;
+                    int balaCol = balaclavaColumn + Mathf.Clamp(usingSpecialFrame, 0, 5);
+                    hero.Sprite.SetLowerLeftPixel(balaCol * hero.SpritePixelWidth, hero.SpritePixelHeight * balaclavaRow);
                     if (isWalking) owner.speed = 0f;
                     if (usingSpecialFrame == 5)
                     {
@@ -368,9 +392,9 @@ namespace BroMakerLib.Vanilla.Specials
                 case DoubleBroSevenSpecialType.BalaclavaRemoval:
                     hero.SetSpriteOffset(0f, 0f);
                     hero.DeactivateGun();
-                    hero.FrameRate = 0.0334f;
-                    int removeCol = 26 + Mathf.Clamp(5 - usingSpecialFrame, 0, 5);
-                    hero.Sprite.SetLowerLeftPixel(removeCol * hero.SpritePixelWidth, hero.SpritePixelHeight * 8);
+                    hero.FrameRate = frameRate;
+                    int removeCol = balaclavaColumn + Mathf.Clamp(5 - usingSpecialFrame, 0, 5);
+                    hero.Sprite.SetLowerLeftPixel(removeCol * hero.SpritePixelWidth, hero.SpritePixelHeight * balaclavaRemoveRow);
                     if (isWalking) owner.speed = 0f;
                     if (usingSpecialFrame == 5) StopUsingSpecialInternal();
                     usingSpecialFrame++;

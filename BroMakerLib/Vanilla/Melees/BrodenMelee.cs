@@ -7,12 +7,12 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
+    /// <summary>Broden's impaling uppercut melee.</summary>
     [MeleePreset("Broden")]
     public class BrodenMelee : MeleeAbility
     {
         protected override HeroType SourceBroType => HeroType.Broden;
 
-        public int upperCutAnimationRow = 8;
         public AudioClip[] alternateMeleeMissSounds;
 
         [JsonIgnore] private bool hasPlayedUppercutSound;
@@ -22,6 +22,9 @@ namespace BroMakerLib.Vanilla.Melees
             meleeType = BroBase.MeleeType.Custom;
             startType = MeleeStartType.Custom;
             restartFrame = 1;
+            animationRow = 8;
+            animationColumn = 22;
+            frameRate = 0.033f;
         }
 
         protected override void CacheSoundsFromPrefab()
@@ -41,7 +44,7 @@ namespace BroMakerLib.Vanilla.Melees
             var sourceBro = HeroController.GetHeroPrefab(HeroType.Broden) as Broden;
             if (sourceBro != null)
             {
-                upperCutAnimationRow = sourceBro.upperCutAnimationRow;
+                animationRow = sourceBro.upperCutAnimationRow;
             }
         }
 
@@ -69,9 +72,9 @@ namespace BroMakerLib.Vanilla.Melees
         public override void AnimateMelee()
         {
             hero.AnimateMeleeCommon();
-            int num = 22 + Mathf.Clamp(owner.frame, 0, 9);
-            int num2 = upperCutAnimationRow;
-            hero.FrameRate = 0.033f;
+            int num = animationColumn + Mathf.Clamp(owner.frame, 0, 9);
+            int num2 = animationRow;
+            hero.FrameRate = frameRate;
             hero.Sprite.SetLowerLeftPixel((float)(num * hero.SpritePixelWidth), (float)(num2 * hero.SpritePixelHeight));
             if (owner.frame == 7)
             {

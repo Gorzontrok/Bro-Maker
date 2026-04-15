@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>Blade's horizontal sword dash.</summary>
     [SpecialPreset("Brade")]
     public class BladeSpecial : SpecialAbility
     {
@@ -23,18 +24,32 @@ namespace BroMakerLib.Vanilla.Specials
             }
         }
 
+        /// <summary>Horizontal speed during the dash.</summary>
         public float dashSpeed = 240f;
+        /// <summary>How long the dash lasts in seconds.</summary>
         public float dashDuration = 0.5f;
+        /// <summary>Minimum time between consecutive dashes.</summary>
         public float dashCooldown = 0.55f;
+        /// <summary>Volume of the dash initiation sound.</summary>
         public float specialSoundVolume = 0.7f;
+        /// <summary>Melee damage dealt to units hit during the dash.</summary>
         public int dashDamage = 5;
+        /// <summary>Radius within which incoming projectiles are deflected during the dash.</summary>
         public float deflectRange = 16f;
+        /// <summary>Radius used when checking for unit hits each dash tick.</summary>
         public float hitRange = 10f;
+        /// <summary>Radius used when damaging terrain during the dash.</summary>
         public float terrainDamageRange = 24f;
+        /// <summary>Damage dealt to terrain per dash tick.</summary>
         public int terrainDamage = 3;
-        public int dashSpriteRow = 1;
-        public int dashSpriteColumn = 23;
+        /// <summary>Sprite sheet column for the gun sprite during the dash.</summary>
         public int dashGunColumn = 11;
+
+        public BladeSpecial()
+        {
+            animationColumn = 23;
+            frameRate = 0.025f;
+        }
 
         [JsonIgnore]
         private float dashTime;
@@ -70,7 +85,7 @@ namespace BroMakerLib.Vanilla.Specials
                 dashTime = dashDuration;
                 dashStartTime = Time.time;
                 dashHeight = Y;
-                hero.FrameRate = 0.025f;
+                hero.FrameRate = frameRate;
                 hero.ChangeFrame();
             }
             else
@@ -137,7 +152,7 @@ namespace BroMakerLib.Vanilla.Specials
                 return true;
             }
 
-            hero.FrameRate = 0.025f;
+            hero.FrameRate = frameRate;
             if (owner.frame % 4 == 0)
             {
                 sound.PlaySoundEffectAt(attackSounds, 0.3f, owner.transform.position, 1.5f, true, false, false, 0f);
@@ -149,8 +164,8 @@ namespace BroMakerLib.Vanilla.Specials
             }
             owner.gunSprite.gameObject.SetActive(true);
             owner.actionState = ActionState.Jumping;
-            int column = dashSpriteColumn + owner.frame % 2;
-            hero.Sprite.SetLowerLeftPixel(column * hero.SpritePixelWidth, dashSpriteRow * hero.SpritePixelHeight);
+            int column = animationColumn + owner.frame % 2;
+            hero.Sprite.SetLowerLeftPixel(column * hero.SpritePixelWidth, animationRow * hero.SpritePixelHeight);
             return false;
         }
 

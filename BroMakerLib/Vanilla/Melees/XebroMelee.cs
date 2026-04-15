@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
+    /// <summary>Xebro's flip kick melee.</summary>
     [MeleePreset("Xebro")]
     public class XebroMelee : MeleeAbility
     {
@@ -15,9 +16,14 @@ namespace BroMakerLib.Vanilla.Melees
         public float flipGravityM = 0.7f;
         public float warCryVolume = 0.1f;
         public float wallInFrontAttackDistance = 24f;
+        public int flipKickColumn = 19;
+        /// <summary>Frame index within the flip animation at which the hit detection fires.</summary>
         public int flipKickHitFrame = 4;
+        /// <summary>Damage dealt by the flip kick hit.</summary>
         public int flipKickDamage = 5;
+        /// <summary>Radius of the flip kick hit detection.</summary>
         public float flipKickRange = 19f;
+        /// <summary>Volume of the flip kick attack sound effect.</summary>
         public float flipKickAttackVolume = 0.6f;
 
         [JsonIgnore] private bool isXebroFlipping;
@@ -67,6 +73,7 @@ namespace BroMakerLib.Vanilla.Melees
         public XebroMelee()
         {
             meleeType = BroBase.MeleeType.Custom;
+            animationRow = 11;
         }
 
         protected override void CacheSoundsFromPrefab()
@@ -255,7 +262,7 @@ namespace BroMakerLib.Vanilla.Melees
             }
             else if (!IsXebroFlipping)
             {
-                hero.Sprite.SetLowerLeftPixel((float)(owner.frame * hero.SpritePixelWidth), (float)(11 * hero.SpritePixelHeight));
+                hero.Sprite.SetLowerLeftPixel((float)(owner.frame * hero.SpritePixelWidth), (float)(animationRow * hero.SpritePixelHeight));
                 if (owner.frame > 13)
                 {
                     owner.frame = 0;
@@ -277,7 +284,7 @@ namespace BroMakerLib.Vanilla.Melees
                     Map.HitUnits(owner, owner, owner.playerNum, flipKickDamage, DamageType.Melee, flipKickRange, owner.X + Mathf.Sign(owner.xI) * 5f, owner.Y - 5f, owner.transform.localScale.x * 220f, 260f, true, true);
                     Sound.GetInstance().PlaySoundEffectAt(flipKickAttackSounds, flipKickAttackVolume, owner.transform.position, 1f, true, false, false, 0f);
                 }
-                hero.Sprite.SetLowerLeftPixel((float)((19 + owner.frame % 12) * hero.SpritePixelWidth), (float)(hero.SpritePixelHeight * 11));
+                hero.Sprite.SetLowerLeftPixel((float)((flipKickColumn + owner.frame % 12) * hero.SpritePixelWidth), (float)(hero.SpritePixelHeight * animationRow));
             }
         }
 

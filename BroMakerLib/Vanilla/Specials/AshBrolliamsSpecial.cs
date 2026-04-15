@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>Ash Brolliams's chainsaw rampage.</summary>
     [SpecialPreset("AshBrolliams")]
     public class AshBrolliamsSpecial : SpecialAbility
     {
@@ -20,23 +21,41 @@ namespace BroMakerLib.Vanilla.Specials
             if (sourceBro == null) return;
             if (effortSounds == null) effortSounds = sourceBro.soundHolder.effortSounds.CloneArray();
         }
+        /// <summary>How long the rampage lasts in seconds.</summary>
         public float rampageDuration = 5.5f;
+        /// <summary>Seconds between each chainsaw damage tick during rampage.</summary>
         public float rampageDamageRate = 0.03334f;
+        /// <summary>Damage per chainsaw tick against units.</summary>
         public int chainsawDamage = 1;
+        /// <summary>Horizontal hit range of the chainsaw sweep.</summary>
         public float chainsawRange = 16f;
+        /// <summary>Vertical hit range of the chainsaw sweep.</summary>
         public float chainsawYRange = 16f;
+        /// <summary>Horizontal impulse applied to units hit by the chainsaw.</summary>
         public float chainsawHitXI = 70f;
+        /// <summary>Vertical impulse applied to units hit by the chainsaw.</summary>
         public float chainsawHitYI = 70f;
+        /// <summary>Radius within which incoming projectiles are deflected during rampage.</summary>
         public float deflectRange = 20f;
+        /// <summary>Horizontal radius within which nearby enemies are panicked each tick.</summary>
         public float panicRange = 64f;
+        /// <summary>Vertical radius within which nearby enemies are panicked each tick.</summary>
         public float panicYRange = 16f;
+        /// <summary>How long the panic effect lasts on affected enemies.</summary>
         public float panicDuration = 0.5f;
+        /// <summary>Damage dealt to terrain per chainsaw tick.</summary>
         public int groundDamage = 3;
+        /// <summary>Speed multiplier applied when moving in the facing direction during rampage.</summary>
         public float speedForwardMultiplier = 1.6f;
+        /// <summary>Speed multiplier applied when not actively moving forward during rampage.</summary>
         public float speedDefaultMultiplier = 1.3f;
+        /// <summary>Duration of the invulnerability window granted when rampage ends.</summary>
         public float endInvulnerableTime = 0.5f;
+        /// <summary>Number of red-blood chainsaw hits before the HUD avatar switches to the bloody sprite.</summary>
         public int bloodyAvatarThreshold = 15;
+        /// <summary>Sprite sheet column of the first rampage gun animation frame.</summary>
         public int rampageGunColumn = 11;
+        /// <summary>Column offset added when the chainsaw hit an enemy on the last frame.</summary>
         public int rampageGunHitOffset = 3;
 
         [JsonIgnore]

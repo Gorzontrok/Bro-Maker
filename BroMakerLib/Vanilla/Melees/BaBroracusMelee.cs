@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
+    /// <summary>B.A. Broracus's punch melee.</summary>
     [MeleePreset("BaBroracus")]
     public class BaBroracusMelee : MeleeAbility
     {
@@ -20,6 +21,7 @@ namespace BroMakerLib.Vanilla.Melees
             animationFrameCount = 9;
             hitFrame = 4;
             endFrame = 7;
+            jumpingAnimationRow = 10;
         }
 
         public override void StartMelee()
@@ -45,11 +47,11 @@ namespace BroMakerLib.Vanilla.Melees
         public override void AnimateMelee()
         {
             hero.AnimateMeleeCommon();
-            int num = 25 + Mathf.Clamp(owner.frame, 0, 8);
-            int num2 = 9;
+            int num = animationColumn + Mathf.Clamp(owner.frame, 0, 8);
+            int num2 = animationRow;
             if (hero.JumpingMelee)
             {
-                num2 = 10;
+                num2 = jumpingAnimationRow;
             }
             if (owner.frame == 4)
             {

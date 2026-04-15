@@ -6,13 +6,18 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
+    /// <summary>Indiana Brones's whip melee.</summary>
     [MeleePreset("IndianaBrones")]
     public class IndianaBronesMelee : MeleeAbility
     {
         protected override HeroType SourceBroType => HeroType.IndianaBrones;
 
-        public float meleeFrameRate = 0.03334f;
         public float wallHitVolume = 0.2f;
+
+        public IndianaBronesMelee()
+        {
+            frameRate = 0.03334f;
+        }
 
         public AudioClip[] wallHitSounds;
         public AudioClip[] specialAttackSounds;
@@ -80,9 +85,9 @@ namespace BroMakerLib.Vanilla.Melees
             {
                 hero.ActivateGun();
                 meleeCounter += hero.DeltaTime;
-                if (meleeCounter >= meleeFrameRate)
+                if (meleeCounter >= frameRate)
                 {
-                    meleeCounter -= meleeFrameRate;
+                    meleeCounter -= frameRate;
                     meleeFrame++;
                     AnimateMelee();
                 }
@@ -114,7 +119,7 @@ namespace BroMakerLib.Vanilla.Melees
             {
                 hero.MeleeFollowUp = false;
             }
-            hero.FrameRate = 0.0333f;
+            hero.FrameRate = frameRate;
             if (meleeFrame == 3)
             {
                 if (Map.HitClosestUnit(owner, PlayerNum, 4, DamageType.Blade, 14f, 24f, X + owner.transform.localScale.x * 8f, Y + 8f, owner.transform.localScale.x * 170f, 300f, true, true, owner.IsMine, false, true))

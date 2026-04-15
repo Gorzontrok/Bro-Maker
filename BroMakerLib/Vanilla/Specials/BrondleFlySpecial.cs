@@ -7,18 +7,28 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>Seth BrondleFly's teleport-and-telefrag special.</summary>
     [SpecialPreset("SethBrondle")]
     public class BrondleFlySpecial : SpecialAbility
     {
         protected override HeroType SourceBroType => HeroType.BrondleFly;
+        /// <summary>Minimum time in seconds between successive teleport uses.</summary>
         public float cooldownTime = 0.12f;
+        /// <summary>Maximum teleport range when searching for enemies or open spots.</summary>
         public float targetRange = 80f;
+        /// <summary>Maximum angle in degrees from the input direction when targeting an enemy.</summary>
         public float maxTargetAngle = 50f;
+        /// <summary>Radius for the secondary enemy scan around the resolved target position.</summary>
         public float secondarySearchRange = 32f;
+        /// <summary>Minimum distance that must be covered before ammo is consumed.</summary>
         public float teleportMinDistance = 16f;
+        /// <summary>Volume of the teleport sound effect.</summary>
         public float teleportSoundVolume = 0.5f;
+        /// <summary>Speed at which the camera lerps from the pre-teleport position to the new position.</summary>
         public float camLerpSpeed = 2f;
+        /// <summary>Damage dealt to the Satan miniboss on a telefrag (regular enemies are one-shot).</summary>
         public int satanDamage = 50;
+        /// <summary>Vertical velocity applied when teleporting while holding up.</summary>
         public float jumpYI = 120f;
 
         [JsonIgnore]

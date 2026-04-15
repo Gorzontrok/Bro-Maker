@@ -6,11 +6,14 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>Nebro's projectile-return zone special.</summary>
     [SpecialPreset("MrAnderbro")]
     public class NebroSpecial : SpecialAbility
     {
         protected override HeroType SourceBroType => HeroType.Nebro;
+        /// <summary>Minimum seconds between successive zone placements.</summary>
         public float zoneCooldown = 0.33f;
+        /// <summary>Seconds of invulnerability granted on each use.</summary>
         public float invulnerableOnUse = 0.2f;
 
         [JsonIgnore]
@@ -21,6 +24,11 @@ namespace BroMakerLib.Vanilla.Specials
         [JsonIgnore]
         private float lastReturnZoneTime;
 #pragma warning restore 649
+
+        public NebroSpecial()
+        {
+            animationRow = 1;
+        }
 
         public override void Initialize(TestVanDammeAnim owner)
         {
@@ -41,9 +49,9 @@ namespace BroMakerLib.Vanilla.Specials
         {
             hero.SetSpriteOffset(0f, 0f);
             hero.DeactivateGun();
-            hero.FrameRate = 0.0334f;
+            hero.FrameRate = frameRate;
             int column = 16 + Mathf.Clamp(owner.frame, 0, 4);
-            hero.Sprite.SetLowerLeftPixel(column * hero.SpritePixelWidth, hero.SpritePixelHeight);
+            hero.Sprite.SetLowerLeftPixel(column * hero.SpritePixelWidth, animationRow * hero.SpritePixelHeight);
             if (owner.frame == 2)
             {
                 UseSpecial();

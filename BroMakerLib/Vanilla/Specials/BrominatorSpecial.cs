@@ -9,15 +9,22 @@ using World.Generation.MapGenV4;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>Brominator's metal-exoskeleton mode.</summary>
     [SpecialPreset("Brominator")]
     public class BrominatorSpecial : SpecialAbility
     {
         protected override HeroType SourceBroType => HeroType.Brominator;
+        /// <summary>Duration of metal mode in standard campaign levels.</summary>
         public float normalDuration = 5.5f;
+        /// <summary>Duration of metal mode in deathmatch.</summary>
         public float deathMatchDuration = 4.5f;
+        /// <summary>Duration of metal mode in proc-gen levels.</summary>
         public float procGenDuration = 2f;
+        /// <summary>Speed multiplier applied while in metal mode.</summary>
         public float speedMultiplier = 0.7f;
+        /// <summary>Fraction of incoming knockback force absorbed while in metal mode.</summary>
         public float knockbackAbsorption = 0.1f;
+        /// <summary>Duration of the invulnerability window granted when metal mode ends.</summary>
         public float endInvulnerableTime = 0.5f;
 
         [JsonIgnore]

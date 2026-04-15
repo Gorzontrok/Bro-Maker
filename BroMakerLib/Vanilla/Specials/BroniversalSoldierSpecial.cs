@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>Broniversal Soldier's serum-frenzy cheat-death special.</summary>
     [SpecialPreset("BroniversalSoldier")]
     public class BroniversalSoldierSpecial : SpecialAbility
     {
@@ -22,10 +23,15 @@ namespace BroMakerLib.Vanilla.Specials
         }
         public float serumDuration = 6.5f;
         public float deathGracePeriod = 0.66f;
+        /// <summary>Radius within which dead allies are revived while serum frenzy is active.</summary>
         public float reviveRadius = 15f;
+        /// <summary>Time in seconds between each revive pulse during serum frenzy.</summary>
         public float reviveInterval = 0.1f;
+        /// <summary>Volume of the revive sound played on each pulse.</summary>
         public float reviveSoundVolume = 0.6f;
+        /// <summary>Cumulative damage received after death that ends the serum frenzy early.</summary>
         public int overkillThreshold = 35;
+        /// <summary>Sound played when the serum is activated.</summary>
         public AudioClip[] special4Sounds;
 
         [JsonIgnore]
@@ -332,7 +338,6 @@ namespace BroMakerLib.Vanilla.Specials
                 fire = false;
             }
 
-            // Facing correction when firing
             if (fire)
             {
                 if (owner.transform.localScale.x < 0f && zombie.transform.localScale.x > 0f)
@@ -347,7 +352,6 @@ namespace BroMakerLib.Vanilla.Specials
                 }
             }
 
-            // Horizontal position correction (when idle)
             if (zombieDelay <= 0f)
             {
                 if (!owner.left && !owner.right && !fire)
@@ -367,7 +371,6 @@ namespace BroMakerLib.Vanilla.Specials
                     }
                 }
 
-                // Vertical position correction (when idle)
                 if (!owner.up && !owner.down && !fire)
                 {
                     if (zombie.Y > Y - 32f && zombie.Y < Y - 2f)

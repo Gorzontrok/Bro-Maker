@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
+    /// <summary>Shared base for throwing-knife melee. Extended by: TheBrodeMelee.</summary>
     [MeleePreset("KnifeThrowMelee")]
     public class KnifeThrowMelee : MeleeAbility
     {
@@ -23,6 +24,7 @@ namespace BroMakerLib.Vanilla.Melees
             startType = MeleeStartType.Custom;
             moveType = MeleeMoveType.Punch;
             restartFrame = 3;
+            animationRow = 7;
         }
 
         public override void Initialize(TestVanDammeAnim owner)
@@ -67,9 +69,9 @@ namespace BroMakerLib.Vanilla.Melees
                 owner.frame = 1;
                 hero.MeleeFollowUp = false;
             }
-            hero.FrameRate = 0.025f;
-            int num = 25 + Mathf.Clamp(owner.frame, 0, 6);
-            int num2 = 7;
+            hero.FrameRate = frameRate;
+            int num = animationColumn + Mathf.Clamp(owner.frame, 0, 6);
+            int num2 = animationRow;
             hero.Sprite.SetLowerLeftPixel((float)(num * hero.SpritePixelWidth), (float)(num2 * hero.SpritePixelHeight));
             if (owner.frame == 3 && !knifeThrown)
             {

@@ -7,17 +7,26 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>Colonel James Brodock's cluster-grenade launch special.</summary>
     [SpecialPreset("ColonelJamesBroddock")]
     public class ColJamesBrodockSpecial : SpecialAbility
     {
         protected override HeroType SourceBroType => HeroType.ColJamesBroddock;
+        /// <summary>Name of the grenade prefab launched during the special.</summary>
         public string grenadeName = "Cluster";
+        /// <summary>Horizontal launch speed for a standard (non-ducking) throw.</summary>
         public float shootSpeedX = 250f;
+        /// <summary>Vertical launch speed for a standard (non-ducking) throw.</summary>
         public float shootSpeedY = 60f;
+        /// <summary>Multiplier applied to `shootSpeedX` when throwing while ducking.</summary>
         public float duckingSpeedMultiplier = 0.3f;
+        /// <summary>Vertical launch speed used when throwing while ducking.</summary>
         public float duckingSpeedY = 25f;
+        /// <summary>Fraction of the bro's current horizontal velocity added to the throw speed.</summary>
         public float momentumX = 0.45f;
+        /// <summary>Fraction of the bro's current upward velocity added to the throw speed.</summary>
         public float momentumY = 0.3f;
+        /// <summary>Volume of the throw attack sound.</summary>
         public float attackSoundVolume = 0.4f;
 
         [JsonIgnore]
@@ -51,7 +60,7 @@ namespace BroMakerLib.Vanilla.Specials
         {
             hero.SetSpriteOffset(0f, 0f);
             hero.ActivateGun();
-            hero.FrameRate = 0.0334f;
+            hero.FrameRate = frameRate;
             hero.SetGunSprite(5 - owner.frame, 0);
             if (owner.frame == 0)
             {

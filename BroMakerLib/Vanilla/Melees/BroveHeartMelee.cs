@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
+    /// <summary>BroveHeart's sword-throw and knife melee.</summary>
     [MeleePreset("BroveHeart")]
     public class BroveHeartMelee : MeleeAbility
     {
@@ -103,19 +104,19 @@ namespace BroMakerLib.Vanilla.Melees
             if (isDisarmed && !throwingSword)
             {
                 hero.AnimateMeleeCommon();
-                int num = 25 + Mathf.Clamp(owner.frame, 0, 6);
-                int num2 = 1;
+                int num = animationColumn + Mathf.Clamp(owner.frame, 0, 6);
+                int num2 = animationRow;
                 if (!hero.StandingMelee)
                 {
                     if (hero.JumpingMelee)
                     {
-                        num = 17 + Mathf.Clamp(owner.frame, 0, 6);
-                        num2 = 6;
+                        num = jumpingAnimationColumn + Mathf.Clamp(owner.frame, 0, 6);
+                        num2 = jumpingAnimationRow;
                     }
                     else if (hero.DashingMelee)
                     {
-                        num = 17 + Mathf.Clamp(owner.frame, 0, 6);
-                        num2 = 6;
+                        num = jumpingAnimationColumn + Mathf.Clamp(owner.frame, 0, 6);
+                        num2 = jumpingAnimationRow;
                         if (owner.frame == 4)
                         {
                             owner.counter -= 0.0334f;
@@ -154,21 +155,21 @@ namespace BroMakerLib.Vanilla.Melees
                     owner.counter -= 0.0334f;
                 }
                 hero.SetGunSprite(9 + owner.frame, 0);
-                hero.FrameRate = 0.025f;
+                hero.FrameRate = frameRate;
                 if (hero.StandingMelee)
                 {
-                    int num = 25 + Mathf.Clamp(owner.frame, 0, 6);
-                    hero.Sprite.SetLowerLeftPixel((float)(num * hero.SpritePixelWidth), (float)hero.SpritePixelHeight);
+                    int num = animationColumn + Mathf.Clamp(owner.frame, 0, 6);
+                    hero.Sprite.SetLowerLeftPixel((float)(num * hero.SpritePixelWidth), (float)(animationRow * hero.SpritePixelHeight));
                 }
                 else if (hero.JumpingMelee)
                 {
-                    int num2 = 17 + Mathf.Clamp(owner.frame, 0, 6);
-                    hero.Sprite.SetLowerLeftPixel((float)(num2 * hero.SpritePixelWidth), (float)(hero.SpritePixelHeight * 6));
+                    int num2 = jumpingAnimationColumn + Mathf.Clamp(owner.frame, 0, 6);
+                    hero.Sprite.SetLowerLeftPixel((float)(num2 * hero.SpritePixelWidth), (float)(hero.SpritePixelHeight * jumpingAnimationRow));
                 }
                 else if (hero.DashingMelee)
                 {
-                    int num3 = 17 + Mathf.Clamp(owner.frame, 0, 6);
-                    hero.Sprite.SetLowerLeftPixel((float)(num3 * hero.SpritePixelWidth), (float)(hero.SpritePixelHeight * 6));
+                    int num3 = jumpingAnimationColumn + Mathf.Clamp(owner.frame, 0, 6);
+                    hero.Sprite.SetLowerLeftPixel((float)(num3 * hero.SpritePixelWidth), (float)(hero.SpritePixelHeight * jumpingAnimationRow));
                     if (owner.frame == 4)
                     {
                         owner.counter -= 0.0334f;

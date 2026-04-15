@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
+    /// <summary>Desperabro's knife melee.</summary>
     [MeleePreset("Desperabro")]
     public class DesperabroMelee : MeleeAbility
     {
@@ -39,15 +40,12 @@ namespace BroMakerLib.Vanilla.Melees
                 return;
             }
             var desperabroSpecial = hero != null ? hero.SpecialAbility as DesperabroSpecial : null;
-            if (desperabroSpecial != null && desperabroSpecial.GetFieldValue<bool>("isSerenading"))
+            if (desperabroSpecial != null && desperabroSpecial.IsSerenading)
             {
                 desperabroSpecial.CallMethod("FinishSerenadingAndUnleashHell");
                 return;
             }
-            if (!(owner is Desperabro))
-            {
-                sound.PlaySoundEffectAt(missSounds, 0.7f, owner.transform.position, 1f, true, false, false, 0f);
-            }
+            sound.PlaySoundEffectAt(missSounds, 0.7f, owner.transform.position, 1f, true, false, false, 0f);
             hero.ShowHighFiveAfterMeleeTimer = 0f;
             hero.JumpTime = 0f;
             hero.DeactivateGun();
@@ -73,19 +71,19 @@ namespace BroMakerLib.Vanilla.Melees
             {
                 hero.FrameRate = 0.0125f;
             }
-            int num = 25 + Mathf.Clamp(owner.frame, 0, 6);
-            int num2 = 1;
+            int num = animationColumn + Mathf.Clamp(owner.frame, 0, 6);
+            int num2 = animationRow;
             if (!hero.StandingMelee)
             {
                 if (hero.JumpingMelee)
                 {
-                    num = 17 + Mathf.Clamp(owner.frame, 0, 6);
-                    num2 = 6;
+                    num = jumpingAnimationColumn + Mathf.Clamp(owner.frame, 0, 6);
+                    num2 = jumpingAnimationRow;
                 }
                 else if (hero.DashingMelee)
                 {
-                    num = 17 + Mathf.Clamp(owner.frame, 0, 6);
-                    num2 = 6;
+                    num = jumpingAnimationColumn + Mathf.Clamp(owner.frame, 0, 6);
+                    num2 = jumpingAnimationRow;
                     if (owner.frame == 4)
                     {
                         owner.counter -= 0.0334f;

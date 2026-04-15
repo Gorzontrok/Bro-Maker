@@ -1,17 +1,22 @@
+using System.Collections.Generic;
 using BroMakerLib.Abilities;
 using UnityEngine;
 
 namespace BroMakerLib.CustomObjects
 {
     /// <summary>
-    /// Interface for bros that host the ability system. Provides direct access to protected
-    /// fields and methods that abilities need, avoiding reflection overhead. Implemented by
-    /// vanilla bro wrappers (generated from RambroM template).
+    /// Interface for bros that host the ability system.
     /// </summary>
     public interface IAbilityOwner
     {
         SpecialAbility SpecialAbility { get; }
         MeleeAbility MeleeAbility { get; }
+
+        /// <summary>All passive abilities attached to this bro, in JSON-declared order. Do not mutate the returned list directly; use the bro's `AddPassive`/`RemovePassive`/`ClearPassives` helpers.</summary>
+        List<PassiveAbility> Passives { get; }
+
+        /// <summary>Returns the first attached passive of type <typeparamref name="T" />, or null if none.</summary>
+        T GetPassive<T>() where T : PassiveAbility;
 
         #region Field Accessors
         SpriteSM Sprite { get; }

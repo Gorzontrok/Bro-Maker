@@ -6,12 +6,15 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
+    /// <summary>TheBrocketeer's jetpack punch melee.</summary>
     [MeleePreset("Brocketeer")]
     public class TheBrocketeerMelee : MeleeAbility
     {
         protected override HeroType SourceBroType => HeroType.TheBrocketeer;
 
+        /// <summary>Horizontal blast force applied each frame while the jetpack punch is in flight.</summary>
         public float jetpackThrustForce = 200f;
+        /// <summary>Force used when kicking doors during the jetpack punch.</summary>
         public float doorKickForce = 50f;
 
         public TheBrocketeerMelee()
@@ -45,7 +48,6 @@ namespace BroMakerLib.Vanilla.Melees
             hero.AnimateMeleeCommon();
             int col = animationColumn + Mathf.Clamp(owner.frame, 0, 8);
             int row = animationRow;
-            // Frame delays matching vanilla AnimatePunch
             if (owner.frame == 5)
             {
                 owner.counter -= 0.0334f;
@@ -74,7 +76,7 @@ namespace BroMakerLib.Vanilla.Melees
 
         public override void RunMeleeMovement()
         {
-            owner.CallMethod("ApplyFallingGravity");
+            hero.ApplyFallingGravity();
             if (owner.frame > 1)
             {
                 if (owner.frame < 5 && !hero.MeleeHasHit)

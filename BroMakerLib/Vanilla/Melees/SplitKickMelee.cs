@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
+    /// <summary>Shared base for split kick melee. Used by: TimeBroVanDamme.</summary>
     [MeleePreset("SplitKickMelee")]
     public class SplitKickMelee : MeleeAbility
     {
@@ -17,7 +18,12 @@ namespace BroMakerLib.Vanilla.Melees
         public SplitKickMelee()
         {
             meleeType = BroBase.MeleeType.VanDammeKick;
+            animationColumn = 24;
+            animationRow = 9;
         }
+
+        public int splitKickRow = 10;
+        public int jumpingFallingRow = 11;
 
         protected override void CacheSoundsFromPrefab()
         {
@@ -47,7 +53,6 @@ namespace BroMakerLib.Vanilla.Melees
 
         public override void AnimateMelee()
         {
-            hero.FrameRate = 0.05f;
             hero.SetSpriteOffset(0f, 0f);
             hero.RollingFrames = 0;
             if (owner.frame == 7 && hero.MeleeFollowUp)
@@ -57,7 +62,7 @@ namespace BroMakerLib.Vanilla.Melees
                 hero.MeleeFollowUp = false;
                 hero.ResetMeleeValues();
             }
-            hero.FrameRate = 0.025f;
+            hero.FrameRate = frameRate;
             if (owner.frame == 2 && hero.NearbyMook != null && hero.NearbyMook.CanBeThrown() && hero.HighFive)
             {
                 hero.CancelMelee();
@@ -91,23 +96,23 @@ namespace BroMakerLib.Vanilla.Melees
                 }
                 hero.HasJumpedForKick = true;
             }
-            int num = 9;
+            int num = animationRow;
             if (hero.JumpingMelee)
             {
                 if (owner.yI <= 0f)
                 {
-                    num = 11;
+                    num = jumpingFallingRow;
                 }
                 else
                 {
-                    num = 9;
+                    num = animationRow;
                 }
             }
             if (hero.SplitKick)
             {
-                num = 10;
+                num = splitKickRow;
             }
-            int num2 = 24 + owner.frame;
+            int num2 = animationColumn + owner.frame;
             hero.Sprite.SetLowerLeftPixel((float)(num2 * hero.SpritePixelWidth), (float)(hero.SpritePixelHeight * num));
             if (owner.frame > 7)
             {

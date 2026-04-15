@@ -2,6 +2,7 @@ using BroMakerLib.Attributes;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>Broffy's holy water grenade.</summary>
     [SpecialPreset("Broffy")]
     public class BroffySpecial : GrenadeThrowSpecial
     {

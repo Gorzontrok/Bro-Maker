@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>Snake Broskin's hologram-grenade and teleport special.</summary>
     [SpecialPreset("SnakeBroskin")]
     public class SnakeBroskinSpecial : SpecialAbility
     {
@@ -20,33 +21,48 @@ namespace BroMakerLib.Vanilla.Specials
             if (sourceBro == null) return;
             if (special2Sounds == null) special2Sounds = sourceBro.soundHolder.special2Sounds.CloneArray();
         }
+        /// <summary>Name of the grenade prefab used as the hologram decoy.</summary>
         public string grenadeName = "Hologram";
+        /// <summary>Playback volume for the hologram throw sound.</summary>
         public float throwSoundVolume = 0.4f;
+        /// <summary>Playback volume for the teleport arrival sound.</summary>
         public float teleportSoundVolume = 0.4f;
+        /// <summary>Seconds the bro spends fading out before teleporting to the hologram.</summary>
         public float fadeToHoloDuration = 0.75f;
+        /// <summary>Damage dealt to nearby enemies on teleport arrival.</summary>
         public int teleportExplosionDamage = 20;
+        /// <summary>Radius of the teleport arrival explosion, in world units.</summary>
         public float teleportExplosionRange = 16f;
 
+        /// <summary>Horizontal offset from the bro's position when spawning the hologram standing.</summary>
         public float standingXOffset = 8f;
+        /// <summary>Vertical offset from the bro's position when spawning the hologram standing.</summary>
         public float standingYOffset = 8f;
+        /// <summary>Horizontal throw velocity for the hologram when standing.</summary>
         public float standingThrowXI = 200f;
+        /// <summary>Vertical throw velocity for the hologram when standing.</summary>
         public float standingThrowYI = 150f;
 
+        /// <summary>Horizontal offset from the bro's position when spawning the hologram ducking.</summary>
         public float duckingXOffset = 6f;
+        /// <summary>Vertical offset from the bro's position when spawning the hologram ducking.</summary>
         public float duckingYOffset = 3f;
+        /// <summary>Horizontal throw velocity for the hologram when ducking.</summary>
         public float duckingThrowXI = 30f;
+        /// <summary>Vertical throw velocity for the hologram when ducking.</summary>
         public float duckingThrowYI = 70f;
 
+        /// <summary>Sprite sheet row for the flip-off animation.</summary>
         public int flipAnimationRow = 11;
+        /// <summary>Starting sprite sheet column for the flip-off animation.</summary>
         public int flipAnimationColumn = 25;
+        /// <summary>Number of frames in the flip-off animation.</summary>
         public int flipAnimationFrameCount = 5;
+        /// <summary>Duration of each flip-off animation frame, in seconds.</summary>
         public float flipFrameRate = 0.075f;
 
-        public int throwAnimationRow = 5;
-        public int throwAnimationColumn = 17;
-        public int throwAnimationFrameCount = 8;
-        public float throwFrameRate = 0.0334f;
 
+        /// <summary>Sound played on teleport arrival.</summary>
         public AudioClip[] special2Sounds;
 
         [JsonIgnore]
@@ -106,9 +122,9 @@ namespace BroMakerLib.Vanilla.Specials
             }
             else
             {
-                hero.FrameRate = throwFrameRate;
-                int column = throwAnimationColumn + Mathf.Clamp(owner.frame, 0, throwAnimationFrameCount - 1);
-                hero.Sprite.SetLowerLeftPixel(column * hero.SpritePixelWidth, throwAnimationRow * hero.SpritePixelHeight);
+                hero.FrameRate = frameRate;
+                int column = animationColumn + Mathf.Clamp(owner.frame, 0, animationFrameCount - 1);
+                hero.Sprite.SetLowerLeftPixel(column * hero.SpritePixelWidth, animationRow * hero.SpritePixelHeight);
             }
             if (owner.frame == 4)
             {

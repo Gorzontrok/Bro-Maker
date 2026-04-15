@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
+    /// <summary>Cherry Broling's flip-kick knife melee.</summary>
     [MeleePreset("CherryBroling")]
     public class CherryBrolingMelee : MeleeAbility
     {
@@ -18,6 +19,9 @@ namespace BroMakerLib.Vanilla.Melees
             meleeType = BroBase.MeleeType.FlipKick;
             startType = MeleeStartType.Custom;
             restartFrame = 3;
+            animationRow = 9;
+            animationColumn = 18;
+            frameRate = 0.0167f;
         }
 
         protected override void CacheSoundsFromPrefab()
@@ -64,8 +68,8 @@ namespace BroMakerLib.Vanilla.Melees
         public override void AnimateMelee()
         {
             hero.AnimateMeleeCommon();
-            int num = 18 + Mathf.Clamp(owner.frame, 0, 11);
-            hero.Sprite.SetLowerLeftPixel((float)(num * hero.SpritePixelWidth), (float)(9 * hero.SpritePixelHeight));
+            int num = animationColumn + Mathf.Clamp(owner.frame, 0, 11);
+            hero.Sprite.SetLowerLeftPixel((float)(num * hero.SpritePixelWidth), (float)(animationRow * hero.SpritePixelHeight));
             if (owner.frame > 3 && !hero.MeleeHasHit)
             {
                 hero.KickDoors(24f);
@@ -73,7 +77,7 @@ namespace BroMakerLib.Vanilla.Melees
             if (owner.frame >= 9 && owner.frame <= 13 && !hero.MeleeHasHit)
             {
                 PerformKnifeKickMeleeAttack(true, true);
-                hero.FrameRate = 0.0167f;
+                hero.FrameRate = frameRate;
             }
             if (owner.frame == 9 && !owner.IsOnGround())
             {

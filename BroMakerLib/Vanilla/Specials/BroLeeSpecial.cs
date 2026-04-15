@@ -9,6 +9,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>Bro Lee's multi-directional sword combo.</summary>
     [SpecialPreset("BroLee")]
     public class BroLeeSpecial : SpecialAbility
     {
@@ -24,19 +25,34 @@ namespace BroMakerLib.Vanilla.Specials
             if (attack2Sounds == null) attack2Sounds = sourceBro.soundHolder.attack2Sounds.CloneArray();
             if (attack3Sounds == null) attack3Sounds = sourceBro.soundHolder.attack3Sounds.CloneArray();
         }
+        /// <summary>Number of combo strikes before the special ends.</summary>
         public int maxHits = 15;
         public int enemySwordDamage = 5;
         public int groundSwordDamage = 1;
+        /// <summary>Volume of the special activation sound.</summary>
         public float specialSoundVolume = 0.7f;
+        /// <summary>Volume of the special intro vocal sound.</summary>
         public float special4SoundVolume = 0.5f;
+        /// <summary>Volume of the per-swing sword sounds.</summary>
         public float attackSoundVolume = 0.6f;
+        /// <summary>Intro vocal sound played when the special activates.</summary>
         public AudioClip[] special4Sounds;
+        /// <summary>Slice impact sound played on a successful hit.</summary>
         public AudioClip[] special2Sounds;
+        /// <summary>Wall-hit sound played when the sword strikes terrain.</summary>
         public AudioClip[] attack2Sounds;
+        /// <summary>Bruce Lee vocal played when launching each attack.</summary>
         public AudioClip[] attack3Sounds;
+        /// <summary>Animation frame index at which the forward strike deals damage.</summary>
         public int attackForwardsStrikeFrame = 3;
+        /// <summary>Animation frame index at which the upward strike deals damage.</summary>
         public int attackUpwardsStrikeFrame = 2;
+        /// <summary>Animation frame index at which the downward strike deals damage.</summary>
         public int attackDownwardsStrikeFrame = 3;
+        public int attackForwardsRow = 8;
+        public int attackUpwardsRow = 10;
+        public int attackDownwardsRow = 11;
+        /// <summary>Radius used when searching for the nearest enemy to home toward during a special combo.</summary>
         public float targetRange = 64f;
 
         [JsonIgnore]
@@ -517,7 +533,7 @@ namespace BroMakerLib.Vanilla.Specials
             else
             {
                 int col = (hero.UsingSpecial ? 0 : 24) + Mathf.Clamp(attackFrames, 0, 7);
-                hero.Sprite.SetLowerLeftPixel(col * hero.SpritePixelWidth, (8 + attackSpriteRow) * hero.SpritePixelHeight);
+                hero.Sprite.SetLowerLeftPixel(col * hero.SpritePixelWidth, (attackForwardsRow + attackSpriteRow) * hero.SpritePixelHeight);
             }
         }
 
@@ -566,7 +582,7 @@ namespace BroMakerLib.Vanilla.Specials
             else
             {
                 int col = (hero.UsingSpecial ? 0 : 24) + Mathf.Clamp(attackFrames, 0, 7);
-                hero.Sprite.SetLowerLeftPixel(col * hero.SpritePixelWidth, 10 * hero.SpritePixelHeight);
+                hero.Sprite.SetLowerLeftPixel(col * hero.SpritePixelWidth, attackUpwardsRow * hero.SpritePixelHeight);
             }
         }
 
@@ -604,7 +620,7 @@ namespace BroMakerLib.Vanilla.Specials
             else
             {
                 int col = 24 + Mathf.Clamp(attackFrames, 0, 7);
-                hero.Sprite.SetLowerLeftPixel(col * hero.SpritePixelWidth, 11 * hero.SpritePixelHeight);
+                hero.Sprite.SetLowerLeftPixel(col * hero.SpritePixelWidth, attackDownwardsRow * hero.SpritePixelHeight);
             }
             if (attackFrames == 7 && hero.UsingSpecial)
             {

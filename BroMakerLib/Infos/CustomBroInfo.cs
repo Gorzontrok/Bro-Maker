@@ -27,6 +27,9 @@ namespace BroMakerLib.Infos
         /// <summary>Melee ability JSON config. Contains "preset" key and optional parameter overrides.</summary>
         public JObject melee { get; set; }
 
+        /// <summary>Passive abilities to attach, each with a `"preset"` key and optional parameter overrides. Set `"allowConflict": true` on a passive to bypass `ConflictsWithPreset` enforcement for that bro.</summary>
+        public List<JObject> passives { get; set; }
+
         [JsonConverter(typeof(CutsceneConverter))]
         public List<CustomIntroCutscene> Cutscene = new List<CustomIntroCutscene> { new CustomIntroCutscene() };
 

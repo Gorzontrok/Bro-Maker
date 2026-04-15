@@ -7,10 +7,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
-    /// <summary>
-    /// Shared base class for bro melees that use the Brochete/SnakeBroskin StartCustomMelee and
-    /// RunCustomMeleeMovement patterns. Subclasses supply the animation and attack logic.
-    /// </summary>
+    /// <summary>Shared base for disembowel melee. Extended by: BrocheteMelee, SnakeBroskinMelee.</summary>
     public abstract class DisembowelMelee : MeleeAbility
     {
         public override void StartMelee()
@@ -78,9 +75,7 @@ namespace BroMakerLib.Vanilla.Melees
         }
     }
 
-    /// <summary>
-    /// Implements the Brochete disembowel melee: a grab-and-gut animation with viscera on kill.
-    /// </summary>
+    /// <summary>Brochete's disembowel melee.</summary>
     [MeleePreset("Brochete")]
     public class BrocheteMelee : DisembowelMelee
     {

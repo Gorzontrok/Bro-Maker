@@ -6,10 +6,12 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>Bro in Black's neuralizer flash special.</summary>
     [SpecialPreset("BroInBlack")]
     public class BrononymousSpecial : SpecialAbility
     {
         protected override HeroType SourceBroType => HeroType.Brononymous;
+        /// <summary>Volume of the neuralizer activation sound.</summary>
         public float specialSoundVolume = 0.3f;
 
         [JsonIgnore]

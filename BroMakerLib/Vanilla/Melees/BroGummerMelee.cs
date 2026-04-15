@@ -1,13 +1,12 @@
-using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
-using BroMakerLib.Extensions;
 using Newtonsoft.Json;
 using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
+    /// <summary>Burt Brommer's satchel-charge punch melee.</summary>
     [MeleePreset("BurtBrommer")]
-    public class BroGummerMelee : MeleeAbility
+    public class BroGummerMelee : PunchMelee
     {
         protected override HeroType SourceBroType => HeroType.BroGummer;
 
@@ -15,17 +14,9 @@ namespace BroMakerLib.Vanilla.Melees
         [JsonIgnore] private Projectile sachelPackProjectile;
         [JsonIgnore] private RaycastHit raycastHit;
 
-        public BroGummerMelee()
+        protected override void CacheSoundsFromPrefab()
         {
-            meleeType = BroBase.MeleeType.Punch;
-            startType = MeleeStartType.Custom;
-            moveType = MeleeMoveType.Punch;
-            restartFrame = 0;
-        }
-
-        public override void Initialize(TestVanDammeAnim owner)
-        {
-            base.Initialize(owner);
+            base.CacheSoundsFromPrefab();
 
             var sourceBro = HeroController.GetHeroPrefab(HeroType.BroGummer) as BroGummer;
             if (sourceBro != null)
@@ -39,61 +30,11 @@ namespace BroMakerLib.Vanilla.Melees
             sachelPackCooldown -= hero.DeltaTime;
         }
 
-        public override void AnimateMelee()
-        {
-            if (owner.frame == 2)
-            {
-                Mook nearbyMook = hero.NearbyMook;
-                if (nearbyMook != null && nearbyMook.CanBeThrown() && hero.HighFive)
-                {
-                    hero.CancelMelee();
-                    if (!(owner is BroGummer) && sachelPackProjectile != null && owner.IsMine)
-                    {
-                        Projectile projectile = ProjectileController.SpawnProjectileOverNetwork(sachelPackProjectile, owner,
-                            nearbyMook.X, nearbyMook.Y + 10f,
-                            owner.transform.localScale.x * 100f + owner.xI * 0.7f, owner.yI,
-                            false, PlayerNum, false, false, 0f);
-                        SachelPack sachelPack = projectile as SachelPack;
-                        if (sachelPack != null)
-                        {
-                            sachelPack.TryStickToUnit(nearbyMook, true);
-                        }
-                    }
-                    hero.ThrowBackMook(nearbyMook);
-                    hero.NearbyMook = null;
-                    return;
-                }
-            }
-            hero.AnimateMeleeCommon();
-            int num = 25 + Mathf.Clamp(owner.frame, 0, 8);
-            int num2 = 9;
-            if (owner.frame == 5)
-            {
-                owner.counter -= 0.0334f;
-                owner.counter -= 0.0334f;
-                owner.counter -= 0.0334f;
-            }
-            if (owner.frame == 3)
-            {
-                owner.counter -= 0.0334f;
-            }
-            hero.Sprite.SetLowerLeftPixel((float)(num * hero.SpritePixelWidth), (float)(num2 * hero.SpritePixelHeight));
-            if (owner.frame == 3 && !hero.MeleeHasHit)
-            {
-                PerformPunchAttack(true, true);
-            }
-            if (owner.frame >= 7)
-            {
-                owner.frame = 0;
-                hero.CancelMelee();
-            }
-        }
-
-        private void PerformPunchAttack(bool shouldTryHitTerrain, bool playMissSound)
+        protected override void PerformPunchAttack(bool shouldTryHitTerrain, bool playMissSound)
         {
             if (sachelPackCooldown > 0f)
             {
-                PerformBasePunchAttack(shouldTryHitTerrain, playMissSound);
+                base.PerformPunchAttack(shouldTryHitTerrain, playMissSound);
                 return;
             }
             Unit unit = Map.GeLivingtUnit(owner.playerNum, 8f, 8f, owner.X + (float)(owner.Direction * 6), owner.Y + 6f);
@@ -114,37 +55,22 @@ namespace BroMakerLib.Vanilla.Melees
             }
             else
             {
-                PerformBasePunchAttack(shouldTryHitTerrain, playMissSound);
+                base.PerformPunchAttack(shouldTryHitTerrain, playMissSound);
             }
         }
 
-        private void PerformBasePunchAttack(bool shouldTryHitTerrain, bool playMissSound)
+        public override bool HandleThrowBackMook(Mook mook)
         {
-            float num = 6f;
-            Vector3 vector = new Vector3(X + (float)owner.Direction * (num + 7f), Y + 8f, 0f);
-            bool flag;
-            Map.DamageDoodads(3, DamageType.Melee, vector.x, vector.y, 0f, 0f, 6f, PlayerNum, out flag, null);
-            hero.KickDoors(25);
-            if (Map.HitClosestUnit(owner, PlayerNum, 4, DamageType.Melee, num, num * 2f, vector.x, vector.y, owner.transform.localScale.x * 250f, 250f, true, false, owner.IsMine, false, true))
+            if (owner.IsMine)
             {
-                sound.PlaySoundEffectAt(alternateMeleeHitSounds, 0.5f, owner.transform.position, 1f, true, false, false, 0f);
-                hero.MeleeHasHit = true;
-                EffectsController.CreateProjectilePopWhiteEffect(X + (owner.width + 4f) * owner.transform.localScale.x, Y + owner.height + 4f);
+                SachelPack sachelPack = ProjectileController.SpawnProjectileOverNetwork(
+                    sachelPackProjectile, owner, mook.X, mook.Y + 10f,
+                    owner.transform.localScale.x * 100f + owner.xI * 0.7f, owner.yI,
+                    false, PlayerNum, false, false, 0f) as SachelPack;
+                if (sachelPack != null)
+                    sachelPack.TryStickToUnit(mook, true);
             }
-            else
-            {
-                if (playMissSound && !hero.HasPlayedMissSound)
-                {
-                    sound.PlaySoundEffectAt(missSounds, 0.15f, owner.transform.position, 1f, true, false, false, 0f);
-                }
-                hero.HasPlayedMissSound = true;
-            }
-            hero.MeleeChosenUnit = null;
-            if (!hero.MeleeHasHit && shouldTryHitTerrain && HandleTryMeleeTerrain(0, terrainDamage))
-            {
-                hero.MeleeHasHit = true;
-            }
-            hero.TriggerBroMeleeEvent();
+            return true;
         }
     }
 }

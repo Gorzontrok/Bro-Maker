@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
+    /// <summary>Bro Dredd's taser melee.</summary>
     [MeleePreset("BroDredd")]
     public class BroDreddMelee : MeleeAbility
     {
@@ -25,6 +26,8 @@ namespace BroMakerLib.Vanilla.Melees
             meleeType = BroBase.MeleeType.Tazer;
             startType = MeleeStartType.Custom;
             restartFrame = 0;
+            animationRow = 9;
+            jumpingAnimationRow = 10;
         }
 
         protected override void CacheSoundsFromPrefab()
@@ -54,24 +57,24 @@ namespace BroMakerLib.Vanilla.Melees
         public override void AnimateMelee()
         {
             hero.AnimateMeleeCommon();
-            int num = 9;
+            int num = animationRow;
             if (hero.StandingMelee)
             {
-                num = 9;
+                num = animationRow;
             }
             else if (hero.JumpingMelee)
             {
-                num = 10;
+                num = jumpingAnimationRow;
             }
             else if (hero.DashingMelee)
             {
                 if (owner.frame > 5)
                 {
-                    num = 9;
+                    num = animationRow;
                 }
                 else
                 {
-                    num = 10;
+                    num = jumpingAnimationRow;
                 }
             }
             if (owner.frame == 3 || owner.frame == 4)
@@ -87,7 +90,7 @@ namespace BroMakerLib.Vanilla.Melees
             {
                 EffectsController.CreateSparkParticle(X + owner.transform.localScale.x * 10f, Y + 11f, 0f, 1.5f, 0f, 0f, 0f, Color.Lerp(Color.cyan, Color.white, Random.value), Random.Range(0.1f, 0.4f));
             }
-            int num2 = 25 + owner.frame;
+            int num2 = animationColumn + owner.frame;
             hero.Sprite.SetLowerLeftPixel((float)(num2 * hero.SpritePixelWidth), (float)(num * hero.SpritePixelHeight));
             if (owner.frame > 2 && owner.frame % 2 == 1)
             {

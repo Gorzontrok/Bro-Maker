@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>Time Bro Van Damme's bullet-time slow-motion special.</summary>
     [SpecialPreset("TimeBro")]
     public class TimeBroVanDammeSpecial : SpecialAbility
     {
@@ -20,13 +21,20 @@ namespace BroMakerLib.Vanilla.Specials
             if (sourceBro == null) return;
             if (special3Sounds == null) special3Sounds = sourceBro.soundHolder.special3Sounds.CloneArray();
         }
+        /// <summary>Seconds the global time boost lasts.</summary>
         public float timeBoostDuration = 2f;
+        /// <summary>Seconds the hero speed boost lasts.</summary>
         public float heroBoostDuration = 2.3f;
+        /// <summary>Seconds the slow-motion color shift effect lasts.</summary>
         public float colorShiftDuration = 2.2f;
+        /// <summary>Time scale applied to the game during bullet time.</summary>
         public float timeScale = 0.35f;
+        /// <summary>Audio pitch applied during bullet time.</summary>
         public float soundPitch = 0.5f;
+        /// <summary>Playback volume for the special activation sound.</summary>
         public float soundVolume = 0.7f;
 
+        /// <summary>Sound played on special activation.</summary>
         public AudioClip[] special3Sounds;
 
         public TimeBroVanDammeSpecial()

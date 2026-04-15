@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
+    /// <summary>Shared base for pistol-whip melee. Used by: BroHard, BoondockBro.</summary>
     [MeleePreset("PistolWhipMelee")]
     public class PistolWhipMelee : MeleeAbility
     {
@@ -33,9 +34,9 @@ namespace BroMakerLib.Vanilla.Melees
         public override void AnimateMelee()
         {
             hero.AnimateMeleeCommon();
-            int num = 27 + Mathf.Clamp(owner.frame, 0, 6);
-            int num2 = 9;
-            hero.FrameRate = 0.025f;
+            int num = animationColumn + Mathf.Clamp(owner.frame, 0, 6);
+            int num2 = animationRow;
+            hero.FrameRate = frameRate;
             if (owner.frame >= 2 && owner.frame <= 4)
             {
                 owner.counter -= 0.0334f;

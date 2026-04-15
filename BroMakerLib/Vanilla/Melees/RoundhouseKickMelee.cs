@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
+    /// <summary>Shared base for roundhouse kick melee. Used by: BrodellWalker, ColJamesBrodock.</summary>
     [MeleePreset("RoundhouseKickMelee")]
     public class RoundhouseKickMelee : MeleeAbility
     {
@@ -22,6 +23,9 @@ namespace BroMakerLib.Vanilla.Melees
         public RoundhouseKickMelee()
         {
             meleeType = BroBase.MeleeType.ChuckKick;
+            animationRow = 10;
+            jumpingAnimationRow = 9;
+            animationColumn = 24;
         }
 
         protected override void CacheSoundsFromPrefab()
@@ -114,14 +118,14 @@ namespace BroMakerLib.Vanilla.Melees
                 }
                 hero.HasJumpedForKick = true;
             }
-            int num = 24 + owner.frame;
+            int num = animationColumn + owner.frame;
             if ((hero.DashingMelee && !hero.MeleeFollowUp) || hero.JumpingMelee)
             {
-                hero.Sprite.SetLowerLeftPixel((float)(num * hero.SpritePixelWidth), (float)(hero.SpritePixelHeight * 9));
+                hero.Sprite.SetLowerLeftPixel((float)(num * hero.SpritePixelWidth), (float)(hero.SpritePixelHeight * jumpingAnimationRow));
             }
             else
             {
-                hero.Sprite.SetLowerLeftPixel((float)(num * hero.SpritePixelWidth), (float)(hero.SpritePixelHeight * 10));
+                hero.Sprite.SetLowerLeftPixel((float)(num * hero.SpritePixelWidth), (float)(hero.SpritePixelHeight * animationRow));
             }
             if (owner.frame > 7)
             {

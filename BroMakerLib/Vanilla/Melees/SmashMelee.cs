@@ -9,23 +9,31 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
-    /// <summary>
-    /// Shared base for the dual-mode smash melee used by BronanTheBrobarian, Brominator, and TankBro.
-    /// Ground mode plays an uppercut punch animation; aerial mode performs a targeted dive smash.
-    /// Subclasses set per-bro defaults via public configurable fields and virtual hook methods.
-    /// </summary>
+    /// <summary>Abstract shared base for smash melee. Extended by: BrominatorMelee, TankBroMelee, BronanMelee.</summary>
     public abstract class SmashMelee : MeleeAbility
     {
+        /// <summary>Damage dealt by the ground uppercut.</summary>
         public int upperCutDamage = 4;
+        /// <summary>Horizontal impulse applied to the target on uppercut hit.</summary>
         public float upperCutXI = 10f;
+        /// <summary>Vertical impulse applied to the target on uppercut hit.</summary>
         public float upperCutYI = 750f;
 
+        /// <summary>Horizontal radius of the explosion triggered on landing the aerial smash.</summary>
         public float smashExplodeRange = 64f;
+        /// <summary>Vertical radius of the explosion triggered on landing the aerial smash.</summary>
         public float smashExplodeHeight = 20f;
+        /// <summary>Horizontal impulse of the smash landing explosion.</summary>
         public float smashExplodeXI = 300f;
+        /// <summary>Vertical impulse of the smash landing explosion.</summary>
         public float smashExplodeYI = 240f;
+        /// <summary>Radius of the ground damage ring on smash landing.</summary>
         public float smashGroundDamageRange = 25f;
+        /// <summary>Width of the ground-wave visual effect on smash landing.</summary>
         public float smashGroundWaveSize = 80f;
+
+        /// <summary>Sprite sheet row used for the aerial smash animation.</summary>
+        public int smashAnimationRow = 11;
 
         public AudioClip[] alternateMeleeMissSounds;
         public AudioClip[] alternateMeleeHitSounds2;
@@ -37,13 +45,13 @@ namespace BroMakerLib.Vanilla.Melees
         [JsonIgnore]
         private float smashingTime;
 
-        /// <summary>The sprite sheet row used by the current punch animation. Set by <see cref="SetPunchAnimationRow"/> each time StartMelee fires.</summary>
         [JsonIgnore]
         protected int currentPunchAnimationRow = 9;
 
         public SmashMelee()
         {
             meleeType = BroBase.MeleeType.Smash;
+            animationColumn = 24;
         }
 
         public override void Initialize(TestVanDammeAnim owner)
@@ -102,7 +110,7 @@ namespace BroMakerLib.Vanilla.Melees
         {
         }
 
-        /// <summary>Called at the start of StartMelee to choose the punch animation row for this melee. Sets <see cref="currentPunchAnimationRow"/>.</summary>
+        /// <summary>Called at the start of StartMelee to choose the punch animation row for this melee. Sets `currentPunchAnimationRow`.</summary>
         protected virtual void SetPunchAnimationRow()
         {
         }
@@ -126,8 +134,8 @@ namespace BroMakerLib.Vanilla.Melees
                 return;
             }
             hero.AnimateMeleeCommon();
-            int col = 24 + Mathf.Clamp(owner.frame, 0, 8);
-            int row = 11;
+            int col = animationColumn + Mathf.Clamp(owner.frame, 0, 8);
+            int row = smashAnimationRow;
             if (owner.frame == 4)
             {
                 owner.counter -= 0.3f;
@@ -146,7 +154,7 @@ namespace BroMakerLib.Vanilla.Melees
         protected virtual void AnimateBronanPunch()
         {
             hero.AnimateMeleeCommon();
-            int col = 24 + Mathf.Clamp(owner.frame, 0, 8);
+            int col = animationColumn + Mathf.Clamp(owner.frame, 0, 8);
             int row = currentPunchAnimationRow;
             hero.Sprite.SetLowerLeftPixel((float)(col * hero.SpritePixelWidth), (float)(row * hero.SpritePixelHeight));
             if (owner.frame == 4)
@@ -363,12 +371,13 @@ namespace BroMakerLib.Vanilla.Melees
         }
     }
 
+    /// <summary>Bronan the Brobarian's smash melee.</summary>
     [MeleePreset("BronanTheBrobarian")]
     public class BronanMelee : SmashMelee
     {
         protected override HeroType SourceBroType => HeroType.BronanTheBrobarian;
         [JsonIgnore]
-#pragma warning disable CS0649 // Never assigned — matches vanilla bug where punchCount is never incremented
+#pragma warning disable CS0649 // Never assigned — intentional
         private int punchCount;
 #pragma warning restore CS0649
 

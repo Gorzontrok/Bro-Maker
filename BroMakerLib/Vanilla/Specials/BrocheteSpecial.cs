@@ -7,17 +7,24 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>Brochete's machete spray.</summary>
     [SpecialPreset("Brochete")]
     public class BrocheteSpecial : SpecialAbility
     {
         protected override HeroType SourceBroType => HeroType.Brochete;
+        /// <summary>Name of the projectile prefab to load for each thrown machete.</summary>
         public string projectileName = "MacheteSpray";
         public float knifeSpraySpeed = 400f;
         public int knifeSprayCount = 6;
+        /// <summary>Volume of the throw sound played for each fired machete.</summary>
         public float throwSoundVolume = 0.44f;
+        /// <summary>Angular offset applied to the base spray direction.</summary>
         public float sprayAngleOffset = -13.25f;
+        /// <summary>Angle step applied per group-of-three shots within the spray.</summary>
         public float sprayAngleStep1 = 7.5f;
+        /// <summary>Angle step applied per group-of-six shots within the spray.</summary>
         public float sprayAngleStep2 = 2.5f;
+        /// <summary>Lerp speed used to smooth the spray angle toward the target direction each shot.</summary>
         public float angleLerpSpeed = 0.33f;
 
         [JsonIgnore]
@@ -35,9 +42,16 @@ namespace BroMakerLib.Vanilla.Specials
         [JsonIgnore]
         private bool spraying;
 
+        public int upDiagonalColumn = 4;
+        public int upColumn = 8;
+        public int downDiagonalColumn = 12;
+        public int downColumn = 16;
+
         public BrocheteSpecial()
         {
             blockMovement = false;
+            animationRow = 8;
+            animationColumn = 0;
         }
 
         public override void Initialize(TestVanDammeAnim owner)
@@ -71,28 +85,28 @@ namespace BroMakerLib.Vanilla.Specials
         {
             hero.SetSpriteOffset(0f, 0f);
             hero.DeactivateGun();
-            hero.FrameRate = 0.0334f;
+            hero.FrameRate = frameRate;
 
             Vector3 dir = global::Math.Point3OnCircle((720f + lastKnifeSprayAngle) / 180f * 3.1415927f, 1f);
 
             if (Mathf.Abs(dir.x) * 0.25f > Mathf.Abs(dir.y))
             {
                 AnimateSprayFrame();
-                int col = Mathf.Clamp(owner.frame, 0, 3);
-                hero.Sprite.SetLowerLeftPixel(col * hero.SpritePixelWidth, hero.SpritePixelHeight * 8);
+                int col = animationColumn + Mathf.Clamp(owner.frame, 0, 3);
+                hero.Sprite.SetLowerLeftPixel(col * hero.SpritePixelWidth, hero.SpritePixelHeight * animationRow);
             }
             else if (Mathf.Abs(dir.x) * 1.3f > Mathf.Abs(dir.y))
             {
                 AnimateSprayFrame();
                 if (dir.y > 0f)
                 {
-                    int col = 4 + Mathf.Clamp(owner.frame, 0, 3);
-                    hero.Sprite.SetLowerLeftPixel(col * hero.SpritePixelWidth, hero.SpritePixelHeight * 8);
+                    int col = upDiagonalColumn + Mathf.Clamp(owner.frame, 0, 3);
+                    hero.Sprite.SetLowerLeftPixel(col * hero.SpritePixelWidth, hero.SpritePixelHeight * animationRow);
                 }
                 else
                 {
-                    int col = 12 + Mathf.Clamp(owner.frame, 0, 3);
-                    hero.Sprite.SetLowerLeftPixel(col * hero.SpritePixelWidth, hero.SpritePixelHeight * 8);
+                    int col = downDiagonalColumn + Mathf.Clamp(owner.frame, 0, 3);
+                    hero.Sprite.SetLowerLeftPixel(col * hero.SpritePixelWidth, hero.SpritePixelHeight * animationRow);
                 }
             }
             else
@@ -100,13 +114,13 @@ namespace BroMakerLib.Vanilla.Specials
                 AnimateSprayFrame();
                 if (dir.y > 0f)
                 {
-                    int col = 8 + Mathf.Clamp(owner.frame, 0, 3);
-                    hero.Sprite.SetLowerLeftPixel(col * hero.SpritePixelWidth, hero.SpritePixelHeight * 8);
+                    int col = upColumn + Mathf.Clamp(owner.frame, 0, 3);
+                    hero.Sprite.SetLowerLeftPixel(col * hero.SpritePixelWidth, hero.SpritePixelHeight * animationRow);
                 }
                 else
                 {
-                    int col = 16 + Mathf.Clamp(owner.frame, 0, 3);
-                    hero.Sprite.SetLowerLeftPixel(col * hero.SpritePixelWidth, hero.SpritePixelHeight * 8);
+                    int col = downColumn + Mathf.Clamp(owner.frame, 0, 3);
+                    hero.Sprite.SetLowerLeftPixel(col * hero.SpritePixelWidth, hero.SpritePixelHeight * animationRow);
                 }
             }
         }

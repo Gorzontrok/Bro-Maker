@@ -18,6 +18,7 @@ namespace BroMakerLib
         public static Dictionary<string, Type> customObjectsPreset = new Dictionary<string, Type>();
         public static Dictionary<string, Type> specialPresets = new Dictionary<string, Type>();
         public static Dictionary<string, Type> meleePresets = new Dictionary<string, Type>();
+        public static Dictionary<string, Type> passivePresets = new Dictionary<string, Type>();
 
         public static bool disableWarnings = false;
 
@@ -31,6 +32,7 @@ namespace BroMakerLib
             customObjectsPreset = new Dictionary<string, Type>();
             specialPresets = new Dictionary<string, Type>();
             meleePresets = new Dictionary<string, Type>();
+            passivePresets = new Dictionary<string, Type>();
             parameters = new Dictionary<string, MethodInfo>();
 
             CheckAssembly(Assembly.GetExecutingAssembly());
@@ -101,6 +103,16 @@ namespace BroMakerLib
             return meleePresets[name];
         }
 
+        public static Type GetPassivePreset(string name)
+        {
+            if (!passivePresets.ContainsKey(name))
+            {
+                return null;
+            }
+
+            return passivePresets[name];
+        }
+
         public static Dictionary<string, Type> GetAllSpecialPresets()
         {
             return new Dictionary<string, Type>(specialPresets);
@@ -109,6 +121,11 @@ namespace BroMakerLib
         public static Dictionary<string, Type> GetAllMeleePresets()
         {
             return new Dictionary<string, Type>(meleePresets);
+        }
+
+        public static Dictionary<string, Type> GetAllPassivePresets()
+        {
+            return new Dictionary<string, Type>(passivePresets);
         }
 
         public static MethodInfo GetParameterMethod(string name)
@@ -248,6 +265,11 @@ namespace BroMakerLib
                 return meleePresets;
             }
 
+            if (attribute is PassivePresetAttribute)
+            {
+                return passivePresets;
+            }
+
             return customObjectsPreset;
         }
 
@@ -296,6 +318,11 @@ namespace BroMakerLib
             if (attribute is MeleePresetAttribute)
             {
                 return "Melee";
+            }
+
+            if (attribute is PassivePresetAttribute)
+            {
+                return "Passive";
             }
 
             return string.Empty;

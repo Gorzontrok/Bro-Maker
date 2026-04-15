@@ -9,6 +9,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>BroveHeart's freedom-cry hero-boost special.</summary>
     [SpecialPreset("BroHeart")]
     public class BroveHeartSpecial : SpecialAbility
     {
@@ -22,23 +23,39 @@ namespace BroMakerLib.Vanilla.Specials
             if (special3Sounds == null) special3Sounds = sourceBro.soundHolder.special3Sounds.CloneArray();
             if (attack4Sounds == null) attack4Sounds = sourceBro.soundHolder.attack4Sounds.CloneArray();
         }
+        /// <summary>Duration in seconds of the hero-boost applied to all allies on activation.</summary>
         public float heroBoostDuration = 5f;
+        /// <summary>Total duration in seconds of the freedom cry effect.</summary>
         public float specialDuration = 6.7f;
+        /// <summary>Starting radius of the enemy panic wave.</summary>
         public float initialScareRadius = 24f;
+        /// <summary>Maximum radius the panic wave can grow to.</summary>
         public float maxScareRadius = 96f;
+        /// <summary>Time in seconds between successive panic pulses.</summary>
         public float scareInterval = 0.0667f;
+        /// <summary>Radius growth per pulse while expanding.</summary>
         public float scareRadiusGrowth = 4f;
+        /// <summary>Remaining special time at which the panic radius starts shrinking instead of growing.</summary>
         public float scareRadiusShrinkThreshold = 2f;
+        /// <summary>Target radius the panic wave shrinks toward during the wind-down phase.</summary>
         public float shrinkRadius = 32f;
+        /// <summary>Time in seconds between each freedom-bubble trail effect instance.</summary>
         public float trailInterval = 0.1f;
+        /// <summary>Volume of the looping freedom cry audio source.</summary>
         public float audioVolume = 0.45f;
+        /// <summary>Pitch of the looping freedom cry audio source.</summary>
         public float audioPitch = 0.87f;
+        /// <summary>Volume of the post-special wind-down sound.</summary>
         public float attack4SoundVolume = 0.33f;
+        /// <summary>Pitch of the post-special wind-down sound.</summary>
         public float attack4SoundPitch = 0.9f;
+        /// <summary>Time before the end of the special at which the wind-down sound plays.</summary>
         public float attack4SoundTime = 1.7f;
+        /// <summary>Lifetime in seconds of the freedom bubble.</summary>
         public float bubbleLife = 4f;
+        /// <summary>Wind-down sounds played near the end of the special.</summary>
         public AudioClip[] attack4Sounds;
-
+        /// <summary>Freedom cry audio clips looped during the special.</summary>
         public AudioClip[] special3Sounds;
         [JsonIgnore]
         private float broveheartSpecialTime;

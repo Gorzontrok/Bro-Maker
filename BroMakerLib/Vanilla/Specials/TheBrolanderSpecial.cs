@@ -9,13 +9,23 @@ using World.Generation.MapGenV4;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>The Brolander's lightning quickening and immortal resurrection special.</summary>
     [SpecialPreset("TheBrolander")]
     public class TheBrolanderSpecial : SpecialAbility
     {
         protected override HeroType SourceBroType => HeroType.TheBrolander;
+        public int loopColumn = 7;
+
+        public TheBrolanderSpecial()
+        {
+            animationRow = 11;
+            animationColumn = 0;
+        }
+
         public int zapRange = 100;
         public int maxSpecialAmmo = 5;
         public int enemiesSlainPerPowerValue = 5;
+        /// <summary>Seconds the bro lingers as "immortal dead" before auto-resurrecting.</summary>
         public float immortalDeathDuration = 2.6f;
 
         [JsonIgnore]
@@ -123,14 +133,14 @@ namespace BroMakerLib.Vanilla.Specials
             if (owner.frame < 7)
             {
                 hero.FrameRate = 0.045f;
-                int num = Mathf.Clamp(owner.frame, 0, 8);
-                hero.Sprite.SetLowerLeftPixel(num * hero.SpritePixelWidth, hero.SpritePixelHeight * 11);
+                int num = animationColumn + Mathf.Clamp(owner.frame, 0, 8);
+                hero.Sprite.SetLowerLeftPixel(num * hero.SpritePixelWidth, hero.SpritePixelHeight * animationRow);
             }
             else
             {
                 hero.FrameRate = 0.025f;
-                int num2 = 7 + (owner.frame - 7) % 3;
-                hero.Sprite.SetLowerLeftPixel(num2 * hero.SpritePixelWidth, hero.SpritePixelHeight * 11);
+                int num2 = loopColumn + (owner.frame - 7) % 3;
+                hero.Sprite.SetLowerLeftPixel(num2 * hero.SpritePixelWidth, hero.SpritePixelHeight * animationRow);
             }
             if (owner.frame > 3 && owner.frame % 3 == 0 && owner.SpecialAmmo > 0)
             {

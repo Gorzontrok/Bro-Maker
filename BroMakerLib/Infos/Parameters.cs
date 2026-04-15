@@ -79,7 +79,6 @@ namespace BroMakerLib.Infos
                 character.useDashFrames = true;
                 character.useNewFrames = true;
                 character.useNewKnifingFrames = true;
-                character.useNewLedgeGrappleFrames = true;
                 character.useNewThrowingFrames = true;
                 character.useNewHighFivingFrames = true;
                 character.SetFieldValue("hasNewAirFlexFrames", true);

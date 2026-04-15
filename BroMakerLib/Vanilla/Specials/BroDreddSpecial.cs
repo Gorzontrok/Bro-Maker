@@ -6,10 +6,12 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>Bro Dredd's remote-controlled rocket.</summary>
     [SpecialPreset("BroDredd")]
     public class BroDreddSpecial : SpecialAbility
     {
         protected override HeroType SourceBroType => HeroType.BroDredd;
+        /// <summary>Initial horizontal launch speed of the remote rocket.</summary>
         public float rocketSpeed = 90f;
 
         [JsonIgnore]

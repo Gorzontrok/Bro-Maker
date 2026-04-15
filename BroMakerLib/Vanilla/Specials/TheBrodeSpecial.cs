@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>The Brode's five-point-palm dash-strike special.</summary>
     [SpecialPreset("TheBrode")]
     public class TheBrodeSpecial : SpecialAbility
     {
@@ -31,21 +32,36 @@ namespace BroMakerLib.Vanilla.Specials
             }
         }
 
+        /// <summary>Damage dealt per palm strike hit.</summary>
         public int palmDamage = 3;
+        /// <summary>Horizontal hit radius of the palm strike, in world units.</summary>
         public float palmXRange = 8f;
+        /// <summary>Vertical hit radius of the palm strike, in world units.</summary>
         public float palmYRange = 8f;
+        /// <summary>Horizontal offset from the bro's position to the palm strike origin.</summary>
         public float palmXOffset = 8f;
+        /// <summary>Vertical offset from the bro's position to the palm strike origin.</summary>
         public float palmYOffset = 13f;
+        /// <summary>Horizontal knockback impulse applied to struck enemies.</summary>
         public float palmXI = 480f;
+        /// <summary>Vertical knockback impulse applied to struck enemies.</summary>
         public float palmYI = 220f;
+        /// <summary>Playback volume for the special attack sounds.</summary>
         public float specialSoundVolume = 0.7f;
+        /// <summary>Camera shake magnitude on a successful palm hit.</summary>
         public float hitShakeAmount = 0.6f;
+        /// <summary>Camera shake duration on a successful palm hit.</summary>
         public float hitShakeDuration = 3f;
+        /// <summary>Horizontal speed applied to the bro during the dash frames of the strike.</summary>
         public float dashSpeed = 300f;
+        /// <summary>Cooldown in seconds after a failed strike before the special can be used again.</summary>
         public float failCooldown = 1.5f;
+        /// <summary>Maximum animation frames the palm hold extends while waiting to connect.</summary>
         public int maxHoldFrames = 10;
+        /// <summary>Movement speed multiplier applied to the bro during the post-miss cooldown.</summary>
         public float cooldownSpeedMultiplier = 0.5f;
 
+        /// <summary>Sound played on a successful palm hit.</summary>
         public AudioClip[] special3Sounds;
         [JsonIgnore]
         private int punchHoldFrames;
@@ -87,7 +103,7 @@ namespace BroMakerLib.Vanilla.Specials
         public override void AnimateSpecial()
         {
             hero.DeactivateGun();
-            hero.FrameRate = 0.0334f;
+            hero.FrameRate = frameRate;
             int column = animationColumn + Mathf.Clamp(owner.frame, 0, 6);
             hero.Sprite.SetLowerLeftPixel(column * hero.SpritePixelWidth, animationRow * hero.SpritePixelHeight);
             if (owner.frame == triggerFrame)

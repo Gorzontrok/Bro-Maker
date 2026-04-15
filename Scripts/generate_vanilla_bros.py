@@ -117,11 +117,17 @@ def generate_awake_body(bro):
     if not awake_fixes:
         return None
 
-    hero_type = bro.get("prefabSource", {}).get("heroType", bro["heroType"]) if bro.get("prefabSource") else bro["heroType"]
+    prefab_source = bro.get("prefabSource", None)
+    if prefab_source:
+        hero_type = prefab_source["heroType"]
+        cast_class = prefab_source["castClass"]
+    else:
+        hero_type = bro["heroType"]
+        cast_class = bro["baseClass"]
 
     lines = []
     lines.append(
-        f"                var awakePrefab = HeroController.GetHeroPrefab(HeroType.{hero_type});"
+        f"                var awakePrefab = HeroController.GetHeroPrefab(HeroType.{hero_type}).As<{cast_class}>();"
     )
     lines.append(f"                if (awakePrefab != null)")
     lines.append(f"                {{")

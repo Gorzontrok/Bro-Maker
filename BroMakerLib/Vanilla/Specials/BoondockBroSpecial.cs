@@ -9,6 +9,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>Boondock Bro's companion-summoning special.</summary>
     [SpecialPreset("BoondockBros")]
     public class BoondockBroSpecial : SpecialAbility
     {

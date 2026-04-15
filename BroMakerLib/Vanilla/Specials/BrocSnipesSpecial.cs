@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>Broc Snipes's impaling dash.</summary>
     [SpecialPreset("BroctorDeath")]
     public class BrocSnipesSpecial : SpecialAbility
     {
@@ -32,18 +33,31 @@ namespace BroMakerLib.Vanilla.Specials
             }
         }
 
+        /// <summary>Horizontal speed during the dash.</summary>
         public float dashSpeed = 240f;
+        /// <summary>How long the dash lasts in seconds.</summary>
         public float dashDuration = 0.5f;
+        /// <summary>Minimum time between consecutive dashes.</summary>
         public float dashCooldown = 0.55f;
+        /// <summary>Volume of the dash initiation sound.</summary>
         public float specialSoundVolume = 0.7f;
+        /// <summary>Radius within which incoming projectiles are deflected during the dash.</summary>
         public float deflectRange = 16f;
+        /// <summary>Damage dealt to terrain per dash tick.</summary>
         public int terrainDamage = 3;
+        /// <summary>Damage dealt to each impaled unit when unimpaled at the end of the dash.</summary>
         public float impaleDamage = 5;
         public float sliceVolume = 0.7f;
         public AudioClip[] special2Sounds;
-        public int dashSpriteRow = 1;
-        public int dashSpriteColumn = 23;
+        public int chimneyFlipRow = 7;
+        public int chimneyFlipStartColumn = 22;
+        /// <summary>Sprite sheet column for the gun sprite during the dash.</summary>
         public int dashGunColumn = 11;
+
+        public BrocSnipesSpecial()
+        {
+            animationColumn = 23;
+        }
 
         [JsonIgnore]
         private float dashTime;
@@ -205,8 +219,8 @@ namespace BroMakerLib.Vanilla.Specials
                     localChimneyFlip = false;
                     localChimneyFlipFrames = 0;
                 }
-                int chimneyColumn = 22 - localChimneyFlipFrames;
-                hero.Sprite.SetLowerLeftPixel(chimneyColumn * hero.SpritePixelWidth, 7 * hero.SpritePixelHeight);
+                int chimneyColumn = chimneyFlipStartColumn - localChimneyFlipFrames;
+                hero.Sprite.SetLowerLeftPixel(chimneyColumn * hero.SpritePixelWidth, chimneyFlipRow * hero.SpritePixelHeight);
                 return false;
             }
             if (dashTime <= 0f)
@@ -216,8 +230,8 @@ namespace BroMakerLib.Vanilla.Specials
 
             owner.gunSprite.gameObject.SetActive(true);
             owner.actionState = ActionState.Jumping;
-            int column = dashSpriteColumn + owner.frame % 2;
-            hero.Sprite.SetLowerLeftPixel(column * hero.SpritePixelWidth, dashSpriteRow * hero.SpritePixelHeight);
+            int column = animationColumn + owner.frame % 2;
+            hero.Sprite.SetLowerLeftPixel(column * hero.SpritePixelWidth, animationRow * hero.SpritePixelHeight);
             return false;
         }
 

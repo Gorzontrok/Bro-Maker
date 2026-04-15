@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>Tank Bro's tank-summon throw special.</summary>
     [SpecialPreset("TankBro")]
     public class TankBroSpecial : GrenadeThrowSpecial
     {

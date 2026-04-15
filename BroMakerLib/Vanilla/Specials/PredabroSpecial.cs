@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>Predabro's stealth-and-shoulder-cannon special.</summary>
     [SpecialPreset("Brodator")]
     public class PredabroSpecial : SpecialAbility
     {
@@ -21,13 +22,21 @@ namespace BroMakerLib.Vanilla.Specials
         }
 
         public float stealthModeDuration = 4f;
+        /// <summary>Radius of the pulse scan that detects enemies, in world units.</summary>
         public float scanRange = 250f;
+        /// <summary>Maximum seconds a pulse scan runs before the next pulse begins.</summary>
         public float maxPulseTime = 3.3f;
+        /// <summary>Seconds after which a pulse ends early if no targets are found.</summary>
         public float emptyPulseTime = 1.3f;
+        /// <summary>Seconds between successive shoulder cannon shots.</summary>
         public float fireCoolDownDuration = 0.5f;
+        /// <summary>Rate at which the shoulder cannon locks on to a target (higher is faster).</summary>
         public float lockOnSpeed = 6f;
+        /// <summary>Speed of the shoulder cannon projectile.</summary>
         public float bulletSpeed = 700f;
+        /// <summary>Playback volume for the cloaking sound.</summary>
         public float cloakingSoundVolume = 0.3f;
+        /// <summary>Playback volume for the laser cannon sound.</summary>
         public float cannonSoundVolume = 1f;
 
         public AudioClip selfDestructSound;

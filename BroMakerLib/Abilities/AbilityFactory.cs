@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
+using BroMakerLib.Attributes;
 using BroMakerLib.CustomObjects;
 using BroMakerLib.Infos;
 using BroMakerLib.Loggers;
-using HarmonyLib;
 using Newtonsoft.Json.Linq;
 
 namespace BroMakerLib.Abilities
@@ -11,6 +11,7 @@ namespace BroMakerLib.Abilities
     /// <summary>Creates ability instances from JSON configuration.</summary>
     public static class AbilityFactory
     {
+        /// <summary>Instantiates a `SpecialAbility` from a JSON config block containing a `"preset"` key.</summary>
         /// <returns>The instantiated ability, or null on failure.</returns>
         public static SpecialAbility CreateSpecial(JObject config, TestVanDammeAnim owner)
         {
@@ -40,6 +41,7 @@ namespace BroMakerLib.Abilities
             }
         }
 
+        /// <summary>Instantiates a `MeleeAbility` from a JSON config block containing a `"preset"` key.</summary>
         /// <returns>The instantiated ability, or null on failure.</returns>
         public static MeleeAbility CreateMelee(JObject config, TestVanDammeAnim owner)
         {
@@ -69,17 +71,133 @@ namespace BroMakerLib.Abilities
             }
         }
 
+        /// <summary>Instantiates all passive abilities from a bro's `"passives"` JSON list, filtering
+        /// redundant passives, deduplicating by concrete type, and enforcing `ConflictsWithPreset`
+        /// declarations (bypassable via `"allowConflict": true` on an individual passive's JSON).</summary>
+        public static List<PassiveAbility> CreatePassives(List<JObject> configs, TestVanDammeAnim owner)
+        {
+            var result = new List<PassiveAbility>();
+            if (configs == null) return result;
+
+            var seenTypes = new HashSet<Type>();
+            var accepted = new List<KeyValuePair<string, PassiveAbility>>();
+
+            foreach (var config in configs)
+            {
+                if (config == null) continue;
+                string presetName = config.Value<string>("preset");
+                var ability = CreatePassiveInternal(config, presetName, owner);
+                if (ability == null) continue;
+
+                if (!seenTypes.Add(ability.GetType()))
+                {
+                    BMLogger.Warning($"Passive preset '{presetName}' duplicates an already-attached passive — skipping.");
+                    ability.Cleanup();
+                    continue;
+                }
+
+                bool allowConflict = config.Value<bool?>("allowConflict") ?? false;
+                string conflictWith;
+                if (!allowConflict && HasConflict(ability, presetName, accepted, out conflictWith))
+                {
+                    BMLogger.Warning(
+                        $"Passive preset '{presetName}' conflicts with already-attached '{conflictWith}'. Skipping. " +
+                        $"Add \"allowConflict\": true to this passive's JSON to override.");
+                    ability.Cleanup();
+                    continue;
+                }
+
+                accepted.Add(new KeyValuePair<string, PassiveAbility>(presetName, ability));
+                result.Add(ability);
+            }
+
+            return result;
+        }
+
+        private static PassiveAbility CreatePassiveInternal(JObject config, string presetName, TestVanDammeAnim owner)
+        {
+            if (string.IsNullOrEmpty(presetName)) return null;
+
+            Type type = PresetManager.GetPassivePreset(presetName);
+            if (type == null)
+            {
+                BMLogger.Warning($"Passive preset '{presetName}' not found. Valid presets: {string.Join(", ", new List<string>(PresetManager.GetAllPassivePresets().Keys).ToArray())}");
+                return null;
+            }
+
+            try
+            {
+                var ability = (PassiveAbility)Activator.CreateInstance(type);
+                ApplyJsonOverrides(ability, config, owner);
+                ability.Initialize(owner);
+                if (ability.IsRedundant)
+                {
+                    BMLogger.Warning($"Passive preset '{presetName}' is redundant — {owner.GetType().Name}'s base class already provides this behavior. Skipping.");
+                    ability.Cleanup();
+                    return null;
+                }
+                return ability;
+            }
+            catch (Exception ex)
+            {
+                BMLogger.ExceptionLog($"Failed to create passive preset '{presetName}'", ex);
+                return null;
+            }
+        }
+
+        private static bool HasConflict(
+            PassiveAbility candidate, string candidatePreset,
+            List<KeyValuePair<string, PassiveAbility>> accepted,
+            out string conflictWith)
+        {
+            var candidateConflicts = new HashSet<string>(GetConflictingPresets(candidate.GetType()));
+            foreach (var pair in accepted)
+            {
+                if (candidateConflicts.Contains(pair.Key))
+                {
+                    conflictWith = pair.Key;
+                    return true;
+                }
+                foreach (var name in GetConflictingPresets(pair.Value.GetType()))
+                {
+                    if (name == candidatePreset)
+                    {
+                        conflictWith = pair.Key;
+                        return true;
+                    }
+                }
+            }
+            conflictWith = null;
+            return false;
+        }
+
+        private static IEnumerable<string> GetConflictingPresets(Type type)
+        {
+            foreach (var attr in type.GetCustomAttributes(typeof(ConflictsWithPresetAttribute), inherit: true))
+            {
+                yield return ((ConflictsWithPresetAttribute)attr).PresetName;
+            }
+            foreach (var attr in type.GetCustomAttributes(typeof(ConflictsWithPresetsAttribute), inherit: true))
+            {
+                foreach (var name in ((ConflictsWithPresetsAttribute)attr).PresetNames)
+                {
+                    yield return name;
+                }
+            }
+        }
+
         private static void ApplyJsonOverrides(object ability, JObject config, TestVanDammeAnim owner)
         {
             var dict = config.ToObject<Dictionary<string, object>>();
             dict.Remove("preset");
+            dict.Remove("allowConflict");  // factory-consumed, not an ability field
             if (dict.Count == 0) return;
 
             string path = (owner as ICustomHero)?.Info?.path ?? "";
             string presetName = config.Value<string>("preset");
             ability.DynamicFieldsValueSetter(dict, null,
                 (field, key, value) => CustomBroforceObjectInfo.SetFieldDataStatic(field, key, value, path),
-                context: $"{presetName} special/melee override");
+                context: $"{presetName} ability override");
         }
     }
 }

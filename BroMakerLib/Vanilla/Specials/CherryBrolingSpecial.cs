@@ -5,11 +5,14 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>Cherry Broling's rocket-somersault special.</summary>
     [SpecialPreset("CherryBroling")]
     public class CherryBrolingSpecial : SpecialAbility
     {
         protected override HeroType SourceBroType => HeroType.CherryBroling;
+        /// <summary>Horizontal rocket speed when fired while ducking on the ground.</summary>
         public float duckingSpeedX = 400f;
+        /// <summary>Horizontal blast-back applied to the bro when firing the ducking rocket.</summary>
         public float duckingRecoilX = 60f;
         public Vector3 fireLeftDirection = new Vector3(-160f, -330f, 0f);
         public Vector3 fireDownDirection = new Vector3(0f, -370f, 0f);
@@ -27,6 +30,8 @@ namespace BroMakerLib.Vanilla.Specials
         {
             spawnOffsetX = 10f;
             spawnOffsetY = 6f;
+            animationRow = 8;
+            frameRate = 0.04f;
         }
 
         public override void Initialize(TestVanDammeAnim owner)
@@ -145,13 +150,13 @@ namespace BroMakerLib.Vanilla.Specials
                 return true;
             }
             hero.DeactivateGun();
-            hero.Sprite.SetLowerLeftPixel((float)(somersaultFrame * hero.SpritePixelWidth), (float)(8 * hero.SpritePixelHeight));
+            hero.Sprite.SetLowerLeftPixel((float)(somersaultFrame * hero.SpritePixelWidth), (float)(animationRow * hero.SpritePixelHeight));
             somersaultFrame++;
             if (somersaultFrame > 10)
             {
                 somersaulting = false;
             }
-            hero.FrameRate = 0.04f;
+            hero.FrameRate = frameRate;
             return false;
         }
 

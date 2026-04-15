@@ -30,8 +30,25 @@ namespace BroMakerLib.Vanilla.Bros
 
         [JsonIgnore] public SpecialAbility specialAbility;
         [JsonIgnore] public MeleeAbility meleeAbility;
+        [JsonIgnore] public List<PassiveAbility> passives = new List<PassiveAbility>();
+        [JsonIgnore] private AbilityBase[] abilities = new AbilityBase[2];
 
         protected bool blockGesturesDuringMelee = true;
+
+        private void RebuildAbilitiesArray()
+        {
+            int n = 2 + passives.Count;
+            if (abilities == null || abilities.Length != n)
+            {
+                abilities = new AbilityBase[n];
+            }
+            abilities[0] = specialAbility;
+            abilities[1] = meleeAbility;
+            for (int i = 0; i < passives.Count; i++)
+            {
+                abilities[2 + i] = passives[i];
+            }
+        }
 
         #region ICustomHero Setup
         void ICustomHero.PrefabSetup()
@@ -82,10 +99,12 @@ namespace BroMakerLib.Vanilla.Bros
 
                 specialAbility = AbilityFactory.CreateSpecial(Info.special, this);
                 meleeAbility = AbilityFactory.CreateMelee(Info.melee, this);
+                passives = AbilityFactory.CreatePassives(Info.passives, this);
                 if (meleeAbility != null)
                 {
                     meleeType = meleeAbility.meleeType;
                 }
+                RebuildAbilitiesArray();
 
                 base.Awake();
                 this.StandardAfterAwake();
@@ -115,11 +134,11 @@ namespace BroMakerLib.Vanilla.Bros
         protected override void Update()
         {
             bool runBase = true;
-            if (specialAbility != null && !specialAbility.HandleUpdate()) runBase = false;
-            if (meleeAbility != null && !meleeAbility.HandleUpdate()) runBase = false;
+            foreach (var a in abilities)
+                if (a != null && !a.HandleUpdate()) runBase = false;
             if (runBase) base.Update();
-            specialAbility?.Update();
-            meleeAbility?.Update();
+            foreach (var a in abilities)
+                a?.Update();
         }
 
         public override void SetGestureAnimation(GestureElement.Gestures gesture)
@@ -139,8 +158,8 @@ namespace BroMakerLib.Vanilla.Bros
 
         protected override void CheckForTraps(ref float yIT)
         {
-            if (specialAbility != null && !specialAbility.HandleCheckForTraps()) return;
-            if (meleeAbility != null && !meleeAbility.HandleCheckForTraps()) return;
+            foreach (var a in abilities)
+                if (a != null && !a.HandleCheckForTraps()) return;
 
             var num = Y + yIT;
             if (num <= groundHeight + 1f)
@@ -326,6 +345,16 @@ namespace BroMakerLib.Vanilla.Bros
         #region IAbilityOwner
         SpecialAbility IAbilityOwner.SpecialAbility => specialAbility;
         MeleeAbility IAbilityOwner.MeleeAbility => meleeAbility;
+        List<PassiveAbility> IAbilityOwner.Passives => passives;
+
+        T IAbilityOwner.GetPassive<T>()
+        {
+            for (int i = 0; i < passives.Count; i++)
+            {
+                if (passives[i] is T t) return t;
+            }
+            return null;
+        }
 
         SpriteSM IAbilityOwner.Sprite => sprite;
         int IAbilityOwner.SpritePixelWidth => spritePixelWidth;
@@ -404,14 +433,472 @@ namespace BroMakerLib.Vanilla.Bros
         #endregion
 
         #region Ability Forwarding
+        /// <summary>Assigns a special ability at runtime. Calls `Initialize` on the new ability.</summary>
+        public void SetSpecialAbility(SpecialAbility ability)
+        {
+            specialAbility?.Cleanup();
+            specialAbility = ability;
+            ability?.Initialize(this);
+            RebuildAbilitiesArray();
+        }
+
+        /// <summary>Assigns a melee ability at runtime and updates `meleeType` to match.</summary>
+        public void SetMeleeAbility(MeleeAbility ability)
+        {
+            meleeAbility?.Cleanup();
+            meleeAbility = ability;
+            ability?.Initialize(this);
+            if (ability != null)
+            {
+                meleeType = ability.meleeType;
+            }
+            RebuildAbilitiesArray();
+        }
+
+        /// <summary>Attaches a passive ability at runtime. Initializes it and skips it if `IsRedundant`.
+        /// `ConflictsWithPreset` enforcement is not checked on this path.</summary>
+        public void AddPassive(PassiveAbility ability)
+        {
+            if (ability == null) return;
+            ability.Initialize(this);
+            if (ability.IsRedundant)
+            {
+                ability.Cleanup();
+                return;
+            }
+            passives.Add(ability);
+            RebuildAbilitiesArray();
+        }
+
+        /// <summary>Removes and cleans up all attached passives of type <typeparamref name="T" />.</summary>
+        public void RemovePassive<T>() where T : PassiveAbility
+        {
+            for (int i = passives.Count - 1; i >= 0; i--)
+            {
+                if (passives[i] is T)
+                {
+                    passives[i].Cleanup();
+                    passives.RemoveAt(i);
+                }
+            }
+            RebuildAbilitiesArray();
+        }
+
+        /// <summary>Cleans up and removes every attached passive.</summary>
+        public void ClearPassives()
+        {
+            foreach (var p in passives) p?.Cleanup();
+            passives.Clear();
+            RebuildAbilitiesArray();
+        }
+
+        protected override void LateUpdate()
+        {
+            base.LateUpdate();
+            foreach (var a in abilities)
+                a?.HandleLateUpdate();
+        }
+
+        protected override void FixedUpdate()
+        {
+            base.FixedUpdate();
+            foreach (var a in abilities)
+                a?.HandleAfterFixedUpdate();
+        }
+
+        protected override void SetDeltaTime()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleSetDeltaTime()) return;
+            base.SetDeltaTime();
+        }
+
+        protected override void CheckInput()
+        {
+            base.CheckInput();
+            foreach (var a in abilities)
+                a?.HandleAfterCheckInput();
+        }
+
+        protected override void CopyInput(TestVanDammeAnim zombie, ref float zombieDelay, ref bool up, ref bool down, ref bool left, ref bool right, ref bool fire, ref bool buttonJump, ref bool special, ref bool highFive)
+        {
+            base.CopyInput(zombie, ref zombieDelay, ref up, ref down, ref left, ref right, ref fire, ref buttonJump, ref special, ref highFive);
+            foreach (var a in abilities)
+                a?.HandleAfterCopyInput(zombie, ref zombieDelay, ref up, ref down, ref left, ref right, ref fire, ref buttonJump);
+        }
+
+        protected override bool MustIgnoreHighFiveMeleePress()
+        {
+            foreach (var a in abilities)
+                a?.HandleMustIgnoreHighFiveMeleePress();
+            return base.MustIgnoreHighFiveMeleePress();
+        }
+
         protected override void PressSpecial()
         {
+            foreach (var a in abilities)
+                if (a != null && !a.HandlePressSpecial()) return;
             if (specialAbility != null)
             {
                 specialAbility.PressSpecial();
                 return;
             }
             base.PressSpecial();
+        }
+
+        protected override void ReleaseSpecial()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleReleaseSpecial()) return;
+            base.ReleaseSpecial();
+        }
+
+        protected override void PressHighFiveMelee(bool forceHighFive = false)
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandlePressHighFiveMelee()) return;
+            base.PressHighFiveMelee(forceHighFive);
+        }
+
+        protected override void PressDashButton()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandlePressDashButton()) return;
+            base.PressDashButton();
+        }
+
+        protected override void CalculateMovement()
+        {
+            float xI = this.xI;
+            float yI = this.yI;
+            foreach (var a in abilities)
+            {
+                if (a != null && !a.HandleCalculateMovement(ref xI, ref yI))
+                {
+                    this.xI = xI;
+                    this.yI = yI;
+                    return;
+                }
+            }
+            this.xI = xI;
+            this.yI = yI;
+            base.CalculateMovement();
+            foreach (var a in abilities)
+                a?.HandleAfterCalculateMovement();
+        }
+
+        protected override void RunMovement()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleRunMovement()) return;
+            base.RunMovement();
+        }
+
+        protected override void Jump(bool wallJump)
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleJump(wallJump)) return;
+            base.Jump(wallJump);
+        }
+
+        protected override void AirJump()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleAirJump()) return;
+            base.AirJump();
+        }
+
+        protected override void ApplyNormalGravity()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleApplyNormalGravity()) return;
+            base.ApplyNormalGravity();
+        }
+
+        protected override void ApplyFallingGravity()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleApplyFallingGravity()) return;
+            base.ApplyFallingGravity();
+        }
+
+        protected override void RunFalling()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleRunFalling()) return;
+            base.RunFalling();
+        }
+
+        protected override void AddSpeedLeft()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleAddSpeedLeft()) return;
+            base.AddSpeedLeft();
+            foreach (var a in abilities)
+                a?.HandleAfterAddSpeedLeft();
+        }
+
+        protected override void AddSpeedRight()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleAddSpeedRight()) return;
+            base.AddSpeedRight();
+            foreach (var a in abilities)
+                a?.HandleAfterAddSpeedRight();
+        }
+
+        public override void Knock(DamageType damageType, float xI, float yI, bool forceTumble)
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleKnock(damageType, xI, yI, forceTumble)) return;
+            base.Knock(damageType, xI, yI, forceTumble);
+        }
+
+        protected override bool ConstrainToFloor(ref float yIT)
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleConstrainToFloor()) return false;
+            return base.ConstrainToFloor(ref yIT);
+        }
+
+        protected override bool ConstrainToCeiling(ref float yIT)
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleConstrainToCeiling()) return false;
+            return base.ConstrainToCeiling(ref yIT);
+        }
+
+        protected override bool ConstrainToWalls(ref float yIT, ref float xIT)
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleConstrainToWalls()) return false;
+            return base.ConstrainToWalls(ref yIT, ref xIT);
+        }
+
+        protected override void ClampWallDragYI(ref float yIT)
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleClampWallDragYI(ref yIT)) return;
+            base.ClampWallDragYI(ref yIT);
+        }
+
+        protected override void HitCeiling(RaycastHit ceilingHit)
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleHitCeiling()) return;
+            base.HitCeiling(ceilingHit);
+            foreach (var a in abilities)
+                a?.HandleAfterHitCeiling();
+        }
+
+        protected override void HitLeftWall()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleHitLeftWall()) return;
+            base.HitLeftWall();
+            foreach (var a in abilities)
+                a?.HandleAfterHitLeftWall();
+        }
+
+        protected override void HitRightWall()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleHitRightWall()) return;
+            base.HitRightWall();
+            foreach (var a in abilities)
+                a?.HandleAfterHitRightWall();
+        }
+
+        protected override void Land()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleLand()) return;
+            base.Land();
+            foreach (var a in abilities)
+                a?.HandleAfterLand();
+        }
+
+        protected override bool WallDrag
+        {
+            get => base.WallDrag;
+            set
+            {
+                foreach (var a in abilities)
+                    if (a != null && !a.HandleWallDrag(value)) return;
+                base.WallDrag = value;
+            }
+        }
+
+        public override LayerMask GetGroundLayer()
+        {
+            foreach (var a in abilities)
+            {
+                if (a == null) continue;
+                int result = 0;
+                if (!a.HandleGetGroundLayer(ref result)) return result;
+            }
+            return base.GetGroundLayer();
+        }
+
+        protected override void CheckForQuicksand()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleCheckForQuicksand()) return;
+            base.CheckForQuicksand();
+        }
+
+        protected override bool IsOverLadder(float xOffset, ref float ladderXPos)
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleIsOverLadder()) return false;
+            return base.IsOverLadder(xOffset, ref ladderXPos);
+        }
+
+        protected override void RunHanging()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleRunHanging()) return;
+            base.RunHanging();
+        }
+
+        protected override bool CanCheckClimbAlongCeiling()
+        {
+            foreach (var a in abilities)
+            {
+                if (a == null) continue;
+                bool result = false;
+                if (!a.HandleCanCheckClimbAlongCeiling(ref result)) return result;
+            }
+            return base.CanCheckClimbAlongCeiling();
+        }
+
+        protected override void CheckClimbAlongCeiling()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleCheckClimbAlongCeiling()) return;
+            base.CheckClimbAlongCeiling();
+        }
+
+        protected override void LedgeGrapple(bool left, bool right, float radius, float heightOpenOffset)
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleLedgeGrapple(left, right, radius, heightOpenOffset)) return;
+            base.LedgeGrapple(left, right, radius, heightOpenOffset);
+        }
+
+        protected override void AirDashDown()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleAirDashDown()) return;
+            base.AirDashDown();
+        }
+
+        protected override void AirDashUp()
+        {
+            base.AirDashUp();
+            foreach (var a in abilities)
+                a?.HandleAfterAirDashUp();
+        }
+
+        protected override void RunDownwardDash()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleRunDownwardDash()) return;
+            base.RunDownwardDash();
+            foreach (var a in abilities)
+                a?.HandleAfterRunDownwardDash();
+        }
+
+        protected override void RunLeftAirDash()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleRunLeftAirDash()) return;
+            base.RunLeftAirDash();
+            foreach (var a in abilities)
+                a?.HandleAfterRunLeftAirDash();
+        }
+
+        protected override void RunRightAirDash()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleRunRightAirDash()) return;
+            base.RunRightAirDash();
+            foreach (var a in abilities)
+                a?.HandleAfterRunRightAirDash();
+        }
+
+        protected override void RunUpwardDash()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleRunUpwardDash()) return;
+            base.RunUpwardDash();
+            foreach (var a in abilities)
+                a?.HandleAfterRunUpwardDash();
+        }
+
+        protected override void AnimateAirdash()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleAnimateAirdash()) return;
+            base.AnimateAirdash();
+        }
+
+        protected override void PlayAidDashSound()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandlePlayAidDashSound()) return;
+            base.PlayAidDashSound();
+        }
+
+        protected override void PlayAirDashChargeUpSound()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandlePlayAirDashChargeUpSound()) return;
+            base.PlayAirDashChargeUpSound();
+        }
+
+        protected override void StartFiring()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleStartFiring()) return;
+            base.StartFiring();
+        }
+
+        protected override void FireWeapon(float x, float y, float xSpeed, float ySpeed)
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleFireWeapon()) return;
+            base.FireWeapon(x, y, xSpeed, ySpeed);
+            foreach (var a in abilities)
+                a?.HandleAfterFireWeapon(x, y, xSpeed, ySpeed);
+        }
+
+        protected override void RunGun()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleRunGun()) return;
+            base.RunGun();
+        }
+
+        protected override void RunFiring()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleRunFiring()) return;
+            base.RunFiring();
+        }
+
+        protected override void RunAvatarFiring()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleRunAvatarFiring()) return;
+            base.RunAvatarFiring();
+        }
+
+        protected override void ActivateGun()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleActivateGun()) return;
+            base.ActivateGun();
         }
 
         protected override void AnimateSpecial()
@@ -434,128 +921,33 @@ namespace BroMakerLib.Vanilla.Bros
             base.UseSpecial();
         }
 
-        protected override void ReleaseSpecial()
-        {
-            if (specialAbility != null && !specialAbility.HandleReleaseSpecial()) return;
-            if (meleeAbility != null && !meleeAbility.HandleReleaseSpecial()) return;
-            base.ReleaseSpecial();
-        }
-
-        protected override bool MustIgnoreHighFiveMeleePress()
-        {
-            specialAbility?.HandleMustIgnoreHighFiveMeleePress();
-            meleeAbility?.HandleMustIgnoreHighFiveMeleePress();
-            return base.MustIgnoreHighFiveMeleePress();
-        }
-
-        protected override void CalculateMovement()
-        {
-            float xI = this.xI;
-            float yI = this.yI;
-            if (specialAbility != null && !specialAbility.HandleCalculateMovement(ref xI, ref yI))
-            {
-                this.xI = xI;
-                this.yI = yI;
-                return;
-            }
-            if (meleeAbility != null && !meleeAbility.HandleCalculateMovement(ref xI, ref yI))
-            {
-                this.xI = xI;
-                this.yI = yI;
-                return;
-            }
-            this.xI = xI;
-            this.yI = yI;
-            base.CalculateMovement();
-            specialAbility?.HandleAfterCalculateMovement();
-            meleeAbility?.HandleAfterCalculateMovement();
-        }
-
-        public override void Damage(int damage, DamageType damageType, float xI, float yI, int direction, MonoBehaviour damageSender, float hitX, float hitY)
-        {
-            if (specialAbility != null && !specialAbility.HandleDamage(damage, damageType, xI, yI, direction, damageSender, hitX, hitY))
-            {
-                return;
-            }
-            if (meleeAbility != null && !meleeAbility.HandleDamage(damage, damageType, xI, yI, direction, damageSender, hitX, hitY))
-            {
-                return;
-            }
-            base.Damage(damage, damageType, xI, yI, direction, damageSender, hitX, hitY);
-        }
-
-        public override void Death(float xI, float yI, DamageObject damage)
-        {
-            if (specialAbility != null && !specialAbility.HandleDeath())
-            {
-                return;
-            }
-            if (meleeAbility != null && !meleeAbility.HandleDeath())
-            {
-                return;
-            }
-            base.Death(xI, yI, damage);
-            specialAbility?.HandleAfterDeath();
-            meleeAbility?.HandleAfterDeath();
-        }
-
-        protected override bool CanReduceLives()
-        {
-            if (specialAbility != null)
-            {
-                bool result = false;
-                if (!specialAbility.HandleCanReduceLives(ref result)) return result;
-            }
-            if (meleeAbility != null)
-            {
-                bool result = false;
-                if (!meleeAbility.HandleCanReduceLives(ref result)) return result;
-            }
-            return base.CanReduceLives();
-        }
-
-        protected override void FireWeapon(float x, float y, float xSpeed, float ySpeed)
-        {
-            if (specialAbility != null && !specialAbility.HandleFireWeapon()) return;
-            if (meleeAbility != null && !meleeAbility.HandleFireWeapon()) return;
-            base.FireWeapon(x, y, xSpeed, ySpeed);
-            specialAbility?.HandleAfterFireWeapon(x, y, xSpeed, ySpeed);
-            meleeAbility?.HandleAfterFireWeapon(x, y, xSpeed, ySpeed);
-        }
-
-        protected override void Jump(bool wallJump)
-        {
-            if (specialAbility != null && !specialAbility.HandleJump(wallJump)) return;
-            if (meleeAbility != null && !meleeAbility.HandleJump(wallJump)) return;
-            base.Jump(wallJump);
-        }
-
-        protected override void RunMovement()
-        {
-            if (specialAbility != null && !specialAbility.HandleRunMovement()) return;
-            if (meleeAbility != null && !meleeAbility.HandleRunMovement()) return;
-            base.RunMovement();
-        }
-
-        protected override void ApplyNormalGravity()
-        {
-            if (specialAbility != null && !specialAbility.HandleApplyNormalGravity()) return;
-            if (meleeAbility != null && !meleeAbility.HandleApplyNormalGravity()) return;
-            base.ApplyNormalGravity();
-        }
-
-        protected override void StartFiring()
-        {
-            if (specialAbility != null && !specialAbility.HandleStartFiring()) return;
-            if (meleeAbility != null && !meleeAbility.HandleStartFiring()) return;
-            base.StartFiring();
-        }
-
         protected override void StartMelee()
         {
-            if (specialAbility != null && !specialAbility.HandleStartMelee()) return;
-            if (meleeAbility != null && !meleeAbility.HandleStartMelee()) return;
+            foreach (var a in abilities)
+                if (a != null && !a.HandleStartMelee()) return;
             base.StartMelee();
+        }
+
+        protected override bool CanStartNewMelee()
+        {
+            foreach (var a in abilities)
+            {
+                if (a == null) continue;
+                bool result = false;
+                if (!a.HandleCanStartNewMelee(ref result)) return result;
+            }
+            return base.CanStartNewMelee();
+        }
+
+        protected override bool IsLockedInMelee()
+        {
+            foreach (var a in abilities)
+            {
+                if (a == null) continue;
+                bool result = false;
+                if (!a.HandleIsLockedInMelee(ref result)) return result;
+            }
+            return base.IsLockedInMelee();
         }
 
         protected override void RunIndependentMeleeFrames()
@@ -676,480 +1068,224 @@ namespace BroMakerLib.Vanilla.Bros
             }
         }
 
-        /// <summary>
-        /// Assigns a special ability at runtime. Calls <see cref="SpecialAbility.Initialize" /> on the new ability.
-        /// </summary>
-        /// <param name="ability">The ability to assign, or null to clear.</param>
-        public void SetSpecialAbility(SpecialAbility ability)
-        {
-            specialAbility?.Cleanup();
-            specialAbility = ability;
-            ability?.Initialize(this);
-        }
-
-        /// <summary>
-        /// Assigns a melee ability at runtime. Calls <see cref="MeleeAbility.Initialize" /> on the new ability
-        /// and sets <c>meleeType</c> to the ability's declared <see cref="MeleeAbility.meleeType" />.
-        /// </summary>
-        /// <param name="ability">The ability to assign, or null to clear.</param>
-        public void SetMeleeAbility(MeleeAbility ability)
-        {
-            meleeAbility?.Cleanup();
-            meleeAbility = ability;
-            ability?.Initialize(this);
-            if (ability != null)
-            {
-                meleeType = ability.meleeType;
-            }
-        }
-
         protected override void ChangeFrame()
         {
-            if (specialAbility != null && !specialAbility.HandleChangeFrame()) return;
-            if (meleeAbility != null && !meleeAbility.HandleChangeFrame()) return;
+            foreach (var a in abilities)
+                if (a != null && !a.HandleChangeFrame()) return;
             base.ChangeFrame();
-            specialAbility?.HandleAfterChangeFrame();
-            meleeAbility?.HandleAfterChangeFrame();
+            foreach (var a in abilities)
+                a?.HandleAfterChangeFrame();
         }
 
         protected override void IncreaseFrame()
         {
             base.IncreaseFrame();
-            specialAbility?.HandleAfterIncreaseFrame();
-            meleeAbility?.HandleAfterIncreaseFrame();
-        }
-
-        protected override void RunGun()
-        {
-            if (specialAbility != null && !specialAbility.HandleRunGun()) return;
-            if (meleeAbility != null && !meleeAbility.HandleRunGun()) return;
-            base.RunGun();
-        }
-
-        protected override void RunFiring()
-        {
-            if (specialAbility != null && !specialAbility.HandleRunFiring()) return;
-            if (meleeAbility != null && !meleeAbility.HandleRunFiring()) return;
-            base.RunFiring();
-        }
-
-        protected override void Land()
-        {
-            if (specialAbility != null && !specialAbility.HandleLand()) return;
-            if (meleeAbility != null && !meleeAbility.HandleLand()) return;
-            base.Land();
-            specialAbility?.HandleAfterLand();
-            meleeAbility?.HandleAfterLand();
-        }
-
-        protected override void RunAvatarFiring()
-        {
-            if (specialAbility != null && !specialAbility.HandleRunAvatarFiring()) return;
-            if (meleeAbility != null && !meleeAbility.HandleRunAvatarFiring()) return;
-            base.RunAvatarFiring();
-        }
-
-        protected override bool IsOverLadder(float xOffset, ref float ladderXPos)
-        {
-            if (specialAbility != null && !specialAbility.HandleIsOverLadder()) return false;
-            if (meleeAbility != null && !meleeAbility.HandleIsOverLadder()) return false;
-            return base.IsOverLadder(xOffset, ref ladderXPos);
-        }
-
-        protected override bool WallDrag
-        {
-            get => base.WallDrag;
-            set
-            {
-                if (specialAbility != null && !specialAbility.HandleWallDrag(value)) return;
-                if (meleeAbility != null && !meleeAbility.HandleWallDrag(value)) return;
-                base.WallDrag = value;
-            }
+            foreach (var a in abilities)
+                a?.HandleAfterIncreaseFrame();
         }
 
         protected override void AnimateActualJumpingFrames()
         {
-            if (specialAbility != null && !specialAbility.HandleAnimateActualJumpingFrames()) return;
-            if (meleeAbility != null && !meleeAbility.HandleAnimateActualJumpingFrames()) return;
+            foreach (var a in abilities)
+                if (a != null && !a.HandleAnimateActualJumpingFrames()) return;
             base.AnimateActualJumpingFrames();
+        }
+
+        protected override void AnimateActualJumpingDuckingFrames()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleAnimateActualJumpingDuckingFrames()) return;
+            base.AnimateActualJumpingDuckingFrames();
+        }
+
+        protected override void AnimateIdle()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleAnimateIdle()) return;
+            base.AnimateIdle();
         }
 
         protected override void AnimateActualNewRunningFrames()
         {
             base.AnimateActualNewRunningFrames();
-            specialAbility?.HandleAfterAnimateNewRunningFrames();
-            meleeAbility?.HandleAfterAnimateNewRunningFrames();
+            foreach (var a in abilities)
+                a?.HandleAfterAnimateNewRunningFrames();
         }
 
-        protected override bool ConstrainToFloor(ref float yIT)
+        protected override void AnimateWallAnticipation()
         {
-            if (specialAbility != null && !specialAbility.HandleConstrainToFloor()) return false;
-            if (meleeAbility != null && !meleeAbility.HandleConstrainToFloor()) return false;
-            return base.ConstrainToFloor(ref yIT);
+            foreach (var a in abilities)
+                if (a != null && !a.HandleAnimateWallAnticipation()) return;
+            base.AnimateWallAnticipation();
         }
 
-        protected override bool ConstrainToCeiling(ref float yIT)
+        protected override void AnimateWallClimb()
         {
-            if (specialAbility != null && !specialAbility.HandleConstrainToCeiling()) return false;
-            if (meleeAbility != null && !meleeAbility.HandleConstrainToCeiling()) return false;
-            return base.ConstrainToCeiling(ref yIT);
+            foreach (var a in abilities)
+                if (a != null && !a.HandleAnimateWallClimb()) return;
+            base.AnimateWallClimb();
         }
 
-        protected override bool ConstrainToWalls(ref float yIT, ref float xIT)
+        public override void Damage(int damage, DamageType damageType, float xI, float yI, int direction, MonoBehaviour damageSender, float hitX, float hitY)
         {
-            if (specialAbility != null && !specialAbility.HandleConstrainToWalls()) return false;
-            if (meleeAbility != null && !meleeAbility.HandleConstrainToWalls()) return false;
-            return base.ConstrainToWalls(ref yIT, ref xIT);
+            foreach (var a in abilities)
+                if (a != null && !a.HandleDamage(damage, damageType, xI, yI, direction, damageSender, hitX, hitY)) return;
+            base.Damage(damage, damageType, xI, yI, direction, damageSender, hitX, hitY);
         }
 
-        public override Vector3 GetFollowPosition()
+        public override void Death(float xI, float yI, DamageObject damage)
         {
-            if (specialAbility != null)
-            {
-                Vector3 result = Vector3.zero;
-                if (!specialAbility.HandleGetFollowPosition(ref result)) return result;
-            }
-            if (meleeAbility != null)
-            {
-                Vector3 result = Vector3.zero;
-                if (!meleeAbility.HandleGetFollowPosition(ref result)) return result;
-            }
-            return base.GetFollowPosition();
-        }
-
-        public override bool IsInStealthMode()
-        {
-            if (specialAbility != null && !specialAbility.HandleIsInStealthMode())
-            {
-                return true;
-            }
-            if (meleeAbility != null && !meleeAbility.HandleIsInStealthMode())
-            {
-                return true;
-            }
-            return base.IsInStealthMode();
-        }
-
-        protected override void AlertNearbyMooks()
-        {
-            if (specialAbility != null && !specialAbility.HandleAlertNearbyMooks())
-            {
-                return;
-            }
-            if (meleeAbility != null && !meleeAbility.HandleAlertNearbyMooks())
-            {
-                return;
-            }
-            base.AlertNearbyMooks();
+            foreach (var a in abilities)
+                if (a != null && !a.HandleDeath()) return;
+            base.Death(xI, yI, damage);
+            foreach (var a in abilities)
+                a?.HandleAfterDeath();
         }
 
         protected override void Gib(DamageType damageType, float xI, float yI)
         {
-            if (specialAbility != null && !specialAbility.HandleGib(damageType, xI, yI)) return;
-            if (meleeAbility != null && !meleeAbility.HandleGib(damageType, xI, yI)) return;
+            foreach (var a in abilities)
+                if (a != null && !a.HandleGib(damageType, xI, yI)) return;
             base.Gib(damageType, xI, yI);
         }
 
-        public override void RecallBro()
+        protected override bool CanReduceLives()
         {
-            if (specialAbility != null && !specialAbility.HandleRecallBro()) return;
-            if (meleeAbility != null && !meleeAbility.HandleRecallBro()) return;
-            base.RecallBro();
-            specialAbility?.HandleAfterRecallBro();
-            meleeAbility?.HandleAfterRecallBro();
-        }
-
-        public override void AttachToHeli()
-        {
-            if (specialAbility != null && !specialAbility.HandleAttachToHeli()) return;
-            if (meleeAbility != null && !meleeAbility.HandleAttachToHeli()) return;
-            base.AttachToHeli();
-        }
-
-        protected override void HitCeiling(RaycastHit ceilingHit)
-        {
-            if (specialAbility != null && !specialAbility.HandleHitCeiling()) return;
-            if (meleeAbility != null && !meleeAbility.HandleHitCeiling()) return;
-            base.HitCeiling(ceilingHit);
-            specialAbility?.HandleAfterHitCeiling();
-            meleeAbility?.HandleAfterHitCeiling();
-        }
-
-        protected override void HitLeftWall()
-        {
-            if (specialAbility != null && !specialAbility.HandleHitLeftWall()) return;
-            if (meleeAbility != null && !meleeAbility.HandleHitLeftWall()) return;
-            base.HitLeftWall();
-            specialAbility?.HandleAfterHitLeftWall();
-            meleeAbility?.HandleAfterHitLeftWall();
-        }
-
-        protected override void HitRightWall()
-        {
-            if (specialAbility != null && !specialAbility.HandleHitRightWall()) return;
-            if (meleeAbility != null && !meleeAbility.HandleHitRightWall()) return;
-            base.HitRightWall();
-            specialAbility?.HandleAfterHitRightWall();
-            meleeAbility?.HandleAfterHitRightWall();
-        }
-
-        protected override void ClampWallDragYI(ref float yIT)
-        {
-            if (specialAbility != null && !specialAbility.HandleClampWallDragYI(ref yIT)) return;
-            if (meleeAbility != null && !meleeAbility.HandleClampWallDragYI(ref yIT)) return;
-            base.ClampWallDragYI(ref yIT);
-        }
-
-        protected override void RunHanging()
-        {
-            if (specialAbility != null && !specialAbility.HandleRunHanging()) return;
-            if (meleeAbility != null && !meleeAbility.HandleRunHanging()) return;
-            base.RunHanging();
-        }
-
-        protected override bool CanCheckClimbAlongCeiling()
-        {
-            if (specialAbility != null)
+            foreach (var a in abilities)
             {
+                if (a == null) continue;
                 bool result = false;
-                if (!specialAbility.HandleCanCheckClimbAlongCeiling(ref result)) return result;
+                if (!a.HandleCanReduceLives(ref result)) return result;
             }
-            if (meleeAbility != null)
-            {
-                bool result = false;
-                if (!meleeAbility.HandleCanCheckClimbAlongCeiling(ref result)) return result;
-            }
-            return base.CanCheckClimbAlongCeiling();
-        }
-
-        protected override void CheckClimbAlongCeiling()
-        {
-            if (specialAbility != null && !specialAbility.HandleCheckClimbAlongCeiling()) return;
-            if (meleeAbility != null && !meleeAbility.HandleCheckClimbAlongCeiling()) return;
-            base.CheckClimbAlongCeiling();
-        }
-
-        protected override void CheckInput()
-        {
-            base.CheckInput();
-            specialAbility?.HandleAfterCheckInput();
-            meleeAbility?.HandleAfterCheckInput();
-        }
-
-        protected override void AirDashDown()
-        {
-            if (specialAbility != null && !specialAbility.HandleAirDashDown()) return;
-            if (meleeAbility != null && !meleeAbility.HandleAirDashDown()) return;
-            base.AirDashDown();
-        }
-
-        protected override void RunDownwardDash()
-        {
-            if (specialAbility != null && !specialAbility.HandleRunDownwardDash()) return;
-            if (meleeAbility != null && !meleeAbility.HandleRunDownwardDash()) return;
-            base.RunDownwardDash();
-            specialAbility?.HandleAfterRunDownwardDash();
-            meleeAbility?.HandleAfterRunDownwardDash();
-        }
-
-        protected override void AnimateIdle()
-        {
-            if (specialAbility != null && !specialAbility.HandleAnimateIdle()) return;
-            if (meleeAbility != null && !meleeAbility.HandleAnimateIdle()) return;
-            base.AnimateIdle();
-        }
-
-        public override LayerMask GetGroundLayer()
-        {
-            if (specialAbility != null)
-            {
-                int result = 0;
-                if (!specialAbility.HandleGetGroundLayer(ref result)) return result;
-            }
-            if (meleeAbility != null)
-            {
-                int result = 0;
-                if (!meleeAbility.HandleGetGroundLayer(ref result)) return result;
-            }
-            return base.GetGroundLayer();
+            return base.CanReduceLives();
         }
 
         public override bool IsAlive()
         {
-            if (specialAbility != null)
+            foreach (var a in abilities)
             {
+                if (a == null) continue;
                 bool result = false;
-                if (!specialAbility.HandleIsAlive(ref result)) return result;
-            }
-            if (meleeAbility != null)
-            {
-                bool result = false;
-                if (!meleeAbility.HandleIsAlive(ref result)) return result;
+                if (!a.HandleIsAlive(ref result)) return result;
             }
             return base.IsAlive();
         }
 
         public override bool Revive(int playerNum, bool isUnderPlayerControl, TestVanDammeAnim reviveSource)
         {
-            if (specialAbility != null && !specialAbility.HandleRevive(playerNum, isUnderPlayerControl, reviveSource)) return false;
-            if (meleeAbility != null && !meleeAbility.HandleRevive(playerNum, isUnderPlayerControl, reviveSource)) return false;
+            foreach (var a in abilities)
+                if (a != null && !a.HandleRevive(playerNum, isUnderPlayerControl, reviveSource)) return false;
             bool result = base.Revive(playerNum, isUnderPlayerControl, reviveSource);
-            specialAbility?.HandleAfterRevive(playerNum, isUnderPlayerControl, reviveSource);
-            meleeAbility?.HandleAfterRevive(playerNum, isUnderPlayerControl, reviveSource);
+            foreach (var a in abilities)
+                a?.HandleAfterRevive(playerNum, isUnderPlayerControl, reviveSource);
             return result;
-        }
-
-        public override void UseSteroids()
-        {
-            if (specialAbility != null && !specialAbility.HandleUseSteroids()) return;
-            if (meleeAbility != null && !meleeAbility.HandleUseSteroids()) return;
-            base.UseSteroids();
-            specialAbility?.HandleAfterUseSteroids();
-            meleeAbility?.HandleAfterUseSteroids();
         }
 
         protected override void CheckNotifyDeathType()
         {
-            if (specialAbility != null && !specialAbility.HandleCheckNotifyDeathType()) return;
-            if (meleeAbility != null && !meleeAbility.HandleCheckNotifyDeathType()) return;
+            foreach (var a in abilities)
+                if (a != null && !a.HandleCheckNotifyDeathType()) return;
             base.CheckNotifyDeathType();
         }
 
-        protected override void ApplyFallingGravity()
+        protected virtual bool CanBeImpaledByGroundSpikes()
         {
-            if (specialAbility != null && !specialAbility.HandleApplyFallingGravity()) return;
-            if (meleeAbility != null && !meleeAbility.HandleApplyFallingGravity()) return;
-            base.ApplyFallingGravity();
+            foreach (var a in abilities)
+            {
+                if (a == null) continue;
+                bool result = false;
+                if (!a.HandleCanBeImpaledByGroundSpikes(ref result)) return result;
+            }
+            return !invulnerable && !wallDrag;
         }
 
-        protected override void SetDeltaTime()
+        public override void UseSteroids()
         {
-            if (specialAbility != null && !specialAbility.HandleSetDeltaTime()) return;
-            if (meleeAbility != null && !meleeAbility.HandleSetDeltaTime()) return;
-            base.SetDeltaTime();
+            foreach (var a in abilities)
+                if (a != null && !a.HandleUseSteroids()) return;
+            base.UseSteroids();
+            foreach (var a in abilities)
+                a?.HandleAfterUseSteroids();
+        }
+
+        public override bool IsInStealthMode()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleIsInStealthMode()) return true;
+            return base.IsInStealthMode();
+        }
+
+        protected override void AlertNearbyMooks()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleAlertNearbyMooks()) return;
+            base.AlertNearbyMooks();
         }
 
         public override bool CanInseminate(float xI, float yI)
         {
-            if (specialAbility != null)
+            foreach (var a in abilities)
             {
+                if (a == null) continue;
                 bool result = false;
-                if (!specialAbility.HandleCanInseminate(ref result)) return result;
-            }
-            if (meleeAbility != null)
-            {
-                bool result = false;
-                if (!meleeAbility.HandleCanInseminate(ref result)) return result;
+                if (!a.HandleCanInseminate(ref result)) return result;
             }
             return base.CanInseminate(xI, yI);
         }
 
-        protected override bool CanStartNewMelee()
+        public override Vector3 GetFollowPosition()
         {
-            if (specialAbility != null)
+            foreach (var a in abilities)
             {
-                bool result = false;
-                if (!specialAbility.HandleCanStartNewMelee(ref result)) return result;
+                if (a == null) continue;
+                Vector3 result = Vector3.zero;
+                if (!a.HandleGetFollowPosition(ref result)) return result;
             }
-            if (meleeAbility != null)
-            {
-                bool result = false;
-                if (!meleeAbility.HandleCanStartNewMelee(ref result)) return result;
-            }
-            return base.CanStartNewMelee();
+            return base.GetFollowPosition();
         }
 
-        protected override bool IsLockedInMelee()
+        public override void RecallBro()
         {
-            if (specialAbility != null)
-            {
-                bool result = false;
-                if (!specialAbility.HandleIsLockedInMelee(ref result)) return result;
-            }
-            if (meleeAbility != null)
-            {
-                bool result = false;
-                if (!meleeAbility.HandleIsLockedInMelee(ref result)) return result;
-            }
-            return base.IsLockedInMelee();
+            foreach (var a in abilities)
+                if (a != null && !a.HandleRecallBro()) return;
+            base.RecallBro();
+            foreach (var a in abilities)
+                a?.HandleAfterRecallBro();
+        }
+
+        public override void AttachToHeli()
+        {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleAttachToHeli()) return;
+            base.AttachToHeli();
         }
 
         public override void StartPilotingUnit(Unit pilottedUnit)
         {
-            if (specialAbility != null && !specialAbility.HandleStartPilotingUnit()) return;
-            if (meleeAbility != null && !meleeAbility.HandleStartPilotingUnit()) return;
+            foreach (var a in abilities)
+                if (a != null && !a.HandleStartPilotingUnit()) return;
             base.StartPilotingUnit(pilottedUnit);
         }
 
         public override void DischargePilotingUnit(float newX, float newY, float xI, float yI, bool stunPilot)
         {
             base.DischargePilotingUnit(newX, newY, xI, yI, stunPilot);
-            specialAbility?.HandleAfterDischargePilotingUnit();
-            meleeAbility?.HandleAfterDischargePilotingUnit();
+            foreach (var a in abilities)
+                a?.HandleAfterDischargePilotingUnit();
         }
 
         public override void DestroyUnit()
         {
-            specialAbility?.HandleDestroyUnit();
-            meleeAbility?.HandleDestroyUnit();
+            foreach (var a in abilities)
+                a?.HandleDestroyUnit();
             base.DestroyUnit();
         }
 
-        protected override void LateUpdate()
+        protected override void ThrowBackMook(Mook mook)
         {
-            base.LateUpdate();
-            specialAbility?.HandleLateUpdate();
-            meleeAbility?.HandleLateUpdate();
-        }
-
-        protected override void AddSpeedLeft()
-        {
-            base.AddSpeedLeft();
-            specialAbility?.HandleAfterAddSpeedLeft();
-            meleeAbility?.HandleAfterAddSpeedLeft();
-        }
-
-        protected override void AddSpeedRight()
-        {
-            base.AddSpeedRight();
-            specialAbility?.HandleAfterAddSpeedRight();
-            meleeAbility?.HandleAfterAddSpeedRight();
-        }
-
-        public override void Knock(DamageType damageType, float xI, float yI, bool forceTumble)
-        {
-            if (specialAbility != null && !specialAbility.HandleKnock(damageType, xI, yI, forceTumble)) return;
-            if (meleeAbility != null && !meleeAbility.HandleKnock(damageType, xI, yI, forceTumble)) return;
-            base.Knock(damageType, xI, yI, forceTumble);
-        }
-
-        protected override void FixedUpdate()
-        {
-            base.FixedUpdate();
-            specialAbility?.HandleAfterFixedUpdate();
-            meleeAbility?.HandleAfterFixedUpdate();
-        }
-
-        protected override void CopyInput(TestVanDammeAnim zombie, ref float zombieDelay, ref bool up, ref bool down, ref bool left, ref bool right, ref bool fire, ref bool buttonJump, ref bool special, ref bool highFive)
-        {
-            base.CopyInput(zombie, ref zombieDelay, ref up, ref down, ref left, ref right, ref fire, ref buttonJump, ref special, ref highFive);
-            specialAbility?.HandleAfterCopyInput(zombie, ref zombieDelay, ref up, ref down, ref left, ref right, ref fire, ref buttonJump);
-            meleeAbility?.HandleAfterCopyInput(zombie, ref zombieDelay, ref up, ref down, ref left, ref right, ref fire, ref buttonJump);
-        }
-
-        protected virtual bool CanBeImpaledByGroundSpikes()
-        {
-            if (specialAbility != null)
-            {
-                bool result = false;
-                if (!specialAbility.HandleCanBeImpaledByGroundSpikes(ref result)) return result;
-            }
-            if (meleeAbility != null)
-            {
-                bool result = false;
-                if (!meleeAbility.HandleCanBeImpaledByGroundSpikes(ref result)) return result;
-            }
-            return !invulnerable && !wallDrag;
+            foreach (var a in abilities)
+                if (a != null && !a.HandleThrowBackMook(mook)) return;
+            base.ThrowBackMook(mook);
         }
         #endregion
     }

@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
+    /// <summary>Broffy's knife melee.</summary>
     [MeleePreset("Broffy")]
     public class BroffyMelee : MeleeAbility
     {
@@ -28,19 +29,19 @@ namespace BroMakerLib.Vanilla.Melees
         public override void AnimateMelee()
         {
             hero.AnimateMeleeCommon();
-            int num = 25 + Mathf.Clamp(owner.frame, 0, 6);
-            int num2 = 1;
+            int num = animationColumn + Mathf.Clamp(owner.frame, 0, 6);
+            int num2 = animationRow;
             if (!hero.StandingMelee)
             {
                 if (hero.JumpingMelee)
                 {
-                    num = 17 + Mathf.Clamp(owner.frame, 0, 9);
-                    num2 = 6;
+                    num = jumpingAnimationColumn + Mathf.Clamp(owner.frame, 0, 9);
+                    num2 = jumpingAnimationRow;
                 }
                 else if (hero.DashingMelee)
                 {
-                    num = 17 + Mathf.Clamp(owner.frame, 0, 9);
-                    num2 = 6;
+                    num = jumpingAnimationColumn + Mathf.Clamp(owner.frame, 0, 9);
+                    num2 = jumpingAnimationRow;
                     if (owner.frame == 4)
                     {
                         owner.counter -= 0.0334f;

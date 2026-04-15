@@ -4,12 +4,14 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
+    /// <summary>TheBrode's throwing-knife melee.</summary>
     [MeleePreset("TheBrode")]
     public class TheBrodeMelee : KnifeThrowMelee
     {
         public TheBrodeMelee()
         {
             meleeType = BroBase.MeleeType.Custom;
+            animationRow = 9;
         }
 
         public override void Initialize(TestVanDammeAnim owner)
@@ -37,9 +39,9 @@ namespace BroMakerLib.Vanilla.Melees
                 owner.frame = 1;
                 hero.MeleeFollowUp = false;
             }
-            hero.FrameRate = 0.025f;
-            int num = 25 + Mathf.Clamp(owner.frame, 0, 6);
-            int num2 = 9;
+            hero.FrameRate = frameRate;
+            int num = animationColumn + Mathf.Clamp(owner.frame, 0, 6);
+            int num2 = animationRow;
             hero.Sprite.SetLowerLeftPixel((float)(num * hero.SpritePixelWidth), (float)(num2 * hero.SpritePixelHeight));
             if (owner.frame == 3 && !knifeThrown)
             {

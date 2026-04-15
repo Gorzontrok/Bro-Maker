@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>Bronnar Jensen's remote-controlled explosive car special.</summary>
     [SpecialPreset("BronnarJensen")]
     public class BronnarJensenSpecial : SpecialAbility
     {
@@ -51,7 +52,7 @@ namespace BroMakerLib.Vanilla.Specials
         {
             hero.SetSpriteOffset(0f, 0f);
             hero.ActivateGun();
-            hero.FrameRate = 0.0334f;
+            hero.FrameRate = frameRate;
             hero.SetGunSprite(5 - owner.frame, 0);
             if (owner.frame == 0)
             {

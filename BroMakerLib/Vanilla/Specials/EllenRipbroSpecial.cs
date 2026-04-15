@@ -6,10 +6,12 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>Ellen Ripbro's flame-wave special.</summary>
     [SpecialPreset("EllenRipbro")]
     public class EllenRipbroSpecial : SpecialAbility
     {
         protected override HeroType SourceBroType => HeroType.EllenRipbro;
+        /// <summary>Delay in seconds after the flame wave is spawned before ammo is decremented.</summary>
         public float ammoDecrementDelay = 0.2f;
 
         [JsonIgnore]
@@ -25,6 +27,7 @@ namespace BroMakerLib.Vanilla.Specials
         {
             spawnOffsetX = 5f;
             spawnOffsetY = 9f;
+            animationRow = 7;
         }
 
         public override void Initialize(TestVanDammeAnim owner)
@@ -62,9 +65,9 @@ namespace BroMakerLib.Vanilla.Specials
         {
             hero.SetSpriteOffset(0f, 0f);
             hero.DeactivateGun();
-            hero.FrameRate = 0.0334f;
+            hero.FrameRate = frameRate;
             int column = Mathf.Clamp(owner.frame, 0, 6);
-            hero.Sprite.SetLowerLeftPixel(column * hero.SpritePixelWidth, hero.SpritePixelHeight * 7);
+            hero.Sprite.SetLowerLeftPixel(column * hero.SpritePixelWidth, hero.SpritePixelHeight * animationRow);
             if (owner.frame == 3 && !firedSpecial)
             {
                 UseSpecial();

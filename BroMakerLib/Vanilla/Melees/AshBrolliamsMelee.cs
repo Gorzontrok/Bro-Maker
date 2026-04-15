@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
+    /// <summary>Ash Brolliams's chainsaw melee.</summary>
     [MeleePreset("AshBrolliams")]
     public class AshBrolliamsMelee : MeleeAbility
     {
@@ -30,6 +31,9 @@ namespace BroMakerLib.Vanilla.Melees
         public AshBrolliamsMelee()
         {
             meleeType = BroBase.MeleeType.ChainSaw;
+            animationColumn = 24;
+            animationRow = 9;
+            jumpingAnimationRow = 10;
         }
 
         protected override void CacheSoundsFromPrefab()
@@ -137,12 +141,12 @@ namespace BroMakerLib.Vanilla.Melees
                     }
                 }
             }
-            int num = 9;
+            int num = animationRow;
             if (hero.JumpingMelee)
             {
-                num = 10;
+                num = jumpingAnimationRow;
             }
-            int num2 = 24 + owner.frame;
+            int num2 = animationColumn + owner.frame;
             hero.Sprite.SetLowerLeftPixel((float)(num2 * hero.SpritePixelWidth), (float)(num * hero.SpritePixelHeight));
             if (owner.frame == 5)
             {

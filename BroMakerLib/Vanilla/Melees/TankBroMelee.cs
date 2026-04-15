@@ -5,12 +5,15 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
+    /// <summary>TankBro's smash melee.</summary>
     [MeleePreset("TankBro")]
     public class TankBroMelee : SmashMelee
     {
         protected override HeroType SourceBroType => HeroType.TankBro;
 
+        /// <summary>Horizontal impulse applied to the target on TankBro's uppercut hit.</summary>
         public float tankBroUpperCutXI = 50f;
+        /// <summary>Vertical impulse applied to the target on TankBro's uppercut hit.</summary>
         public float tankBroUpperCutYI = 550f;
 
         public TankBroMelee()

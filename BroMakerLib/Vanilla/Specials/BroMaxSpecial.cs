@@ -7,13 +7,17 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>Bro Max's returning boomerang.</summary>
     [SpecialPreset("BroMax")]
     public class BroMaxSpecial : SpecialAbility
     {
         protected override HeroType SourceBroType => HeroType.BroMax;
+        /// <summary>Name of the boomerang projectile prefab to load.</summary>
         public string boomerangName = "Boomerang";
         public float boomerangSpeed = 240f;
+        /// <summary>Vertical launch speed component of the boomerang.</summary>
         public float boomerangSpeedY = 0f;
+        /// <summary>Frame rate of the catch animation when the boomerang returns.</summary>
         public float catchFrameRate = 0.045f;
 
         [JsonIgnore]

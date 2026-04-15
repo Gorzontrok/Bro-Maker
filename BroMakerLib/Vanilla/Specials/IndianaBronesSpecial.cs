@@ -7,15 +7,22 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>Indiana Brones's shotgun blast special.</summary>
     [SpecialPreset("IndianaBrones")]
     public class IndianaBronesSpecial : SpecialAbility
     {
         protected override HeroType SourceBroType => HeroType.IndianaBrones;
+        /// <summary>Name of the projectile prefab fired during the special.</summary>
         public string projectileName = "IndianaBrones";
+        /// <summary>Horizontal speed of the fired projectile.</summary>
         public float fireSpeedX = 800f;
+        /// <summary>Maximum random vertical speed variance applied to each shot.</summary>
         public float fireSpeedYVariance = 10f;
+        /// <summary>Vertical recoil applied to the bro on firing.</summary>
         public float recoilY = 50f;
+        /// <summary>Horizontal recoil applied to the bro on firing.</summary>
         public float recoilX = 50f;
+        /// <summary>Camera shake magnitude on firing.</summary>
         public float shakeAmount = 0.4f;
 
         [JsonIgnore]

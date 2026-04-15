@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>Brobocop's targeting-system missile barrage.</summary>
     [SpecialPreset("Brobocop")]
     public class BrobocopSpecial : SpecialAbility
     {
@@ -17,11 +18,17 @@ namespace BroMakerLib.Vanilla.Specials
             instantUse = true;
         }
 
+        /// <summary>How long the targeting cursor stays active before auto-firing.</summary>
         public float targetingDuration = 5f;
+        /// <summary>Radius used when scanning for the next target to lock onto.</summary>
         public float scanningRange = 10f;
+        /// <summary>Minimum time between successive special uses.</summary>
         public float specialCooldownDelay = 0.13f;
+        /// <summary>Launch speed of each guided missile.</summary>
         public float missileSpeed = 400f;
+        /// <summary>Delay in seconds between firing successive missiles at locked targets.</summary>
         public float missileFireInterval = 0.12f;
+        /// <summary>Gun sprite column shown while firing missiles.</summary>
         public int targetingGunColumn = 3;
 
         [JsonIgnore]

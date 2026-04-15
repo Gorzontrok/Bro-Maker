@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
+    /// <summary>Brobocop's pistol-whip punch melee.</summary>
     [MeleePreset("Brobocop")]
     public class BrobocopMelee : MeleeAbility
     {
@@ -19,6 +20,8 @@ namespace BroMakerLib.Vanilla.Melees
             meleeType = BroBase.MeleeType.BrobocopPunch;
             startType = MeleeStartType.Custom;
             restartFrame = 0;
+            animationRow = 9;
+            jumpingAnimationRow = 10;
         }
 
         protected override void CacheSoundsFromPrefab()
@@ -33,11 +36,11 @@ namespace BroMakerLib.Vanilla.Melees
         public override void AnimateMelee()
         {
             hero.AnimateMeleeCommon();
-            int num = 25 + Mathf.Clamp(owner.frame, 0, 8);
-            int num2 = 9;
+            int num = animationColumn + Mathf.Clamp(owner.frame, 0, 8);
+            int num2 = animationRow;
             if (hero.JumpingMelee)
             {
-                num2 = 10;
+                num2 = jumpingAnimationRow;
             }
             if (owner.frame == 3)
             {

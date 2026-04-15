@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>The Brofessional's Matilda targeting-wave special.</summary>
     [SpecialPreset("TheBrofessional")]
     public class TheBrofessionalSpecial : SpecialAbility
     {
@@ -52,9 +53,9 @@ namespace BroMakerLib.Vanilla.Specials
         {
             hero.SetSpriteOffset(0f, 0f);
             hero.DeactivateGun();
-            hero.FrameRate = 0.0334f;
+            hero.FrameRate = frameRate;
             int column = 25 + Mathf.Clamp(owner.frame, 0, 6);
-            hero.Sprite.SetLowerLeftPixel(column * hero.SpritePixelWidth, hero.SpritePixelHeight * 5);
+            hero.Sprite.SetLowerLeftPixel(column * hero.SpritePixelWidth, hero.SpritePixelHeight * animationRow);
             if (owner.frame == 0)
             {
                 owner.counter -= 0.033f;

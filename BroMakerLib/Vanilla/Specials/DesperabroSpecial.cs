@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>Desperabro's mariachi-serenade then blinding shockwave special.</summary>
     [SpecialPreset("Desperabro")]
     public class DesperabroSpecial : SpecialAbility
     {
@@ -20,18 +21,28 @@ namespace BroMakerLib.Vanilla.Specials
             if (special4Sounds == null) special4Sounds = sourceBro.soundHolder.special4Sounds.CloneArray();
         }
 
+        /// <summary>Radius within which enemies are blinded when the serenade ends.</summary>
         public float blindRange = 200f;
+        /// <summary>Duration in seconds of the blindness applied to affected enemies.</summary>
         public float blindDuration = 9f;
+        /// <summary>Radius of the shockwave explosion released at the end of the serenade.</summary>
         public float shockWaveRange = 64f;
+        /// <summary>Horizontal radius within which enemies are forced to dance during the serenade.</summary>
         public float danceRange = 200f;
+        /// <summary>Vertical radius within which enemies are forced to dance during the serenade.</summary>
         public float danceYRange = 64f;
+        /// <summary>Duration of each forced dance burst applied to nearby enemies.</summary>
         public float danceDuration = 0.2f;
+        /// <summary>Time in seconds between successive dance pulses.</summary>
         public float danceInterval = 0.0334f;
+        /// <summary>Time in seconds after which the serenade automatically triggers the shockwave if not manually ended.</summary>
         public float serenadeAutoFinishTime = 4.2f;
 
+        /// <summary>Guitar serenade audio clips played during the special.</summary>
         public AudioClip[] special4Sounds;
         [JsonIgnore]
         private bool isSerenading;
+        public bool IsSerenading => isSerenading;
         [JsonIgnore]
         private float serenadeTimer;
         [JsonIgnore]

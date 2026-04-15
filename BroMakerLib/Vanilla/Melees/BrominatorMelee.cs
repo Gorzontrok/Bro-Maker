@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
+    /// <summary>Brominator's smash melee.</summary>
     [MeleePreset("Brominator")]
     public class BrominatorMelee : SmashMelee
     {

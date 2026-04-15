@@ -7,10 +7,12 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
+    /// <summary>Xebro's chakram throw special.</summary>
     [SpecialPreset("Xebro")]
     public class XebroSpecial : SpecialAbility
     {
         protected override HeroType SourceBroType => HeroType.Xebro;
+        /// <summary>Playback volume for the throw sound.</summary>
         public float throwSoundVolume = 0.5f;
 
         [JsonIgnore]
@@ -66,6 +68,7 @@ namespace BroMakerLib.Vanilla.Specials
             if (broBase != null) broBase.meleeType = BroBase.MeleeType.Custom;
         }
 
+        /// <summary>Called by a returning `Chakram` to restore ammo and reset melee state.</summary>
         public void CatchChakram(Chakram chakram)
         {
             var broBase = owner as BroBase;
