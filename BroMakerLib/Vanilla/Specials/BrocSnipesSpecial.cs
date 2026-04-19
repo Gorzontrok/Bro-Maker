@@ -22,7 +22,7 @@ namespace BroMakerLib.Vanilla.Specials
             if (special2Sounds == null) special2Sounds = sourceBro.soundHolder.special2Sounds.CloneArray();
         }
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
             var prefab = HeroController.GetHeroPrefab(HeroType.Broc);
@@ -186,7 +186,7 @@ namespace BroMakerLib.Vanilla.Specials
             var brocSnipes = owner as BrocSnipes;
             if (brocSnipes != null)
             {
-                owner.SetFieldValue("chimneyFlip", true);
+                hero.ChimneyFlip = true;
                 owner.SetFieldValue("chimneyFlipFrames", 11);
                 owner.SetFieldValue("chimneyFlipDirection", 0);
                 owner.CallMethod("AnimateChimneyFlip");

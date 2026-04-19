@@ -46,12 +46,8 @@ namespace BroMakerLib.Abilities
         /// <summary>Sounds played for the special's main attack effect.</summary>
         public AudioClip[] specialAttackSounds;
 
-        /// <summary>True while the special is animating or otherwise mid-use.</summary>
-        [JsonIgnore]
-        public bool IsActive { get; protected set; }
-
         /// <summary>Called once when the bro spawns. Also calls `CacheSoundsFromPrefab`.</summary>
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
             CacheSoundsFromPrefab();
@@ -119,7 +115,7 @@ namespace BroMakerLib.Abilities
             }
         }
 
-        /// <summary>Called when the special fires — deducts ammo and calls `ActivateSpecial`, or flashes the HUD if out of ammo.</summary>
+        /// <summary>Called when the special fires. Deducts ammo and calls `ActivateSpecial`, or flashes the HUD if out of ammo.</summary>
         public virtual void UseSpecial()
         {
             if (owner.SpecialAmmo > 0)

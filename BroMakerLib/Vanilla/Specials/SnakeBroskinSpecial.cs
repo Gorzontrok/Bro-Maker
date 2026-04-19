@@ -80,7 +80,7 @@ namespace BroMakerLib.Vanilla.Specials
         [JsonIgnore]
         private SpriteSM faderSpritePrefab;
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
             specialGrenade = LoadBroforceObjects.GetGrenadeFromName(grenadeName);

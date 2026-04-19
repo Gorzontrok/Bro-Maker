@@ -44,10 +44,13 @@ namespace BroMakerLib.Vanilla.Specials
         public AudioClip teleportSound;
         [JsonIgnore]
         private Material coveredInBloodMaterial;
+        [JsonIgnore]
+        private Material originalDefaultMaterial;
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
+            originalDefaultMaterial = owner.GetFieldValue<Material>("defaultMaterial");
             var brondleFly = owner as BrondleFly;
             if (brondleFly == null)
             {
@@ -247,6 +250,16 @@ namespace BroMakerLib.Vanilla.Specials
             }
             pos = original;
             return false;
+        }
+
+        public override bool HandleDeath(float xI, float yI, DamageObject damage)
+        {
+            if (!(owner is BrondleFly) && originalDefaultMaterial != null)
+            {
+                owner.SetFieldValue("defaultMaterial", originalDefaultMaterial);
+                owner.SetFieldValue("isBloody", false);
+            }
+            return true;
         }
 
         public override void Update()

@@ -13,7 +13,7 @@ namespace BroMakerLib.Vanilla.Passives
     {
         protected override HeroType SourceBroType => HeroType.Nebro;
 
-        protected override bool IsOwnerRedundant(TestVanDammeAnim owner) => owner is Nebro;
+        protected override bool IsOwnerRedundant(BroBase owner) => owner is Nebro;
 
         public NebroPassive()
         {
@@ -73,8 +73,8 @@ namespace BroMakerLib.Vanilla.Passives
 
         public override bool HandlePressDashButton()
         {
-            if (!owner.GetFieldValue<bool>("canAirdash")) return true;
-            bool wasdash = owner.GetFieldValue<bool>("wasdashButton");
+            if (!hero.CanAirdash) return true;
+            bool wasdash = hero.WasDashButton;
             if (wasdash) return true;
 
             if (owner.up && CanAirDash(DirectionEnum.Up)) { Airdash(true); }
@@ -86,7 +86,7 @@ namespace BroMakerLib.Vanilla.Passives
 
         public override bool HandleJump(bool wallJump)
         {
-            if (owner.GetFieldValue<bool>("holdingHighFive") && owner.GetFieldValue<bool>("airdashUpAvailable"))
+            if (hero.HoldingHighFive && hero.AirdashUpAvailable)
             {
                 owner.up = true;
                 Airdash(true);
@@ -168,15 +168,15 @@ namespace BroMakerLib.Vanilla.Passives
 
         public override bool HandleHitRightWall()
         {
-            float airdashTime = owner.GetFieldValue<float>("airdashTime");
-            DirectionEnum airdashDirection = owner.GetFieldValue<DirectionEnum>("airdashDirection");
+            float airdashTime = hero.AirdashTime;
+            DirectionEnum airdashDirection = hero.AirdashDirection;
             if (airdashTime > 0f && airdashDirection == DirectionEnum.Right)
             {
                 MakeDashBlast(X + 7f, Y + 5f, true);
                 owner.xIBlast = -100f;
                 owner.yI += 50f;
                 hero.AirdashDirection = DirectionEnum.Any;
-                owner.SetFieldValue("airdashTime", 0f);
+                hero.AirdashTime = 0f;
                 return false;
             }
             return true;
@@ -184,15 +184,15 @@ namespace BroMakerLib.Vanilla.Passives
 
         public override bool HandleHitLeftWall()
         {
-            float airdashTime = owner.GetFieldValue<float>("airdashTime");
-            DirectionEnum airdashDirection = owner.GetFieldValue<DirectionEnum>("airdashDirection");
+            float airdashTime = hero.AirdashTime;
+            DirectionEnum airdashDirection = hero.AirdashDirection;
             if (airdashTime > 0f && airdashDirection == DirectionEnum.Left)
             {
                 MakeDashBlast(X - 7f, Y + 5f, true);
                 owner.xIBlast = 100f;
                 owner.yI += 50f;
                 hero.AirdashDirection = DirectionEnum.Any;
-                owner.SetFieldValue("airdashTime", 0f);
+                hero.AirdashTime = 0f;
                 return false;
             }
             return true;
@@ -200,12 +200,12 @@ namespace BroMakerLib.Vanilla.Passives
 
         public override bool HandleHitCeiling()
         {
-            float airdashTime = owner.GetFieldValue<float>("airdashTime");
-            DirectionEnum airdashDirection = owner.GetFieldValue<DirectionEnum>("airdashDirection");
+            float airdashTime = hero.AirdashTime;
+            DirectionEnum airdashDirection = hero.AirdashDirection;
             if (airdashTime > 0f && airdashDirection == DirectionEnum.Up)
             {
                 MakeDashBlast(X, Y + owner.headHeight + 5f, false);
-                owner.SetFieldValue("airdashTime", 0f);
+                hero.AirdashTime = 0f;
             }
             return true;
         }
@@ -214,8 +214,8 @@ namespace BroMakerLib.Vanilla.Passives
         {
             owner.CallMethod("SetAirdashAvailable");
 
-            float airdashTime = owner.GetFieldValue<float>("airdashTime");
-            DirectionEnum airdashDirection = owner.GetFieldValue<DirectionEnum>("airdashDirection");
+            float airdashTime = hero.AirdashTime;
+            DirectionEnum airdashDirection = hero.AirdashDirection;
             if (airdashTime > 0f && airdashDirection == DirectionEnum.Down)
             {
                 MakeDashBlast(X, owner.groundHeight, true);
@@ -268,7 +268,7 @@ namespace BroMakerLib.Vanilla.Passives
 
         private void TickFaderTrail()
         {
-            if (owner.GetFieldValue<float>("airDashDelay") > 0f) return;
+            if (hero.AirDashDelay > 0f) return;
             airdashFadeCounter += Time.deltaTime;
             if (airdashFadeCounter > airdashFadeRate)
             {

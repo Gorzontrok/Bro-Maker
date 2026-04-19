@@ -14,7 +14,7 @@ namespace BroMakerLib.Vanilla.Melees
             animationRow = 9;
         }
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
 
@@ -38,6 +38,7 @@ namespace BroMakerLib.Vanilla.Melees
                 owner.counter -= 0.08f;
                 owner.frame = 1;
                 hero.MeleeFollowUp = false;
+                hero.ResetMeleeValues();
             }
             hero.FrameRate = frameRate;
             int num = animationColumn + Mathf.Clamp(owner.frame, 0, 6);

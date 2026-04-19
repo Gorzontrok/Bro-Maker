@@ -26,6 +26,10 @@ namespace BroMakerLib.Vanilla.Specials
         public float knockbackAbsorption = 0.1f;
         /// <summary>Duration of the invulnerability window granted when metal mode ends.</summary>
         public float endInvulnerableTime = 0.5f;
+        /// <summary>Maximum xIBlast clamp fraction of speed while in metal mode.</summary>
+        public float brominatorModeSpeedBlastClamp = 0.12f;
+        /// <summary>Maximum xIBlast clamp fraction of speed in normal mode.</summary>
+        public float normalSpeedBlastClamp = 1.6f;
 
         [JsonIgnore]
         private bool brominatorMode;
@@ -61,7 +65,7 @@ namespace BroMakerLib.Vanilla.Specials
             }
         }
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
             originalSpeed = owner.speed;
@@ -163,14 +167,14 @@ namespace BroMakerLib.Vanilla.Specials
             }
             if (brominatorMode)
             {
-                if (owner.xIBlast > owner.speed * 0.12f)
+                if (owner.xIBlast > owner.speed * brominatorModeSpeedBlastClamp)
                 {
-                    owner.xIBlast = owner.speed * 0.12f;
+                    owner.xIBlast = owner.speed * brominatorModeSpeedBlastClamp;
                 }
             }
-            else if (owner.xIBlast > owner.speed * 1.6f)
+            else if (owner.xIBlast > owner.speed * normalSpeedBlastClamp)
             {
-                owner.xIBlast = owner.speed * 1.6f;
+                owner.xIBlast = owner.speed * normalSpeedBlastClamp;
             }
         }
 
@@ -182,14 +186,14 @@ namespace BroMakerLib.Vanilla.Specials
             }
             if (brominatorMode)
             {
-                if (owner.xIBlast < owner.speed * -0.12f)
+                if (owner.xIBlast < owner.speed * -brominatorModeSpeedBlastClamp)
                 {
-                    owner.xIBlast = owner.speed * -0.12f;
+                    owner.xIBlast = owner.speed * -brominatorModeSpeedBlastClamp;
                 }
             }
-            else if (owner.xIBlast < owner.speed * -1.6f)
+            else if (owner.xIBlast < owner.speed * -normalSpeedBlastClamp)
             {
-                owner.xIBlast = owner.speed * -1.6f;
+                owner.xIBlast = owner.speed * -normalSpeedBlastClamp;
             }
         }
 
@@ -205,6 +209,10 @@ namespace BroMakerLib.Vanilla.Specials
 
         public override bool HandleDamage(int damage, DamageType damageType, float xI, float yI, int direction, MonoBehaviour damageSender, float hitX, float hitY)
         {
+            if (ownerAsBrominator != null)
+            {
+                return true;
+            }
             if (!brominatorMode)
             {
                 return true;
@@ -286,7 +294,7 @@ namespace BroMakerLib.Vanilla.Specials
             return true;
         }
 
-        public override bool HandleDeath()
+        public override bool HandleDeath(float xI, float yI, DamageObject damage)
         {
             if (ownerAsBrominator == null && brominatorMode)
             {
@@ -295,7 +303,7 @@ namespace BroMakerLib.Vanilla.Specials
             return true;
         }
 
-        public override void HandleAfterDeath()
+        public override void HandleAfterDeath(float xI, float yI, DamageObject damage)
         {
             if (miniGunAudio != null)
             {

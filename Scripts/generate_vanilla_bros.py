@@ -20,7 +20,7 @@ import sys
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(SCRIPT_DIR, "vanilla-bros.json")
 
-HEADER = "// Auto-generated from RambroM.cs \u2014 do not edit manually\n"
+HEADER = "// Auto-generated from RambroM.cs, do not edit manually\n"
 
 
 def load_config():
@@ -77,7 +77,7 @@ def generate_fix_body(bro, common_null_fixes=None):
 
         if fix_type == "prefabCopy":
             for field in fix["fields"]:
-                lines.append(f"            {field} = bro.{field};")
+                lines.append(f"            if ({field} == null) {field} = bro.{field};")
 
         elif fix_type == "findChild":
             field = fix["field"]

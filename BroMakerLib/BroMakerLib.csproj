@@ -316,7 +316,6 @@
         <Compile Include="Vanilla\Bros\TimeBroVanDammeM.cs"/>
         <Compile Include="Vanilla\Bros\TollBroadM.cs"/>
         <Compile Include="Vanilla\Bros\TrentBroserM.cs"/>
-        <Compile Include="Vanilla\Bros\VanDammeBroM.cs"/>
         <Compile Include="Vanilla\Bros\XebroM.cs"/>
     </ItemGroup>
     <ItemGroup>

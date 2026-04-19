@@ -17,7 +17,7 @@ namespace BroMakerLib.Vanilla.Specials
             grenadeName = "SummonTank";
         }
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
             if (whistle == null)

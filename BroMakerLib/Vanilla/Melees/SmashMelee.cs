@@ -52,9 +52,10 @@ namespace BroMakerLib.Vanilla.Melees
         {
             meleeType = BroBase.MeleeType.Smash;
             animationColumn = 24;
+            damageType = "Crush";
         }
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
         }
@@ -197,7 +198,7 @@ namespace BroMakerLib.Vanilla.Melees
             }
             if (owner.frame > 2 && !owner.IsOnGround())
             {
-                owner.maxFallSpeed = owner.GetFieldValue<float>("originalMaxFallSpeed") * 1.3f;
+                owner.maxFallSpeed = hero.OriginalMaxFallSpeed * 1.3f;
                 owner.yI -= 1100f * hero.DeltaTime;
             }
             if (owner.yI < owner.maxFallSpeed)
@@ -259,7 +260,7 @@ namespace BroMakerLib.Vanilla.Melees
                 OnUpperCutMissSound();
             }
             hero.MeleeChosenUnit = null;
-            if (shouldTryHitTerrain && hero.TryMeleeTerrain(0, 2))
+            if (shouldTryHitTerrain && TryMeleeTerrain(0, 2))
             {
                 OnUpperCutTerrainHit();
                 hero.MeleeHasHit = true;
@@ -287,7 +288,7 @@ namespace BroMakerLib.Vanilla.Melees
             Vector3 center = new Vector3(X + Direction * range, Y + 8f, 0f);
             bool flag;
             Map.DamageDoodads(3, DamageType.Melee, center.x, center.y, 0f, 0f, 6f, PlayerNum, out flag, null);
-            if (Map.HitClosestUnit(owner, PlayerNum, 10, DamageType.Crush, range, range * 2f, center.x, center.y, owner.transform.localScale.x * 20f, 50f, true, false, owner.IsMine, true, true))
+            if (Map.HitClosestUnit(owner, PlayerNum, 10, parsedDamageType, range, range * 2f, center.x, center.y, owner.transform.localScale.x * 20f, 50f, true, false, owner.IsMine, true, true))
             {
                 if (!hero.MeleeHasHit)
                 {
@@ -296,7 +297,7 @@ namespace BroMakerLib.Vanilla.Melees
                 hero.MeleeHasHit = true;
             }
             hero.MeleeChosenUnit = null;
-            if (!hero.MeleeHasHit && hero.TryMeleeTerrain(0, 2))
+            if (!hero.MeleeHasHit && TryMeleeTerrain(0, 2))
             {
                 hero.MeleeHasHit = true;
             }
@@ -377,7 +378,7 @@ namespace BroMakerLib.Vanilla.Melees
     {
         protected override HeroType SourceBroType => HeroType.BronanTheBrobarian;
         [JsonIgnore]
-#pragma warning disable CS0649 // Never assigned — intentional
+#pragma warning disable CS0649 // Never assigned, intentional
         private int punchCount;
 #pragma warning restore CS0649
 

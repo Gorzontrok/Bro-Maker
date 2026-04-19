@@ -23,6 +23,8 @@ namespace BroMakerLib.Vanilla.Passives
         public float jetPackRate = 0.04f;
         /// <summary>Upward velocity impulse added on takeoff.</summary>
         public float blastOffYBoost = 100f;
+        /// <summary>Duration in seconds after an airdash during which the jetpack may still fire despite `airdashTime > 0`. Matches the `suspendedAirdashDelay` field on `TheBrocketeerSpecial` when both abilities are used together.</summary>
+        public float suspendedAirdashDelay = 0f;
 
         /// <summary>When true, takeoff spawns a FlameWallExplosion. Disable for bros without a flame-wall prefab on the owner.</summary>
         public bool enableBlastOffExplosion = true;
@@ -38,9 +40,9 @@ namespace BroMakerLib.Vanilla.Passives
         [JsonIgnore] private Vector3 currentJetpackDirection;
         [JsonIgnore] private AudioSource jetpackAudio;
 
-        protected override bool IsOwnerRedundant(TestVanDammeAnim owner) => owner is TheBrocketeer;
+        protected override bool IsOwnerRedundant(BroBase owner) => owner is TheBrocketeer;
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
             if (IsRedundant) return;
@@ -100,7 +102,7 @@ namespace BroMakerLib.Vanilla.Passives
 
         public override void HandleAfterLand()
         {
-            if (owner.GetFieldValue<float>("pressedJumpInAirSoJumpIfTouchGroundGrace") > 0f && owner.yI <= 0f)
+            if (hero.PressedJumpInAirSoJumpIfTouchGroundGrace > 0f && owner.yI <= 0f)
             {
                 hero.Jump(true);
             }
@@ -120,11 +122,11 @@ namespace BroMakerLib.Vanilla.Passives
                 return;
             }
 
-            bool buttonJump = owner.GetFieldValue<bool>("buttonJump");
-            float airdashTime = owner.GetFieldValue<float>("airdashTime");
-            float suspendedAirdashDelay = (hero.SpecialAbility as TheBrocketeerSpecial)?.suspendedAirdashDelay ?? 0f;
+            bool buttonJump = owner.buttonJump;
+            float airdashTime = hero.AirdashTime;
+            float effectiveSuspendedDelay = (hero.SpecialAbility as TheBrocketeerSpecial)?.suspendedAirdashDelay ?? suspendedAirdashDelay;
 
-            if (buttonJump && (airdashTime <= 0f || suspendedAirdashDelay > 0f))
+            if (buttonJump && (airdashTime <= 0f || effectiveSuspendedDelay > 0f))
             {
                 RunJetpack();
             }

@@ -61,7 +61,7 @@ namespace BroMakerLib.Vanilla.Specials
         [JsonIgnore]
         private float originalSpeed;
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
 
@@ -73,9 +73,9 @@ namespace BroMakerLib.Vanilla.Specials
             }
             if (brolander != null)
             {
-                zapRange = brolander.zapRange;
-                maxSpecialAmmo = brolander.maxSpecialAmmo;
-                enemiesSlainPerPowerValue = brolander.enemiesSlainPerPowerValue;
+                if (zapRange == 100) zapRange = brolander.zapRange;
+                if (maxSpecialAmmo == 5) maxSpecialAmmo = brolander.maxSpecialAmmo;
+                if (enemiesSlainPerPowerValue == 5) enemiesSlainPerPowerValue = brolander.enemiesSlainPerPowerValue;
                 zapper = brolander.zapper;
             }
 
@@ -273,7 +273,7 @@ namespace BroMakerLib.Vanilla.Specials
                 brolander.CallMethod("CalculateImmortalValues");
                 return;
             }
-            int num = owner.GetFieldValue<int>("_specialAmmo") * enemiesSlainPerPowerValue;
+            int num = hero.SpecialAmmoField * enemiesSlainPerPowerValue;
             owner.speed = originalSpeed * (0.85f + Mathf.Clamp(0.035f * Mathf.Sqrt((float)num) + 0.012f * (float)num, 0f, 0.66f));
             if (!ProcGenGameMode.UseProcGenRules)
             {
@@ -299,7 +299,7 @@ namespace BroMakerLib.Vanilla.Specials
 
         private bool CanResurrect()
         {
-            return owner.GetFieldValue<int>("_specialAmmo") >= 2;
+            return hero.SpecialAmmoField >= 2;
         }
 
         private void CreateFaderTrailInstance()
@@ -363,7 +363,7 @@ namespace BroMakerLib.Vanilla.Specials
                     owner.SetInvulnerable(0.5f, true, false);
                     owner.CallMethod("CreateElectricShockPuff", 2f);
                     owner.SetFieldValue("deadTimeCounter", 0f);
-                    owner.SetFieldValue("_specialAmmo", 0);
+                    hero.SpecialAmmoField = 0;
                     enemiesSlain = 0;
                     SyncEnemiesSlain();
                     CalculateImmortalValues();
@@ -407,7 +407,7 @@ namespace BroMakerLib.Vanilla.Specials
                     }
                 }
             }
-            if (owner.health > 0 && owner.GetFieldValue<int>("_specialAmmo") >= maxSpecialAmmo)
+            if (owner.health > 0 && hero.SpecialAmmoField >= maxSpecialAmmo)
             {
                 leveledUpCounter += hero.DeltaTime;
                 if (leveledUpCounter > 0.045f)
@@ -424,7 +424,7 @@ namespace BroMakerLib.Vanilla.Specials
                     }
                 }
             }
-            else if (owner.health > 0 && owner.GetFieldValue<int>("_specialAmmo") >= maxSpecialAmmo - 1)
+            else if (owner.health > 0 && hero.SpecialAmmoField >= maxSpecialAmmo - 1)
             {
                 leveledUpCounter += hero.DeltaTime;
                 if (leveledUpCounter > 0.1f)
@@ -474,7 +474,7 @@ namespace BroMakerLib.Vanilla.Specials
             return true;
         }
 
-        public override bool HandleDeath()
+        public override bool HandleDeath(float xI, float yI, DamageObject damage)
         {
             if (quickeningAudio != null)
             {
@@ -490,7 +490,7 @@ namespace BroMakerLib.Vanilla.Specials
             return true;
         }
 
-        public override void HandleAfterDeath()
+        public override void HandleAfterDeath(float xI, float yI, DamageObject damage)
         {
             Map.ForgetPlayer(PlayerNum, false, true);
         }
@@ -524,10 +524,11 @@ namespace BroMakerLib.Vanilla.Specials
             return false;
         }
 
-        public override bool HandleIsInStealthMode()
+        public override bool HandleIsInStealthMode(ref bool result)
         {
             if (owner.health <= 0 && CanResurrect())
             {
+                result = true;
                 return false;
             }
             return true;

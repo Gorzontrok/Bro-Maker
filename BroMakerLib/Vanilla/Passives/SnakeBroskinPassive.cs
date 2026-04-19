@@ -14,7 +14,7 @@ namespace BroMakerLib.Vanilla.Passives
     {
         protected override HeroType SourceBroType => HeroType.SnakeBroSkin;
 
-        protected override bool IsOwnerRedundant(TestVanDammeAnim owner) => owner is SnakeBroskin;
+        protected override bool IsOwnerRedundant(BroBase owner) => owner is SnakeBroskin;
 
         public float gliderTerminalVelocity = 400f;
         /// <summary>Per-second drag multiplier applied to the velocity vector while gliding.</summary>
@@ -34,7 +34,7 @@ namespace BroMakerLib.Vanilla.Passives
             animationRow = 10;
         }
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
 
@@ -96,8 +96,8 @@ namespace BroMakerLib.Vanilla.Passives
         public override bool HandleRunFalling()
         {
             if (!gliderActive
-                && owner.GetFieldValue<bool>("buttonJump")
-                && !owner.GetFieldValue<bool>("wallClimbing"))
+                && owner.buttonJump
+                && !hero.WallClimbing)
             {
                 ActivateGlider();
             }
@@ -106,10 +106,10 @@ namespace BroMakerLib.Vanilla.Passives
 
         public override bool HandleApplyFallingGravity()
         {
-            if (!gliderActive) return true;
-            if (owner.GetFieldValue<bool>("chimneyFlip") && owner.GetFieldValue<bool>("chimneyFlipConstrained")) return false;
+            if (hero.ChimneyFlip && owner.GetFieldValue<bool>("chimneyFlipConstrained")) return false;
             if (owner.actionState == ActionState.ClimbingLadder) return false;
-            if (owner.GetFieldValue<bool>("isInQuicksand")) return true;
+            if (!gliderActive) return true;
+            if (hero.IsInQuicksand) return true;
 
             Vector2 vector = Vector2.ClampMagnitude(new Vector2(owner.xI, owner.yI), gliderTerminalVelocity);
             vector *= 1f - hero.DeltaTime * dragCoefficient;

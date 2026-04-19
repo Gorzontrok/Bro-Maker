@@ -350,7 +350,7 @@ namespace BroMakerLib.Loaders
             {
                 return attributes[0].As<HeroPresetAttribute>().baseType;
             }
-            throw new NotImplementedException($"Type {type} as no attribute of {nameof(HeroPresetAttribute)}");
+            throw new ArgumentException($"Type {type.FullName} is not registered as a bro preset, it must include the [HeroPreset] attribute to be used as a CharacterPreset.", "type");
         }
 
         private static GameObject CreateOriginal(HeroType heroType, Type type)

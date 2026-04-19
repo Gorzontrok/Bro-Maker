@@ -22,6 +22,7 @@ namespace BroMakerLib.Vanilla.Melees
             hitFrame = 4;
             endFrame = 7;
             jumpingAnimationRow = 10;
+            damageType = "Melee";
         }
 
         public override void StartMelee()
@@ -70,6 +71,29 @@ namespace BroMakerLib.Vanilla.Melees
             }
         }
 
+        public override bool TryMeleeTerrain(int offset, int meleeDamage)
+        {
+            RaycastHit raycastHit;
+            if (!Physics.Raycast(new Vector3(X - Direction * 4f, Y + 8f, 0f), new Vector3(Direction, 0f, 0f), out raycastHit, (float)(16 + offset), hero.GroundLayer))
+            {
+                return false;
+            }
+            Cage cage = raycastHit.collider.GetComponent<Cage>();
+            if (cage == null && raycastHit.collider.transform.parent != null)
+            {
+                cage = raycastHit.collider.transform.parent.GetComponent<Cage>();
+            }
+            if (cage != null)
+            {
+                MapController.Damage_Networked(owner, raycastHit.collider.gameObject, cage.health, DamageType.Melee, 0f, 40f, raycastHit.point.x, raycastHit.point.y);
+                return true;
+            }
+            MapController.Damage_Networked(owner, raycastHit.collider.gameObject, 5, DamageType.Melee, 0f, 40f, raycastHit.point.x, raycastHit.point.y);
+            sound.PlaySoundEffectAt(alternateMeleeHitSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
+            EffectsController.CreateProjectilePopWhiteEffect(X + owner.width * owner.transform.localScale.x, Y + owner.height + 4f);
+            return true;
+        }
+
         private void PerformPunchAttack(bool shouldTryHitTerrain, bool playMissSound)
         {
             float num = 6f;
@@ -77,7 +101,7 @@ namespace BroMakerLib.Vanilla.Melees
             bool flag;
             Map.DamageDoodads(3, DamageType.Melee, vector.x, vector.y, 0f, 0f, 6f, PlayerNum, out flag, null);
             hero.KickDoors(25f);
-            if (Map.HitClosestUnit(owner, PlayerNum, 6, DamageType.Melee, num + 13f, num * 2f, vector.x, vector.y, owner.transform.localScale.x * 250f, 250f, true, false, owner.IsMine, false, true))
+            if (Map.HitClosestUnit(owner, PlayerNum, 6, parsedDamageType, num + 13f, num * 2f, vector.x, vector.y, owner.transform.localScale.x * 250f, 250f, true, false, owner.IsMine, false, true))
             {
                 sound.PlaySoundEffectAt(alternateMeleeHitSounds, 0.5f, owner.transform.position, 1f, true, false, false, 0f);
                 hero.MeleeHasHit = true;
@@ -92,7 +116,7 @@ namespace BroMakerLib.Vanilla.Melees
                 hero.HasPlayedMissSound = true;
             }
             hero.MeleeChosenUnit = null;
-            if (!hero.MeleeHasHit && shouldTryHitTerrain && HandleTryMeleeTerrain(0, terrainDamage))
+            if (!hero.MeleeHasHit && shouldTryHitTerrain && TryMeleeTerrain(0, terrainDamage))
             {
                 hero.MeleeHasHit = true;
             }

@@ -16,6 +16,10 @@ namespace BroMakerLib.Vanilla.Melees
         public float jetpackThrustForce = 200f;
         /// <summary>Force used when kicking doors during the jetpack punch.</summary>
         public float doorKickForce = 50f;
+        /// <summary>Y velocity added to the bro on jetpack punch hit or terrain hit.</summary>
+        public float jetpackHitYBoost = 80f;
+        /// <summary>Horizontal blast impulse applied to the bro on jetpack punch hit or terrain hit.</summary>
+        public float jetpackHitXBlast = -90f;
 
         public TheBrocketeerMelee()
         {
@@ -25,6 +29,11 @@ namespace BroMakerLib.Vanilla.Melees
             animationColumn = 25;
             hitFrame = 3;
             endFrame = 7;
+            damageType = "Melee";
+            damage = 10;
+            knockbackX = 600f;
+            knockbackY = 250f;
+            terrainDamage = 10;
         }
 
         public override void StartMelee()
@@ -63,7 +72,7 @@ namespace BroMakerLib.Vanilla.Melees
             {
                 PerformJetpackPunchAttack(true, true);
             }
-            if (owner.frame >= 4 && owner.frame <= 5 && !hero.MeleeHasHit)
+            else if (owner.frame >= 4 && owner.frame <= 5 && !hero.MeleeHasHit)
             {
                 PerformJetpackPunchAttack(true, true);
             }
@@ -121,7 +130,7 @@ namespace BroMakerLib.Vanilla.Melees
                     {
                         float offset = 8f;
                         float num = meleeChosenUnit.X - (float)Direction * offset - X;
-                        if (!owner.GetFieldValue<bool>("isInQuicksand"))
+                        if (!hero.IsInQuicksand)
                         {
                             owner.xI = num / 0.1f;
                             owner.xI = Mathf.Clamp(owner.xI, -owner.speed * 1.7f, owner.speed * 1.7f);
@@ -129,7 +138,7 @@ namespace BroMakerLib.Vanilla.Melees
                     }
                     else
                     {
-                        if (!owner.GetFieldValue<bool>("isInQuicksand"))
+                        if (!hero.IsInQuicksand)
                         {
                             owner.xI = owner.speed * (float)Direction;
                         }
@@ -154,12 +163,15 @@ namespace BroMakerLib.Vanilla.Melees
             bool flag;
             Map.DamageDoodads(3, DamageType.Melee, vector.x, vector.y, 0f, 0f, 6f, PlayerNum, out flag, null);
             hero.KickDoors(doorKickForce);
-            if (Map.HitClosestUnit(owner, PlayerNum, damage, DamageType.Melee, num + 13f, num * 2f,
+            if (Map.HitClosestUnit(owner, PlayerNum, damage, parsedDamageType, num + 13f, num * 2f,
                 vector.x, vector.y, owner.transform.localScale.x * knockbackX, knockbackY, true, false, owner.IsMine, false, true))
             {
+                SortOfFollow.Shake(0.3f, 1.5f);
                 sound.PlaySoundEffectAt(alternateMeleeHitSounds, 0.5f, owner.transform.position, 1f, true, false, false, 0f);
                 hero.MeleeHasHit = true;
                 EffectsController.CreateProjectilePopWhiteEffect(X + owner.width * owner.transform.localScale.x, Y + owner.height + 8f);
+                owner.yI += jetpackHitYBoost;
+                owner.xIBlast = jetpackHitXBlast * owner.transform.localScale.x;
             }
             else
             {
@@ -170,9 +182,11 @@ namespace BroMakerLib.Vanilla.Melees
                 hero.HasPlayedMissSound = true;
             }
             hero.MeleeChosenUnit = null;
-            if (!hero.MeleeHasHit && shouldTryHitTerrain && HandleTryMeleeTerrain(0, terrainDamage))
+            if (!hero.MeleeHasHit && shouldTryHitTerrain && TryMeleeTerrain(0, terrainDamage))
             {
                 hero.MeleeHasHit = true;
+                owner.yI += jetpackHitYBoost;
+                owner.xIBlast = jetpackHitXBlast * owner.transform.localScale.x;
             }
         }
     }

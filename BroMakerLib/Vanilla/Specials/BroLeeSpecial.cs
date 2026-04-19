@@ -104,7 +104,7 @@ namespace BroMakerLib.Vanilla.Specials
         [JsonIgnore]
         private FlickerFader hitPuff;
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
             var broLee = owner as BroLee;
@@ -239,7 +239,7 @@ namespace BroMakerLib.Vanilla.Specials
 
         private void FireFlashAvatar()
         {
-            owner.SetFieldValue("avatarGunFireTime", hero.UsingSpecial ? 0.5f : 0.1f);
+            hero.AvatarGunFireTime = hero.UsingSpecial ? 0.5f : 0.1f;
             HeroController.SetAvatarFireFrame(PlayerNum, Random.Range(5, 8));
         }
 
@@ -260,7 +260,7 @@ namespace BroMakerLib.Vanilla.Specials
             {
                 ignoreTimescale = true;
             }
-            owner.SetFieldValue("airdashTime", 0f);
+            hero.AirdashTime = 0f;
             if (Y < owner.groundHeight + 1f)
             {
                 hero.StopAirDashing();
@@ -789,17 +789,13 @@ namespace BroMakerLib.Vanilla.Specials
             return !hero.UsingSpecial && !attackForwards && !attackUpwards && !attackDownwards;
         }
 
-        private bool IsAttacking()
-        {
-            return (owner.fire && hero.GunFrame > 1) || Time.time - lastAttackingTime < 0.0445f ||
-                ((attackDownwards || attackForwards || attackUpwards) && attackFrames > 1 && attackFrames < attackForwardsStrikeFrame + 2);
-        }
-
         public override bool HandleDamage(int damage, DamageType damageType, float xI, float yI, int direction, MonoBehaviour damageSender, float hitX, float hitY)
         {
-            if ((damageType == DamageType.Drill || damageType == DamageType.Melee || damageType == DamageType.Knifed) &&
-                IsAttacking() &&
-                !(Mathf.Sign(owner.transform.localScale.x) == Mathf.Sign(xI) && damageType != DamageType.Drill))
+            bool comboAttacking = Time.time - lastAttackingTime < 0.0445f
+                || ((attackDownwards || attackForwards || attackUpwards) && attackFrames > 1 && attackFrames < attackForwardsStrikeFrame + 2);
+            if ((damageType == DamageType.Drill || damageType == DamageType.Melee || damageType == DamageType.Knifed)
+                && comboAttacking
+                && !(Mathf.Sign(owner.transform.localScale.x) == Mathf.Sign(xI) && damageType != DamageType.Drill))
             {
                 return false;
             }
@@ -887,11 +883,11 @@ namespace BroMakerLib.Vanilla.Specials
                 {
                     SortOfFollow.instance.ignoreTimescale = true;
                     float dt = Mathf.Clamp(Time.deltaTime, 0f, 0.0334f);
-                    owner.SetFieldValue("t", (dt / Time.timeScale + dt) / 2f);
+                    hero.DeltaTime = (dt / Time.timeScale + dt) / 2f;
                 }
                 else
                 {
-                    owner.SetFieldValue("t", Mathf.Clamp(Time.deltaTime, 0f, 0.0334f) / Time.timeScale);
+                    hero.DeltaTime = Mathf.Clamp(Time.deltaTime, 0f, 0.0334f) / Time.timeScale;
                 }
                 return false;
             }
@@ -935,12 +931,12 @@ namespace BroMakerLib.Vanilla.Specials
         public override bool HandleRunAvatarFiring()
         {
             if (owner.health <= 0) return true;
-            float avatarGunFireTime = owner.GetFieldValue<float>("avatarGunFireTime");
-            float avatarAngryTime = owner.GetFieldValue<float>("avatarAngryTime");
+            float avatarGunFireTime = hero.AvatarGunFireTime;
+            float avatarAngryTime = hero.AvatarAngryTime;
             if (avatarGunFireTime > 0f)
             {
                 avatarGunFireTime -= hero.DeltaTime * (hero.UsingSpecial ? Time.timeScale : 1f);
-                owner.SetFieldValue("avatarGunFireTime", avatarGunFireTime);
+                hero.AvatarGunFireTime = avatarGunFireTime;
                 if (avatarGunFireTime <= 0f)
                 {
                     if (avatarAngryTime > 0f)
@@ -958,10 +954,10 @@ namespace BroMakerLib.Vanilla.Specials
                 if (owner.fire)
                 {
                     if (hero.GunFrame > 0 || attackFrames > 0)
-                        owner.SetFieldValue("avatarAngryTime", 0.1f);
+                        hero.AvatarAngryTime = 0.1f;
                     else
                     {
-                        owner.SetFieldValue("avatarAngryTime", 0f);
+                        hero.AvatarAngryTime = 0f;
                         HeroController.SetAvatarCalm(PlayerNum, owner.usePrimaryAvatar);
                     }
                 }
@@ -969,7 +965,7 @@ namespace BroMakerLib.Vanilla.Specials
             else if (avatarAngryTime > 0f)
             {
                 avatarAngryTime -= hero.DeltaTime;
-                owner.SetFieldValue("avatarAngryTime", avatarAngryTime);
+                hero.AvatarAngryTime = avatarAngryTime;
                 if (avatarAngryTime <= 0f)
                 {
                     HeroController.SetAvatarCalm(PlayerNum, owner.usePrimaryAvatar);

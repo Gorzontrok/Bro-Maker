@@ -32,7 +32,7 @@ namespace BroMakerLib.Vanilla.Specials
         private static readonly MethodInfo setConnollyBro = AccessTools.Method(typeof(BoondockBro), "SetConnollyBro",
             new Type[] { typeof(BoondockBro) });
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
             defaultSpeed = owner.speed;
@@ -134,7 +134,7 @@ namespace BroMakerLib.Vanilla.Specials
             companion.GetComponent<Renderer>().enabled = true;
         }
 
-        public override bool HandleDeath()
+        public override bool HandleDeath(float xI, float yI, DamageObject damage)
         {
             if (!(owner is BoondockBro))
             {
@@ -183,7 +183,7 @@ namespace BroMakerLib.Vanilla.Specials
             }
         }
 
-        public override void HandleDestroyUnit()
+        public override void HandleAfterDestroyUnit()
         {
             if (!(owner is BoondockBro))
             {

@@ -116,7 +116,7 @@ namespace BroMakerLib.Vanilla.Melees
             bool flag;
             Map.DamageDoodads(3, DamageType.Knifed, X + (float)(Direction * 4), Y, 0f, 0f, 6f, PlayerNum, out flag, null);
             hero.KickDoors(24f);
-            if (Map.HitClosestUnit(owner, PlayerNum, 4, DamageType.Knifed, 14f, 24f, X + owner.transform.localScale.x * 8f, Y + 8f, owner.transform.localScale.x * 200f, 500f, true, false, owner.IsMine, false, true))
+            if (Map.HitClosestUnit(owner, PlayerNum, 4, parsedDamageType, 14f, 24f, X + owner.transform.localScale.x * 8f, Y + 8f, owner.transform.localScale.x * 200f, 500f, true, false, owner.IsMine, false, true))
             {
                 sound.PlaySoundEffectAt(meleeHitSounds, 0.7f, owner.transform.position, 1f, true, false, false, 0f);
                 hero.MeleeHasHit = true;
@@ -126,7 +126,7 @@ namespace BroMakerLib.Vanilla.Melees
                 sound.PlaySoundEffectAt(missSounds, 0.7f, owner.transform.position, 1f, true, false, false, 0f);
             }
             hero.MeleeChosenUnit = null;
-            if (shouldTryHitTerrain && HandleTryMeleeTerrain(0, terrainDamage))
+            if (shouldTryHitTerrain && TryMeleeTerrain(0, terrainDamage))
             {
                 hero.MeleeHasHit = true;
             }

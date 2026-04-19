@@ -10,7 +10,7 @@ namespace BroMakerLib.Vanilla.Passives
     {
         protected override HeroType SourceBroType => HeroType.BroLee;
 
-        protected override bool IsOwnerRedundant(TestVanDammeAnim owner) => owner is BroLee;
+        protected override bool IsOwnerRedundant(BroBase owner) => owner is BroLee;
 
         /// <summary>Fraction of `airdashMaxTime` used for upward dash duration.</summary>
         public float upDashTimeMultiplier = 0.5f;
@@ -50,7 +50,7 @@ namespace BroMakerLib.Vanilla.Passives
 
         public override void HandleAfterAirDashUp()
         {
-            owner.SetFieldValue("airdashTime", owner.airdashMaxTime * upDashTimeMultiplier);
+            hero.AirdashTime = owner.airdashMaxTime * upDashTimeMultiplier;
         }
 
         public override bool HandleAnimateAirdash()
@@ -78,7 +78,7 @@ namespace BroMakerLib.Vanilla.Passives
                 case DirectionEnum.Left:
                 case DirectionEnum.Right:
                     hero.DeactivateGun();
-                    float airDashDelay = owner.GetFieldValue<float>("airDashDelay");
+                    float airDashDelay = hero.AirDashDelay;
                     int col = airDashDelay > 0f ? horizontalDashWindupColumn : horizontalDashColumn;
                     hero.Sprite.SetLowerLeftPixel((float)(col * hero.SpritePixelWidth), (float)(animationRow * hero.SpritePixelHeight));
                     return false;

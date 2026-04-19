@@ -54,7 +54,7 @@ namespace BroMakerLib.Vanilla.Specials
             animationColumn = 0;
         }
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
             projectile = LoadBroforceObjects.GetProjectileFromName(projectileName);
@@ -205,7 +205,7 @@ namespace BroMakerLib.Vanilla.Specials
             return true;
         }
 
-        public override bool HandleDeath()
+        public override bool HandleDeath(float xI, float yI, DamageObject damage)
         {
             if (spraying)
             {

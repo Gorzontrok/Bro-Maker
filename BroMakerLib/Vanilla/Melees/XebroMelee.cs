@@ -74,6 +74,7 @@ namespace BroMakerLib.Vanilla.Melees
         {
             meleeType = BroBase.MeleeType.Custom;
             animationRow = 11;
+            damageType = "Melee";
         }
 
         protected override void CacheSoundsFromPrefab()
@@ -86,7 +87,7 @@ namespace BroMakerLib.Vanilla.Melees
             }
         }
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
 
@@ -281,7 +282,7 @@ namespace BroMakerLib.Vanilla.Melees
                 {
                     _hasHitDuringFlip = true;
                     EffectsController.CreateMeleeStrikeEffect(owner.X + (float)(owner.Direction * 10), owner.Y + 8f, -owner.xI * 0.2f, 0f);
-                    Map.HitUnits(owner, owner, owner.playerNum, flipKickDamage, DamageType.Melee, flipKickRange, owner.X + Mathf.Sign(owner.xI) * 5f, owner.Y - 5f, owner.transform.localScale.x * 220f, 260f, true, true);
+                    Map.HitUnits(owner, owner, owner.playerNum, flipKickDamage, parsedDamageType, flipKickRange, owner.X + Mathf.Sign(owner.xI) * 5f, owner.Y - 5f, owner.transform.localScale.x * 220f, 260f, true, true);
                     Sound.GetInstance().PlaySoundEffectAt(flipKickAttackSounds, flipKickAttackVolume, owner.transform.position, 1f, true, false, false, 0f);
                 }
                 hero.Sprite.SetLowerLeftPixel((float)((flipKickColumn + owner.frame % 12) * hero.SpritePixelWidth), (float)(hero.SpritePixelHeight * animationRow));
@@ -347,7 +348,7 @@ namespace BroMakerLib.Vanilla.Melees
             }
         }
 
-        public override void HandleAfterDeath()
+        public override void HandleAfterDeath(float xI, float yI, DamageObject damage)
         {
             if (warCryAudio != null && warCryAudio.isPlaying)
             {
@@ -380,32 +381,6 @@ namespace BroMakerLib.Vanilla.Melees
         public override void HandleAfterHitCeiling()
         {
             LastXebroFlipAttackPressTime = -1f;
-        }
-
-        public override bool HandleDamage(int damage, DamageType damageType, float xI, float yI, int direction, MonoBehaviour damageSender, float hitX, float hitY)
-        {
-            if (ownerIsXebro) return true;
-
-            bool isAttacking = owner.fire || hero.GunFrame > 0;
-            bool meleeDamage = damageType == DamageType.Melee || damageType == DamageType.Knifed;
-            if (meleeDamage && isAttacking && Mathf.Sign(owner.transform.localScale.x) != Mathf.Sign(xI))
-            {
-                return false;
-            }
-            if (hero.InvulnerableTime > 0f)
-            {
-                return false;
-            }
-            return true;
-        }
-
-        public override bool HandleCanInseminate(ref bool result)
-        {
-            if (ownerIsXebro) return true;
-
-            bool isAttacking = owner.fire || hero.GunFrame > 0;
-            result = !isAttacking || Mathf.Sign(owner.transform.localScale.x) == Mathf.Sign(owner.xI);
-            return false;
         }
 
         public override bool HandleStartFiring()

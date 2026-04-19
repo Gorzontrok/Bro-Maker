@@ -56,7 +56,7 @@ namespace BroMakerLib.Vanilla.Specials
         [JsonIgnore]
         private List<TargetableObject> currentTargetingObjectStreak = new List<TargetableObject>();
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
 
@@ -263,7 +263,7 @@ namespace BroMakerLib.Vanilla.Specials
             }
         }
 
-        public override void HandleAfterDeath()
+        public override void HandleAfterDeath(float xI, float yI, DamageObject damage)
         {
             if (targettedTargets != null)
             {

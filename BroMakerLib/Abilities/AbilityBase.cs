@@ -1,4 +1,5 @@
 using BroMakerLib.CustomObjects;
+using BroMakerLib.Loggers;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -20,7 +21,7 @@ namespace BroMakerLib.Abilities
         public float frameRate = 0.025f;
 
         [JsonIgnore]
-        public TestVanDammeAnim owner;
+        public BroBase owner;
 
         [JsonIgnore]
         protected IAbilityOwner hero;
@@ -45,10 +46,14 @@ namespace BroMakerLib.Abilities
         protected SoundHolder soundHolder => owner.soundHolder;
 
         /// <summary>Called once when the bro spawns.</summary>
-        public virtual void Initialize(TestVanDammeAnim owner)
+        public virtual void Initialize(BroBase owner)
         {
             this.owner = owner;
             this.hero = owner as IAbilityOwner;
+            if (this.hero == null)
+            {
+                BMLogger.Error($"Ability {GetType().Name} cannot function: owner {owner.GetType().Name} does not implement IAbilityOwner. The ability will not work. The bro must use a vanilla preset (e.g. \"Rambro\", \"Brommando\", \"Nebro\") as its `CharacterPreset`.");
+            }
         }
 
         public virtual void Update()
@@ -78,15 +83,19 @@ namespace BroMakerLib.Abilities
         public virtual bool HandleSetDeltaTime() => true;
 
 
+        /// <summary>Called before the bro reads and processes its input state.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleCheckInput() => true;
+
         /// <summary>Called after the bro reads and processes its input state.</summary>
         public virtual void HandleAfterCheckInput() { }
 
         /// <summary>Called after input is copied to a zombie co-op bro.</summary>
         public virtual void HandleAfterCopyInput(TestVanDammeAnim zombie, ref float zombieDelay, ref bool up, ref bool down, ref bool left, ref bool right, ref bool fire, ref bool buttonJump) { }
 
-        /// <summary>Called when checking whether to suppress melee input for a high-five.</summary>
-        /// <returns>True to run original, false to skip.</returns>
-        public virtual bool HandleMustIgnoreHighFiveMeleePress() => true;
+        /// <summary>Called when checking whether to suppress melee input for a high-five.
+        /// Write into `result` and return false to override the wrapper's return value.</summary>
+        public virtual bool HandleMustIgnoreHighFiveMeleePress(ref bool result) => true;
 
         /// <summary>Called when the player presses the special button.</summary>
         /// <returns>True to run original, false to skip.</returns>
@@ -321,6 +330,13 @@ namespace BroMakerLib.Abilities
         /// <returns>True to use base result, false to use the modified `result`.</returns>
         public virtual bool HandleIsLockedInMelee(ref bool result) => true;
 
+        /// <summary>Called every frame while an independent-melee animation is running.</summary>
+        /// <returns>True to run original, false to skip.</returns>
+        public virtual bool HandleRunIndependentMeleeFrames() => true;
+
+        /// <summary>Called after melee state is reset (follow-up, mid-animation reset, etc.). Use for ability-specific state that should track vanilla's ResetMeleeValues contract.</summary>
+        public virtual void HandleAfterResetMeleeValues() { }
+
 
         /// <summary>Called each frame to advance the sprite animation. Pair with `HandleAfterChangeFrame`.</summary>
         /// <returns>True to run original, false to skip.</returns>
@@ -362,10 +378,10 @@ namespace BroMakerLib.Abilities
 
         /// <summary>Called when the bro dies. Pair with `HandleAfterDeath`.</summary>
         /// <returns>True to run original, false to skip.</returns>
-        public virtual bool HandleDeath() => true;
+        public virtual bool HandleDeath(float xI, float yI, DamageObject damage) => true;
 
         /// <summary>Called after death logic runs. Pair with `HandleDeath`.</summary>
-        public virtual void HandleAfterDeath() { }
+        public virtual void HandleAfterDeath(float xI, float yI, DamageObject damage) { }
 
         /// <summary>Called when the bro is gibbed (exploded into pieces).</summary>
         /// <returns>True to run original, false to skip.</returns>
@@ -406,9 +422,9 @@ namespace BroMakerLib.Abilities
         public virtual void HandleAfterUseSteroids() { }
 
 
-        /// <summary>Called to check whether the bro is currently in stealth mode.</summary>
-        /// <returns>True to run original, false to force stealth mode active.</returns>
-        public virtual bool HandleIsInStealthMode() => true;
+        /// <summary>Called to check whether the bro is currently in stealth mode.
+        /// Write into `result` and return false to override the wrapper's return value.</summary>
+        public virtual bool HandleIsInStealthMode(ref bool result) => true;
 
         /// <summary>Called to alert nearby enemies to the bro's presence.</summary>
         /// <returns>True to run original, false to skip.</returns>
@@ -433,6 +449,9 @@ namespace BroMakerLib.Abilities
         /// <returns>True to run original, false to skip.</returns>
         public virtual bool HandleAttachToHeli() => true;
 
+        /// <summary>Called after the bro has attached to a helicopter.</summary>
+        public virtual void HandleAfterAttachToHeli() { }
+
         /// <summary>Called when the bro begins piloting a vehicle unit.</summary>
         /// <returns>True to run original, false to skip.</returns>
         public virtual bool HandleStartPilotingUnit() => true;
@@ -441,7 +460,7 @@ namespace BroMakerLib.Abilities
         public virtual void HandleAfterDischargePilotingUnit() { }
 
         /// <summary>Called when the bro's GameObject is about to be destroyed.</summary>
-        public virtual void HandleDestroyUnit() { }
+        public virtual void HandleAfterDestroyUnit() { }
 
         /// <summary>Called when the bro throws back a nearby mook during a high-five-gated melee. Return false to skip base behavior.</summary>
         public virtual bool HandleThrowBackMook(Mook mook) { return true; }

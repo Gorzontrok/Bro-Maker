@@ -1,5 +1,7 @@
+using System;
 using BroMakerLib.CustomObjects;
 using BroMakerLib.Extensions;
+using BroMakerLib.Loggers;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -59,8 +61,12 @@ namespace BroMakerLib.Abilities
         /// <summary>Damage dealt to units on hit.</summary>
         public int damage = 4;
 
-        /// <summary>DamageType enum name (e.g., "Knifed", "Crush", "Electrocution"). Parsed at initialization.</summary>
+        /// <summary>DamageType enum name (e.g., "Knifed", "Melee", "Electrocution") controlling the unit-hit damage type. Parsed at initialization into `parsedDamageType`. Doodad damage is always `DamageType.Knifed`.</summary>
         public string damageType = "Knifed";
+
+        /// <summary>Parsed `DamageType` applied to unit hits by `PerformMeleeAttack`. Set from `damageType` during `Initialize`.</summary>
+        [JsonIgnore]
+        protected DamageType parsedDamageType = DamageType.Knifed;
 
         /// <summary>Horizontal knockback force applied to hit units.</summary>
         public float knockbackX = 200f;
@@ -90,6 +96,10 @@ namespace BroMakerLib.Abilities
         [JsonIgnore]
         public BroBase.MeleeType meleeType = BroBase.MeleeType.Knife;
 
+        /// <summary>When true, `MeleeStartType.Custom` start sets `DashingMelee = true` and pushes `xI` toward the target. Set true only for bros whose vanilla `StartCustomMelee` does this (e.g. BaBroracus, Broden).</summary>
+        [JsonIgnore]
+        public bool forceDashingOnCustomStart = false;
+
         /// <summary>Sounds played when the melee strike connects with a unit.</summary>
         public AudioClip[] meleeHitSounds;
         /// <summary>Sounds played when the melee swing misses.</summary>
@@ -99,11 +109,30 @@ namespace BroMakerLib.Abilities
         /// <summary>Alternate hit sounds used by non-knife melees and terrain hits.</summary>
         public AudioClip[] alternateMeleeHitSounds;
 
-        /// <summary>Called once when the bro spawns. Also calls `CacheSoundsFromPrefab`.</summary>
-        public override void Initialize(TestVanDammeAnim owner)
+        /// <summary>Called once when the bro spawns. Parses `damageType`, then calls `CacheSoundsFromPrefab`.</summary>
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
+            ParseDamageType();
             CacheSoundsFromPrefab();
+        }
+
+        private void ParseDamageType()
+        {
+            if (string.IsNullOrEmpty(damageType))
+            {
+                parsedDamageType = DamageType.Knifed;
+                return;
+            }
+            try
+            {
+                parsedDamageType = (DamageType)Enum.Parse(typeof(DamageType), damageType, true);
+            }
+            catch
+            {
+                BMLogger.Warning($"Unknown damageType \"{damageType}\" in melee ability config; falling back to Knifed.");
+                parsedDamageType = DamageType.Knifed;
+            }
         }
 
         /// <summary>Loads melee sound clips from the `SourceBroType` prefab's soundHolder.
@@ -144,7 +173,7 @@ namespace BroMakerLib.Abilities
             }
             else
             {
-                if (!hero.DoingMelee || owner.frame > 10)
+                if (!hero.DoingMelee || owner.frame > restartFrame)
                 {
                     if (hero.DoingMelee)
                     {
@@ -157,7 +186,7 @@ namespace BroMakerLib.Abilities
                     owner.counter = -0.05f;
                     AnimateMelee();
                 }
-                if (!hero.JumpingMelee)
+                if (forceDashingOnCustomStart && !hero.JumpingMelee)
                 {
                     hero.DashingMelee = true;
                     owner.xI = (float)owner.Direction * owner.speed;
@@ -341,7 +370,7 @@ namespace BroMakerLib.Abilities
             bool flag;
             Map.DamageDoodads(3, DamageType.Knifed, X + (float)(Direction * 4), Y, 0f, 0f, 6f, PlayerNum, out flag, null);
             hero.KickDoors(24f);
-            if (Map.HitClosestUnit(owner, PlayerNum, damage, DamageType.Knifed, hitRangeX, hitRangeY, X + owner.transform.localScale.x * hitOffsetX, Y + hitOffsetY, owner.transform.localScale.x * knockbackX, knockbackY, true, false, owner.IsMine, false, true))
+            if (Map.HitClosestUnit(owner, PlayerNum, damage, parsedDamageType, hitRangeX, hitRangeY, X + owner.transform.localScale.x * hitOffsetX, Y + hitOffsetY, owner.transform.localScale.x * knockbackX, knockbackY, true, false, owner.IsMine, false, true))
             {
                 sound.PlaySoundEffectAt(meleeHitSounds, 1f, owner.transform.position, 1f, true, false, false, 0f);
                 hero.MeleeHasHit = true;
@@ -351,23 +380,23 @@ namespace BroMakerLib.Abilities
                 sound.PlaySoundEffectAt(missSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
             }
             hero.MeleeChosenUnit = null;
-            if (shouldTryHitTerrain && HandleTryMeleeTerrain(0, terrainDamage))
+            if (shouldTryHitTerrain && TryMeleeTerrain(0, terrainDamage))
             {
                 hero.MeleeHasHit = true;
             }
             hero.TriggerBroMeleeEvent();
         }
 
-        /// <summary>Called when the melee is interrupted (e.g., taking damage, falling).
-        /// Do NOT call `hero.CancelMelee()` from this method — the wrapper
-        /// already calls both this callback and `base.CancelMelee()` in sequence.</summary>
+        /// <summary>Called after the base `CancelMelee` has run when the melee is interrupted
+        /// (e.g., taking damage, falling). Do NOT call `hero.CancelMelee()` from here; the wrapper
+        /// already invokes base first, then this callback.</summary>
         public virtual void CancelMelee()
         {
         }
 
         /// <summary>Performs terrain damage and plays the ability's
         /// cached sounds instead of the owner's soundHolder. Returns true if terrain was hit.</summary>
-        public virtual bool HandleTryMeleeTerrain(int offset, int meleeDamage)
+        public virtual bool TryMeleeTerrain(int offset, int meleeDamage)
         {
             RaycastHit raycastHit;
             if (!Physics.Raycast(new Vector3(X - Direction * 4f, Y + 4f, 0f), new Vector3(Direction, 0f, 0f), out raycastHit, (float)(16 + offset), hero.GroundLayer))

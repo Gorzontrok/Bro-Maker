@@ -20,8 +20,6 @@ namespace BroMakerLib
         public static Dictionary<string, Type> meleePresets = new Dictionary<string, Type>();
         public static Dictionary<string, Type> passivePresets = new Dictionary<string, Type>();
 
-        public static bool disableWarnings = false;
-
         static PresetManager()
         {
         }
@@ -292,10 +290,8 @@ namespace BroMakerLib
 
             if (collection.ContainsKey(name))
             {
-                if (!disableWarnings)
-                {
-                    BMLogger.Warning($"{collectionName} Preset of name {name} already exist. Type: {preset} ; Assembly: {preset.Assembly.FullName}");
-                }
+                Type winningType = collection[name];
+                BMLogger.Warning($"{collectionName} preset '{name}' collision: attempted registration of {preset} from {preset.Assembly.FullName} ignored; previously registered {winningType} from {winningType.Assembly.FullName} remains active.");
             }
             else
             {

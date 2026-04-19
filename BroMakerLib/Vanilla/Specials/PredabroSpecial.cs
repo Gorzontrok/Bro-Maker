@@ -84,8 +84,7 @@ namespace BroMakerLib.Vanilla.Specials
         private float glitchTimer;
         [JsonIgnore]
         private int glitchFrame;
-        [JsonIgnore]
-        private float glitchFrameRate = 0.025f;
+        public float glitchFrameRate = 0.025f;
         [JsonIgnore]
         private int warningBeepCount;
         [JsonIgnore]
@@ -122,7 +121,7 @@ namespace BroMakerLib.Vanilla.Specials
         [JsonIgnore]
         private SpriteSM[] laserSightLazers;
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
 
@@ -139,8 +138,10 @@ namespace BroMakerLib.Vanilla.Specials
                     cloakingSound = source.cloakingSound;
                 if (lazerCannonSound == null)
                     lazerCannonSound = source.lazerCannonSound;
-                selfDestructSound = source.selfDestructSoundSound;
-                hudSpecialCountDownMaterials = source.hudSpecialCountDownMaterials;
+                if (selfDestructSound == null)
+                    selfDestructSound = source.selfDestructSoundSound;
+                if (hudSpecialCountDownMaterials == null)
+                    hudSpecialCountDownMaterials = source.hudSpecialCountDownMaterials;
             }
 
             if (predabro != null)
@@ -514,7 +515,7 @@ namespace BroMakerLib.Vanilla.Specials
                     }
                     float dx = X - entity.X;
                     int side = (int)Mathf.Sign(dx);
-                    if (side == (int)Direction && !owner.GetFieldValue<bool>("wallClimbing") && !hero.WallDrag)
+                    if (side == (int)Direction && !hero.WallClimbing && !hero.WallDrag)
                     {
                         remove = true;
                     }
@@ -688,7 +689,7 @@ namespace BroMakerLib.Vanilla.Specials
             return true;
         }
 
-        public override bool HandleDeath()
+        public override bool HandleDeath(float xI, float yI, DamageObject damage)
         {
             StopUsingSpecial();
             return true;
@@ -700,10 +701,11 @@ namespace BroMakerLib.Vanilla.Specials
             return true;
         }
 
-        public override bool HandleIsInStealthMode()
+        public override bool HandleIsInStealthMode(ref bool result)
         {
             if (stealthModeTime > 0f)
             {
+                result = true;
                 return false;
             }
             return true;
@@ -719,13 +721,12 @@ namespace BroMakerLib.Vanilla.Specials
             StopUsingSpecial();
         }
 
-        public override bool HandleAttachToHeli()
+        public override void HandleAfterAttachToHeli()
         {
             if (searchRing != null)
             {
                 searchRing.gameObject.SetActive(false);
             }
-            return true;
         }
 
         public override void Cleanup()

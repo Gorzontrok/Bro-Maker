@@ -92,7 +92,7 @@ namespace BroMakerLib.Vanilla.Specials
             triggerFrame = 4;
         }
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
             freedomCryAudio = owner.gameObject.AddComponent<AudioSource>();
@@ -188,7 +188,7 @@ namespace BroMakerLib.Vanilla.Specials
                 trailDelay -= hero.DeltaTime;
                 if (broveheartSpecialTime < attack4SoundTime && broveheartSpecialTime + hero.DeltaTime >= attack4SoundTime)
                 {
-                    Sound.GetInstance().PlaySoundEffectAt(attack4Sounds, attack4SoundVolume, owner.transform.position, attack4SoundPitch);
+                    Sound.GetInstance().PlaySoundEffectAt(attack4Sounds, attack4SoundVolume, owner.transform.position, attack4SoundPitch + owner.pitchShiftAmount);
                 }
                 if (trailDelay < 0f && broveheartSpecialTime > 0.6f)
                 {
@@ -244,34 +244,13 @@ namespace BroMakerLib.Vanilla.Specials
             return false;
         }
 
-        public override bool HandleRunGun()
-        {
-            if (owner is BroveHeart)
-            {
-                return true;
-            }
-            if (broveheartSpecialTime > 0f)
-            {
-                int gunFrame = hero.GunFrame;
-                if (gunFrame == 5)
-                {
-                    if (owner.IsOnGround())
-                    {
-                        owner.xI = 0f;
-                        owner.yI = 0f;
-                    }
-                }
-            }
-            return true;
-        }
-
-        public override bool HandleDeath()
+        public override bool HandleDeath(float xI, float yI, DamageObject damage)
         {
             ReturnBubbleFaderEffects();
             return true;
         }
 
-        public override void HandleAfterDeath()
+        public override void HandleAfterDeath(float xI, float yI, DamageObject damage)
         {
             freedomCryAudio.Stop();
         }

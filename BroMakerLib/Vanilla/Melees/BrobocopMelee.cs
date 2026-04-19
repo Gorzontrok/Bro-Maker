@@ -12,9 +12,6 @@ namespace BroMakerLib.Vanilla.Melees
     {
         protected override HeroType SourceBroType => HeroType.Brobocop;
 
-        public AudioClip[] alternateMeleeHitSounds2;
-        public AudioClip[] missSounds2;
-
         public BrobocopMelee()
         {
             meleeType = BroBase.MeleeType.BrobocopPunch;
@@ -22,15 +19,27 @@ namespace BroMakerLib.Vanilla.Melees
             restartFrame = 0;
             animationRow = 9;
             jumpingAnimationRow = 10;
+            damageType = "SilencedBullet";
         }
 
         protected override void CacheSoundsFromPrefab()
         {
-            var sourceBro = HeroController.GetHeroPrefab(SourceBroType);
-            if (sourceBro == null) return;
+            base.CacheSoundsFromPrefab();
+        }
 
-            if (alternateMeleeHitSounds2 == null) alternateMeleeHitSounds2 = sourceBro.soundHolder.alternateMeleeHitSound.CloneArray();
-            if (missSounds2 == null) missSounds2 = sourceBro.soundHolder.missSounds.CloneArray();
+        public override void StartMelee()
+        {
+            if (!hero.DoingMelee || owner.frame > 4)
+            {
+                owner.frame = 0;
+                owner.counter = -0.05f;
+                AnimateMelee();
+            }
+            else
+            {
+                hero.MeleeFollowUp = true;
+            }
+            hero.StartMeleeCommon();
         }
 
         public override void AnimateMelee()
@@ -132,20 +141,20 @@ namespace BroMakerLib.Vanilla.Melees
             Unit firstUnit = Map.GetFirstUnit(owner, PlayerNum, num, vector.x, vector.y, true, true, list);
             if (firstUnit)
             {
-                firstUnit.Damage(4, DamageType.SilencedBullet, owner.xI, owner.yI, (int)Mathf.Sign(owner.xI), owner, X, Y);
-                sound.PlaySoundEffectAt(alternateMeleeHitSounds2, 0.5f, owner.transform.position, 1f, true, false, false, 0f);
+                firstUnit.Damage(4, parsedDamageType, owner.xI, owner.yI, (int)Mathf.Sign(owner.xI), owner, X, Y);
+                sound.PlaySoundEffectAt(alternateMeleeHitSounds, 0.5f, owner.transform.position, 1f, true, false, false, 0f);
                 hero.MeleeHasHit = true;
             }
             else
             {
                 if (playMissSound && !hero.HasPlayedMissSound)
                 {
-                    sound.PlaySoundEffectAt(missSounds2, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
+                    sound.PlaySoundEffectAt(missSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
                 }
                 hero.HasPlayedMissSound = true;
             }
             hero.MeleeChosenUnit = null;
-            if (!hero.MeleeHasHit && shouldTryHitTerrain && HandleTryMeleeTerrain(0, terrainDamage))
+            if (!hero.MeleeHasHit && shouldTryHitTerrain && TryMeleeTerrain(0, terrainDamage))
             {
                 hero.MeleeHasHit = true;
             }

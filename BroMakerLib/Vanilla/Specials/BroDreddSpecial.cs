@@ -27,7 +27,7 @@ namespace BroMakerLib.Vanilla.Specials
             spawnOffsetY = 11f;
         }
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
             var prefab = HeroController.GetHeroPrefab(HeroType.BroDredd);
@@ -51,9 +51,7 @@ namespace BroMakerLib.Vanilla.Specials
                 return;
 
             // Boost RPC fails (no NID on locally-spawned projectile), call directly
-            bool special = owner.GetFieldValue<bool>("special");
-            bool wasSpecial = owner.GetFieldValue<bool>("wasSpecial");
-            if (special && !wasSpecial && !owner.remoteProjectile.doubleSpeed)
+            if (owner.special && !owner.wasSpecial && !owner.remoteProjectile.doubleSpeed)
             {
                 owner.remoteProjectile.SetDoubleSpeed();
             }
@@ -72,7 +70,7 @@ namespace BroMakerLib.Vanilla.Specials
                     {
                         hero.UsingSpecial = false;
                         owner.fire = false;
-                        owner.SetFieldValue("controllingProjectile", true);
+                        hero.ControllingProjectile = true;
                         owner.SetFieldValue("projectileTime", Time.time);
                         owner.frame = 0;
                     }

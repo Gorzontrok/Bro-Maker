@@ -68,7 +68,7 @@ namespace BroMakerLib.Vanilla.Specials
             set => hero.DeathTime = value;
         }
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
             originalSpeed = owner.speed;
@@ -183,7 +183,7 @@ namespace BroMakerLib.Vanilla.Specials
             return true;
         }
 
-        public override void HandleAfterDeath()
+        public override void HandleAfterDeath(float xI, float yI, DamageObject damage)
         {
             if (serumFrenzy)
             {

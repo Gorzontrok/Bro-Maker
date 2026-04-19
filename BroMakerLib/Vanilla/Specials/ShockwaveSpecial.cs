@@ -1,8 +1,9 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Extensions;
 using Newtonsoft.Json;
-using UnityEngine;
+using Rogueforce;
 using RocketLib.Extensions;
+using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
@@ -65,7 +66,7 @@ namespace BroMakerLib.Vanilla.Specials
             if (special3Sounds == null) special3Sounds = sourceBro.soundHolder.special3Sounds.CloneArray();
         }
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
             var sourceBro = HeroController.GetHeroPrefab(SourceBroType);
@@ -86,7 +87,7 @@ namespace BroMakerLib.Vanilla.Specials
             }
             if (owner.SpecialAmmo > 0)
             {
-                MapController.DamageGround(owner, groundDamage, DamageType.Normal, groundDamageRange, X, Y, null, false);
+                MapController.DamageGround(owner, ValueOrchestrator.GetModifiedDamage(groundDamage, PlayerNum), DamageType.Normal, groundDamageRange, X, Y, null, false);
                 EffectsController.CreateGroundWave(X, Y, 2f);
                 if (!hero.UsingSpecial)
                 {
@@ -241,7 +242,7 @@ namespace BroMakerLib.Vanilla.Specials
             return !hero.UsingSpecial;
         }
 
-        public override bool HandleDeath()
+        public override bool HandleDeath(float xI, float yI, DamageObject damage)
         {
             readyForBlast = false;
             hero.UsingSpecial = false;

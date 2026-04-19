@@ -30,7 +30,7 @@ namespace BroMakerLib.Vanilla.Specials
             animationRow = 1;
         }
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
             var nebro = owner as Nebro;

@@ -85,7 +85,7 @@ namespace BroMakerLib.Vanilla.Specials
         [JsonIgnore]
         private Material bloodyAvatar;
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
             normalSpeed = owner.speed;
@@ -286,7 +286,7 @@ namespace BroMakerLib.Vanilla.Specials
             return true;
         }
 
-        public override void HandleAfterDeath()
+        public override void HandleAfterDeath(float xI, float yI, DamageObject damage)
         {
             rampageTime -= 100f;
             onRampage = false;

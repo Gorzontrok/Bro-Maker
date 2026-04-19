@@ -15,7 +15,6 @@ namespace BroMakerLib.Vanilla.Melees
         public AudioClip chainsawStart;
         public AudioClip chainsawSpin;
         public AudioClip chainsawWindDown;
-        public AudioClip[] alternateMeleeHitSounds2;
 
         [JsonIgnore]
         private AudioSource chainsawAudio;
@@ -34,19 +33,15 @@ namespace BroMakerLib.Vanilla.Melees
             animationColumn = 24;
             animationRow = 9;
             jumpingAnimationRow = 10;
+            damageType = "ChainsawImpale";
         }
 
         protected override void CacheSoundsFromPrefab()
         {
             base.CacheSoundsFromPrefab();
-            var sourceBro = HeroController.GetHeroPrefab(SourceBroType);
-            if (sourceBro != null)
-            {
-                if (alternateMeleeHitSounds2 == null) alternateMeleeHitSounds2 = sourceBro.soundHolder.alternateMeleeHitSound.CloneArray();
-            }
         }
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
 
@@ -238,7 +233,7 @@ namespace BroMakerLib.Vanilla.Melees
             StopChainsawAudio();
             if (chainSawMeleedUnit != null && chainSawMeleedUnit.canDisembowel)
             {
-                chainSawMeleedUnit.GibNow(DamageType.ChainsawImpale, (float)(owner.Direction * 100), 100f);
+                chainSawMeleedUnit.GibNow(parsedDamageType, (float)(owner.Direction * 100), 100f);
             }
         }
 
@@ -284,10 +279,10 @@ namespace BroMakerLib.Vanilla.Melees
             Map.DamageDoodads(3, DamageType.Knifed, X + (float)(owner.Direction * 6), Y, 0f, 0f, 6f, PlayerNum, out flag, null);
             if (chainSawMeleedUnit != null)
             {
-                chainSawMeleedUnit.Damage(4, DamageType.ChainsawImpale, 0f, 0f, owner.Direction, owner, X, Y);
+                chainSawMeleedUnit.Damage(4, parsedDamageType, 0f, 0f, owner.Direction, owner, X, Y);
                 Map.PanicUnits(X, Y, 80f, 24f, 2f, true, false);
             }
-            hero.TryMeleeTerrain(8, 2);
+            TryMeleeTerrain(8, 2);
         }
 
         private void PerformJumpingChainsawMelee()
@@ -298,11 +293,11 @@ namespace BroMakerLib.Vanilla.Melees
             Map.DamageDoodads(3, DamageType.Melee, vector.x, vector.y, 0f, 0f, 6f, PlayerNum, out flag, null);
             if (Map.HitClosestUnit(owner, PlayerNum, 4, DamageType.Melee, num, num * 2f, vector.x, vector.y, owner.transform.localScale.x * 250f, 250f, true, false, owner.IsMine, false, true))
             {
-                sound.PlaySoundEffectAt(alternateMeleeHitSounds2, 0.5f, owner.transform.position, 1f, true, false, false, 0f);
+                sound.PlaySoundEffectAt(alternateMeleeHitSounds, 0.5f, owner.transform.position, 1f, true, false, false, 0f);
                 hero.MeleeHasHit = true;
             }
             hero.MeleeChosenUnit = null;
-            if (!hero.MeleeHasHit && hero.TryMeleeTerrain(0, 2))
+            if (!hero.MeleeHasHit && TryMeleeTerrain(0, 2))
             {
                 hero.MeleeHasHit = true;
             }

@@ -17,6 +17,7 @@ namespace BroMakerLib.Vanilla.Melees
             meleeType = BroBase.MeleeType.Custom;
             animationColumn = 24;
             animationRow = 10;
+            damageType = "Melee";
         }
 
         public override void AnimateMelee()
@@ -63,7 +64,7 @@ namespace BroMakerLib.Vanilla.Melees
                     if (hero.MeleeChosenUnit != null)
                     {
                         float num = 8f;
-                        if (owner.GetFieldValue<BroBase.MeleeType>("meleeType") == BroBase.MeleeType.Disembowel)
+                        if (owner.meleeType == BroBase.MeleeType.Disembowel)
                         {
                             num = 14f;
                         }
@@ -95,7 +96,7 @@ namespace BroMakerLib.Vanilla.Melees
             bool flag;
             Map.DamageDoodads(3, DamageType.Melee, vector.x, vector.y, 0f, 0f, 6f, owner.playerNum, out flag, null);
             hero.KickDoors(25f);
-            if (Map.HitClosestUnit(owner, owner.playerNum, 5, DamageType.Melee, num + 4f, num * 2f, vector.x, vector.y, owner.transform.localScale.x * 450f, 220f, true, false, owner.IsMine, false, true))
+            if (Map.HitClosestUnit(owner, owner.playerNum, 5, parsedDamageType, num + 4f, num * 2f, vector.x, vector.y, owner.transform.localScale.x * 450f, 220f, true, false, owner.IsMine, false, true))
             {
                 sound.PlaySoundEffectAt(alternateMeleeHitSounds, 0.9f, owner.transform.position, 1f, true, false, false, 0f);
                 hero.MeleeHasHit = true;
@@ -110,7 +111,7 @@ namespace BroMakerLib.Vanilla.Melees
                 hero.HasPlayedMissSound = true;
             }
             hero.MeleeChosenUnit = null;
-            if (!hero.MeleeHasHit && hero.TryMeleeTerrain(0, 2))
+            if (!hero.MeleeHasHit && TryMeleeTerrain(0, 2))
             {
                 hero.MeleeHasHit = true;
             }

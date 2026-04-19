@@ -28,6 +28,7 @@ namespace BroMakerLib.Vanilla.Melees
             restartFrame = 0;
             animationRow = 9;
             jumpingAnimationRow = 10;
+            damageType = "Shock";
         }
 
         protected override void CacheSoundsFromPrefab()
@@ -166,7 +167,7 @@ namespace BroMakerLib.Vanilla.Melees
             }
         }
 
-        public override void Update()
+        public override void HandleAfterCheckInput()
         {
             if (owner.left || owner.right)
             {
@@ -178,7 +179,7 @@ namespace BroMakerLib.Vanilla.Melees
         {
             bool flag;
             Map.DamageDoodads(3, DamageType.Shock, X + (float)(owner.Direction * 4), Y, 0f, 0f, 6f, PlayerNum, out flag, null);
-            Unit unit = Map.HitClosestUnit(owner, PlayerNum, 1, DamageType.Shock, 13f, 24f, X + owner.transform.localScale.x * 4f, Y + 8f, owner.transform.localScale.x * 0f, 0f, false, true, owner.IsMine, false, true);
+            Unit unit = Map.HitClosestUnit(owner, PlayerNum, 1, parsedDamageType, 13f, 24f, X + owner.transform.localScale.x * 4f, Y + 8f, owner.transform.localScale.x * 0f, 0f, false, true, owner.IsMine, false, true);
             if (unit != null)
             {
                 hero.MeleeHasHit = true;
@@ -200,7 +201,7 @@ namespace BroMakerLib.Vanilla.Melees
             {
                 sound.PlaySoundEffectAt(alternateMeleeHitSounds2, 0.3f, owner.transform.position, Random.Range(0.9f, 1.1f), true, false, false, 0f);
             }
-            if (shouldTryHitTerrain && HandleTryMeleeTerrain(0, terrainDamage))
+            if (shouldTryHitTerrain && TryMeleeTerrain(0, terrainDamage))
             {
                 hero.MeleeHasHit = true;
             }

@@ -30,7 +30,7 @@ namespace BroMakerLib.Vanilla.Specials
             animationRow = 7;
         }
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
             var prefab = HeroController.GetHeroPrefab(HeroType.EllenRipbro);

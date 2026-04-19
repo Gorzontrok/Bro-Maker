@@ -39,6 +39,8 @@ namespace BroMakerLib.Vanilla.Melees
             restartFrame = 0;
             knockbackY = 250f;
             animationRow = 9;
+            animationFrameCount = 9;
+            damageType = "Melee";
         }
 
         public override void StartMelee()
@@ -88,7 +90,7 @@ namespace BroMakerLib.Vanilla.Melees
             {
                 PerformPunchAttack(true, true);
             }
-            if (owner.GetFieldValue<BroBase.MeleeType>("currentMeleeType") == BroBase.MeleeType.JetpackPunch && owner.frame >= 4 && owner.frame <= 5 && !hero.MeleeHasHit)
+            if (hero.CurrentMeleeType == BroBase.MeleeType.JetpackPunch && owner.frame >= 4 && owner.frame <= 5 && !hero.MeleeHasHit)
             {
                 PerformPunchAttack(true, true);
             }
@@ -101,14 +103,14 @@ namespace BroMakerLib.Vanilla.Melees
 
         protected virtual void PerformPunchAttack(bool shouldTryHitTerrain, bool playMissSound)
         {
-            bool isJetpackPunch = owner.GetFieldValue<BroBase.MeleeType>("currentMeleeType") == BroBase.MeleeType.JetpackPunch;
+            bool isJetpackPunch = hero.CurrentMeleeType == BroBase.MeleeType.JetpackPunch;
             Vector3 vector = new Vector3(owner.X + (float)owner.Direction * (punchOffset + 7f), owner.Y + 8f, 0f);
             bool flag;
             Map.DamageDoodads(3, DamageType.Melee, vector.x, vector.y, 0f, 0f, 6f, owner.playerNum, out flag, null);
             hero.KickDoors(isJetpackPunch ? jetpackKickRange : normalKickRange);
             int damage = isJetpackPunch ? jetpackDamage : normalDamage;
             float kbX = isJetpackPunch ? jetpackKnockbackX : normalKnockbackX;
-            if (Map.HitClosestUnit(owner, owner.playerNum, damage, DamageType.Melee, punchOffset, punchOffset * 2f, vector.x, vector.y, owner.transform.localScale.x * kbX, knockbackY, true, false, owner.IsMine, false, true))
+            if (Map.HitClosestUnit(owner, owner.playerNum, damage, parsedDamageType, punchOffset, punchOffset * 2f, vector.x, vector.y, owner.transform.localScale.x * kbX, knockbackY, true, false, owner.IsMine, false, true))
             {
                 if (isJetpackPunch)
                 {
@@ -133,7 +135,7 @@ namespace BroMakerLib.Vanilla.Melees
             }
             hero.MeleeChosenUnit = null;
             int tdmg = isJetpackPunch ? jetpackTerrainDamage : normalTerrainDamage;
-            if (!hero.MeleeHasHit && shouldTryHitTerrain && HandleTryMeleeTerrain(0, tdmg))
+            if (!hero.MeleeHasHit && shouldTryHitTerrain && TryMeleeTerrain(0, tdmg))
             {
                 hero.MeleeHasHit = true;
                 if (isJetpackPunch)

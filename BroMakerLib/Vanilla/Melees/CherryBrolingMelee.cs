@@ -1,6 +1,7 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
 using BroMakerLib.Extensions;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
@@ -14,6 +15,22 @@ namespace BroMakerLib.Vanilla.Melees
         public AudioClip[] alternateMeleeHitSounds2;
         public AudioClip[] alternateMeleeMissSounds;
 
+        /// <summary>Whether a successful kick triggers the airborne somersault animation. Disable for cross-bro owners whose sprite sheet lacks a matching flip row.</summary>
+        public bool enableSomersault = true;
+        /// <summary>Sprite sheet row for the somersault animation.</summary>
+        public int somersaultAnimationRow = 8;
+        /// <summary>Starting column of the somersault animation.</summary>
+        public int somersaultAnimationColumn = 0;
+        /// <summary>Number of somersault animation frames played.</summary>
+        public int somersaultFrameCount = 11;
+        /// <summary>Seconds per somersault frame.</summary>
+        public float somersaultFrameRate = 0.04f;
+
+        [JsonIgnore]
+        private bool somersaulting;
+        [JsonIgnore]
+        private int somersaultFrame;
+
         public CherryBrolingMelee()
         {
             meleeType = BroBase.MeleeType.FlipKick;
@@ -22,6 +39,7 @@ namespace BroMakerLib.Vanilla.Melees
             animationRow = 9;
             animationColumn = 18;
             frameRate = 0.0167f;
+            damageType = "Knifed";
         }
 
         protected override void CacheSoundsFromPrefab()
@@ -135,14 +153,17 @@ namespace BroMakerLib.Vanilla.Melees
         {
             bool flag;
             Map.DamageDoodads(3, DamageType.Knifed, X + (float)(owner.Direction * 4), Y, 0f, 0f, 6f, PlayerNum, out flag, null);
-            Unit unit = Map.HitClosestUnit(owner, PlayerNum, 8, DamageType.Knifed, 10f, 24f, X + owner.transform.localScale.x * 8f, Y + 8f + (float)((owner.yI >= -60f) ? 0 : (-6)), owner.transform.localScale.x * 200f, 500f, true, false, owner.IsMine, false, true);
+            Unit unit = Map.HitClosestUnit(owner, PlayerNum, 8, parsedDamageType, 10f, 24f, X + owner.transform.localScale.x * 8f, Y + 8f + (float)((owner.yI >= -60f) ? 0 : (-6)), owner.transform.localScale.x * 200f, 500f, true, false, owner.IsMine, false, true);
             if (unit)
             {
                 sound.PlaySoundEffectAt(alternateMeleeHitSounds2, 1f, owner.transform.position, 1f, true, false, false, 0f);
                 hero.MeleeHasHit = true;
                 hero.CancelMelee();
-                owner.SetFieldValue("somersaulting", true);
-                owner.SetFieldValue("somersaultFrame", 0);
+                if (enableSomersault)
+                {
+                    somersaulting = true;
+                    somersaultFrame = 0;
+                }
                 owner.actionState = ActionState.Jumping;
                 owner.yI = 400f;
                 hero.InvulnerableTime = 0.2f;
@@ -153,10 +174,49 @@ namespace BroMakerLib.Vanilla.Melees
                 sound.PlaySoundEffectAt(alternateMeleeMissSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
             }
             hero.MeleeChosenUnit = null;
-            if (shouldTryHitTerrain && HandleTryMeleeTerrain(0, terrainDamage))
+            if (shouldTryHitTerrain && TryMeleeTerrain(0, terrainDamage))
             {
                 hero.MeleeHasHit = true;
             }
+        }
+
+        public override bool HandleUpdate()
+        {
+            if (somersaulting && (owner.actionState != ActionState.Jumping || hero.WallDrag))
+            {
+                somersaulting = false;
+                somersaultFrame = 0;
+            }
+            return true;
+        }
+
+        public override void HandleAfterLand()
+        {
+            somersaulting = false;
+            somersaultFrame = 0;
+        }
+
+        public override bool HandleAnimateActualJumpingFrames()
+        {
+            if (!somersaulting)
+            {
+                return true;
+            }
+            hero.DeactivateGun();
+            int col = somersaultAnimationColumn + somersaultFrame;
+            hero.Sprite.SetLowerLeftPixel((float)(col * hero.SpritePixelWidth), (float)(somersaultAnimationRow * hero.SpritePixelHeight));
+            somersaultFrame++;
+            if (somersaultFrame >= somersaultFrameCount)
+            {
+                somersaulting = false;
+            }
+            hero.FrameRate = somersaultFrameRate;
+            return false;
+        }
+
+        public override bool HandleRunFiring()
+        {
+            return !somersaulting;
         }
     }
 }

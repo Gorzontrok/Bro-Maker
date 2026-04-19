@@ -21,7 +21,7 @@ namespace BroMakerLib.Vanilla.Specials
             if (special3Sounds == null) special3Sounds = sourceBro.soundHolder.special3Sounds.CloneArray();
         }
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
             var prefab = HeroController.GetHeroPrefab(HeroType.TheBrode);
@@ -166,7 +166,7 @@ namespace BroMakerLib.Vanilla.Specials
         public override bool HandleDamage(int damage, DamageType damageType, float xI, float yI, int direction, MonoBehaviour damageSender, float hitX, float hitY)
         {
             if ((damageType == DamageType.Melee || damageType == DamageType.Knifed)
-                && (hero.UsingSpecial || hero.GunFrame > 0)
+                && hero.UsingSpecial
                 && Mathf.Sign(xI) != Mathf.Sign(owner.transform.localScale.x))
             {
                 return false;

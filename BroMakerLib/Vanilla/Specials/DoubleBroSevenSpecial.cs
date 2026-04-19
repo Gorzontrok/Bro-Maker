@@ -8,10 +8,10 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
-    /// <summary>Controls which gadget type is selected when `SpecialAmmo` falls outside the 1–5 gadget range.</summary>
+    /// <summary>Controls which gadget type is selected when `SpecialAmmo` falls outside the 1-5 gadget range.</summary>
     public enum SpecialOverflowMode
     {
-        /// <summary>Wraps ammo into the 1–5 range using modulo arithmetic.</summary>
+        /// <summary>Wraps ammo into the 1-5 range using modulo arithmetic.</summary>
         Wrap,
         /// <summary>Clamps to the highest gadget type (5).</summary>
         Clamp,
@@ -47,7 +47,7 @@ namespace BroMakerLib.Vanilla.Specials
         public int balaclavaRemoveRow = 8;
         public int jetpackSpriteColumn = 14;
         public int balaclavaColumn = 26;
-        /// <summary>How to resolve the gadget type when `SpecialAmmo` is outside the 1–5 range.</summary>
+        /// <summary>How to resolve the gadget type when `SpecialAmmo` is outside the 1-5 range.</summary>
         public SpecialOverflowMode overflowMode = SpecialOverflowMode.Wrap;
         /// <summary>Gadget name used when `overflowMode` is `Fallback` and parsing fails.</summary>
         public string overflowSpecialType = "TearGas";
@@ -118,11 +118,13 @@ namespace BroMakerLib.Vanilla.Specials
         [JsonIgnore]
         private Material normalMaterial;
         [JsonIgnore]
+        private bool materialCaptured;
+        [JsonIgnore]
         private LineRenderer laserLine;
         [JsonIgnore]
         private AudioSource laserAudio;
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
             originalSpeed = owner.speed;
@@ -142,13 +144,13 @@ namespace BroMakerLib.Vanilla.Specials
             {
                 liftOffBlastFlameWall = dbs.liftOffBlastFlameWall;
                 balaclavaMaterial = dbs.balaclavaMaterial;
-                laserVolume = dbs.laserVolume;
-                startLaserAngle = dbs.startLaserAngle;
-                endLaserAngle = dbs.endLaserAngle;
-                laserStepM = dbs.GetFieldValue<float>("laserStepM");
-                minSquareLaserDist = dbs.minSquareLaserDist;
-                laserAngleSpeed = dbs.laserAngleSpeed;
-                laserAngleAcceleration = dbs.laserAngleAcceleration;
+                if (laserVolume == 0.25f) laserVolume = dbs.laserVolume;
+                if (startLaserAngle == 265f) startLaserAngle = dbs.startLaserAngle;
+                if (endLaserAngle == 120f) endLaserAngle = dbs.endLaserAngle;
+                if (laserStepM == 0.33f) laserStepM = dbs.GetFieldValue<float>("laserStepM");
+                if (minSquareLaserDist == 5f) minSquareLaserDist = dbs.minSquareLaserDist;
+                if (laserAngleSpeed == 120f) laserAngleSpeed = dbs.laserAngleSpeed;
+                if (laserAngleAcceleration == 80f) laserAngleAcceleration = dbs.laserAngleAcceleration;
                 startAngleSpeed = laserAngleSpeed;
             }
 
@@ -213,9 +215,10 @@ namespace BroMakerLib.Vanilla.Specials
 
         public override void PressSpecial()
         {
-            if (normalMaterial == null)
+            if (!materialCaptured && (balaclavaMaterial == null || owner.GetComponent<Renderer>().sharedMaterial != balaclavaMaterial))
             {
                 normalMaterial = owner.GetComponent<Renderer>().sharedMaterial;
+                materialCaptured = true;
             }
             if (!owner.hasBeenCoverInAcid && !hero.DoingMelee && !hero.UsingSpecial)
             {
@@ -228,18 +231,19 @@ namespace BroMakerLib.Vanilla.Specials
                         if (currentSpecialType == DoubleBroSevenSpecialType.Jetpack)
                         {
                             jetPackFuel = jetPackFuelDuration;
-                            Sound.GetInstance().PlaySoundEffectAt(special3Sounds, 0.25f, owner.transform.position, 1f, true, false, false, 0f);
+                            Sound.GetInstance().PlaySoundEffectAt(special3Sounds, 0.25f, owner.transform.position, 1f + owner.pitchShiftAmount, true, false, false, 0f);
                         }
                         else if (currentSpecialType == DoubleBroSevenSpecialType.LaserWristWatch)
                         {
                             laserAngleSpeed = startAngleSpeed;
                             laserAngle = startLaserAngle;
                             lastLaserHitPos = -Vector3.one;
-                            Sound.GetInstance().PlaySoundEffectAt(special2Sounds, 0.5f, owner.transform.position, 1f + owner.pitchShiftAmount, true, false, false, 0f);
+                            Sound.GetInstance().PlaySoundEffectAt(special2Sounds, 0.25f, owner.transform.position, 1f + owner.pitchShiftAmount, true, false, false, 0f);
                         }
                         else if (currentSpecialType == DoubleBroSevenSpecialType.Balaclava)
                         {
-                            Sound.GetInstance().PlaySoundEffectAt(attack4Sounds[0], 0.3f, owner.transform.position, 1f, true, false, false, 0f);
+                            if (attack4Sounds != null && attack4Sounds.Length > 0)
+                                Sound.GetInstance().PlaySoundEffectAt(attack4Sounds[0], 0.3f, owner.transform.position, 1f + owner.pitchShiftAmount, true, false, false, 0f);
                             balaclavaTime = balaclavaTimeDuration;
                         }
                     }
@@ -291,7 +295,7 @@ namespace BroMakerLib.Vanilla.Specials
                         }
                         break;
                     case DoubleBroSevenSpecialType.Martini:
-                        Sound.GetInstance().PlaySoundEffectAt(throwSounds, 0.4f, owner.transform.position, 1f, true, false, false, 0f);
+                        Sound.GetInstance().PlaySoundEffectAt(throwSounds, 0.4f, owner.transform.position, 1f + owner.pitchShiftAmount, true, false, false, 0f);
                         if (owner.IsMine && martiniGlass != null)
                         {
                             ProjectileController.SpawnGrenadeOverNetwork(martiniGlass, owner,
@@ -302,7 +306,7 @@ namespace BroMakerLib.Vanilla.Specials
                         }
                         break;
                     case DoubleBroSevenSpecialType.TearGas:
-                        Sound.GetInstance().PlaySoundEffectAt(throwSounds, 0.5f, owner.transform.position, 1f, true, false, false, 0f);
+                        Sound.GetInstance().PlaySoundEffectAt(throwSounds, 0.5f, owner.transform.position, 1f + owner.pitchShiftAmount, true, false, false, 0f);
                         if (owner.IsMine && tearGasGrenade != null)
                         {
                             ProjectileController.SpawnGrenadeOverNetwork(tearGasGrenade, owner,
@@ -341,7 +345,7 @@ namespace BroMakerLib.Vanilla.Specials
                     if (usingSpecialFrame == 5)
                     {
                         hero.FrameRate = 0.25f;
-                        Sound.GetInstance().PlaySoundEffectAt(attack2Sounds, 0.35f, owner.transform.position, 1f, true, false, false, 0f);
+                        Sound.GetInstance().PlaySoundEffectAt(attack2Sounds, 0.35f, owner.transform.position, 1f + owner.pitchShiftAmount, true, false, false, 0f);
                         martinisDrunk++;
                     }
                     if (usingSpecialFrame == 10) UseSpecial();
@@ -459,7 +463,8 @@ namespace BroMakerLib.Vanilla.Specials
                         usingSpecialFrame = 0;
                         owner.counter = 0f;
                         hero.ChangeFrame();
-                        Sound.GetInstance().PlaySoundEffectAt(attack4Sounds[1], 0.3f, owner.transform.position, 1f, true, false, false, 0f);
+                        if (attack4Sounds != null && attack4Sounds.Length > 1)
+                            Sound.GetInstance().PlaySoundEffectAt(attack4Sounds[1], 0.3f, owner.transform.position, 1f + owner.pitchShiftAmount, true, false, false, 0f);
                     }
                     break;
                 case DoubleBroSevenSpecialType.LaserWristWatch:
@@ -602,23 +607,20 @@ namespace BroMakerLib.Vanilla.Specials
             return true;
         }
 
-        public override void HandleAfterCheckInput()
+        public override bool HandleCheckInput()
         {
             if (hero.UsingSpecial && currentSpecialType == DoubleBroSevenSpecialType.LaserWristWatch)
             {
-                owner.left = false;
-                owner.right = false;
-                owner.up = false;
-                owner.down = false;
-                owner.fire = false;
-                owner.buttonJump = false;
+                return false;
             }
+            return true;
         }
 
-        public override bool HandleIsInStealthMode()
+        public override bool HandleIsInStealthMode(ref bool result)
         {
             if (balaclavaTime > 0f)
             {
+                result = true;
                 return false;
             }
             return true;
@@ -629,7 +631,7 @@ namespace BroMakerLib.Vanilla.Specials
             return balaclavaTime <= 0f;
         }
 
-        public override bool HandleDeath()
+        public override bool HandleDeath(float xI, float yI, DamageObject damage)
         {
             if (laserLine != null) laserLine.enabled = false;
             if (laserAudio != null && laserAudio.isPlaying) laserAudio.Stop();

@@ -587,6 +587,18 @@ namespace BroMakerLib.CustomObjects.Bros
             Character = this;
             Info = LoadHero.currentInfo;
 
+            List<string> unusedBlocks = new List<string>();
+            if (Info.special != null) unusedBlocks.Add("special");
+            if (Info.melee != null) unusedBlocks.Add("melee");
+            if (Info.passives != null && Info.passives.Count > 0) unusedBlocks.Add("passives");
+            if (unusedBlocks.Count > 0)
+            {
+                BMLogger.Warning(
+                    $"Bro '{Info.name}' uses CharacterPreset '{Info.CharacterPreset}', which does not support the ability system. " +
+                    $"The following JSON blocks will be ignored: {string.Join(", ", unusedBlocks.ToArray())}. " +
+                    $"Use a vanilla preset (e.g. \"Rambro\", \"Brommando\") to enable abilities.");
+            }
+
             // Setup CustomHero from original bro component and destroy it
             this.SetupCustomHero();
 

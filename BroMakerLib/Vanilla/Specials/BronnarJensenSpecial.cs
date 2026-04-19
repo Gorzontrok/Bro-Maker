@@ -21,7 +21,7 @@ namespace BroMakerLib.Vanilla.Specials
         [JsonIgnore]
         private float controllingRCVDelay;
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
 
@@ -102,24 +102,20 @@ namespace BroMakerLib.Vanilla.Specials
                 remoteVehicle.down = owner.down;
                 remoteVehicle.left = owner.left;
                 remoteVehicle.right = owner.right;
-                remoteVehicle.buttonJump = owner.GetFieldValue<bool>("buttonJump");
+                remoteVehicle.buttonJump = owner.buttonJump;
                 owner.up = false;
                 owner.left = false;
                 owner.right = false;
                 owner.down = false;
-                owner.SetFieldValue("buttonJump", false);
-                bool special = owner.GetFieldValue<bool>("special");
-                bool wasSpecial = owner.GetFieldValue<bool>("wasSpecial");
-                bool fire = owner.GetFieldValue<bool>("fire");
-                bool wasFire = owner.GetFieldValue<bool>("wasFire");
-                if (Time.time - projectileTime > 0.56f && ((special && !wasSpecial) || (fire && !wasFire)))
+                owner.buttonJump = false;
+                if (Time.time - projectileTime > 0.56f && ((owner.special && !owner.wasSpecial) || (owner.fire && !owner.wasFire)))
                 {
-                    owner.SetFieldValue("controllingProjectile", false);
+                    hero.ControllingProjectile = false;
                     hero.UsingSpecial = false;
                     remoteVehicle.Explode();
                 }
                 hero.UsingSpecial = false;
-                owner.SetFieldValue("fire", false);
+                owner.fire = false;
                 controllingRCVDelay = 0.25f;
             }
             else
@@ -132,13 +128,13 @@ namespace BroMakerLib.Vanilla.Specials
                     owner.right = false;
                     owner.down = false;
                     hero.UsingSpecial = false;
-                    owner.SetFieldValue("fire", false);
+                    owner.fire = false;
                 }
-                owner.SetFieldValue("controllingProjectile", false);
+                hero.ControllingProjectile = false;
             }
         }
 
-        public override bool HandleDeath()
+        public override bool HandleDeath(float xI, float yI, DamageObject damage)
         {
             if (remoteVehicle != null)
             {

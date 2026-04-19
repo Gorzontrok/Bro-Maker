@@ -727,7 +727,7 @@ namespace BroMakerLib
                 return true;
             }
 
-            if (playerNum < 0 || playerNum > 0 || HeroController.players[playerNum] == null)
+            if (playerNum < 0 || playerNum >= HeroController.players.Length || HeroController.players[playerNum] == null)
             {
                 return true;
             }

@@ -17,6 +17,11 @@ namespace BroMakerLib.Vanilla.Melees
         public IndianaBronesMelee()
         {
             frameRate = 0.03334f;
+            damageType = "Blade";
+            hitRangeX = 14f;
+            hitRangeY = 24f;
+            knockbackX = 170f;
+            knockbackY = 300f;
         }
 
         public AudioClip[] wallHitSounds;
@@ -44,7 +49,7 @@ namespace BroMakerLib.Vanilla.Melees
             hero.CancelMeleeOnChangeDirection = true;
             var indianaCheck = owner as IndianaBrones;
             bool whippingAnimation = indianaCheck != null && indianaCheck.GetFieldValue<bool>("whippingAnimation");
-            if (owner.GetFieldValue<bool>("wallClimbing") || whippingAnimation)
+            if (hero.WallClimbing || whippingAnimation)
             {
                 return;
             }
@@ -122,7 +127,7 @@ namespace BroMakerLib.Vanilla.Melees
             hero.FrameRate = frameRate;
             if (meleeFrame == 3)
             {
-                if (Map.HitClosestUnit(owner, PlayerNum, 4, DamageType.Blade, 14f, 24f, X + owner.transform.localScale.x * 8f, Y + 8f, owner.transform.localScale.x * 170f, 300f, true, true, owner.IsMine, false, true))
+                if (Map.HitClosestUnit(owner, PlayerNum, damage, parsedDamageType, hitRangeX, hitRangeY, X + owner.transform.localScale.x * 8f, Y + 8f, owner.transform.localScale.x * knockbackX, knockbackY, true, true, owner.IsMine, false, true))
                 {
                     sound.PlaySoundEffectAt(meleeHitSounds, 0.6f, owner.transform.position, 1f, true, false, false, 0f);
                     hero.MeleeHasHit = true;
@@ -162,7 +167,7 @@ namespace BroMakerLib.Vanilla.Melees
                     sound.PlaySoundEffectAt(missSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
                 }
                 hero.MeleeChosenUnit = null;
-                if (HandleTryMeleeTerrain(0, terrainDamage))
+                if (TryMeleeTerrain(0, terrainDamage))
                 {
                     hero.MeleeHasHit = true;
                 }

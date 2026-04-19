@@ -22,7 +22,7 @@ namespace BroMakerLib.Vanilla.Specials
             if (special2Sounds == null) special2Sounds = sourceBro.soundHolder.special2Sounds.CloneArray();
         }
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
             var prefab = HeroController.GetHeroPrefab(HeroType.Broden);
@@ -230,7 +230,7 @@ namespace BroMakerLib.Vanilla.Specials
         {
             if (dashTime <= 0f)
             {
-                if (owner.Y + owner.headHeight > owner.GetFieldValue<float>("ceilingHeight") - 2f)
+                if (owner.Y + owner.headHeight > hero.CeilingHeight - 2f)
                 {
                     postDashSpinningUpTime = 0f;
                 }

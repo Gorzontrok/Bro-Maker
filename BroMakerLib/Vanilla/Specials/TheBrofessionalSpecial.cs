@@ -23,7 +23,7 @@ namespace BroMakerLib.Vanilla.Specials
             spawnOffsetY = 9f;
         }
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
             var prefab = HeroController.GetHeroPrefab(HeroType.TheBrofessional);
@@ -40,7 +40,7 @@ namespace BroMakerLib.Vanilla.Specials
             usedSpecial = false;
         }
 
-        public override bool HandleMustIgnoreHighFiveMeleePress()
+        public override bool HandleMustIgnoreHighFiveMeleePress(ref bool result)
         {
             if (hero.UsingSpecial)
             {
@@ -91,8 +91,8 @@ namespace BroMakerLib.Vanilla.Specials
             if (owner.SpecialAmmo > 0)
             {
                 float spawnY = Y + spawnOffsetY;
-                owner.SetFieldValue("ceilingHeight", owner.CalculateCeilingHeight());
-                float ceilingHeight = owner.GetFieldValue<float>("ceilingHeight");
+                hero.CeilingHeight = owner.CalculateCeilingHeight();
+                float ceilingHeight = hero.CeilingHeight;
                 if (ceilingHeight - 20f >= owner.groundHeight + 9f)
                 {
                     if (ceilingHeight - 20f < spawnY)

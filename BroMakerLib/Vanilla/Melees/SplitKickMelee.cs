@@ -20,6 +20,7 @@ namespace BroMakerLib.Vanilla.Melees
             meleeType = BroBase.MeleeType.VanDammeKick;
             animationColumn = 24;
             animationRow = 9;
+            damageType = "Melee";
         }
 
         public int splitKickRow = 10;
@@ -162,7 +163,7 @@ namespace BroMakerLib.Vanilla.Melees
             List<Unit> list = new List<Unit>();
             hero.KickDoors(24f);
             hero.MeleeChosenUnit = null;
-            if (shouldTryHitTerrain && HandleTryMeleeTerrain(0, terrainDamage))
+            if (shouldTryHitTerrain && TryMeleeTerrain(0, terrainDamage))
             {
                 hero.MeleeHasHit = true;
             }
@@ -177,7 +178,7 @@ namespace BroMakerLib.Vanilla.Melees
                 num5 = -250f;
             }
             BloodColor bloodColor = BloodColor.None;
-            if (Map.HitUnits(owner, owner, PlayerNum, 5, DamageType.Melee, (float)num2, 9f, X + (float)(num * num3), Y, (float)num * num4, num5, false, true, false, false, ref bloodColor, list, false))
+            if (Map.HitUnits(owner, owner, PlayerNum, 5, parsedDamageType, (float)num2, 9f, X + (float)(num * num3), Y, (float)num * num4, num5, false, true, false, false, ref bloodColor, list, false))
             {
                 sound.PlaySoundEffectAt(alternateMeleeHitSounds, 1f, owner.transform.position, 1f, true, false, false, 0f);
                 hero.MeleeHasHit = true;
@@ -185,7 +186,7 @@ namespace BroMakerLib.Vanilla.Melees
             if (splitkick)
             {
                 num = -num;
-                if (Map.HitUnits(owner, owner, PlayerNum, 5, DamageType.Melee, (float)num2, 9f, X + (float)(num * (num3 + 4)), Y, (float)num * num4, 250f, false, true, false, false, ref bloodColor, list, false))
+                if (Map.HitUnits(owner, owner, PlayerNum, 5, parsedDamageType, (float)num2, 9f, X + (float)(num * (num3 + 4)), Y, (float)num * num4, 250f, false, true, false, false, ref bloodColor, list, false))
                 {
                     sound.PlaySoundEffectAt(alternateMeleeHitSounds, 1f, owner.transform.position, 1f, true, false, false, 0f);
                     hero.MeleeHasHit = true;
@@ -220,7 +221,7 @@ namespace BroMakerLib.Vanilla.Melees
             }
         }
 
-        private float CalculateKickForce()
+        protected virtual float CalculateKickForce()
         {
             VanDammeBro vanDammeBro = owner as VanDammeBro;
             if (vanDammeBro != null)

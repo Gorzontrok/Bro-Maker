@@ -12,7 +12,7 @@ namespace BroMakerLib.Vanilla.Passives
     {
         protected override HeroType SourceBroType => HeroType.Broden;
 
-        protected override bool IsOwnerRedundant(TestVanDammeAnim owner) => owner is Broden;
+        protected override bool IsOwnerRedundant(BroBase owner) => owner is Broden;
 
         /// <summary>Maximum time between two down-presses that counts as a double-tap, in seconds.</summary>
         public float doubleTapWindow = 0.2f;
@@ -34,6 +34,7 @@ namespace BroMakerLib.Vanilla.Passives
         public BrodenPassive()
         {
             animationRow = 13;
+            frameRate = 0.025f;
         }
 
         [JsonIgnore] private bool teleporting;
@@ -49,6 +50,7 @@ namespace BroMakerLib.Vanilla.Passives
 
         public override void HandleAfterCheckInput()
         {
+            if (owner.health <= 0 || teleporting || hero.UsingSpecial) return;
             if (owner.down && !owner.wasDown && owner.actionState != ActionState.ClimbingLadder)
             {
                 if (Time.realtimeSinceStartup - lastDownPressTime < doubleTapWindow)
@@ -161,9 +163,9 @@ namespace BroMakerLib.Vanilla.Passives
             return true;
         }
 
-        public override bool HandleIsInStealthMode()
+        public override bool HandleIsInStealthMode(ref bool result)
         {
-            if (teleporting) return false;
+            if (teleporting) { result = true; return false; }
             return true;
         }
     }

@@ -1,4 +1,4 @@
-// Auto-generated from RambroM.cs — do not edit manually
+// Auto-generated from RambroM.cs, do not edit manually
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -82,13 +82,13 @@ namespace BroMakerLib.Vanilla.Bros
             if (faderSpritePrefab == null) faderSpritePrefab = bro.faderSpritePrefab;
             if (disarmedGunMaterial == null) disarmedGunMaterial = bro.disarmedGunMaterial;
             if (parachute == null) parachute = bro.parachute;
-            targetSystemPrefab = bro.targetSystemPrefab;
-            chargingSound = bro.chargingSound;
-            finishedChargingSound = bro.finishedChargingSound;
-            gunMaterialDefault = bro.gunMaterialDefault;
-            gunMaterialOneLight = bro.gunMaterialOneLight;
-            gunMaterialOtherLight = bro.gunMaterialOtherLight;
-            gunMaterialBothLights = bro.gunMaterialBothLights;
+            if (targetSystemPrefab == null) targetSystemPrefab = bro.targetSystemPrefab;
+            if (chargingSound == null) chargingSound = bro.chargingSound;
+            if (finishedChargingSound == null) finishedChargingSound = bro.finishedChargingSound;
+            if (gunMaterialDefault == null) gunMaterialDefault = bro.gunMaterialDefault;
+            if (gunMaterialOneLight == null) gunMaterialOneLight = bro.gunMaterialOneLight;
+            if (gunMaterialOtherLight == null) gunMaterialOtherLight = bro.gunMaterialOtherLight;
+            if (gunMaterialBothLights == null) gunMaterialBothLights = bro.gunMaterialBothLights;
         }
         #endregion
 
@@ -368,13 +368,13 @@ namespace BroMakerLib.Vanilla.Bros
         int IAbilityOwner.SpritePixelWidth => spritePixelWidth;
         int IAbilityOwner.SpritePixelHeight => spritePixelHeight;
         bool IAbilityOwner.Ducking => ducking;
-        float IAbilityOwner.DeltaTime => t;
+        float IAbilityOwner.DeltaTime { get => t; set => t = value; }
         Sound IAbilityOwner.Sound => sound;
         LayerMask IAbilityOwner.GroundLayer => groundLayer;
         bool IAbilityOwner.WallDrag => wallDrag;
         bool IAbilityOwner.IsInQuicksand => isInQuicksand;
         float IAbilityOwner.HalfWidth => halfWidth;
-        float IAbilityOwner.CeilingHeight => ceilingHeight;
+        float IAbilityOwner.CeilingHeight { get => ceilingHeight; set => ceilingHeight = value; }
         LayerMask IAbilityOwner.FragileLayer => fragileLayer;
         bool IAbilityOwner.HighFive => highFive;
 
@@ -407,6 +407,26 @@ namespace BroMakerLib.Vanilla.Bros
         bool IAbilityOwner.PerformedMeleeAttack { set => performedMeleeAttack = value; }
         DirectionEnum IAbilityOwner.AirdashDirection { get => airdashDirection; set => airdashDirection = value; }
 
+        bool IAbilityOwner.CanAirdash { get => canAirdash; set => canAirdash = value; }
+        float IAbilityOwner.AirdashTime { get => airdashTime; set => airdashTime = value; }
+        float IAbilityOwner.AirDashDelay => airDashDelay;
+        bool IAbilityOwner.WasHighFive { get => wasHighFive; set => wasHighFive = value; }
+        bool IAbilityOwner.WasDashButton => wasdashButton;
+        bool IAbilityOwner.HoldingHighFive => holdingHighFive;
+        bool IAbilityOwner.AirdashUpAvailable => airdashUpAvailable;
+        float IAbilityOwner.DefaultAirdashDelay { get => defaultAirdashDelay; set => defaultAirdashDelay = value; }
+
+        float IAbilityOwner.PressedJumpInAirSoJumpIfTouchGroundGrace => pressedJumpInAirSoJumpIfTouchGroundGrace;
+        bool IAbilityOwner.ChimneyFlip { get => chimneyFlip; set => chimneyFlip = value; }
+        float IAbilityOwner.AvatarAngryTime { get => avatarAngryTime; set => avatarAngryTime = value; }
+        bool IAbilityOwner.ControllingProjectile { get => controllingProjectile; set => controllingProjectile = value; }
+        bool IAbilityOwner.WallClimbing => wallClimbing;
+        float IAbilityOwner.LastJumpTime { get => lastJumpTime; set => lastJumpTime = value; }
+        float IAbilityOwner.AvatarGunFireTime { get => avatarGunFireTime; set => avatarGunFireTime = value; }
+        int IAbilityOwner.SpecialAmmoField { get => _specialAmmo; set => _specialAmmo = value; }
+        BroBase.MeleeType IAbilityOwner.CurrentMeleeType { get => currentMeleeType; set => currentMeleeType = value; }
+        float IAbilityOwner.OriginalMaxFallSpeed => originalMaxFallSpeed;
+
         void IAbilityOwner.SetSpriteOffset(float x, float y) => SetSpriteOffset(x, y);
         void IAbilityOwner.DeactivateGun() => DeactivateGun();
         void IAbilityOwner.ActivateGun() => ActivateGun();
@@ -430,7 +450,7 @@ namespace BroMakerLib.Vanilla.Bros
         void IAbilityOwner.SetMeleeType() => SetMeleeType();
         bool IAbilityOwner.TryMeleeTerrain(int offset, int damage)
         {
-            if (meleeAbility != null) return meleeAbility.HandleTryMeleeTerrain(offset, damage);
+            if (meleeAbility != null) return meleeAbility.TryMeleeTerrain(offset, damage);
             return TryMeleeTerrain(offset, damage);
         }
         void IAbilityOwner.KickDoors(float range) => KickDoors(range);
@@ -523,6 +543,8 @@ namespace BroMakerLib.Vanilla.Bros
 
         protected override void CheckInput()
         {
+            foreach (var a in abilities)
+                if (a != null && !a.HandleCheckInput()) return;
             base.CheckInput();
             foreach (var a in abilities)
                 a?.HandleAfterCheckInput();
@@ -538,7 +560,11 @@ namespace BroMakerLib.Vanilla.Bros
         protected override bool MustIgnoreHighFiveMeleePress()
         {
             foreach (var a in abilities)
-                a?.HandleMustIgnoreHighFiveMeleePress();
+            {
+                if (a == null) continue;
+                bool result = false;
+                if (!a.HandleMustIgnoreHighFiveMeleePress(ref result)) return result;
+            }
             return base.MustIgnoreHighFiveMeleePress();
         }
 
@@ -960,11 +986,16 @@ namespace BroMakerLib.Vanilla.Bros
 
         protected override void RunIndependentMeleeFrames()
         {
-            if (meleeAbility != null)
-            {
-                return;
-            }
+            foreach (var a in abilities)
+                if (a != null && !a.HandleRunIndependentMeleeFrames()) return;
             base.RunIndependentMeleeFrames();
+        }
+
+        protected override void ResetMeleeValues()
+        {
+            base.ResetMeleeValues();
+            foreach (var a in abilities)
+                a?.HandleAfterResetMeleeValues();
         }
 
         protected override void StartKnifeMelee()
@@ -1144,10 +1175,10 @@ namespace BroMakerLib.Vanilla.Bros
         public override void Death(float xI, float yI, DamageObject damage)
         {
             foreach (var a in abilities)
-                if (a != null && !a.HandleDeath()) return;
+                if (a != null && !a.HandleDeath(xI, yI, damage)) return;
             base.Death(xI, yI, damage);
             foreach (var a in abilities)
-                a?.HandleAfterDeath();
+                a?.HandleAfterDeath(xI, yI, damage);
         }
 
         protected override void Gib(DamageType damageType, float xI, float yI)
@@ -1196,7 +1227,7 @@ namespace BroMakerLib.Vanilla.Bros
             base.CheckNotifyDeathType();
         }
 
-        protected virtual bool CanBeImpaledByGroundSpikes()
+        protected override bool CanBeImpaledByGroundSpikes()
         {
             foreach (var a in abilities)
             {
@@ -1204,7 +1235,7 @@ namespace BroMakerLib.Vanilla.Bros
                 bool result = false;
                 if (!a.HandleCanBeImpaledByGroundSpikes(ref result)) return result;
             }
-            return !invulnerable && !wallDrag;
+            return base.CanBeImpaledByGroundSpikes();
         }
 
         public override void UseSteroids()
@@ -1219,7 +1250,11 @@ namespace BroMakerLib.Vanilla.Bros
         public override bool IsInStealthMode()
         {
             foreach (var a in abilities)
-                if (a != null && !a.HandleIsInStealthMode()) return true;
+            {
+                if (a == null) continue;
+                bool result = false;
+                if (!a.HandleIsInStealthMode(ref result)) return result;
+            }
             return base.IsInStealthMode();
         }
 
@@ -1266,6 +1301,8 @@ namespace BroMakerLib.Vanilla.Bros
             foreach (var a in abilities)
                 if (a != null && !a.HandleAttachToHeli()) return;
             base.AttachToHeli();
+            foreach (var a in abilities)
+                a?.HandleAfterAttachToHeli();
         }
 
         public override void StartPilotingUnit(Unit pilottedUnit)
@@ -1284,9 +1321,9 @@ namespace BroMakerLib.Vanilla.Bros
 
         public override void DestroyUnit()
         {
-            foreach (var a in abilities)
-                a?.HandleDestroyUnit();
             base.DestroyUnit();
+            foreach (var a in abilities)
+                a?.HandleAfterDestroyUnit();
         }
 
         protected override void ThrowBackMook(Mook mook)

@@ -35,9 +35,10 @@ namespace BroMakerLib.Vanilla.Melees
         {
             meleeType = BroBase.MeleeType.TeleportStab;
             animationColumn = 21;
+            damageType = "SilencedBullet";
         }
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
 
@@ -203,7 +204,7 @@ namespace BroMakerLib.Vanilla.Melees
                     else
                     {
                         hero.DoingMelee = false;
-                        owner.SetFieldValue("wasHighFive", true);
+                        hero.WasHighFive = true;
                     }
                     teleporting = false;
                     owner.invulnerable = false;
@@ -268,7 +269,7 @@ namespace BroMakerLib.Vanilla.Melees
             bool flag;
             Map.DamageDoodads(3, DamageType.Knifed, owner.X + (float)(owner.Direction * 4), owner.Y, 0f, 0f, 6f, owner.playerNum, out flag, null);
             hero.KickDoors(24f);
-            if (Map.HitClosestUnit(owner, owner.playerNum, 8, DamageType.SilencedBullet, 24f, 24f, owner.X + owner.transform.localScale.x * 8f, owner.Y + 8f, owner.transform.localScale.x * 200f, 0f, false, false, owner.IsMine, false, true))
+            if (Map.HitClosestUnit(owner, owner.playerNum, 8, parsedDamageType, 24f, 24f, owner.X + owner.transform.localScale.x * 8f, owner.Y + 8f, owner.transform.localScale.x * 200f, 0f, false, false, owner.IsMine, false, true))
             {
                 sound.PlaySoundEffectAt(meleeHitSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
                 hero.MeleeHasHit = true;
@@ -278,7 +279,7 @@ namespace BroMakerLib.Vanilla.Melees
                 sound.PlaySoundEffectAt(missSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
             }
             hero.MeleeChosenUnit = null;
-            if (shouldTryHitTerrain && hero.TryMeleeTerrain(0, 2))
+            if (shouldTryHitTerrain && TryMeleeTerrain(0, 2))
             {
                 hero.MeleeHasHit = true;
             }
@@ -303,7 +304,7 @@ namespace BroMakerLib.Vanilla.Melees
             owner.invulnerable = false;
         }
 
-        public override void HandleAfterDeath()
+        public override void HandleAfterDeath(float xI, float yI, DamageObject damage)
         {
             teleporting = false;
         }
@@ -321,10 +322,11 @@ namespace BroMakerLib.Vanilla.Melees
             return true;
         }
 
-        public override bool HandleIsInStealthMode()
+        public override bool HandleIsInStealthMode(ref bool result)
         {
             if (teleporting)
             {
+                result = true;
                 return false;
             }
             return true;

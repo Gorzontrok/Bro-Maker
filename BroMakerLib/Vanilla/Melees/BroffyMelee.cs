@@ -14,6 +14,7 @@ namespace BroMakerLib.Vanilla.Melees
         public BroffyMelee()
         {
             meleeType = BroBase.MeleeType.Knife;
+            damageType = "SilencedBullet";
         }
 
         protected override void CacheSoundsFromPrefab()
@@ -73,7 +74,7 @@ namespace BroMakerLib.Vanilla.Melees
 
         private void PerformKnifeMeleeAttack(bool shouldTryHitTerrain, bool playMissSound)
         {
-            DamageType damageType = (!hero.DashingMelee) ? DamageType.SilencedBullet : DamageType.Melee;
+            DamageType damageType = (!hero.DashingMelee) ? parsedDamageType : DamageType.Melee;
             bool flag;
             Map.DamageDoodads(3, DamageType.Knifed, X + (float)(Direction * 4), Y, 0f, 0f, 6f, PlayerNum, out flag, null);
             hero.KickDoors(24f);
@@ -96,7 +97,7 @@ namespace BroMakerLib.Vanilla.Melees
                 sound.PlaySoundEffectAt(missSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
             }
             hero.MeleeChosenUnit = null;
-            if (shouldTryHitTerrain && HandleTryMeleeTerrain(0, terrainDamage))
+            if (shouldTryHitTerrain && TryMeleeTerrain(0, terrainDamage))
             {
                 hero.MeleeHasHit = true;
             }

@@ -13,12 +13,16 @@ namespace BroMakerLib.Abilities
     {
         /// <summary>Instantiates a `SpecialAbility` from a JSON config block containing a `"preset"` key.</summary>
         /// <returns>The instantiated ability, or null on failure.</returns>
-        public static SpecialAbility CreateSpecial(JObject config, TestVanDammeAnim owner)
+        public static SpecialAbility CreateSpecial(JObject config, BroBase owner)
         {
             if (config == null) return null;
 
             string presetName = config.Value<string>("preset");
-            if (string.IsNullOrEmpty(presetName)) return null;
+            if (string.IsNullOrEmpty(presetName))
+            {
+                BMLogger.Warning("Special ability config is missing a 'preset' field, skipped.");
+                return null;
+            }
 
             Type type = PresetManager.GetSpecialPreset(presetName);
             if (type == null)
@@ -43,12 +47,16 @@ namespace BroMakerLib.Abilities
 
         /// <summary>Instantiates a `MeleeAbility` from a JSON config block containing a `"preset"` key.</summary>
         /// <returns>The instantiated ability, or null on failure.</returns>
-        public static MeleeAbility CreateMelee(JObject config, TestVanDammeAnim owner)
+        public static MeleeAbility CreateMelee(JObject config, BroBase owner)
         {
             if (config == null) return null;
 
             string presetName = config.Value<string>("preset");
-            if (string.IsNullOrEmpty(presetName)) return null;
+            if (string.IsNullOrEmpty(presetName))
+            {
+                BMLogger.Warning("Melee ability config is missing a 'preset' field, skipped.");
+                return null;
+            }
 
             Type type = PresetManager.GetMeleePreset(presetName);
             if (type == null)
@@ -74,12 +82,12 @@ namespace BroMakerLib.Abilities
         /// <summary>Instantiates all passive abilities from a bro's `"passives"` JSON list, filtering
         /// redundant passives, deduplicating by concrete type, and enforcing `ConflictsWithPreset`
         /// declarations (bypassable via `"allowConflict": true` on an individual passive's JSON).</summary>
-        public static List<PassiveAbility> CreatePassives(List<JObject> configs, TestVanDammeAnim owner)
+        public static List<PassiveAbility> CreatePassives(List<JObject> configs, BroBase owner)
         {
             var result = new List<PassiveAbility>();
             if (configs == null) return result;
 
-            var seenTypes = new HashSet<Type>();
+            var seenTypes = new Dictionary<Type, string>();
             var accepted = new List<KeyValuePair<string, PassiveAbility>>();
 
             foreach (var config in configs)
@@ -89,12 +97,14 @@ namespace BroMakerLib.Abilities
                 var ability = CreatePassiveInternal(config, presetName, owner);
                 if (ability == null) continue;
 
-                if (!seenTypes.Add(ability.GetType()))
+                if (seenTypes.ContainsKey(ability.GetType()))
                 {
-                    BMLogger.Warning($"Passive preset '{presetName}' duplicates an already-attached passive — skipping.");
+                    string existingPreset = seenTypes[ability.GetType()];
+                    BMLogger.Warning($"Passive preset '{presetName}' is a duplicate of already-attached preset '{existingPreset}', skipping.");
                     ability.Cleanup();
                     continue;
                 }
+                seenTypes.Add(ability.GetType(), presetName);
 
                 bool allowConflict = config.Value<bool?>("allowConflict") ?? false;
                 string conflictWith;
@@ -114,9 +124,13 @@ namespace BroMakerLib.Abilities
             return result;
         }
 
-        private static PassiveAbility CreatePassiveInternal(JObject config, string presetName, TestVanDammeAnim owner)
+        private static PassiveAbility CreatePassiveInternal(JObject config, string presetName, BroBase owner)
         {
-            if (string.IsNullOrEmpty(presetName)) return null;
+            if (string.IsNullOrEmpty(presetName))
+            {
+                BMLogger.Warning("Passive ability config entry is missing a 'preset' field, skipped.");
+                return null;
+            }
 
             Type type = PresetManager.GetPassivePreset(presetName);
             if (type == null)
@@ -132,7 +146,7 @@ namespace BroMakerLib.Abilities
                 ability.Initialize(owner);
                 if (ability.IsRedundant)
                 {
-                    BMLogger.Warning($"Passive preset '{presetName}' is redundant — {owner.GetType().Name}'s base class already provides this behavior. Skipping.");
+                    BMLogger.Warning($"Passive preset '{presetName}' is redundant. This behavior is already built into the base bro. Skipping.");
                     ability.Cleanup();
                     return null;
                 }
@@ -186,7 +200,7 @@ namespace BroMakerLib.Abilities
             }
         }
 
-        private static void ApplyJsonOverrides(object ability, JObject config, TestVanDammeAnim owner)
+        private static void ApplyJsonOverrides(object ability, JObject config, BroBase owner)
         {
             var dict = config.ToObject<Dictionary<string, object>>();
             dict.Remove("preset");

@@ -13,7 +13,7 @@ namespace BroMakerLib.Vanilla.Passives
     {
         protected override HeroType SourceBroType => HeroType.BrondleFly;
 
-        protected override bool IsOwnerRedundant(TestVanDammeAnim owner) => owner is BrondleFly;
+        protected override bool IsOwnerRedundant(BroBase owner) => owner is BrondleFly;
 
         /// <summary>Total hover duration available per jump, in seconds.</summary>
         public float hoverDuration = 4f;
@@ -59,7 +59,7 @@ namespace BroMakerLib.Vanilla.Passives
             }
         }
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
 
@@ -88,7 +88,7 @@ namespace BroMakerLib.Vanilla.Passives
             if (owner.health <= 0 || owner.hasBeenCoverInAcid) return true;
             if (owner.GetFieldValue<bool>("wasButtonJump")) return true;
             if (owner.actionState == ActionState.ClimbingLadder) return true;
-            if (Time.time - owner.GetFieldValue<float>("lastJumpTime") <= 0.05f) return true;
+            if (Time.time - hero.LastJumpTime <= 0.05f) return true;
 
             if (!hasHovered)
             {
@@ -177,7 +177,7 @@ namespace BroMakerLib.Vanilla.Passives
             return !IsHovering;
         }
 
-        public override bool HandleDeath()
+        public override bool HandleDeath(float xI, float yI, DamageObject damage)
         {
             SetHovering(false);
             return true;
@@ -199,7 +199,7 @@ namespace BroMakerLib.Vanilla.Passives
         {
             if (hoverTime > 0f)
             {
-                if (owner.GetFieldValue<bool>("chimneyFlip") || owner.GetFieldValue<float>("stunTime") > 0f)
+                if (hero.ChimneyFlip || owner.GetFieldValue<float>("stunTime") > 0f)
                 {
                     SetHovering(false);
                 }
@@ -211,7 +211,7 @@ namespace BroMakerLib.Vanilla.Passives
                 }
             }
 
-            if (owner.actionState != ActionState.Jumping || owner.GetFieldValue<bool>("chimneyFlip"))
+            if (owner.actionState != ActionState.Jumping || hero.ChimneyFlip)
             {
                 hasHovered = false;
                 if (hoverTime > 0f) SetHovering(false);

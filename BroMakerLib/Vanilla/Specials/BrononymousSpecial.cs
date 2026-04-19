@@ -25,7 +25,7 @@ namespace BroMakerLib.Vanilla.Specials
             triggerFrame = 4;
         }
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
             var prefab = HeroController.GetHeroPrefab(HeroType.Brononymous);

@@ -13,7 +13,7 @@ namespace BroMakerLib.Vanilla.Specials
     {
         protected override HeroType SourceBroType => HeroType.Blade;
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
             var prefab = HeroController.GetHeroPrefab(HeroType.Blade);

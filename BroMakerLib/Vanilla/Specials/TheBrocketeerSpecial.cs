@@ -55,6 +55,8 @@ namespace BroMakerLib.Vanilla.Specials
         public int stampAnimationEndFrame = 7;
         public float stampFrameRate = 0.09f;
 
+        /// <summary>Volume of the dive impact sound played by `MakeDashBlast`.</summary>
+        public float dashBlastSoundVolume = 0.6f;
         public AudioClip jetpackLiftSound;
         public AudioClip jetpackDiveSound;
 
@@ -69,7 +71,7 @@ namespace BroMakerLib.Vanilla.Specials
         [JsonIgnore] private Vector3 currentJetpackDirection;
         [JsonIgnore] private Vector3 jetpackDownDirection = new Vector3(0f, -370f, 0f);
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
 
@@ -93,15 +95,15 @@ namespace BroMakerLib.Vanilla.Specials
                 jetpackDownDirection = brocketeer.jetpackDownDirection;
             }
             currentJetpackDirection = jetpackDownDirection;
-            owner.SetFieldValue("canAirdash", true);
+            hero.CanAirdash = true;
         }
 
         public override void PressSpecial()
         {
             if (owner.health <= 0) return;
 
-            float airdashTime = owner.GetFieldValue<float>("airdashTime");
-            DirectionEnum airdashDirection = owner.GetFieldValue<DirectionEnum>("airdashDirection");
+            float airdashTime = hero.AirdashTime;
+            DirectionEnum airdashDirection = hero.AirdashDirection;
             if (owner.SpecialAmmo > 0 && (airdashTime <= 0f || airdashDirection == DirectionEnum.Any))
             {
                 owner.SpecialAmmo--;
@@ -124,7 +126,7 @@ namespace BroMakerLib.Vanilla.Specials
 
         private void PerformAirDashDown()
         {
-            owner.SetFieldValue("airdashTime", owner.GetFieldValue<float>("airdashMaxTime") * 5f);
+            hero.AirdashTime = owner.GetFieldValue<float>("airdashMaxTime") * 5f;
             hero.AirdashDirection = DirectionEnum.Down;
             owner.yI = owner.jumpForce * 0.8f;
             owner.xI = 0f;
@@ -199,7 +201,7 @@ namespace BroMakerLib.Vanilla.Specials
                         StartDownwardCharge();
                     }
                 }
-                if (!owner.GetFieldValue<bool>("buttonJump"))
+                if (!owner.buttonJump)
                 {
                     jetPackFlameCounter += hero.DeltaTime;
                     if (jetPackFlameCounter > 0.0225f)
@@ -294,7 +296,7 @@ namespace BroMakerLib.Vanilla.Specials
             isDiving = false;
             hero.AirdashDirection = DirectionEnum.Any;
             downwardDashDirection = DirectionEnum.None;
-            owner.SetFieldValue("airdashTime", 0f);
+            hero.AirdashTime = 0f;
         }
 
         private void MakeDashBlast(float xPoint, float yPoint, bool groundWave)
@@ -305,7 +307,7 @@ namespace BroMakerLib.Vanilla.Specials
             MapController.DamageGround(owner, blastGroundDamage, DamageType.Explosion, blastGroundRange, xPoint, yPoint, null, false);
             EffectsController.CreateWhiteFlashPop(xPoint, yPoint);
             SortOfFollow.Shake(0.9f);
-            Sound.GetInstance().PlaySoundEffectAt(special2Sounds, 0.5f, owner.transform.position, 1f, true, false, false, 0f);
+            Sound.GetInstance().PlaySoundEffectAt(special2Sounds, dashBlastSoundVolume, owner.transform.position, 1f + owner.pitchShiftAmount, true, false, false, 0f);
             if (groundWave)
             {
                 EffectsController.CreateGroundWave(xPoint, yPoint + 1f, 80f);
@@ -321,8 +323,8 @@ namespace BroMakerLib.Vanilla.Specials
 
         public override void HandleAfterHitRightWall()
         {
-            float airdashTime = owner.GetFieldValue<float>("airdashTime");
-            DirectionEnum airdashDirection = owner.GetFieldValue<DirectionEnum>("airdashDirection");
+            float airdashTime = hero.AirdashTime;
+            DirectionEnum airdashDirection = hero.AirdashDirection;
             if (airdashTime > 0f && (airdashDirection == DirectionEnum.Right ||
                 (airdashDirection == DirectionEnum.Down && owner.transform.localScale.x > 0f)))
             {
@@ -330,7 +332,7 @@ namespace BroMakerLib.Vanilla.Specials
                 owner.xIBlast = -100f;
                 owner.yI += 50f;
                 EndDive();
-                if (owner.GetFieldValue<float>("pressedJumpInAirSoJumpIfTouchGroundGrace") > 0f)
+                if (hero.PressedJumpInAirSoJumpIfTouchGroundGrace > 0f)
                 {
                     hero.Jump(false);
                 }
@@ -339,8 +341,8 @@ namespace BroMakerLib.Vanilla.Specials
 
         public override void HandleAfterHitLeftWall()
         {
-            float airdashTime = owner.GetFieldValue<float>("airdashTime");
-            DirectionEnum airdashDirection = owner.GetFieldValue<DirectionEnum>("airdashDirection");
+            float airdashTime = hero.AirdashTime;
+            DirectionEnum airdashDirection = hero.AirdashDirection;
             if (airdashTime > 0f && (airdashDirection == DirectionEnum.Left ||
                 (airdashDirection == DirectionEnum.Down && owner.transform.localScale.x < 0f)))
             {
@@ -348,7 +350,7 @@ namespace BroMakerLib.Vanilla.Specials
                 owner.xIBlast = 100f;
                 owner.yI += 50f;
                 EndDive();
-                if (owner.GetFieldValue<float>("pressedJumpInAirSoJumpIfTouchGroundGrace") > 0f)
+                if (hero.PressedJumpInAirSoJumpIfTouchGroundGrace > 0f)
                 {
                     hero.Jump(false);
                 }
@@ -384,14 +386,14 @@ namespace BroMakerLib.Vanilla.Specials
                 return;
             }
 
-            float airdashTime = owner.GetFieldValue<float>("airdashTime");
+            float airdashTime = hero.AirdashTime;
             if (airdashTime <= 0f && !isDiving && diveAudio != null && diveAudio.isPlaying)
             {
                 diveAudio.Stop();
             }
         }
 
-        public override bool HandleDeath()
+        public override bool HandleDeath(float xI, float yI, DamageObject damage)
         {
             isDiving = false;
             if (diveAudio != null && diveAudio.isPlaying)
@@ -401,8 +403,8 @@ namespace BroMakerLib.Vanilla.Specials
 
         public override bool HandleLand()
         {
-            float airdashTime = owner.GetFieldValue<float>("airdashTime");
-            DirectionEnum airdashDirection = owner.GetFieldValue<DirectionEnum>("airdashDirection");
+            float airdashTime = hero.AirdashTime;
+            DirectionEnum airdashDirection = hero.AirdashDirection;
             if (airdashTime > 0f && airdashDirection == DirectionEnum.Down)
             {
                 MakeDashBlast(X, owner.groundHeight + 9f, true);
@@ -412,7 +414,7 @@ namespace BroMakerLib.Vanilla.Specials
                     owner.Y = groundHeightGround;
                     owner.groundHeight = groundHeightGround;
                 }
-                if (owner.GetFieldValue<float>("pressedJumpInAirSoJumpIfTouchGroundGrace") <= 0f)
+                if (hero.PressedJumpInAirSoJumpIfTouchGroundGrace <= 0f)
                 {
                     if (enableStampAnimation)
                     {
@@ -433,7 +435,7 @@ namespace BroMakerLib.Vanilla.Specials
         {
             // TheBrocketeerPassive owns the buffered jump when attached (so it can re-engage hover too).
             if (hero.GetPassive<TheBrocketeerPassive>() == null
-                && owner.GetFieldValue<float>("pressedJumpInAirSoJumpIfTouchGroundGrace") > 0f
+                && hero.PressedJumpInAirSoJumpIfTouchGroundGrace > 0f
                 && owner.yI <= 0f)
             {
                 hero.Jump(true);
@@ -443,7 +445,7 @@ namespace BroMakerLib.Vanilla.Specials
 
         public override void Cleanup()
         {
-            owner.SetFieldValue("canAirdash", false);
+            hero.CanAirdash = false;
             if (diveAudio != null)
             {
                 Object.Destroy(diveAudio);

@@ -21,7 +21,6 @@ namespace BroMakerLib.Vanilla.Melees
         [JsonIgnore] private bool throwingSword;
         [JsonIgnore] private bool disarmed;
         [JsonIgnore] private Projectile thrownSword;
-        [JsonIgnore] private float savedCounter;
 
         [JsonIgnore] private Shrapnel shrapnelSpark;
         [JsonIgnore] private FlickerFader hitPuff;
@@ -30,9 +29,10 @@ namespace BroMakerLib.Vanilla.Melees
         public BroveHeartMelee()
         {
             meleeType = BroBase.MeleeType.Punch;
+            damageType = "Knifed";
         }
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
 
@@ -53,7 +53,6 @@ namespace BroMakerLib.Vanilla.Melees
         {
             if (hero.DoingMelee)
             {
-                owner.counter = savedCounter;
                 return;
             }
             bool isDisarmed = GetDisarmed();
@@ -224,7 +223,7 @@ namespace BroMakerLib.Vanilla.Melees
             bool flag;
             Map.DamageDoodads(3, DamageType.Knifed, owner.X + (float)(owner.Direction * 4), owner.Y, 0f, 0f, 6f, owner.playerNum, out flag, null);
             hero.KickDoors(24f);
-            if (Map.HitClosestUnit(owner, owner.playerNum, 4, DamageType.Knifed, 14f, 24f, owner.X + owner.transform.localScale.x * 8f, owner.Y + 8f, owner.transform.localScale.x * 200f, 500f, true, false, owner.IsMine, false, true))
+            if (Map.HitClosestUnit(owner, owner.playerNum, 4, parsedDamageType, 14f, 24f, owner.X + owner.transform.localScale.x * 8f, owner.Y + 8f, owner.transform.localScale.x * 200f, 500f, true, false, owner.IsMine, false, true))
             {
                 sound.PlaySoundEffectAt(meleeHitSounds, 1f, owner.transform.position, 1f, true, false, false, 0f);
                 hero.MeleeHasHit = true;
@@ -234,7 +233,7 @@ namespace BroMakerLib.Vanilla.Melees
                 sound.PlaySoundEffectAt(missSounds, 0.3f, owner.transform.position, 1f, true, false, false, 0f);
             }
             hero.MeleeChosenUnit = null;
-            if (shouldTryHitTerrain && hero.TryMeleeTerrain(0, 2))
+            if (shouldTryHitTerrain && TryMeleeTerrain(0, 2))
             {
                 hero.MeleeHasHit = true;
             }
@@ -243,7 +242,6 @@ namespace BroMakerLib.Vanilla.Melees
 
         public override void Update()
         {
-            savedCounter = owner.counter;
             if (disarmed && thrownSword == null)
             {
                 ReArm();

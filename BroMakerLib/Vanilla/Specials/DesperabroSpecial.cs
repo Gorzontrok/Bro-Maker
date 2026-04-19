@@ -1,6 +1,7 @@
 using BroMakerLib.Abilities;
 using BroMakerLib.Attributes;
 using BroMakerLib.Extensions;
+using HarmonyLib;
 using Newtonsoft.Json;
 using RocketLib.Extensions;
 using UnityEngine;
@@ -62,7 +63,7 @@ namespace BroMakerLib.Vanilla.Specials
         [JsonIgnore]
         private SpriteSM guitarGunSprite;
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
 
@@ -267,7 +268,7 @@ namespace BroMakerLib.Vanilla.Specials
                 FinishSerenadingAndUnleashHell();
                 return;
             }
-            owner.CallMethod("set_WallDrag", false);
+            Traverse.Create(owner).Property("WallDrag").SetValue(false);
             AnimateGuitarSprite();
         }
 
@@ -316,7 +317,7 @@ namespace BroMakerLib.Vanilla.Specials
             return true;
         }
 
-        public override bool HandleDeath()
+        public override bool HandleDeath(float xI, float yI, DamageObject damage)
         {
             if (isSerenading)
             {
@@ -338,6 +339,10 @@ namespace BroMakerLib.Vanilla.Specials
 
         public override void Cleanup()
         {
+            if (isSerenading)
+            {
+                StopSerenading();
+            }
             if (!(owner is Desperabro))
             {
                 if (musicParticles != null) Object.Destroy(musicParticles.gameObject);

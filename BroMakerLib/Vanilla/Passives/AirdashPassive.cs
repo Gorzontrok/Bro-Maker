@@ -15,34 +15,34 @@ namespace BroMakerLib.Vanilla.Passives
         [JsonIgnore] private float originalAirdashDelay;
         [JsonIgnore] private float originalAirdashMaxTime;
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
-            originalCanAirdash = owner.GetFieldValue<bool>("canAirdash");
-            originalAirdashDelay = owner.GetFieldValue<float>("defaultAirdashDelay");
+            originalCanAirdash = hero.CanAirdash;
+            originalAirdashDelay = hero.DefaultAirdashDelay;
             originalAirdashMaxTime = owner.airdashMaxTime;
 
-            owner.SetFieldValue("canAirdash", true);
-            owner.SetFieldValue("defaultAirdashDelay", defaultAirdashDelay);
+            hero.CanAirdash = true;
+            hero.DefaultAirdashDelay = defaultAirdashDelay;
             owner.airdashMaxTime = airdashMaxTime;
         }
 
         public override void Cleanup()
         {
-            if (owner == null) return;
-            owner.SetFieldValue("canAirdash", originalCanAirdash);
-            owner.SetFieldValue("defaultAirdashDelay", originalAirdashDelay);
+            if (IsRedundant || owner == null) return;
+            hero.CanAirdash = originalCanAirdash;
+            hero.DefaultAirdashDelay = originalAirdashDelay;
             owner.airdashMaxTime = originalAirdashMaxTime;
         }
 
         public override bool HandlePressHighFiveMelee()
         {
-            bool wasHighFive = owner.GetFieldValue<bool>("wasHighFive");
+            bool wasHighFive = hero.WasHighFive;
             if (owner.up && CanAirDash(DirectionEnum.Up)) { if (!wasHighFive) Airdash(true); return false; }
             if (owner.right && CanAirDash(DirectionEnum.Right)) { if (!wasHighFive) Airdash(true); return false; }
             if (owner.left && CanAirDash(DirectionEnum.Left)) { if (!wasHighFive) Airdash(true); return false; }
             if (owner.down && CanAirDash(DirectionEnum.Down)) { if (!wasHighFive) Airdash(true); return false; }
-            if (owner.GetFieldValue<float>("airdashTime") > 0f) return false;
+            if (hero.AirdashTime > 0f) return false;
             return true;
         }
 

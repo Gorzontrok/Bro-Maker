@@ -30,7 +30,7 @@ namespace BroMakerLib.Vanilla.Specials
             spawnOffsetY = 6.5f;
         }
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
             var prefab = HeroController.GetHeroPrefab(HeroType.Xebro);
@@ -64,20 +64,16 @@ namespace BroMakerLib.Vanilla.Specials
             var chakram = ProjectileController.SpawnProjectileOverNetwork(chakramPrefab, owner, X + Direction * spawnOffsetX, Y + spawnOffsetY, normalized.x, normalized.y, true, PlayerNum, false, false, 0f) as Chakram;
             thrownChakram.Add(chakram);
             Sound.GetInstance().PlaySoundEffectAt(throwSounds, throwSoundVolume, owner.transform.position, 1f, true, false, false, 0f);
-            var broBase = owner as BroBase;
-            if (broBase != null) broBase.meleeType = BroBase.MeleeType.Custom;
         }
 
-        /// <summary>Called by a returning `Chakram` to restore ammo and reset melee state.</summary>
+        /// <summary>Called by a returning `Chakram` to restore ammo.</summary>
         public void CatchChakram(Chakram chakram)
         {
-            var broBase = owner as BroBase;
-            if (broBase != null) broBase.meleeType = BroBase.MeleeType.Punch;
             owner.SpecialAmmo++;
             thrownChakram.Remove(chakram);
         }
 
-        public override void HandleAfterDeath()
+        public override void HandleAfterDeath(float xI, float yI, DamageObject damage)
         {
             KillThrownChakrams();
         }

@@ -80,11 +80,11 @@ namespace BroMakerLib.Vanilla.Specials
             owner.SetFieldValue("lastT", hero.DeltaTime);
             if (Time.timeScale > 0f)
             {
-                owner.SetFieldValue("t", Mathf.Clamp(Time.deltaTime / Time.timeScale, 0f, 0.04f));
+                hero.DeltaTime = Mathf.Clamp(Time.deltaTime / Time.timeScale, 0f, 0.04f);
             }
             else
             {
-                owner.SetFieldValue("t", 0f);
+                hero.DeltaTime = 0f;
             }
             return false;
         }
@@ -95,14 +95,13 @@ namespace BroMakerLib.Vanilla.Specials
             if (Time.timeScale > 0f && Time.timeScale < 1f)
             {
                 float compensation = Time.deltaTime * (1f - Time.timeScale) / Time.timeScale;
-                owner.SetFieldValue("lastJumpTime",
-                    owner.GetFieldValue<float>("lastJumpTime") - compensation);
+                hero.LastJumpTime = hero.LastJumpTime - compensation;
                 owner.SetFieldValue("lastButtonJumpTime",
                     owner.GetFieldValue<float>("lastButtonJumpTime") - compensation);
             }
         }
 
-        public override bool HandleDeath()
+        public override bool HandleDeath(float xI, float yI, DamageObject damage)
         {
             HeroController.CancelTimeBroBoost();
             return true;

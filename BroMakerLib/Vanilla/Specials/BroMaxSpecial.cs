@@ -37,7 +37,7 @@ namespace BroMakerLib.Vanilla.Specials
             spawnOffsetY = 15f;
         }
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
             boomerang = LoadBroforceObjects.GetProjectileFromName(boomerangName);

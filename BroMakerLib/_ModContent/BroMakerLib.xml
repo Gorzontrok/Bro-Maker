@@ -37,10 +37,7 @@
         <member name="F:BroMakerLib.Abilities.SpecialAbility.specialAttackSounds">
             <summary>Sounds played for the special's main attack effect.</summary>
         </member>
-        <member name="P:BroMakerLib.Abilities.SpecialAbility.IsActive">
-            <summary>True while the special is animating or otherwise mid-use.</summary>
-        </member>
-        <member name="M:BroMakerLib.Abilities.SpecialAbility.Initialize(TestVanDammeAnim)">
+        <member name="M:BroMakerLib.Abilities.SpecialAbility.Initialize(BroBase)">
             <summary>Called once when the bro spawns. Also calls `CacheSoundsFromPrefab`.</summary>
         </member>
         <member name="M:BroMakerLib.Abilities.SpecialAbility.CacheSoundsFromPrefab">
@@ -55,7 +52,7 @@
             <summary>Called each frame while the special is animating. Advances the sprite, calls `UseSpecial` on the trigger frame, and ends the animation.</summary>
         </member>
         <member name="M:BroMakerLib.Abilities.SpecialAbility.UseSpecial">
-            <summary>Called when the special fires — deducts ammo and calls `ActivateSpecial`, or flashes the HUD if out of ammo.</summary>
+            <summary>Called when the special fires. Deducts ammo and calls `ActivateSpecial`, or flashes the HUD if out of ammo.</summary>
         </member>
         <member name="M:BroMakerLib.Abilities.SpecialAbility.ActivateSpecial">
             <summary>Override to implement the special's effect (spawn projectile, apply buff, etc.). Called by `UseSpecial` after ammo is deducted.</summary>
@@ -105,7 +102,10 @@
             <summary>Damage dealt to units on hit.</summary>
         </member>
         <member name="F:BroMakerLib.Abilities.MeleeAbility.damageType">
-            <summary>DamageType enum name (e.g., "Knifed", "Crush", "Electrocution"). Parsed at initialization.</summary>
+            <summary>DamageType enum name (e.g., "Knifed", "Melee", "Electrocution") controlling the unit-hit damage type. Parsed at initialization into `parsedDamageType`. Doodad damage is always `DamageType.Knifed`.</summary>
+        </member>
+        <member name="F:BroMakerLib.Abilities.MeleeAbility.parsedDamageType">
+            <summary>Parsed `DamageType` applied to unit hits by `PerformMeleeAttack`. Set from `damageType` during `Initialize`.</summary>
         </member>
         <member name="F:BroMakerLib.Abilities.MeleeAbility.knockbackX">
             <summary>Horizontal knockback force applied to hit units.</summary>
@@ -134,6 +134,9 @@
         <member name="F:BroMakerLib.Abilities.MeleeAbility.meleeType">
             <summary>Controls BroBase dispatch routing and TryMeleeTerrain sounds.</summary>
         </member>
+        <member name="F:BroMakerLib.Abilities.MeleeAbility.forceDashingOnCustomStart">
+            <summary>When true, `MeleeStartType.Custom` start sets `DashingMelee = true` and pushes `xI` toward the target. Set true only for bros whose vanilla `StartCustomMelee` does this (e.g. BaBroracus, Broden).</summary>
+        </member>
         <member name="F:BroMakerLib.Abilities.MeleeAbility.meleeHitSounds">
             <summary>Sounds played when the melee strike connects with a unit.</summary>
         </member>
@@ -146,8 +149,8 @@
         <member name="F:BroMakerLib.Abilities.MeleeAbility.alternateMeleeHitSounds">
             <summary>Alternate hit sounds used by non-knife melees and terrain hits.</summary>
         </member>
-        <member name="M:BroMakerLib.Abilities.MeleeAbility.Initialize(TestVanDammeAnim)">
-            <summary>Called once when the bro spawns. Also calls `CacheSoundsFromPrefab`.</summary>
+        <member name="M:BroMakerLib.Abilities.MeleeAbility.Initialize(BroBase)">
+            <summary>Called once when the bro spawns. Parses `damageType`, then calls `CacheSoundsFromPrefab`.</summary>
         </member>
         <member name="M:BroMakerLib.Abilities.MeleeAbility.CacheSoundsFromPrefab">
             <summary>Loads melee sound clips from the `SourceBroType` prefab's soundHolder.
@@ -173,11 +176,11 @@
             <summary>Override for custom hit detection (e.g., multi-hit, special effects).</summary>
         </member>
         <member name="M:BroMakerLib.Abilities.MeleeAbility.CancelMelee">
-            <summary>Called when the melee is interrupted (e.g., taking damage, falling).
-            Do NOT call `hero.CancelMelee()` from this method — the wrapper
-            already calls both this callback and `base.CancelMelee()` in sequence.</summary>
+            <summary>Called after the base `CancelMelee` has run when the melee is interrupted
+            (e.g., taking damage, falling). Do NOT call `hero.CancelMelee()` from here; the wrapper
+            already invokes base first, then this callback.</summary>
         </member>
-        <member name="M:BroMakerLib.Abilities.MeleeAbility.HandleTryMeleeTerrain(System.Int32,System.Int32)">
+        <member name="M:BroMakerLib.Abilities.MeleeAbility.TryMeleeTerrain(System.Int32,System.Int32)">
             <summary>Performs terrain damage and plays the ability's
             cached sounds instead of the owner's soundHolder. Returns true if terrain was hit.</summary>
         </member>
@@ -199,7 +202,7 @@
         <member name="P:BroMakerLib.Abilities.AbilityBase.Direction">
             <summary>Facing direction: 1 = right, -1 = left.</summary>
         </member>
-        <member name="M:BroMakerLib.Abilities.AbilityBase.Initialize(TestVanDammeAnim)">
+        <member name="M:BroMakerLib.Abilities.AbilityBase.Initialize(BroBase)">
             <summary>Called once when the bro spawns.</summary>
         </member>
         <member name="M:BroMakerLib.Abilities.AbilityBase.Cleanup">
@@ -219,15 +222,19 @@
             <summary>Called when the bro's per-frame delta time is being computed.</summary>
             <returns>True to run original, false to skip.</returns>
         </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleCheckInput">
+            <summary>Called before the bro reads and processes its input state.</summary>
+            <returns>True to run original, false to skip.</returns>
+        </member>
         <member name="M:BroMakerLib.Abilities.AbilityBase.HandleAfterCheckInput">
             <summary>Called after the bro reads and processes its input state.</summary>
         </member>
         <member name="M:BroMakerLib.Abilities.AbilityBase.HandleAfterCopyInput(TestVanDammeAnim,System.Single@,System.Boolean@,System.Boolean@,System.Boolean@,System.Boolean@,System.Boolean@,System.Boolean@)">
             <summary>Called after input is copied to a zombie co-op bro.</summary>
         </member>
-        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleMustIgnoreHighFiveMeleePress">
-            <summary>Called when checking whether to suppress melee input for a high-five.</summary>
-            <returns>True to run original, false to skip.</returns>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleMustIgnoreHighFiveMeleePress(System.Boolean@)">
+            <summary>Called when checking whether to suppress melee input for a high-five.
+            Write into `result` and return false to override the wrapper's return value.</summary>
         </member>
         <member name="M:BroMakerLib.Abilities.AbilityBase.HandlePressSpecial">
             <summary>Called when the player presses the special button.</summary>
@@ -456,6 +463,13 @@
             <summary>Called to check whether the bro is locked into a melee animation. Write to `result` and return false to override.</summary>
             <returns>True to use base result, false to use the modified `result`.</returns>
         </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleRunIndependentMeleeFrames">
+            <summary>Called every frame while an independent-melee animation is running.</summary>
+            <returns>True to run original, false to skip.</returns>
+        </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleAfterResetMeleeValues">
+            <summary>Called after melee state is reset (follow-up, mid-animation reset, etc.). Use for ability-specific state that should track vanilla's ResetMeleeValues contract.</summary>
+        </member>
         <member name="M:BroMakerLib.Abilities.AbilityBase.HandleChangeFrame">
             <summary>Called each frame to advance the sprite animation. Pair with `HandleAfterChangeFrame`.</summary>
             <returns>True to run original, false to skip.</returns>
@@ -493,11 +507,11 @@
             <summary>Called when the bro takes damage.</summary>
             <returns>True to run original, false to skip.</returns>
         </member>
-        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleDeath">
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleDeath(System.Single,System.Single,DamageObject)">
             <summary>Called when the bro dies. Pair with `HandleAfterDeath`.</summary>
             <returns>True to run original, false to skip.</returns>
         </member>
-        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleAfterDeath">
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleAfterDeath(System.Single,System.Single,DamageObject)">
             <summary>Called after death logic runs. Pair with `HandleDeath`.</summary>
         </member>
         <member name="M:BroMakerLib.Abilities.AbilityBase.HandleGib(DamageType,System.Single,System.Single)">
@@ -538,9 +552,9 @@
         <member name="M:BroMakerLib.Abilities.AbilityBase.HandleAfterUseSteroids">
             <summary>Called after steroid activation logic runs. Pair with `HandleUseSteroids`.</summary>
         </member>
-        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleIsInStealthMode">
-            <summary>Called to check whether the bro is currently in stealth mode.</summary>
-            <returns>True to run original, false to force stealth mode active.</returns>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleIsInStealthMode(System.Boolean@)">
+            <summary>Called to check whether the bro is currently in stealth mode.
+            Write into `result` and return false to override the wrapper's return value.</summary>
         </member>
         <member name="M:BroMakerLib.Abilities.AbilityBase.HandleAlertNearbyMooks">
             <summary>Called to alert nearby enemies to the bro's presence.</summary>
@@ -565,6 +579,9 @@
             <summary>Called when the bro attaches to a helicopter.</summary>
             <returns>True to run original, false to skip.</returns>
         </member>
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleAfterAttachToHeli">
+            <summary>Called after the bro has attached to a helicopter.</summary>
+        </member>
         <member name="M:BroMakerLib.Abilities.AbilityBase.HandleStartPilotingUnit">
             <summary>Called when the bro begins piloting a vehicle unit.</summary>
             <returns>True to run original, false to skip.</returns>
@@ -572,7 +589,7 @@
         <member name="M:BroMakerLib.Abilities.AbilityBase.HandleAfterDischargePilotingUnit">
             <summary>Called after the bro exits a piloted vehicle.</summary>
         </member>
-        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleDestroyUnit">
+        <member name="M:BroMakerLib.Abilities.AbilityBase.HandleAfterDestroyUnit">
             <summary>Called when the bro's GameObject is about to be destroyed.</summary>
         </member>
         <member name="M:BroMakerLib.Abilities.AbilityBase.HandleThrowBackMook(Mook)">
@@ -581,21 +598,21 @@
         <member name="T:BroMakerLib.Abilities.AbilityFactory">
             <summary>Creates ability instances from JSON configuration.</summary>
         </member>
-        <member name="M:BroMakerLib.Abilities.AbilityFactory.CreateSpecial(Newtonsoft.Json.Linq.JObject,TestVanDammeAnim)">
+        <member name="M:BroMakerLib.Abilities.AbilityFactory.CreateSpecial(Newtonsoft.Json.Linq.JObject,BroBase)">
             <summary>Instantiates a `SpecialAbility` from a JSON config block containing a `"preset"` key.</summary>
             <returns>The instantiated ability, or null on failure.</returns>
         </member>
-        <member name="M:BroMakerLib.Abilities.AbilityFactory.CreateMelee(Newtonsoft.Json.Linq.JObject,TestVanDammeAnim)">
+        <member name="M:BroMakerLib.Abilities.AbilityFactory.CreateMelee(Newtonsoft.Json.Linq.JObject,BroBase)">
             <summary>Instantiates a `MeleeAbility` from a JSON config block containing a `"preset"` key.</summary>
             <returns>The instantiated ability, or null on failure.</returns>
         </member>
-        <member name="M:BroMakerLib.Abilities.AbilityFactory.CreatePassives(System.Collections.Generic.List{Newtonsoft.Json.Linq.JObject},TestVanDammeAnim)">
+        <member name="M:BroMakerLib.Abilities.AbilityFactory.CreatePassives(System.Collections.Generic.List{Newtonsoft.Json.Linq.JObject},BroBase)">
             <summary>Instantiates all passive abilities from a bro's `"passives"` JSON list, filtering
             redundant passives, deduplicating by concrete type, and enforcing `ConflictsWithPreset`
             declarations (bypassable via `"allowConflict": true` on an individual passive's JSON).</summary>
         </member>
         <member name="T:BroMakerLib.Abilities.PassiveAbility">
-            <summary>Base class for passive abilities — hook-driven behaviors with no dedicated button.</summary>
+            <summary>Base class for passive abilities, hook-driven behaviors with no dedicated button.</summary>
         </member>
         <member name="P:BroMakerLib.Abilities.PassiveAbility.SourceBroType">
             <summary>Vanilla bro whose prefab is the source of this passive's sounds.</summary>
@@ -603,11 +620,11 @@
         <member name="P:BroMakerLib.Abilities.PassiveAbility.IsRedundant">
             <summary>True when the owner's base class already provides this passive's behavior; redundant passives are discarded without being attached.</summary>
         </member>
-        <member name="M:BroMakerLib.Abilities.PassiveAbility.IsOwnerRedundant(TestVanDammeAnim)">
+        <member name="M:BroMakerLib.Abilities.PassiveAbility.IsOwnerRedundant(BroBase)">
             <summary>Override to return true when the owner's own class already hosts this passive's
             behavior (e.g. TheBrocketeerPassive on TheBrocketeer). Typically implemented as `owner is SomeBroClass`.</summary>
         </member>
-        <member name="M:BroMakerLib.Abilities.PassiveAbility.Initialize(TestVanDammeAnim)">
+        <member name="M:BroMakerLib.Abilities.PassiveAbility.Initialize(BroBase)">
             <summary>Called once when the bro spawns. Sets `IsRedundant` and, if not redundant, calls `CacheSoundsFromPrefab`.</summary>
         </member>
         <member name="M:BroMakerLib.Abilities.PassiveAbility.CacheSoundsFromPrefab">
@@ -708,7 +725,7 @@
             <summary>Playback volume for the throw sound.</summary>
         </member>
         <member name="M:BroMakerLib.Vanilla.Specials.XebroSpecial.CatchChakram(Chakram)">
-            <summary>Called by a returning `Chakram` to restore ammo and reset melee state.</summary>
+            <summary>Called by a returning `Chakram` to restore ammo.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Specials.BrocheteSpecial">
             <summary>Brochete's machete spray.</summary>
@@ -1293,6 +1310,12 @@
         <member name="F:BroMakerLib.Vanilla.Specials.BrominatorSpecial.endInvulnerableTime">
             <summary>Duration of the invulnerability window granted when metal mode ends.</summary>
         </member>
+        <member name="F:BroMakerLib.Vanilla.Specials.BrominatorSpecial.brominatorModeSpeedBlastClamp">
+            <summary>Maximum xIBlast clamp fraction of speed while in metal mode.</summary>
+        </member>
+        <member name="F:BroMakerLib.Vanilla.Specials.BrominatorSpecial.normalSpeedBlastClamp">
+            <summary>Maximum xIBlast clamp fraction of speed in normal mode.</summary>
+        </member>
         <member name="T:BroMakerLib.Vanilla.Specials.BrondleFlySpecial">
             <summary>Seth BrondleFly's teleport-and-telefrag special.</summary>
         </member>
@@ -1375,10 +1398,10 @@
             <summary>Guitar serenade audio clips played during the special.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Specials.SpecialOverflowMode">
-            <summary>Controls which gadget type is selected when `SpecialAmmo` falls outside the 1–5 gadget range.</summary>
+            <summary>Controls which gadget type is selected when `SpecialAmmo` falls outside the 1-5 gadget range.</summary>
         </member>
         <member name="F:BroMakerLib.Vanilla.Specials.SpecialOverflowMode.Wrap">
-            <summary>Wraps ammo into the 1–5 range using modulo arithmetic.</summary>
+            <summary>Wraps ammo into the 1-5 range using modulo arithmetic.</summary>
         </member>
         <member name="F:BroMakerLib.Vanilla.Specials.SpecialOverflowMode.Clamp">
             <summary>Clamps to the highest gadget type (5).</summary>
@@ -1393,7 +1416,7 @@
             <summary>Double Bro Seven's rotating gadget special with balaclava, jetpack, laser, martini, and tear gas modes.</summary>
         </member>
         <member name="F:BroMakerLib.Vanilla.Specials.DoubleBroSevenSpecial.overflowMode">
-            <summary>How to resolve the gadget type when `SpecialAmmo` is outside the 1–5 range.</summary>
+            <summary>How to resolve the gadget type when `SpecialAmmo` is outside the 1-5 range.</summary>
         </member>
         <member name="F:BroMakerLib.Vanilla.Specials.DoubleBroSevenSpecial.overflowSpecialType">
             <summary>Gadget name used when `overflowMode` is `Fallback` and parsing fails.</summary>
@@ -1566,6 +1589,9 @@
         <member name="F:BroMakerLib.Vanilla.Specials.TheBrocketeerSpecial.enableStampAnimation">
             <summary>When true, plays the stamp landing animation after a ground impact.</summary>
         </member>
+        <member name="F:BroMakerLib.Vanilla.Specials.TheBrocketeerSpecial.dashBlastSoundVolume">
+            <summary>Volume of the dive impact sound played by `MakeDashBlast`.</summary>
+        </member>
         <member name="T:BroMakerLib.Vanilla.Specials.TheBrodeSpecial">
             <summary>The Brode's five-point-palm dash-strike special.</summary>
         </member>
@@ -1719,12 +1745,6 @@
         <member name="T:BroMakerLib.Vanilla.Melees.BrocheteMelee">
             <summary>Brochete's disembowel melee.</summary>
         </member>
-        <member name="F:BroMakerLib.Vanilla.Melees.BrocheteMelee.animColumn">
-            <summary>Sprite sheet column for the start of the disembowel animation.</summary>
-        </member>
-        <member name="F:BroMakerLib.Vanilla.Melees.BrocheteMelee.animRow">
-            <summary>Sprite sheet row for the disembowel animation.</summary>
-        </member>
         <member name="T:BroMakerLib.Vanilla.Melees.BaBroracusMelee">
             <summary>B.A. Broracus's punch melee.</summary>
         </member>
@@ -1739,6 +1759,21 @@
         </member>
         <member name="T:BroMakerLib.Vanilla.Melees.CherryBrolingMelee">
             <summary>Cherry Broling's flip-kick knife melee.</summary>
+        </member>
+        <member name="F:BroMakerLib.Vanilla.Melees.CherryBrolingMelee.enableSomersault">
+            <summary>Whether a successful kick triggers the airborne somersault animation. Disable for cross-bro owners whose sprite sheet lacks a matching flip row.</summary>
+        </member>
+        <member name="F:BroMakerLib.Vanilla.Melees.CherryBrolingMelee.somersaultAnimationRow">
+            <summary>Sprite sheet row for the somersault animation.</summary>
+        </member>
+        <member name="F:BroMakerLib.Vanilla.Melees.CherryBrolingMelee.somersaultAnimationColumn">
+            <summary>Starting column of the somersault animation.</summary>
+        </member>
+        <member name="F:BroMakerLib.Vanilla.Melees.CherryBrolingMelee.somersaultFrameCount">
+            <summary>Number of somersault animation frames played.</summary>
+        </member>
+        <member name="F:BroMakerLib.Vanilla.Melees.CherryBrolingMelee.somersaultFrameRate">
+            <summary>Seconds per somersault frame.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Melees.AshBrolliamsMelee">
             <summary>Ash Brolliams's chainsaw melee.</summary>
@@ -1836,6 +1871,12 @@
         <member name="F:BroMakerLib.Vanilla.Melees.TheBrocketeerMelee.doorKickForce">
             <summary>Force used when kicking doors during the jetpack punch.</summary>
         </member>
+        <member name="F:BroMakerLib.Vanilla.Melees.TheBrocketeerMelee.jetpackHitYBoost">
+            <summary>Y velocity added to the bro on jetpack punch hit or terrain hit.</summary>
+        </member>
+        <member name="F:BroMakerLib.Vanilla.Melees.TheBrocketeerMelee.jetpackHitXBlast">
+            <summary>Horizontal blast impulse applied to the bro on jetpack punch hit or terrain hit.</summary>
+        </member>
         <member name="T:BroMakerLib.Vanilla.Melees.BroniversalSoldierMelee">
             <summary>Broniversal Soldier's Van Damme split-kick melee.</summary>
         </member>
@@ -1856,6 +1897,9 @@
         </member>
         <member name="F:BroMakerLib.Vanilla.Passives.TheBrocketeerPassive.blastOffYBoost">
             <summary>Upward velocity impulse added on takeoff.</summary>
+        </member>
+        <member name="F:BroMakerLib.Vanilla.Passives.TheBrocketeerPassive.suspendedAirdashDelay">
+            <summary>Duration in seconds after an airdash during which the jetpack may still fire despite `airdashTime > 0`. Matches the `suspendedAirdashDelay` field on `TheBrocketeerSpecial` when both abilities are used together.</summary>
         </member>
         <member name="F:BroMakerLib.Vanilla.Passives.TheBrocketeerPassive.enableBlastOffExplosion">
             <summary>When true, takeoff spawns a FlameWallExplosion. Disable for bros without a flame-wall prefab on the owner.</summary>
@@ -2784,22 +2828,6 @@
             <summary>Removes and cleans up all attached passives of type <typeparamref name="T" />.</summary>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.TrentBroserM.ClearPassives">
-            <summary>Cleans up and removes every attached passive.</summary>
-        </member>
-        <member name="M:BroMakerLib.Vanilla.Bros.VanDammeBroM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">
-            <summary>Assigns a special ability at runtime. Calls `Initialize` on the new ability.</summary>
-        </member>
-        <member name="M:BroMakerLib.Vanilla.Bros.VanDammeBroM.SetMeleeAbility(BroMakerLib.Abilities.MeleeAbility)">
-            <summary>Assigns a melee ability at runtime and updates `meleeType` to match.</summary>
-        </member>
-        <member name="M:BroMakerLib.Vanilla.Bros.VanDammeBroM.AddPassive(BroMakerLib.Abilities.PassiveAbility)">
-            <summary>Attaches a passive ability at runtime. Initializes it and skips it if `IsRedundant`.
-            `ConflictsWithPreset` enforcement is not checked on this path.</summary>
-        </member>
-        <member name="M:BroMakerLib.Vanilla.Bros.VanDammeBroM.RemovePassive``1">
-            <summary>Removes and cleans up all attached passives of type <typeparamref name="T" />.</summary>
-        </member>
-        <member name="M:BroMakerLib.Vanilla.Bros.VanDammeBroM.ClearPassives">
             <summary>Cleans up and removes every attached passive.</summary>
         </member>
         <member name="M:BroMakerLib.Vanilla.Bros.XebroM.SetSpecialAbility(BroMakerLib.Abilities.SpecialAbility)">

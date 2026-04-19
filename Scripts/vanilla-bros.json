@@ -14,7 +14,16 @@
             "baseClass": "AshBrolliams",
             "heroType": "AshBrolliams",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["bulletShell", "chainsawStart", "chainsawSpin", "chainsawWindDown", "bloodyAvatar"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "bulletShell",
+                        "chainsawStart",
+                        "chainsawSpin",
+                        "chainsawWindDown",
+                        "bloodyAvatar"
+                    ]
+                }
             ]
         },
         {
@@ -23,8 +32,20 @@
             "baseClass": "BaBroracus",
             "heroType": "BaBroracus",
             "nullFixes": [
-                {"type": "getComponent", "field": "flameSource", "component": "AudioSource"},
-                {"type": "prefabCopy", "fields": ["flameSound", "flameSoundEnd", "projectile2", "projectile3"]}
+                {
+                    "type": "getComponent",
+                    "field": "flameSource",
+                    "component": "AudioSource"
+                },
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "flameSound",
+                        "flameSoundEnd",
+                        "projectile2",
+                        "projectile3"
+                    ]
+                }
             ]
         },
         {
@@ -33,10 +54,22 @@
             "baseClass": "Blade",
             "heroType": "Blade",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["shrapnelSpark", "hitPuff", "throwingKnife"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "shrapnelSpark",
+                        "hitPuff",
+                        "throwingKnife"
+                    ]
+                }
             ],
             "awakeFixes": [
-                {"type": "prefabCopy", "fields": ["doRollOnLand"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "doRollOnLand"
+                    ]
+                }
             ]
         },
         {
@@ -45,9 +78,26 @@
             "baseClass": "BoondockBro",
             "heroType": "BoondockBros",
             "nullFixes": [
-                {"type": "setValue", "field": "isLeadBro", "value": "true"},
-                {"type": "prefabCopy", "fields": ["billyConnollyPrefab", "secondBroMaterial", "avatar1", "avatar2"]},
-                {"type": "raw", "code": ["gameObject.name = gameObject.name.Insert(0, \"[LEAD] \");"]}
+                {
+                    "type": "setValue",
+                    "field": "isLeadBro",
+                    "value": "true"
+                },
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "billyConnollyPrefab",
+                        "secondBroMaterial",
+                        "avatar1",
+                        "avatar2"
+                    ]
+                },
+                {
+                    "type": "raw",
+                    "code": [
+                        "gameObject.name = gameObject.name.Insert(0, \"[LEAD] \");"
+                    ]
+                }
             ]
         },
         {
@@ -56,10 +106,26 @@
             "baseClass": "Brobocop",
             "heroType": "Brobocop",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["targetSystemPrefab", "chargingSound", "finishedChargingSound", "gunMaterialDefault", "gunMaterialOneLight", "gunMaterialOtherLight", "gunMaterialBothLights"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "targetSystemPrefab",
+                        "chargingSound",
+                        "finishedChargingSound",
+                        "gunMaterialDefault",
+                        "gunMaterialOneLight",
+                        "gunMaterialOtherLight",
+                        "gunMaterialBothLights"
+                    ]
+                }
             ],
             "awakeFixes": [
-                {"type": "prefabCopy", "fields": ["doRollOnLand"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "doRollOnLand"
+                    ]
+                }
             ]
         },
         {
@@ -68,10 +134,24 @@
             "baseClass": "BroCeasar",
             "heroType": "HaleTheBro",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["bulletShell", "miniGunSoundSpinning", "miniGunSoundWindDown", "miniGunSoundWindup"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "bulletShell",
+                        "miniGunSoundSpinning",
+                        "miniGunSoundWindDown",
+                        "miniGunSoundWindup"
+                    ]
+                }
             ],
             "awakeFixes": [
-                {"type": "prefabCopy", "fields": ["useNewHighFivingFrames", "hasNewAirFlexFrames"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "useNewHighFivingFrames",
+                        "hasNewAirFlexFrames"
+                    ]
+                }
             ]
         },
         {
@@ -80,7 +160,12 @@
             "baseClass": "Brochete",
             "heroType": "Brochete",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["macheteSprayProjectile"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "macheteSprayProjectile"
+                    ]
+                }
             ]
         },
         {
@@ -89,10 +174,23 @@
             "baseClass": "BrocSnipes",
             "heroType": "Broc",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["shrapnelSpark", "hitPuff"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "shrapnelSpark",
+                        "hitPuff"
+                    ]
+                }
             ],
             "awakeFixes": [
-                {"type": "prefabCopy", "fields": ["doRollOnLand", "useNewHighFivingFrames", "hasNewAirFlexFrames"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "doRollOnLand",
+                        "useNewHighFivingFrames",
+                        "hasNewAirFlexFrames"
+                    ]
+                }
             ]
         },
         {
@@ -101,7 +199,12 @@
             "baseClass": "BrodellWalker",
             "heroType": "BrodellWalker",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["bulletShell"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "bulletShell"
+                    ]
+                }
             ]
         },
         {
@@ -110,10 +213,20 @@
             "baseClass": "Broden",
             "heroType": "Broden",
             "nullFixes": [
-                {"type": "findChild", "field": "zapper", "childName": "ElectricZap", "component": "ElectricZap"}
+                {
+                    "type": "findChild",
+                    "field": "zapper",
+                    "childName": "ElectricZap",
+                    "component": "ElectricZap"
+                }
             ],
             "awakeFixes": [
-                {"type": "prefabCopy", "fields": ["doRollOnLand"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "doRollOnLand"
+                    ]
+                }
             ]
         },
         {
@@ -122,7 +235,12 @@
             "baseClass": "BroDredd",
             "heroType": "BroDredd",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["specialRocketPrefab"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "specialRocketPrefab"
+                    ]
+                }
             ]
         },
         {
@@ -131,7 +249,12 @@
             "baseClass": "Broffy",
             "heroType": "Broffy",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["halo"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "halo"
+                    ]
+                }
             ]
         },
         {
@@ -140,10 +263,22 @@
             "baseClass": "BroGummer",
             "heroType": "BroGummer",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["specialSniperBulletPrefab", "sachelPackProjectile", "broGummerSniperTargetPrefab"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "specialSniperBulletPrefab",
+                        "sachelPackProjectile",
+                        "broGummerSniperTargetPrefab"
+                    ]
+                }
             ],
             "awakeFixes": [
-                {"type": "prefabCopy", "fields": ["doRollOnLand"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "doRollOnLand"
+                    ]
+                }
             ]
         },
         {
@@ -159,7 +294,13 @@
             "baseClass": "BroLee",
             "heroType": "BroLee",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["shrapnelSpark", "hitPuff"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "shrapnelSpark",
+                        "hitPuff"
+                    ]
+                }
             ]
         },
         {
@@ -168,7 +309,13 @@
             "baseClass": "BroMax",
             "heroType": "BroMax",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["boomerang", "flameProjectiles"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "boomerang",
+                        "flameProjectiles"
+                    ]
+                }
             ]
         },
         {
@@ -177,11 +324,34 @@
             "baseClass": "Brominator",
             "heroType": "Brominator",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["miniGunSoundWindup", "miniGunSoundSpinning", "miniGunSoundWindDown", "metalBrominator", "humanBrominator", "metalGunBrominator", "brominatorHumanAvatar", "brominatorRobotAvatar", "bulletShell"]},
-                {"type": "raw", "code": ["humanGunBrominator = bro.humanGunBrominator;"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "miniGunSoundWindup",
+                        "miniGunSoundSpinning",
+                        "miniGunSoundWindDown",
+                        "metalBrominator",
+                        "humanBrominator",
+                        "metalGunBrominator",
+                        "brominatorHumanAvatar",
+                        "brominatorRobotAvatar",
+                        "bulletShell"
+                    ]
+                },
+                {
+                    "type": "raw",
+                    "code": [
+                        "humanGunBrominator = bro.humanGunBrominator;"
+                    ]
+                }
             ],
             "awakeFixes": [
-                {"type": "prefabCopy", "fields": ["doRollOnLand"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "doRollOnLand"
+                    ]
+                }
             ]
         },
         {
@@ -190,7 +360,12 @@
             "baseClass": "Brommando",
             "heroType": "Brommando",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["barageProjectile"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "barageProjectile"
+                    ]
+                }
             ]
         },
         {
@@ -199,10 +374,22 @@
             "baseClass": "BronanTheBrobarian",
             "heroType": "BronanTheBrobarian",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["shrapnelSpark", "hitPuff", "throwingKnife"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "shrapnelSpark",
+                        "hitPuff",
+                        "throwingKnife"
+                    ]
+                }
             ],
             "awakeFixes": [
-                {"type": "prefabCopy", "fields": ["doRollOnLand"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "doRollOnLand"
+                    ]
+                }
             ]
         },
         {
@@ -211,8 +398,24 @@
             "baseClass": "BrondleFly",
             "heroType": "BrondleFly",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["bulletShell", "teleportOutAnimation", "teleportInAnimation", "teleportSound", "coveredInBloodMaterial", "openMouthBloodyMaterial", "openMouthMaterial", "hoverClip"]},
-                {"type": "getComponentInChildren", "field": "_vomitParticles", "component": "ParticleSystem"}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "bulletShell",
+                        "teleportOutAnimation",
+                        "teleportInAnimation",
+                        "teleportSound",
+                        "coveredInBloodMaterial",
+                        "openMouthBloodyMaterial",
+                        "openMouthMaterial",
+                        "hoverClip"
+                    ]
+                },
+                {
+                    "type": "getComponentInChildren",
+                    "field": "_vomitParticles",
+                    "component": "ParticleSystem"
+                }
             ]
         },
         {
@@ -222,7 +425,13 @@
             "heroType": "BroneyRoss",
             "nullFixes": [],
             "awakeFixes": [
-                {"type": "prefabCopy", "fields": ["useNewHighFivingFrames", "hasNewAirFlexFrames"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "useNewHighFivingFrames",
+                        "hasNewAirFlexFrames"
+                    ]
+                }
             ]
         },
         {
@@ -231,9 +440,27 @@
             "baseClass": "BroniversalSoldier",
             "heroType": "BroniversalSoldier",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["bulletShell"]},
-                {"type": "raw", "code": ["#pragma warning disable", "serumParticles = this.FindChildOfName(\"SerumParticles\").GetComponent<ParticleEmitter>();", "#pragma warning restore"]},
-                {"type": "prefabCopy", "fields": ["reviveBlastPrefab", "reviveClips"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "bulletShell"
+                    ]
+                },
+                {
+                    "type": "raw",
+                    "code": [
+                        "#pragma warning disable",
+                        "serumParticles = this.FindChildOfName(\"SerumParticles\").GetComponent<ParticleEmitter>();",
+                        "#pragma warning restore"
+                    ]
+                },
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "reviveBlastPrefab",
+                        "reviveClips"
+                    ]
+                }
             ]
         },
         {
@@ -242,10 +469,22 @@
             "baseClass": "BronnarJensen",
             "heroType": "BronnarJensen",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["primaryGrenade", "remoteControlVehiclePrefab"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "primaryGrenade",
+                        "remoteControlVehiclePrefab"
+                    ]
+                }
             ],
             "awakeFixes": [
-                {"type": "prefabCopy", "fields": ["useNewHighFivingFrames", "hasNewAirFlexFrames"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "useNewHighFivingFrames",
+                        "hasNewAirFlexFrames"
+                    ]
+                }
             ]
         },
         {
@@ -254,7 +493,12 @@
             "baseClass": "Brononymous",
             "heroType": "Brononymous",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["neuraliserPrefab"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "neuraliserPrefab"
+                    ]
+                }
             ]
         },
         {
@@ -263,11 +507,28 @@
             "baseClass": "BroveHeart",
             "heroType": "BroveHeart",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["shrapnelSpark", "hitPuff", "swordPrefab"]},
-                {"type": "findChild", "field": "freedomBubble", "childName": "AmericaFlagBubble", "component": "ReactionBubble"}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "shrapnelSpark",
+                        "hitPuff",
+                        "swordPrefab"
+                    ]
+                },
+                {
+                    "type": "findChild",
+                    "field": "freedomBubble",
+                    "childName": "AmericaFlagBubble",
+                    "component": "ReactionBubble"
+                }
             ],
             "awakeFixes": [
-                {"type": "prefabCopy", "fields": ["doRollOnLand"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "doRollOnLand"
+                    ]
+                }
             ]
         },
         {
@@ -276,7 +537,12 @@
             "baseClass": "CaseyBroback",
             "heroType": "CaseyBroback",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["bulletShell"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "bulletShell"
+                    ]
+                }
             ]
         },
         {
@@ -285,7 +551,12 @@
             "baseClass": "CherryBroling",
             "heroType": "CherryBroling",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["rocketGrenade"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "rocketGrenade"
+                    ]
+                }
             ]
         },
         {
@@ -294,7 +565,16 @@
             "baseClass": "ChevBrolios",
             "heroType": "ChevBrolios",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["arousedVoiceHolder", "drowsyVoiceHolder", "avatarTired", "avatarNormal", "avatarFrenzy"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "arousedVoiceHolder",
+                        "drowsyVoiceHolder",
+                        "avatarTired",
+                        "avatarNormal",
+                        "avatarFrenzy"
+                    ]
+                }
             ]
         },
         {
@@ -303,7 +583,13 @@
             "baseClass": "ColJamesBrodock",
             "heroType": "ColJamesBroddock",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["primaryGrenade", "gunCookingMaterial"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "primaryGrenade",
+                        "gunCookingMaterial"
+                    ]
+                }
             ]
         },
         {
@@ -319,11 +605,40 @@
             "baseClass": "Desperabro",
             "heroType": "Desperabro",
             "nullFixes": [
-                {"type": "setValue", "field": "mariachiBroType", "value": "MariachiBroType.Desperabro"},
-                {"type": "prefabCopy", "fields": ["bulletShell"]},
-                {"type": "findChild", "field": "musicParticles", "childName": "MusicParticles", "component": "ParticleSystem"},
-                {"type": "findChild", "field": "guitarGunSprite", "childName": "Guitar", "component": "SpriteSM"},
-                {"type": "prefabCopy", "fields": ["campaBroMaterial", "campaBroGuitarMaterial", "campaBroProjectile", "quinoBroGuitarMaterial", "quinoBroMaterial", "quinoBroProjectile"]}
+                {
+                    "type": "setValue",
+                    "field": "mariachiBroType",
+                    "value": "MariachiBroType.Desperabro"
+                },
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "bulletShell"
+                    ]
+                },
+                {
+                    "type": "findChild",
+                    "field": "musicParticles",
+                    "childName": "MusicParticles",
+                    "component": "ParticleSystem"
+                },
+                {
+                    "type": "findChild",
+                    "field": "guitarGunSprite",
+                    "childName": "Guitar",
+                    "component": "SpriteSM"
+                },
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "campaBroMaterial",
+                        "campaBroGuitarMaterial",
+                        "campaBroProjectile",
+                        "quinoBroGuitarMaterial",
+                        "quinoBroMaterial",
+                        "quinoBroProjectile"
+                    ]
+                }
             ]
         },
         {
@@ -332,7 +647,12 @@
             "baseClass": "DirtyHarry",
             "heroType": "DirtyHarry",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["bulletShell"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "bulletShell"
+                    ]
+                }
             ]
         },
         {
@@ -341,10 +661,31 @@
             "baseClass": "DoubleBroSeven",
             "heroType": "DoubleBroSeven",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["martiniGlass", "tearGasGrenade"]},
-                {"type": "findChild", "field": "laserLine", "childName": "Laser", "component": "LineRenderer"},
-                {"type": "prefabCopy", "fields": ["liftOffBlastFlameWall", "balaclavaMaterial"]},
-                {"type": "getComponent", "field": "laserAudio", "component": "AudioSource"}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "martiniGlass",
+                        "tearGasGrenade"
+                    ]
+                },
+                {
+                    "type": "findChild",
+                    "field": "laserLine",
+                    "childName": "Laser",
+                    "component": "LineRenderer"
+                },
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "liftOffBlastFlameWall",
+                        "balaclavaMaterial"
+                    ]
+                },
+                {
+                    "type": "getComponent",
+                    "field": "laserAudio",
+                    "component": "AudioSource"
+                }
             ]
         },
         {
@@ -353,7 +694,12 @@
             "baseClass": "EllenRipbro",
             "heroType": "EllenRipbro",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["flameWavePrefab"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "flameWavePrefab"
+                    ]
+                }
             ]
         },
         {
@@ -362,12 +708,33 @@
             "baseClass": "IndianaBrones",
             "heroType": "IndianaBrones",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["whipHitPuff"]},
-                {"type": "findChild", "field": "whipSprite", "childName": "Whip", "component": "SpriteSM"},
-                {"type": "prefabCopy", "fields": ["materialArmless", "ropeStretchSound"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "whipHitPuff"
+                    ]
+                },
+                {
+                    "type": "findChild",
+                    "field": "whipSprite",
+                    "childName": "Whip",
+                    "component": "SpriteSM"
+                },
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "materialArmless",
+                        "ropeStretchSound"
+                    ]
+                }
             ],
             "awakeFixes": [
-                {"type": "prefabCopy", "fields": ["useNewDuckingFrames"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "useNewDuckingFrames"
+                    ]
+                }
             ]
         },
         {
@@ -376,10 +743,21 @@
             "baseClass": "LeeBroxmas",
             "heroType": "LeeBroxmas",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["macheteSprayProjectile"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "macheteSprayProjectile"
+                    ]
+                }
             ],
             "awakeFixes": [
-                {"type": "prefabCopy", "fields": ["useNewHighFivingFrames", "hasNewAirFlexFrames"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "useNewHighFivingFrames",
+                        "hasNewAirFlexFrames"
+                    ]
+                }
             ]
         },
         {
@@ -388,7 +766,12 @@
             "baseClass": "McBrover",
             "heroType": "McBrover",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["turkeyProjectile"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "turkeyProjectile"
+                    ]
+                }
             ]
         },
         {
@@ -397,7 +780,20 @@
             "baseClass": "Nebro",
             "heroType": "Nebro",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["returnZonePrefab", "materialArmless", "faderSpriteDownPrefab", "faderSpritePrefab", "faderSpriteRightPrefab", "faderSpriteUpPrefab", "shrapnelSpark", "hitPuff", "throwingKnife"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "returnZonePrefab",
+                        "materialArmless",
+                        "faderSpriteDownPrefab",
+                        "faderSpritePrefab",
+                        "faderSpriteRightPrefab",
+                        "faderSpriteUpPrefab",
+                        "shrapnelSpark",
+                        "hitPuff",
+                        "throwingKnife"
+                    ]
+                }
             ]
         },
         {
@@ -406,39 +802,95 @@
             "baseClass": "Predabro",
             "heroType": "Predabro",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["stealthMaterial", "stealthGunMaterial", "targetPrefab"]},
-                {"type": "findChild", "field": "shoulderCannonBaseSprite", "childName": "ShoulderCanon Base", "component": "SpriteSM"},
-                {"type": "raw", "code": ["shoulderCannonSprite = shoulderCannonBaseSprite.FindChildOfName(\"ShoulderCanon\").transform;"]},
-                {"type": "prefabCopy", "fields": ["shoulderCannonBullet"]},
-                {"type": "raw", "code": [
-                    "var temp = new List<SpriteSM>();",
-                    "Transform laserSightParent = null;",
-                    "for (int i = 0; i < shoulderCannonSprite.transform.childCount; i++)",
-                    "{",
-                    "    var child = shoulderCannonSprite.transform.GetChild(i);",
-                    "    if (child.gameObject.name == \"Lazer\")",
-                    "        temp.Add(child.GetComponent<SpriteSM>());",
-                    "    else",
-                    "        laserSightParent = child.transform;",
-                    "}",
-                    "laserSightLazers = temp.ToArray();",
-                    "",
-                    "var temp2 = new List<Transform>();",
-                    "for (int i = 0; i < laserSightParent.childCount; i++)",
-                    "{",
-                    "    temp2.Add(laserSightParent.GetChild(i).transform);",
-                    "}",
-                    "laserSights = temp2.ToArray();"
-                ]},
-                {"type": "prefabCopy", "fields": ["cloakingSound", "selfDestructSoundSound"]},
-                {"type": "findChild", "field": "outlineSprite", "childName": "StealthOutline", "component": "ReplicateSprite"},
-                {"type": "findChild", "field": "searchRing", "childName": "Search Ring", "component": "SpriteSM"},
-                {"type": "prefabCopy", "fields": ["giltchTextures", "hudSpecialCountDownMaterials"]},
-                {"type": "raw", "code": [
-                    "heldSpearSprite = this.FindChildOfName(\"Gun\").FindChildOfName(\"PullBackFrame\").GetComponent<SpriteSM>();",
-                    "heldSpearSpriteCharged = this.FindChildOfName(\"Gun\").FindChildOfName(\"PullBackFrameCharged\").GetComponent<SpriteSM>();"
-                ]},
-                {"type": "prefabCopy", "fields": ["chargedSpearProectilePrefab", "predabroSymbolPrefab"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "stealthMaterial",
+                        "stealthGunMaterial",
+                        "targetPrefab"
+                    ]
+                },
+                {
+                    "type": "findChild",
+                    "field": "shoulderCannonBaseSprite",
+                    "childName": "ShoulderCanon Base",
+                    "component": "SpriteSM"
+                },
+                {
+                    "type": "raw",
+                    "code": [
+                        "shoulderCannonSprite = shoulderCannonBaseSprite.FindChildOfName(\"ShoulderCanon\").transform;"
+                    ]
+                },
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "shoulderCannonBullet"
+                    ]
+                },
+                {
+                    "type": "raw",
+                    "code": [
+                        "var temp = new List<SpriteSM>();",
+                        "Transform laserSightParent = null;",
+                        "for (int i = 0; i < shoulderCannonSprite.transform.childCount; i++)",
+                        "{",
+                        "    var child = shoulderCannonSprite.transform.GetChild(i);",
+                        "    if (child.gameObject.name == \"Lazer\")",
+                        "        temp.Add(child.GetComponent<SpriteSM>());",
+                        "    else",
+                        "        laserSightParent = child.transform;",
+                        "}",
+                        "laserSightLazers = temp.ToArray();",
+                        "",
+                        "var temp2 = new List<Transform>();",
+                        "for (int i = 0; i < laserSightParent.childCount; i++)",
+                        "{",
+                        "    temp2.Add(laserSightParent.GetChild(i).transform);",
+                        "}",
+                        "laserSights = temp2.ToArray();"
+                    ]
+                },
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "cloakingSound",
+                        "selfDestructSoundSound"
+                    ]
+                },
+                {
+                    "type": "findChild",
+                    "field": "outlineSprite",
+                    "childName": "StealthOutline",
+                    "component": "ReplicateSprite"
+                },
+                {
+                    "type": "findChild",
+                    "field": "searchRing",
+                    "childName": "Search Ring",
+                    "component": "SpriteSM"
+                },
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "giltchTextures",
+                        "hudSpecialCountDownMaterials"
+                    ]
+                },
+                {
+                    "type": "raw",
+                    "code": [
+                        "heldSpearSprite = this.FindChildOfName(\"Gun\").FindChildOfName(\"PullBackFrame\").GetComponent<SpriteSM>();",
+                        "heldSpearSpriteCharged = this.FindChildOfName(\"Gun\").FindChildOfName(\"PullBackFrameCharged\").GetComponent<SpriteSM>();"
+                    ]
+                },
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "chargedSpearProectilePrefab",
+                        "predabroSymbolPrefab"
+                    ]
+                }
             ]
         },
         {
@@ -447,10 +899,20 @@
             "baseClass": "ScorpionBro",
             "heroType": "ScorpionBro",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["scorpionModeMaterial"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "scorpionModeMaterial"
+                    ]
+                }
             ],
             "awakeFixes": [
-                {"type": "prefabCopy", "fields": ["hasNewAirFlexFrames"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "hasNewAirFlexFrames"
+                    ]
+                }
             ]
         },
         {
@@ -459,8 +921,17 @@
             "baseClass": "SnakeBroskin",
             "heroType": "SnakeBroSkin",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["hologramMaterial"]},
-                {"type": "getComponent", "field": "gliderAudio", "component": "AudioSource"}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "hologramMaterial"
+                    ]
+                },
+                {
+                    "type": "getComponent",
+                    "field": "gliderAudio",
+                    "component": "AudioSource"
+                }
             ]
         },
         {
@@ -469,7 +940,13 @@
             "baseClass": "TankBro",
             "heroType": "TankBro",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["barageProjectile", "whistle"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "barageProjectile",
+                        "whistle"
+                    ]
+                }
             ]
         },
         {
@@ -478,7 +955,15 @@
             "baseClass": "TheBrocketeer",
             "heroType": "TheBrocketeer",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["bulletShell", "liftOffBlastFlameWall", "jetpackLiftSound", "jetpackDiveSound"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "bulletShell",
+                        "liftOffBlastFlameWall",
+                        "jetpackLiftSound",
+                        "jetpackDiveSound"
+                    ]
+                }
             ]
         },
         {
@@ -487,10 +972,22 @@
             "baseClass": "TheBrode",
             "heroType": "TheBrode",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["throwingKnife", "shrapnelSpark", "hitPuff"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "throwingKnife",
+                        "shrapnelSpark",
+                        "hitPuff"
+                    ]
+                }
             ],
             "awakeFixes": [
-                {"type": "prefabCopy", "fields": ["doRollOnLand"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "doRollOnLand"
+                    ]
+                }
             ]
         },
         {
@@ -499,7 +996,12 @@
             "baseClass": "TheBrofessional",
             "heroType": "TheBrofessional",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["matildaTargettingWavePrefab"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "matildaTargettingWavePrefab"
+                    ]
+                }
             ]
         },
         {
@@ -508,12 +1010,33 @@
             "baseClass": "TheBrolander",
             "heroType": "TheBrolander",
             "nullFixes": [
-                {"type": "findChild", "field": "zapper", "childName": "ElectricZap", "component": "ElectricZap"},
-                {"type": "getComponent", "field": "quickeningAudio", "component": "AudioSource"},
-                {"type": "prefabCopy", "fields": ["shrapnelSpark", "hitPuff", "throwingKnife"]}
+                {
+                    "type": "findChild",
+                    "field": "zapper",
+                    "childName": "ElectricZap",
+                    "component": "ElectricZap"
+                },
+                {
+                    "type": "getComponent",
+                    "field": "quickeningAudio",
+                    "component": "AudioSource"
+                },
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "shrapnelSpark",
+                        "hitPuff",
+                        "throwingKnife"
+                    ]
+                }
             ],
             "awakeFixes": [
-                {"type": "prefabCopy", "fields": ["doRollOnLand"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "doRollOnLand"
+                    ]
+                }
             ]
         },
         {
@@ -529,10 +1052,21 @@
             "baseClass": "TollBroad",
             "heroType": "TollBroad",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["flameProjectiles"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "flameProjectiles"
+                    ]
+                }
             ],
             "awakeFixes": [
-                {"type": "prefabCopy", "fields": ["useNewHighFivingFrames", "hasNewAirFlexFrames"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "useNewHighFivingFrames",
+                        "hasNewAirFlexFrames"
+                    ]
+                }
             ]
         },
         {
@@ -542,15 +1076,14 @@
             "heroType": "TrentBroser",
             "nullFixes": [],
             "awakeFixes": [
-                {"type": "prefabCopy", "fields": ["useNewHighFivingFrames", "hasNewAirFlexFrames"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "useNewHighFivingFrames",
+                        "hasNewAirFlexFrames"
+                    ]
+                }
             ]
-        },
-        {
-            "presetName": "VanDammeBro",
-            "className": "VanDammeBroM",
-            "baseClass": "VanDammeBro",
-            "heroType": "TimeBroVanDamme",
-            "nullFixes": []
         },
         {
             "presetName": "Xebro",
@@ -558,7 +1091,14 @@
             "baseClass": "Xebro",
             "heroType": "Xebro",
             "nullFixes": [
-                {"type": "prefabCopy", "fields": ["chakramPrefab", "shrapnelSpark", "hitPuff"]}
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "chakramPrefab",
+                        "shrapnelSpark",
+                        "hitPuff"
+                    ]
+                }
             ]
         }
     ]

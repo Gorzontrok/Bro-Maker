@@ -30,6 +30,7 @@ namespace BroMakerLib.Vanilla.Melees
             if (sourceBro != null)
             {
                 if (alternateMeleeHitSounds2 == null) alternateMeleeHitSounds2 = sourceBro.soundHolder.alternateMeleeHitSound2.CloneArray();
+                if (special3Sounds == null) special3Sounds = sourceBro.soundHolder.special3Sounds.CloneArray();
             }
         }
 
@@ -93,14 +94,14 @@ namespace BroMakerLib.Vanilla.Melees
                 hero.MeleeHasHit = true;
             }
             hero.MeleeChosenUnit = null;
-            if (shouldTryHitTerrain && hero.TryMeleeTerrain(0, 2))
+            if (shouldTryHitTerrain && TryMeleeTerrain(0, 2))
             {
                 hero.MeleeHasHit = true;
             }
             else
             {
                 owner.Y += 6f;
-                if (shouldTryHitTerrain && hero.TryMeleeTerrain(0, 2))
+                if (shouldTryHitTerrain && TryMeleeTerrain(0, 2))
                 {
                     hero.MeleeHasHit = true;
                 }

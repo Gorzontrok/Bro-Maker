@@ -81,12 +81,6 @@ namespace BroMakerLib.Vanilla.Melees
     {
         protected override HeroType SourceBroType => HeroType.Brochete;
 
-        /// <summary>Sprite sheet column for the start of the disembowel animation.</summary>
-        public int animColumn = 25;
-
-        /// <summary>Sprite sheet row for the disembowel animation.</summary>
-        public int animRow = 9;
-
         public AudioClip[] alternateMeleeHitSounds2;
 
         [JsonIgnore]
@@ -95,9 +89,12 @@ namespace BroMakerLib.Vanilla.Melees
         public BrocheteMelee()
         {
             meleeType = BroBase.MeleeType.Disembowel;
+            animationColumn = 25;
+            animationRow = 9;
+            damageType = "Disembowel";
         }
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
 
@@ -121,8 +118,8 @@ namespace BroMakerLib.Vanilla.Melees
         public override void AnimateMelee()
         {
             hero.AnimateMeleeCommon();
-            int num = animColumn + Mathf.Clamp(owner.frame, 0, 7);
-            int num2 = animRow;
+            int num = animationColumn + Mathf.Clamp(owner.frame, 0, 7);
+            int num2 = animationRow;
             hero.Sprite.SetLowerLeftPixel((float)(num * hero.SpritePixelWidth), (float)(num2 * hero.SpritePixelHeight));
             if (owner.frame >= 4)
             {
@@ -232,7 +229,7 @@ namespace BroMakerLib.Vanilla.Melees
                 if (hero.MeleeChosenUnit.CanDisembowel)
                 {
                     hero.MeleeChosenUnit.ForceFaceDirection(-owner.Direction);
-                    hero.MeleeChosenUnit.Damage(25, DamageType.Disembowel, 0f, 0f, owner.Direction, owner, owner.X, owner.Y);
+                    hero.MeleeChosenUnit.Damage(25, parsedDamageType, 0f, 0f, owner.Direction, owner, owner.X, owner.Y);
                 }
                 else
                 {
@@ -257,7 +254,7 @@ namespace BroMakerLib.Vanilla.Melees
                 }
                 hero.HasPlayedMissSound = true;
             }
-            if (shouldTryHitTerrain && hero.TryMeleeTerrain(0, 2))
+            if (shouldTryHitTerrain && TryMeleeTerrain(0, 2))
             {
                 hero.MeleeHasHit = true;
             }

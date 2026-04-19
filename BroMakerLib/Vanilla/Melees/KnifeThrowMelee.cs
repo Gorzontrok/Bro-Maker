@@ -27,7 +27,7 @@ namespace BroMakerLib.Vanilla.Melees
             animationRow = 7;
         }
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
 
@@ -68,6 +68,7 @@ namespace BroMakerLib.Vanilla.Melees
                 owner.counter -= 0.08f;
                 owner.frame = 1;
                 hero.MeleeFollowUp = false;
+                hero.ResetMeleeValues();
             }
             hero.FrameRate = frameRate;
             int num = animationColumn + Mathf.Clamp(owner.frame, 0, 6);
@@ -94,7 +95,7 @@ namespace BroMakerLib.Vanilla.Melees
         protected void ThrowKnife()
         {
             knifeThrown = true;
-            sound.PlaySoundEffectAt(attackSounds, 0.44f, owner.transform.position, 1f, true, false, false, 0f);
+            sound.PlaySoundEffectAt(attackSounds, 0.44f, owner.transform.position, 1f + owner.pitchShiftAmount, true, false, false, 0f);
             ProjectileController.SpawnProjectileLocally(throwingKnife, owner, X + (float)(16 * (int)Direction), Y + 10f, owner.xI + (float)(250 * (int)Direction), 0f, PlayerNum);
         }
     }

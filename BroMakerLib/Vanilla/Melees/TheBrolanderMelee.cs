@@ -64,9 +64,9 @@ namespace BroMakerLib.Vanilla.Melees
             bool flag;
             Map.DamageDoodads(3, DamageType.Melee, vector.x, vector.y, 0f, 0f, 6f, owner.playerNum, out flag, null);
             hero.KickDoors(normalKickRange);
-            int specialAmmo = owner.GetFieldValue<int>("_specialAmmo");
+            int specialAmmo = hero.SpecialAmmoField;
             int num2 = ((specialAmmo < 2) ? normalDamage : chargedDamage);
-            DamageType damageType = ((specialAmmo < 2) ? DamageType.Melee : DamageType.Plasma);
+            DamageType damageType = ((specialAmmo < 2) ? parsedDamageType : DamageType.Plasma);
             float num3 = (float)((specialAmmo < 2) ? normalKnockbackX : chargedKnockbackX);
             float kbY = (specialAmmo < 2) ? normalKnockbackY : chargedKnockbackY;
             if (Map.HitClosestUnit(owner, owner.playerNum, num2, damageType, num + 6f, num * 2f, vector.x + (float)(owner.Direction * 5), vector.y, owner.transform.localScale.x * num3, kbY, true, false, owner.IsMine, false, true))
@@ -104,7 +104,7 @@ namespace BroMakerLib.Vanilla.Melees
                 }
             }
             hero.MeleeChosenUnit = null;
-            if (!hero.MeleeHasHit && shouldTryHitTerrain && HandleTryMeleeTerrain(0, normalTerrainDamage))
+            if (!hero.MeleeHasHit && shouldTryHitTerrain && TryMeleeTerrain(0, normalTerrainDamage))
             {
                 hero.MeleeHasHit = true;
             }

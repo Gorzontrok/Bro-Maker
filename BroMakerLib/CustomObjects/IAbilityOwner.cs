@@ -23,7 +23,7 @@ namespace BroMakerLib.CustomObjects
         int SpritePixelWidth { get; }
         int SpritePixelHeight { get; }
         bool Ducking { get; }
-        float DeltaTime { get; }
+        float DeltaTime { get; set; }
         Sound Sound { get; }
         float FrameRate { get; set; }
         float InvulnerableTime { get; set; }
@@ -33,7 +33,7 @@ namespace BroMakerLib.CustomObjects
         float JumpTime { set; }
         bool IsInQuicksand { get; }
         float HalfWidth { get; }
-        float CeilingHeight { get; }
+        float CeilingHeight { get; set; }
         LayerMask FragileLayer { get; }
         float DeathTime { get; set; }
         DeathType CurrentDeathType { get; set; }
@@ -60,6 +60,26 @@ namespace BroMakerLib.CustomObjects
         bool CancelMeleeOnChangeDirection { set; }
         bool PerformedMeleeAttack { set; }
         DirectionEnum AirdashDirection { get; set; }
+
+        bool CanAirdash { get; set; }
+        float AirdashTime { get; set; }
+        float AirDashDelay { get; }
+        bool WasHighFive { get; set; }
+        bool WasDashButton { get; }
+        bool HoldingHighFive { get; }
+        bool AirdashUpAvailable { get; }
+        float DefaultAirdashDelay { get; set; }
+
+        float PressedJumpInAirSoJumpIfTouchGroundGrace { get; }
+        bool ChimneyFlip { get; set; }
+        float AvatarAngryTime { get; set; }
+        bool ControllingProjectile { get; set; }
+        bool WallClimbing { get; }
+        float LastJumpTime { get; set; }
+        float AvatarGunFireTime { get; set; }
+        int SpecialAmmoField { get; set; }
+        BroBase.MeleeType CurrentMeleeType { get; set; }
+        float OriginalMaxFallSpeed { get; }
         #endregion
 
         #region Method Accessors

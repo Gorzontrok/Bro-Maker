@@ -72,7 +72,7 @@ namespace BroMakerLib.Vanilla.Specials
             animationRow = 10;
         }
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
 
@@ -117,7 +117,7 @@ namespace BroMakerLib.Vanilla.Specials
                     hero.GunFrame = 12;
                     hero.SetGunSprite(12, 0);
                     owner.fire = false;
-                    owner.SetFieldValue("controllingProjectile", true);
+                    hero.ControllingProjectile = true;
                     if (owner.player != null)
                     {
                         owner.player.SetAvatarSpecialFrame(5f);
@@ -305,7 +305,7 @@ namespace BroMakerLib.Vanilla.Specials
             }
         }
 
-        public override bool HandleDeath()
+        public override bool HandleDeath(float xI, float yI, DamageObject damage)
         {
             if (usingTargetingSystem)
             {

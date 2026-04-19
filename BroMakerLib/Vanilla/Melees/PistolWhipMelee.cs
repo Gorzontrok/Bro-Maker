@@ -19,6 +19,7 @@ namespace BroMakerLib.Vanilla.Melees
             animationFrameCount = 7;
             endFrame = 4;
             restartFrame = 4;
+            damageType = "Melee";
         }
 
         protected override void CacheSoundsFromPrefab()
@@ -60,13 +61,13 @@ namespace BroMakerLib.Vanilla.Melees
             bool flag;
             Map.DamageDoodads(3, DamageType.Melee, vector.x, vector.y, 0f, 0f, 6f, PlayerNum, out flag, null);
             hero.KickDoors(26f);
-            if (Map.HitClosestUnit(owner, PlayerNum, 4, DamageType.Melee, num, num * 2f, vector.x, vector.y, owner.transform.localScale.x * 150f, 0f, true, false, owner.IsMine, false, true))
+            if (Map.HitClosestUnit(owner, PlayerNum, 4, parsedDamageType, num, num * 2f, vector.x, vector.y, owner.transform.localScale.x * 150f, 0f, true, false, owner.IsMine, false, true))
             {
                 sound.PlaySoundEffectAt(alternateMeleeHitSounds, 0.8f, owner.transform.position, Random.Range(0.9f, 1.1f), true, false, false, 0f);
                 hero.MeleeHasHit = true;
             }
             hero.MeleeChosenUnit = null;
-            if (!hero.MeleeHasHit && shouldTryHitTerrain && HandleTryMeleeTerrain(0, terrainDamage))
+            if (!hero.MeleeHasHit && shouldTryHitTerrain && TryMeleeTerrain(0, terrainDamage))
             {
                 hero.MeleeHasHit = true;
             }

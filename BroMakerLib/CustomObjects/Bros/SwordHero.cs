@@ -20,8 +20,12 @@ namespace BroMakerLib.CustomObjects.Bros
 
         protected override void Awake()
         {
-            hitPuff = (HeroController.GetHeroPrefab(HeroType.Blade) as Blade).hitPuff;
-            shrapnelSpark = (HeroController.GetHeroPrefab(HeroType.Blade) as Blade).shrapnelSpark;
+            Blade bladePrefab = HeroController.GetHeroPrefab(HeroType.Blade) as Blade;
+            if (bladePrefab != null)
+            {
+                hitPuff = bladePrefab.hitPuff;
+                shrapnelSpark = bladePrefab.shrapnelSpark;
+            }
             base.Awake();
         }
 

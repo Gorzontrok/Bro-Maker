@@ -25,6 +25,7 @@ namespace BroMakerLib.Vanilla.Melees
             animationRow = 8;
             animationColumn = 22;
             frameRate = 0.033f;
+            damageType = "Melee";
         }
 
         protected override void CacheSoundsFromPrefab()
@@ -37,7 +38,7 @@ namespace BroMakerLib.Vanilla.Melees
             if (alternateMeleeMissSounds == null) alternateMeleeMissSounds = sourceBro.soundHolder.alternateMeleeMissSound.CloneArray();
         }
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
 
@@ -97,7 +98,7 @@ namespace BroMakerLib.Vanilla.Melees
             }
         }
 
-        public override void CancelMelee()
+        public override void HandleAfterResetMeleeValues()
         {
             if (owner.frame <= 1)
             {
@@ -111,13 +112,13 @@ namespace BroMakerLib.Vanilla.Melees
             Map.DamageDoodads(3, DamageType.Knifed, owner.X + (float)(owner.Direction * 4), owner.Y, 0f, 0f, 6f, owner.playerNum, out flag, null);
             hero.KickDoors(24f);
             List<Unit> list = new List<Unit>();
-            if (Map.HitUnits(owner, owner.playerNum, 8, DamageType.Melee, 9f, owner.X + (float)(owner.Direction * 8), owner.Y + 16f, owner.xI + (float)(owner.Direction * 80), owner.yI + 700f, false, true, false, list, false, true))
+            if (Map.HitUnits(owner, owner.playerNum, 8, parsedDamageType, 9f, owner.X + (float)(owner.Direction * 8), owner.Y + 16f, owner.xI + (float)(owner.Direction * 80), owner.yI + 700f, false, true, false, list, false, true))
             {
                 sound.PlaySoundEffectAt(alternateMeleeHitSounds, 0.5f, owner.transform.position, 1f, true, false, false, 0f);
                 hero.MeleeHasHit = true;
                 SortOfFollow.Shake(0.3f);
             }
-            else if (HandleTryMeleeTerrain(0, 10))
+            else if (TryMeleeTerrain(0, 10))
             {
                 hero.MeleeHasHit = true;
             }
@@ -125,7 +126,7 @@ namespace BroMakerLib.Vanilla.Melees
             {
             }
             hero.MeleeChosenUnit = null;
-            if (!hero.MeleeHasHit && shouldTryHitTerrain && HandleTryMeleeTerrain(0, terrainDamage))
+            if (!hero.MeleeHasHit && shouldTryHitTerrain && TryMeleeTerrain(0, terrainDamage))
             {
                 hero.MeleeHasHit = true;
             }

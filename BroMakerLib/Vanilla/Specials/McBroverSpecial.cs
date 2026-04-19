@@ -39,7 +39,7 @@ namespace BroMakerLib.Vanilla.Specials
             spawnOffsetY = 6.5f;
         }
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
             var prefab = HeroController.GetHeroPrefab(HeroType.McBrover);

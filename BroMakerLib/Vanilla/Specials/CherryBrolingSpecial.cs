@@ -34,7 +34,7 @@ namespace BroMakerLib.Vanilla.Specials
             frameRate = 0.04f;
         }
 
-        public override void Initialize(TestVanDammeAnim owner)
+        public override void Initialize(BroBase owner)
         {
             base.Initialize(owner);
             var sourceBro = HeroController.GetHeroPrefab(HeroType.CherryBroling);
@@ -91,17 +91,8 @@ namespace BroMakerLib.Vanilla.Specials
                 }
                 else
                 {
-                    var cherry = owner as CherryBroling;
-                    if (cherry != null)
-                    {
-                        cherry.SetFieldValue("somersaulting", true);
-                        cherry.SetFieldValue("somersaultFrame", 0);
-                    }
-                    else
-                    {
-                        somersaulting = true;
-                        somersaultFrame = 0;
-                    }
+                    somersaulting = true;
+                    somersaultFrame = 0;
                     owner.actionState = ActionState.Jumping;
                     hero.AnimateJumping();
                     if (owner.IsMine)
@@ -183,6 +174,11 @@ namespace BroMakerLib.Vanilla.Specials
                 somersaultFrame = 0;
             }
             return true;
+        }
+
+        public override bool HandleRunFiring()
+        {
+            return !somersaulting;
         }
     }
 }
