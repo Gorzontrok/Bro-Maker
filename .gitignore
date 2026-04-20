@@ -4,6 +4,7 @@
 *bin/
 *obj/
 wiki/
+!images/wiki/
 BroMaker/src/BroMaker/NewFolder1/
 **/_ModContent/*.dll
 BroMakerLib/LocalBroforcePath.props
