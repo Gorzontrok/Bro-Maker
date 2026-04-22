@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
-    /// <summary>Cherry Broling's rocket-somersault special.</summary>
+    /// <summary>Cherry Broling's rocket-jump special.</summary>
     [SpecialPreset("CherryBroling")]
     public class CherryBrolingSpecial : SpecialAbility
     {

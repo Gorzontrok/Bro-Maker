@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
-    /// <summary>The Brofessional's Matilda targeting-wave special.</summary>
+    /// <summary>The Brofessional's Brotilda targeting-wave special.</summary>
     [SpecialPreset("TheBrofessional")]
     public class TheBrofessionalSpecial : SpecialAbility
     {

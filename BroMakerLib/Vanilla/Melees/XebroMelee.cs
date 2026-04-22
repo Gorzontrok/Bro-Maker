@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
-    /// <summary>Xebro's flip kick melee.</summary>
+    /// <summary>Xebro's chakram-punch melee.</summary>
     [MeleePreset("Xebro")]
     public class XebroMelee : MeleeAbility
     {

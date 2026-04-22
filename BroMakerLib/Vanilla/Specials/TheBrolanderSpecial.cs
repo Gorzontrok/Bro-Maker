@@ -9,7 +9,7 @@ using World.Generation.MapGenV4;
 
 namespace BroMakerLib.Vanilla.Specials
 {
-    /// <summary>The Brolander's lightning quickening and immortal resurrection special.</summary>
+    /// <summary>The Brolander's Quickening lightning-burst special.</summary>
     [SpecialPreset("TheBrolander")]
     public class TheBrolanderSpecial : SpecialAbility
     {

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
-    /// <summary>Shared base for punch melee. Used by: McBrover, BroMax, DoubleBroSeven, BurtBrommer, TheBrolander.</summary>
+    /// <summary>Shared base for punch melee. Used by: McBrover, BroMax, DoubleBroSeven. Extended by: BroGummerMelee, TheBrolanderMelee.</summary>
     [MeleePreset("Punch")]
     public class PunchMelee : MeleeAbility
     {

@@ -8,7 +8,7 @@ using UnityEngine;
 namespace BroMakerLib.Vanilla.Specials
 {
     /// <summary>Shared base for shockwave specials. Extended by: BroCeasarSpecial, BronanSpecial.</summary>
-    public class ShockwaveSpecial : SpecialAbility
+    public abstract class ShockwaveSpecial : SpecialAbility
     {
         /// <summary>When false, the shockwave stuns but does not kill enemies.</summary>
         public bool lethal = true;

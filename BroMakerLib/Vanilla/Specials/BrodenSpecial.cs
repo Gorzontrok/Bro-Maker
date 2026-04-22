@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
-    /// <summary>Broden's impaling dash with explosive finish.</summary>
+    /// <summary>Broden's dashing skyward-throw.</summary>
     [SpecialPreset("Broden")]
     public class BrodenSpecial : SpecialAbility
     {

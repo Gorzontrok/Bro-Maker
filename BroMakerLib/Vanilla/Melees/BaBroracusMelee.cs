@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
-    /// <summary>B.A. Broracus's punch melee.</summary>
+    /// <summary>B.A. Broracus's headbutt melee.</summary>
     [MeleePreset("BaBroracus")]
     public class BaBroracusMelee : MeleeAbility
     {

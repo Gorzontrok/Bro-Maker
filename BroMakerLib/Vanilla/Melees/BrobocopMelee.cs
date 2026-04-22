@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
-    /// <summary>Brobocop's pistol-whip punch melee.</summary>
+    /// <summary>Brobocop's data-stab melee.</summary>
     [MeleePreset("Brobocop")]
     public class BrobocopMelee : MeleeAbility
     {

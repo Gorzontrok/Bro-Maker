@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
-    /// <summary>Abstract shared base for smash melee. Extended by: BrominatorMelee, TankBroMelee, BronanMelee.</summary>
+    /// <summary>Shared base for smash melee. Extended by: BrominatorMelee, TankBroMelee, BronanMelee.</summary>
     public abstract class SmashMelee : MeleeAbility
     {
         /// <summary>Damage dealt by the ground uppercut.</summary>
@@ -29,7 +29,7 @@ namespace BroMakerLib.Vanilla.Melees
         public float smashExplodeYI = 240f;
         /// <summary>Radius of the ground damage ring on smash landing.</summary>
         public float smashGroundDamageRange = 25f;
-        /// <summary>Width of the ground-wave visual effect on smash landing.</summary>
+        /// <summary>Radius of the ground-wave visual effect on smash landing.</summary>
         public float smashGroundWaveSize = 80f;
 
         /// <summary>Sprite sheet row used for the aerial smash animation.</summary>

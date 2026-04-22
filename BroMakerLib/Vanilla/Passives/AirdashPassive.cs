@@ -5,8 +5,8 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Passives
 {
-    /// <summary>Shared base for airdash passives. Vanilla subclasses: NebroPassive, BroLeePassive.</summary>
-    public class AirdashPassive : PassiveAbility
+    /// <summary>Shared base for airdash passives. Extended by: NebroPassive, BroLeePassive.</summary>
+    public abstract class AirdashPassive : PassiveAbility
     {
         public float defaultAirdashDelay = 0.15f;
         public float airdashMaxTime = 0.5f;

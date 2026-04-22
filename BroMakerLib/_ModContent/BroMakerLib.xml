@@ -102,7 +102,7 @@
             <summary>Damage dealt to units on hit.</summary>
         </member>
         <member name="F:BroMakerLib.Abilities.MeleeAbility.damageType">
-            <summary>DamageType enum name (e.g., "Knifed", "Melee", "Electrocution") controlling the unit-hit damage type. Parsed at initialization into `parsedDamageType`. Doodad damage is always `DamageType.Knifed`.</summary>
+            <summary>DamageType enum name controlling the unit-hit damage type. Parsed at initialization into `parsedDamageType`.</summary>
         </member>
         <member name="F:BroMakerLib.Abilities.MeleeAbility.parsedDamageType">
             <summary>Parsed `DamageType` applied to unit hits by `PerformMeleeAttack`. Set from `damageType` during `Initialize`.</summary>
@@ -135,7 +135,7 @@
             <summary>Controls BroBase dispatch routing and TryMeleeTerrain sounds.</summary>
         </member>
         <member name="F:BroMakerLib.Abilities.MeleeAbility.forceDashingOnCustomStart">
-            <summary>When true, `MeleeStartType.Custom` start sets `DashingMelee = true` and pushes `xI` toward the target. Set true only for bros whose vanilla `StartCustomMelee` does this (e.g. BaBroracus, Broden).</summary>
+            <summary>When true, `MeleeStartType.Custom` start sets `DashingMelee = true` and pushes `xI` toward the target.</summary>
         </member>
         <member name="F:BroMakerLib.Abilities.MeleeAbility.meleeHitSounds">
             <summary>Sounds played when the melee strike connects with a unit.</summary>
@@ -728,7 +728,7 @@
             <summary>Called by a returning `Chakram` to restore ammo.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Specials.BrocheteSpecial">
-            <summary>Brochete's machete spray.</summary>
+            <summary>Brochete's knife flurry.</summary>
         </member>
         <member name="F:BroMakerLib.Vanilla.Specials.BrocheteSpecial.projectileName">
             <summary>Name of the projectile prefab to load for each thrown machete.</summary>
@@ -779,7 +779,7 @@
             <summary>Maximum random multiplier for each knife's vertical speed.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Specials.BladeSpecial">
-            <summary>Blade's horizontal sword dash.</summary>
+            <summary>Blade's horizontal slashing dash.</summary>
         </member>
         <member name="F:BroMakerLib.Vanilla.Specials.BladeSpecial.dashSpeed">
             <summary>Horizontal speed during the dash.</summary>
@@ -888,13 +888,13 @@
             subclasses to match the bro's own effects (e.g., `BroCeasarSpecial` overrides to `BroCeasar`).</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Specials.BronanSpecial">
-            <summary>Bronan's lethal shockwave special.</summary>
+            <summary>Bronan's leaping shockwave smash.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Specials.BroCeasarSpecial">
             <summary>Bro Ceasar's shockwave charge.</summary>
         </member>
         <member name="F:BroMakerLib.Vanilla.Specials.BroCeasarSpecial.shockwaveProjectile">
-            <summary>Projectile fired backward during the shockwave dash (provides the reverse recoil thrust).</summary>
+            <summary>Projectile fired backward during the shockwave dash; its recoil thrusts the bro forward.</summary>
         </member>
         <member name="F:BroMakerLib.Vanilla.Specials.BroCeasarSpecial.shockwaveBulletShell">
             <summary>Shell casing shrapnel spawned at each shockwave bullet.</summary>
@@ -906,7 +906,7 @@
             <summary>Seconds between consecutive shockwave bullets.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Specials.BrodenSpecial">
-            <summary>Broden's impaling dash with explosive finish.</summary>
+            <summary>Broden's dashing skyward-throw.</summary>
         </member>
         <member name="F:BroMakerLib.Vanilla.Specials.BrodenSpecial.dashSpeed">
             <summary>Horizontal speed during the dash.</summary>
@@ -1029,7 +1029,7 @@
             <summary>Volume of the throw attack sound.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Specials.IndianaBronesSpecial">
-            <summary>Indiana Brones's shotgun blast special.</summary>
+            <summary>Indiana Brones's piercing revolver shot special.</summary>
         </member>
         <member name="F:BroMakerLib.Vanilla.Specials.IndianaBronesSpecial.projectileName">
             <summary>Name of the projectile prefab fired during the special.</summary>
@@ -1050,7 +1050,7 @@
             <summary>Camera shake magnitude on firing.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Specials.CherryBrolingSpecial">
-            <summary>Cherry Broling's rocket-somersault special.</summary>
+            <summary>Cherry Broling's rocket-jump special.</summary>
         </member>
         <member name="F:BroMakerLib.Vanilla.Specials.CherryBrolingSpecial.duckingSpeedX">
             <summary>Horizontal rocket speed when fired while ducking on the ground.</summary>
@@ -1089,7 +1089,7 @@
             <summary>Sound played on special activation.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Specials.TheBrofessionalSpecial">
-            <summary>The Brofessional's Matilda targeting-wave special.</summary>
+            <summary>The Brofessional's Brotilda targeting-wave special.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Specials.BroveHeartSpecial">
             <summary>BroveHeart's freedom-cry hero-boost special.</summary>
@@ -1206,7 +1206,7 @@
             <summary>Boondock Bro's companion-summoning special.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Specials.BrobocopSpecial">
-            <summary>Brobocop's targeting-system missile barrage.</summary>
+            <summary>Brobocop's tracking Auto 9 barrage.</summary>
         </member>
         <member name="F:BroMakerLib.Vanilla.Specials.BrobocopSpecial.targetingDuration">
             <summary>How long the targeting cursor stays active before auto-firing.</summary>
@@ -1218,7 +1218,7 @@
             <summary>Minimum time between successive special uses.</summary>
         </member>
         <member name="F:BroMakerLib.Vanilla.Specials.BrobocopSpecial.missileSpeed">
-            <summary>Launch speed of each guided missile.</summary>
+            <summary>Launch speed of each guided Auto 9 shot.</summary>
         </member>
         <member name="F:BroMakerLib.Vanilla.Specials.BrobocopSpecial.missileFireInterval">
             <summary>Delay in seconds between firing successive missiles at locked targets.</summary>
@@ -1251,7 +1251,7 @@
             <summary>Sound played when the shot fires.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Specials.BroLeeSpecial">
-            <summary>Bro Lee's multi-directional sword combo.</summary>
+            <summary>Bro Lee's slow-motion martial-arts chain.</summary>
         </member>
         <member name="F:BroMakerLib.Vanilla.Specials.BroLeeSpecial.maxHits">
             <summary>Number of combo strikes before the special ends.</summary>
@@ -1272,7 +1272,7 @@
             <summary>Slice impact sound played on a successful hit.</summary>
         </member>
         <member name="F:BroMakerLib.Vanilla.Specials.BroLeeSpecial.attack2Sounds">
-            <summary>Wall-hit sound played when the sword strikes terrain.</summary>
+            <summary>Sound played when a strike hits terrain.</summary>
         </member>
         <member name="F:BroMakerLib.Vanilla.Specials.BroLeeSpecial.attack3Sounds">
             <summary>Bruce Lee vocal played when launching each attack.</summary>
@@ -1413,7 +1413,7 @@
             <summary>Passes the raw ammo value through unchanged; may resolve to `None` if out of range.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Specials.DoubleBroSevenSpecial">
-            <summary>Double Bro Seven's rotating gadget special with balaclava, jetpack, laser, martini, and tear gas modes.</summary>
+            <summary>Double Bro Seven's rotating gadget special.</summary>
         </member>
         <member name="F:BroMakerLib.Vanilla.Specials.DoubleBroSevenSpecial.overflowMode">
             <summary>How to resolve the gadget type when `SpecialAmmo` is outside the 1-5 range.</summary>
@@ -1485,7 +1485,7 @@
             <summary>Playback volume for the cloaking sound.</summary>
         </member>
         <member name="F:BroMakerLib.Vanilla.Specials.PredabroSpecial.cannonSoundVolume">
-            <summary>Playback volume for the laser cannon sound.</summary>
+            <summary>Playback volume for the shoulder cannon firing sound.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Specials.SnakeBroskinSpecial">
             <summary>Snake Broskin's hologram-grenade and teleport special.</summary>
@@ -1641,16 +1641,16 @@
             <summary>Sound played on a successful palm hit.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Specials.TheBrolanderSpecial">
-            <summary>The Brolander's lightning quickening and immortal resurrection special.</summary>
+            <summary>The Brolander's Quickening lightning-burst special.</summary>
         </member>
         <member name="F:BroMakerLib.Vanilla.Specials.TheBrolanderSpecial.immortalDeathDuration">
             <summary>Seconds the bro lingers as "immortal dead" before auto-resurrecting.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Melees.KnifeMelee">
-            <summary>Shared base for knife melee. Used by: Rambro, Brommando, Brononymous, Nebro, EllenRipbro, BroneyRoss, LeeBroxmas, BronnarJensen, BroCeasar, TrentBroser, BrocSnipes, TollBroad, Predabro, BrondleFly, BroLee, ScorpionBro, DemolitionBro.</summary>
+            <summary>Shared base for knife melee. Used by: Rambro, Brommando, Brononymous, Nebro, EllenRipbro, BroneyRoss, LeeBroxmas, BronnarJensen, BroCeasar, TrentBroser, BrocSnipes, TollBroad, Predabro, BrondleFly, BroLee, ScorpionBro, DemolitionBro, CaseyBroback.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Melees.KnifeThrowMelee">
-            <summary>Shared base for throwing-knife melee. Extended by: TheBrodeMelee.</summary>
+            <summary>Shared base for throwing-knife melee. Used by: Blade. Extended by: TheBrodeMelee.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Melees.PistolWhipMelee">
             <summary>Shared base for pistol-whip melee. Used by: BroHard, BoondockBro.</summary>
@@ -1659,10 +1659,10 @@
             <summary>Shared base for roundhouse kick melee. Used by: BrodellWalker, ColJamesBrodock.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Melees.SplitKickMelee">
-            <summary>Shared base for split kick melee. Used by: TimeBroVanDamme.</summary>
+            <summary>Shared base for split kick melee. Used by: TimeBroVanDamme. Extended by: BroniversalSoldierMelee.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Melees.SmashMelee">
-            <summary>Abstract shared base for smash melee. Extended by: BrominatorMelee, TankBroMelee, BronanMelee.</summary>
+            <summary>Shared base for smash melee. Extended by: BrominatorMelee, TankBroMelee, BronanMelee.</summary>
         </member>
         <member name="F:BroMakerLib.Vanilla.Melees.SmashMelee.upperCutDamage">
             <summary>Damage dealt by the ground uppercut.</summary>
@@ -1689,7 +1689,7 @@
             <summary>Radius of the ground damage ring on smash landing.</summary>
         </member>
         <member name="F:BroMakerLib.Vanilla.Melees.SmashMelee.smashGroundWaveSize">
-            <summary>Width of the ground-wave visual effect on smash landing.</summary>
+            <summary>Radius of the ground-wave visual effect on smash landing.</summary>
         </member>
         <member name="F:BroMakerLib.Vanilla.Melees.SmashMelee.smashAnimationRow">
             <summary>Sprite sheet row used for the aerial smash animation.</summary>
@@ -1746,22 +1746,22 @@
             <summary>Brochete's disembowel melee.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Melees.BaBroracusMelee">
-            <summary>B.A. Broracus's punch melee.</summary>
+            <summary>B.A. Broracus's headbutt melee.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Melees.IndianaBronesMelee">
-            <summary>Indiana Brones's whip melee.</summary>
+            <summary>Indiana Brones's pickaxe melee.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Melees.BroffyMelee">
-            <summary>Broffy's knife melee.</summary>
+            <summary>Broffy's stake-stab and kick melee.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Melees.DesperabroMelee">
-            <summary>Desperabro's knife melee.</summary>
+            <summary>Desperabro's guitar melee.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Melees.CherryBrolingMelee">
-            <summary>Cherry Broling's flip-kick knife melee.</summary>
+            <summary>Cherry Broling's flip-kick melee.</summary>
         </member>
         <member name="F:BroMakerLib.Vanilla.Melees.CherryBrolingMelee.enableSomersault">
-            <summary>Whether a successful kick triggers the airborne somersault animation. Disable for cross-bro owners whose sprite sheet lacks a matching flip row.</summary>
+            <summary>Whether a successful kick triggers the airborne somersault animation.</summary>
         </member>
         <member name="F:BroMakerLib.Vanilla.Melees.CherryBrolingMelee.somersaultAnimationRow">
             <summary>Sprite sheet row for the somersault animation.</summary>
@@ -1782,10 +1782,10 @@
             <summary>Bro Dredd's taser melee.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Melees.BrobocopMelee">
-            <summary>Brobocop's pistol-whip punch melee.</summary>
+            <summary>Brobocop's data-stab melee.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Melees.XebroMelee">
-            <summary>Xebro's flip kick melee.</summary>
+            <summary>Xebro's chakram-punch melee.</summary>
         </member>
         <member name="F:BroMakerLib.Vanilla.Melees.XebroMelee.flipKickHitFrame">
             <summary>Frame index within the flip animation at which the hit detection fires.</summary>
@@ -1800,7 +1800,7 @@
             <summary>Volume of the flip kick attack sound effect.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Melees.PunchMelee">
-            <summary>Shared base for punch melee. Used by: McBrover, BroMax, DoubleBroSeven, BurtBrommer, TheBrolander.</summary>
+            <summary>Shared base for punch melee. Used by: McBrover, BroMax, DoubleBroSeven. Extended by: BroGummerMelee, TheBrolanderMelee.</summary>
         </member>
         <member name="F:BroMakerLib.Vanilla.Melees.PunchMelee.punchOffset">
             <summary>Forward offset from the bro center to the punch hit origin.</summary>
@@ -1824,7 +1824,7 @@
             <summary>Volume for miss sound.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Melees.BroGummerMelee">
-            <summary>Burt Brommer's satchel-charge punch melee.</summary>
+            <summary>Burt Brommer's stick-dynamite melee.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Melees.SnakeBroskinMelee">
             <summary>SnakeBroSkin's baseball bat melee.</summary>
@@ -1884,13 +1884,13 @@
             <summary>TheBrofessional's teleport-stab melee.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Melees.BrodenMelee">
-            <summary>Broden's impaling uppercut melee.</summary>
+            <summary>Broden's uppercut melee.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Melees.DirtyHarryMelee">
-            <summary>Dirty Harry's baseball bat melee.</summary>
+            <summary>Dirty Harry's punch melee.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Melees.BroveHeartMelee">
-            <summary>BroveHeart's sword-throw and knife melee.</summary>
+            <summary>BroveHeart's sword-throw and punch melee.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Passives.TheBrocketeerPassive">
             <summary>TheBrocketeer's jetpack hover.</summary>
@@ -1899,10 +1899,10 @@
             <summary>Upward velocity impulse added on takeoff.</summary>
         </member>
         <member name="F:BroMakerLib.Vanilla.Passives.TheBrocketeerPassive.suspendedAirdashDelay">
-            <summary>Duration in seconds after an airdash during which the jetpack may still fire despite `airdashTime > 0`. Matches the `suspendedAirdashDelay` field on `TheBrocketeerSpecial` when both abilities are used together.</summary>
+            <summary>Fallback grace period in seconds after an airdash during which the jetpack may still fire despite `airdashTime > 0`. Used only when the bro has no `TheBrocketeerSpecial`; when a `TheBrocketeerSpecial` is present on the same bro, its live dive-countdown timer overrides this field.</summary>
         </member>
         <member name="F:BroMakerLib.Vanilla.Passives.TheBrocketeerPassive.enableBlastOffExplosion">
-            <summary>When true, takeoff spawns a FlameWallExplosion. Disable for bros without a flame-wall prefab on the owner.</summary>
+            <summary>When true, takeoff spawns a FlameWallExplosion at the bro's feet.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Passives.SnakeBroskinPassive">
             <summary>SnakeBroskin's airplane glider.</summary>
@@ -1962,7 +1962,7 @@
             <summary>Sounds played at teleport start and end.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Passives.AirdashPassive">
-            <summary>Shared base for airdash passives. Vanilla subclasses: NebroPassive, BroLeePassive.</summary>
+            <summary>Shared base for airdash passives. Extended by: NebroPassive, BroLeePassive.</summary>
         </member>
         <member name="T:BroMakerLib.Vanilla.Passives.NebroPassive">
             <summary>Nebro's airdash.</summary>
@@ -2866,9 +2866,9 @@
             
              <example>
              <code>
-             [PassivePreset("Stormbro")]
-             [ConflictsWithPresets("BrondleFly", "Tornado", "Balloon")]
-             public class StormbroPassive : PassiveAbility { }
+             [PassivePreset("SuperGlider")]
+             [ConflictsWithPresets("SnakeBroskin", "BrondleFly")]
+             public class SuperGliderPassive : PassiveAbility { }
              </code>
              </example>
              </summary>
@@ -3697,9 +3697,7 @@
             </remarks>
         </member>
         <member name="T:BroMakerLib.CustomObjects.IAbilityOwner">
-            <summary>
-            Interface for bros that host the ability system.
-            </summary>
+            <summary>Interface for bros that support the ability system.</summary>
         </member>
         <member name="P:BroMakerLib.CustomObjects.IAbilityOwner.Passives">
             <summary>All passive abilities attached to this bro, in JSON-declared order. Do not mutate the returned list directly; use the bro's `AddPassive`/`RemovePassive`/`ClearPassives` helpers.</summary>
@@ -3787,7 +3785,7 @@
             Name of the Custom Object
             </summary>
         </member>
-        <member name="M:BroMakerLib.Infos.CustomBroforceObjectInfo.SetFieldDataStatic(HarmonyLib.Traverse,System.String,System.Object,System.String)">
+        <member name="M:BroMakerLib.Infos.CustomBroforceObjectInfo.SetFieldDataStatic(HarmonyLib.Traverse,System.String,System.Object,System.String,System.Object)">
             <summary>
             Type-aware field setter that handles Unity types, enums, and game objects.
             Used by both lifecycle callbacks (beforeAwake, etc.) and ability JSON deserialization.
@@ -3796,6 +3794,7 @@
             <param name="key">Field name (for error logging).</param>
             <param name="value">Value to assign (may need type conversion).</param>
             <param name="path">Base path for resolving relative file references (textures, audio, etc.).</param>
+            <param name="owner">Object that owns the field; used as the parent transform for cloned SpriteSM components.</param>
         </member>
         <member name="P:BroMakerLib.Infos.CustomBroInfo.special">
             <summary>Special ability JSON config. Contains "preset" key and optional parameter overrides.</summary>

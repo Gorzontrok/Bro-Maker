@@ -23,10 +23,10 @@ namespace BroMakerLib.Vanilla.Passives
         public float jetPackRate = 0.04f;
         /// <summary>Upward velocity impulse added on takeoff.</summary>
         public float blastOffYBoost = 100f;
-        /// <summary>Duration in seconds after an airdash during which the jetpack may still fire despite `airdashTime > 0`. Matches the `suspendedAirdashDelay` field on `TheBrocketeerSpecial` when both abilities are used together.</summary>
+        /// <summary>Fallback grace period in seconds after an airdash during which the jetpack may still fire despite `airdashTime > 0`. Used only when the bro has no `TheBrocketeerSpecial`; when a `TheBrocketeerSpecial` is present on the same bro, its live dive-countdown timer overrides this field.</summary>
         public float suspendedAirdashDelay = 0f;
 
-        /// <summary>When true, takeoff spawns a FlameWallExplosion. Disable for bros without a flame-wall prefab on the owner.</summary>
+        /// <summary>When true, takeoff spawns a FlameWallExplosion at the bro's feet.</summary>
         public bool enableBlastOffExplosion = true;
         public Vector3 jetpackSideDirection = new Vector3(160f, -330f, 0f);
         public Vector3 jetpackDownDirection = new Vector3(0f, -370f, 0f);

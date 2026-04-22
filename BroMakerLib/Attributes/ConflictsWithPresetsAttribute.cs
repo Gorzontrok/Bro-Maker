@@ -7,9 +7,9 @@ namespace BroMakerLib.Attributes
     ///
     /// <example>
     /// <code>
-    /// [PassivePreset("Stormbro")]
-    /// [ConflictsWithPresets("BrondleFly", "Tornado", "Balloon")]
-    /// public class StormbroPassive : PassiveAbility { }
+    /// [PassivePreset("SuperGlider")]
+    /// [ConflictsWithPresets("SnakeBroskin", "BrondleFly")]
+    /// public class SuperGliderPassive : PassiveAbility { }
     /// </code>
     /// </example>
     /// </summary>

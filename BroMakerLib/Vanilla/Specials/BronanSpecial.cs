@@ -3,7 +3,7 @@ using Rogueforce;
 
 namespace BroMakerLib.Vanilla.Specials
 {
-    /// <summary>Bronan's lethal shockwave special.</summary>
+    /// <summary>Bronan's leaping shockwave smash.</summary>
     [SpecialPreset("Bronan")]
     public class BronanSpecial : ShockwaveSpecial
     {

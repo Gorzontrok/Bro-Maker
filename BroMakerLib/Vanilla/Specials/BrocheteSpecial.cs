@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
-    /// <summary>Brochete's machete spray.</summary>
+    /// <summary>Brochete's knife flurry.</summary>
     [SpecialPreset("Brochete")]
     public class BrocheteSpecial : SpecialAbility
     {

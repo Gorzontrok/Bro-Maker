@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
-    /// <summary>Desperabro's knife melee.</summary>
+    /// <summary>Desperabro's guitar melee.</summary>
     [MeleePreset("Desperabro")]
     public class DesperabroMelee : MeleeAbility
     {

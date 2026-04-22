@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
-    /// <summary>Shared base for throwing-knife melee. Extended by: TheBrodeMelee.</summary>
+    /// <summary>Shared base for throwing-knife melee. Used by: Blade. Extended by: TheBrodeMelee.</summary>
     [MeleePreset("KnifeThrowMelee")]
     public class KnifeThrowMelee : MeleeAbility
     {

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
-    /// <summary>Cherry Broling's flip-kick knife melee.</summary>
+    /// <summary>Cherry Broling's flip-kick melee.</summary>
     [MeleePreset("CherryBroling")]
     public class CherryBrolingMelee : MeleeAbility
     {
@@ -15,7 +15,7 @@ namespace BroMakerLib.Vanilla.Melees
         public AudioClip[] alternateMeleeHitSounds2;
         public AudioClip[] alternateMeleeMissSounds;
 
-        /// <summary>Whether a successful kick triggers the airborne somersault animation. Disable for cross-bro owners whose sprite sheet lacks a matching flip row.</summary>
+        /// <summary>Whether a successful kick triggers the airborne somersault animation.</summary>
         public bool enableSomersault = true;
         /// <summary>Sprite sheet row for the somersault animation.</summary>
         public int somersaultAnimationRow = 8;

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
-    /// <summary>Indiana Brones's whip melee.</summary>
+    /// <summary>Indiana Brones's pickaxe melee.</summary>
     [MeleePreset("IndianaBrones")]
     public class IndianaBronesMelee : MeleeAbility
     {

@@ -4,9 +4,7 @@ using UnityEngine;
 
 namespace BroMakerLib.CustomObjects
 {
-    /// <summary>
-    /// Interface for bros that host the ability system.
-    /// </summary>
+    /// <summary>Interface for bros that support the ability system.</summary>
     public interface IAbilityOwner
     {
         SpecialAbility SpecialAbility { get; }

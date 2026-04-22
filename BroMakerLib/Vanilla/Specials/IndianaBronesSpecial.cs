@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
-    /// <summary>Indiana Brones's shotgun blast special.</summary>
+    /// <summary>Indiana Brones's piercing revolver shot special.</summary>
     [SpecialPreset("IndianaBrones")]
     public class IndianaBronesSpecial : SpecialAbility
     {

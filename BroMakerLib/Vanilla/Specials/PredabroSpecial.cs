@@ -36,7 +36,7 @@ namespace BroMakerLib.Vanilla.Specials
         public float bulletSpeed = 700f;
         /// <summary>Playback volume for the cloaking sound.</summary>
         public float cloakingSoundVolume = 0.3f;
-        /// <summary>Playback volume for the laser cannon sound.</summary>
+        /// <summary>Playback volume for the shoulder cannon firing sound.</summary>
         public float cannonSoundVolume = 1f;
 
         public AudioClip selfDestructSound;

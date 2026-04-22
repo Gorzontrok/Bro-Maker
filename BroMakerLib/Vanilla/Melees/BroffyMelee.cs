@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
-    /// <summary>Broffy's knife melee.</summary>
+    /// <summary>Broffy's stake-stab and kick melee.</summary>
     [MeleePreset("Broffy")]
     public class BroffyMelee : MeleeAbility
     {

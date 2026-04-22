@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
-    /// <summary>Blade's horizontal sword dash.</summary>
+    /// <summary>Blade's horizontal slashing dash.</summary>
     [SpecialPreset("Brade")]
     public class BladeSpecial : SpecialAbility
     {

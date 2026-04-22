@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
-    /// <summary>Bro Lee's multi-directional sword combo.</summary>
+    /// <summary>Bro Lee's slow-motion martial-arts chain.</summary>
     [SpecialPreset("BroLee")]
     public class BroLeeSpecial : SpecialAbility
     {
@@ -39,7 +39,7 @@ namespace BroMakerLib.Vanilla.Specials
         public AudioClip[] special4Sounds;
         /// <summary>Slice impact sound played on a successful hit.</summary>
         public AudioClip[] special2Sounds;
-        /// <summary>Wall-hit sound played when the sword strikes terrain.</summary>
+        /// <summary>Sound played when a strike hits terrain.</summary>
         public AudioClip[] attack2Sounds;
         /// <summary>Bruce Lee vocal played when launching each attack.</summary>
         public AudioClip[] attack3Sounds;

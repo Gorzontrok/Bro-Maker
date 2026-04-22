@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
-    /// <summary>Burt Brommer's satchel-charge punch melee.</summary>
+    /// <summary>Burt Brommer's stick-dynamite melee.</summary>
     [MeleePreset("BurtBrommer")]
     public class BroGummerMelee : PunchMelee
     {

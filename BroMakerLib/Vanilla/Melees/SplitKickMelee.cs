@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
-    /// <summary>Shared base for split kick melee. Used by: TimeBroVanDamme.</summary>
+    /// <summary>Shared base for split kick melee. Used by: TimeBroVanDamme. Extended by: BroniversalSoldierMelee.</summary>
     [MeleePreset("SplitKickMelee")]
     public class SplitKickMelee : MeleeAbility
     {

@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
-    /// <summary>Broden's impaling uppercut melee.</summary>
+    /// <summary>Broden's uppercut melee.</summary>
     [MeleePreset("Broden")]
     public class BrodenMelee : MeleeAbility
     {

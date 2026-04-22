@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
-    /// <summary>Dirty Harry's baseball bat melee.</summary>
+    /// <summary>Dirty Harry's punch melee.</summary>
     [MeleePreset("DirtyHarry")]
     public class DirtyHarryMelee : MeleeAbility
     {

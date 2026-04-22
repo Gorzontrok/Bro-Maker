@@ -61,7 +61,7 @@ namespace BroMakerLib.Abilities
         /// <summary>Damage dealt to units on hit.</summary>
         public int damage = 4;
 
-        /// <summary>DamageType enum name (e.g., "Knifed", "Melee", "Electrocution") controlling the unit-hit damage type. Parsed at initialization into `parsedDamageType`. Doodad damage is always `DamageType.Knifed`.</summary>
+        /// <summary>DamageType enum name controlling the unit-hit damage type. Parsed at initialization into `parsedDamageType`.</summary>
         public string damageType = "Knifed";
 
         /// <summary>Parsed `DamageType` applied to unit hits by `PerformMeleeAttack`. Set from `damageType` during `Initialize`.</summary>
@@ -96,7 +96,7 @@ namespace BroMakerLib.Abilities
         [JsonIgnore]
         public BroBase.MeleeType meleeType = BroBase.MeleeType.Knife;
 
-        /// <summary>When true, `MeleeStartType.Custom` start sets `DashingMelee = true` and pushes `xI` toward the target. Set true only for bros whose vanilla `StartCustomMelee` does this (e.g. BaBroracus, Broden).</summary>
+        /// <summary>When true, `MeleeStartType.Custom` start sets `DashingMelee = true` and pushes `xI` toward the target.</summary>
         [JsonIgnore]
         public bool forceDashingOnCustomStart = false;
 

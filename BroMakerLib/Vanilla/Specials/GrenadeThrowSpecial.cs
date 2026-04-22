@@ -7,7 +7,7 @@ using UnityEngine;
 namespace BroMakerLib.Vanilla.Specials
 {
     /// <summary>Shared base for grenade-throw specials. Extended by: RambroSpecial, BaBroracusSpecial, BrodellWalkerSpecial, BroffySpecial, BroHardSpecial, DemolitionBroSpecial, DirtyHarrySpecial, TankBroSpecial, TollBroadSpecial, TrentBroserSpecial.</summary>
-    public class GrenadeThrowSpecial : SpecialAbility
+    public abstract class GrenadeThrowSpecial : SpecialAbility
     {
         /// <summary>Name of the grenade prefab to throw.</summary>
         public string grenadeName = "Grenade";

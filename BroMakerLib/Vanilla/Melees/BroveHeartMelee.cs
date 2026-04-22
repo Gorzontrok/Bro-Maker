@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Melees
 {
-    /// <summary>BroveHeart's sword-throw and knife melee.</summary>
+    /// <summary>BroveHeart's sword-throw and punch melee.</summary>
     [MeleePreset("BroveHeart")]
     public class BroveHeartMelee : MeleeAbility
     {

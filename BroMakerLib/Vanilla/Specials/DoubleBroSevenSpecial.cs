@@ -21,7 +21,7 @@ namespace BroMakerLib.Vanilla.Specials
         Skip
     }
 
-    /// <summary>Double Bro Seven's rotating gadget special with balaclava, jetpack, laser, martini, and tear gas modes.</summary>
+    /// <summary>Double Bro Seven's rotating gadget special.</summary>
     [SpecialPreset("DoubleBroSeven")]
     public class DoubleBroSevenSpecial : SpecialAbility
     {

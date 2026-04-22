@@ -10,7 +10,7 @@ namespace BroMakerLib.Vanilla.Specials
     [SpecialPreset("BroCeasar")]
     public class BroCeasarSpecial : ShockwaveSpecial
     {
-        /// <summary>Projectile fired backward during the shockwave dash (provides the reverse recoil thrust).</summary>
+        /// <summary>Projectile fired backward during the shockwave dash; its recoil thrusts the bro forward.</summary>
         public Projectile shockwaveProjectile;
         /// <summary>Shell casing shrapnel spawned at each shockwave bullet.</summary>
         public Shrapnel shockwaveBulletShell;
