@@ -210,7 +210,7 @@ namespace BroMakerLib.Abilities
             string path = (owner as ICustomHero)?.Info?.path ?? "";
             string presetName = config.Value<string>("preset");
             ability.DynamicFieldsValueSetter(dict, null,
-                (field, key, value) => CustomBroforceObjectInfo.SetFieldDataStatic(field, key, value, path),
+                (field, key, value) => CustomBroforceObjectInfo.SetFieldDataStatic(field, key, value, path, ability),
                 context: $"{presetName} ability override");
         }
     }

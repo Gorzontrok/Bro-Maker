@@ -60,7 +60,9 @@ namespace BroMakerLib.Infos
                 throw new Exception("beforeAwake null");
             try
             {
-                obj.DynamicFieldsValueSetter(beforeAwake, null, SetFieldData, context: $"{name} beforeAwake");
+                obj.DynamicFieldsValueSetter(beforeAwake, null,
+                    (field, key, value) => SetFieldDataStatic(field, key, value, path, obj),
+                    context: $"{name} beforeAwake");
             }
             catch (Exception e)
             {
@@ -73,7 +75,9 @@ namespace BroMakerLib.Infos
                 throw new Exception("afterAwake null");
             try
             {
-                obj.DynamicFieldsValueSetter(afterAwake, null, SetFieldData, context: $"{name} afterAwake");
+                obj.DynamicFieldsValueSetter(afterAwake, null,
+                    (field, key, value) => SetFieldDataStatic(field, key, value, path, obj),
+                    context: $"{name} afterAwake");
             }
             catch (Exception e)
             {
@@ -86,7 +90,9 @@ namespace BroMakerLib.Infos
                 throw new Exception("beforeStart null");
             try
             {
-                obj.DynamicFieldsValueSetter(beforeStart, null, SetFieldData, context: $"{name} beforeStart");
+                obj.DynamicFieldsValueSetter(beforeStart, null,
+                    (field, key, value) => SetFieldDataStatic(field, key, value, path, obj),
+                    context: $"{name} beforeStart");
             }
             catch (Exception e)
             {
@@ -99,7 +105,9 @@ namespace BroMakerLib.Infos
                 throw new Exception("afterStart null");
             try
             {
-                obj.DynamicFieldsValueSetter(afterStart, null, SetFieldData, context: $"{name} afterStart");
+                obj.DynamicFieldsValueSetter(afterStart, null,
+                    (field, key, value) => SetFieldDataStatic(field, key, value, path, obj),
+                    context: $"{name} afterStart");
             }
             catch (Exception e)
             {
@@ -199,11 +207,6 @@ namespace BroMakerLib.Infos
         }
 
 
-        protected void SetFieldData(Traverse field, string key, object value)
-        {
-            SetFieldDataStatic(field, key, value, path);
-        }
-
         /// <summary>
         /// Type-aware field setter that handles Unity types, enums, and game objects.
         /// Used by both lifecycle callbacks (beforeAwake, etc.) and ability JSON deserialization.
@@ -212,7 +215,8 @@ namespace BroMakerLib.Infos
         /// <param name="key">Field name (for error logging).</param>
         /// <param name="value">Value to assign (may need type conversion).</param>
         /// <param name="path">Base path for resolving relative file references (textures, audio, etc.).</param>
-        public static void SetFieldDataStatic(Traverse field, string key, object value, string path)
+        /// <param name="owner">Object that owns the field; used as the parent transform for cloned SpriteSM components.</param>
+        internal static void SetFieldDataStatic(Traverse field, string key, object value, string path, object owner)
         {
             try
             {
@@ -222,17 +226,44 @@ namespace BroMakerLib.Infos
                     if (!(value is string))
                         throw new InvalidCastException("can't cast value to string on 'SpriteSM' field");
 
-                    SpriteSM sprite = field.GetValue<SpriteSM>();
-                    sprite.SetTexture(ResourcesController.GetTexture(path, (string)value));
-                    field.SetValue(sprite);
+                    SpriteSM existing = field.GetValue<SpriteSM>();
+                    if (existing == null)
+                    {
+                        BMLogger.Warning($"Cannot assign SpriteSM field '{key}': existing field is null");
+                        return;
+                    }
+
+                    var ownerComponent = owner as Component;
+                    if (ownerComponent == null)
+                    {
+                        BMLogger.Warning($"Cannot assign SpriteSM field '{key}': owner is not a Component, skipping");
+                        return;
+                    }
+
+                    SpriteSM clone = UnityEngine.Object.Instantiate(existing);
+                    clone.transform.SetParent(ownerComponent.transform, false);
+                    clone.transform.localPosition = existing.transform.localPosition;
+                    clone.transform.localRotation = existing.transform.localRotation;
+                    clone.transform.localScale = existing.transform.localScale;
+
+                    if (clone.meshRender == null)
+                    {
+                        BMLogger.Warning($"Cannot set texture on SpriteSM field '{key}': cloned sprite has no MeshRenderer");
+                        field.SetValue(clone);
+                        return;
+                    }
+
+                    if (clone.meshRender.sharedMaterial != null)
+                        clone.meshRender.sharedMaterial = new Material(clone.meshRender.sharedMaterial);
+
+                    clone.SetTexture(ResourcesController.GetTexture(path, (string)value));
+                    field.SetValue(clone);
                 }
                 else if (fieldType == typeof(Material))
                 {
                     if (!(value is string))
                         throw new InvalidCastException("can't cast value to string on 'Material' field");
-                    Material material = field.GetValue<Material>();
-                    material.mainTexture = ResourcesController.GetTexture(path, (string)value);
-                    field.SetValue(material);
+                    field.SetValue(ResourcesController.GetMaterial(path, (string)value));
                 }
                 else if (fieldType == typeof(Texture))
                 {
