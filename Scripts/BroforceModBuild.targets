@@ -30,9 +30,11 @@
     <LaunchBroforceOnBuild Condition="'$(LaunchBroforceOnBuild)' == ''">false</LaunchBroforceOnBuild>
     <VerboseBuildOutput Condition="'$(VerboseBuildOutput)' == ''">false</VerboseBuildOutput>
     <CopyXmlDocToModContent Condition="'$(CopyXmlDocToModContent)' == ''">false</CopyXmlDocToModContent>
+    <SkipInstall Condition="'$(SkipInstall)' == ''">false</SkipInstall>
+    <LaunchArgs Condition="'$(LaunchArgs)' == ''"></LaunchArgs>
     <LibPath Condition="'$(LibPath)' == ''">$(MSBuildThisFileDirectory)../../BroforceMods/libs</LibPath>
-    <BroMakerLibPath Condition="'$(BroMakerLibPath)' == ''">$(MSBuildThisFileDirectory)../../Bro-Maker/BroMakerLib/_ModContent/BroMakerLib.dll</BroMakerLibPath>
-    <RocketLibPath Condition="'$(RocketLibPath)' == ''">$(MSBuildThisFileDirectory)../../RocketLib/RocketLib/_ModContent/RocketLib.dll</RocketLibPath>
+    <BroMakerLibPath Condition="'$(BroMakerLibPath)' == ''">$(BroforcePath)/Mods/BroMaker/BroMakerLib.dll</BroMakerLibPath>
+    <RocketLibPath Condition="'$(RocketLibPath)' == ''">$(BroforcePath)/Mods/RocketLib/RocketLib.dll</RocketLibPath>
     <IsWindows Condition="'$(OS)' == 'Windows_NT'">true</IsWindows>
     <IsLinux Condition="'$(OS)' != 'Windows_NT'">true</IsLinux>
   </PropertyGroup>
@@ -93,7 +95,8 @@
              Condition="Exists('$(XmlDocPath)') AND '$(VerboseBuildOutput)' == 'true'" />
   </Target>
 
-  <Target Name="InstallToGame" AfterTargets="Build" DependsOnTargets="DetectProjectType">
+  <Target Name="InstallToGame" AfterTargets="Build" DependsOnTargets="DetectProjectType"
+          Condition="'$(SkipInstall)' != 'true'">
     <MakeDir Directories="$(ProjectDir)$(ModContentFolder)" />
     <MakeDir Directories="$(InstallPath)" />
 
@@ -118,7 +121,8 @@
     <Message Text="  Files: @(CopiedContentFiles->Count()) files" Importance="high" Condition="'$(VerboseBuildOutput)' == 'true'" />
   </Target>
 
-  <Target Name="CleanCacheFiles" AfterTargets="InstallToGame">
+  <Target Name="CleanCacheFiles" AfterTargets="InstallToGame"
+          Condition="'$(SkipInstall)' != 'true'">
     <ItemGroup>
       <CacheFiles Include="$(InstallPath)*.cache" />
     </ItemGroup>
@@ -128,21 +132,20 @@
 
   <Target Name="LaunchGame" AfterTargets="InstallToGame"
           Condition="'$(LaunchBroforceOnBuild)' == 'true' AND '$(IsWindows)' == 'true'">
-    <Exec Command="start steam://rungameid/274190" />
+    <Exec Command="start steam://rungameid/274190"
+          Condition="'$(LaunchArgs)' == ''" />
+    <Exec Command="start steam://run/274190//$(LaunchArgs)/"
+          Condition="'$(LaunchArgs)' != ''" />
     <Message Text="Launching Broforce via Steam" Importance="high" Condition="'$(VerboseBuildOutput)' == 'true'" />
   </Target>
 
   <Target Name="LaunchGameLinux" AfterTargets="InstallToGame"
           Condition="'$(LaunchBroforceOnBuild)' == 'true' AND '$(IsLinux)' == 'true'">
-    <Exec Command="command -v bf &amp;&gt;/dev/null &amp;&amp; bf || xdg-open steam://rungameid/274190" />
+    <Exec Command="command -v bf &amp;&gt;/dev/null &amp;&amp; bf || xdg-open steam://rungameid/274190"
+          Condition="'$(LaunchArgs)' == ''" />
+    <Exec Command="command -v bf &amp;&gt;/dev/null &amp;&amp; bf $(LaunchArgs) || xdg-open 'steam://run/274190//$(LaunchArgs)/'"
+          Condition="'$(LaunchArgs)' != ''" />
     <Message Text="Launching Broforce" Importance="high" Condition="'$(VerboseBuildOutput)' == 'true'" />
   </Target>
-
-  <Target Name="CleanInstall" DependsOnTargets="DetectProjectType">
-    <RemoveDir Directories="$(InstallPath)" Condition="Exists('$(InstallPath)')" />
-    <Message Text="Cleaned install folder: $(InstallPath)" Importance="high" Condition="'$(VerboseBuildOutput)' == 'true'" />
-  </Target>
-
-  <Target Name="RebuildAndInstall" DependsOnTargets="Clean;CleanInstall;Build" />
 
 </Project>

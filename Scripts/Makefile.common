@@ -3,11 +3,19 @@
 # Synced to repos via sync-targets.sh
 
 # Required variables (must be set before including this file):
-#   PROJECT_NAME - Display name for help text
-#   SOLUTION     - Solution or project file to build
+#   PROJECT_NAME  - Display name for help text
+#
+# Build mode (set ONE before including):
+#   SOLUTION      - Solution or project file to build (single/solution build)
+#   AUTO_DISCOVER - Set to 1 to auto-discover projects matching Name/Name/Name.csproj
+#   CUSTOM_BUILD  - Set to 1 to define your own build/clean/rebuild targets
 #
 # Optional variables:
-#   EXTRA_HELP   - Additional help text to display
+#   EXTRA_HELP       - Additional help text to display (auto-generated with AUTO_DISCOVER)
+#   EXCLUDE          - Project names to exclude from discovery (AUTO_DISCOVER only)
+#   CLEANUP_SETTINGS - Path to ReSharper .DotSettings file (default: Scripts/BroforceMods.DotSettings)
+#   CLEANUP_PROFILE  - Cleanup profile name (default: BroforceMods)
+#   JB               - jb binary (default: jb; override for dotnet local tools: JB="dotnet jb")
 
 # MSBuild configuration - override with: make MSBUILD="/path/to/msbuild" build
 # Detect if running in WSL (Windows Subsystem for Linux)
@@ -31,6 +39,27 @@ else
     LAUNCH_FLAGS := /p:CloseBroforceOnBuild=true /p:LaunchBroforceOnBuild=true
 endif
 
+# INSTALL variable controls whether DLL is copied to game directory
+# Usage: make build INSTALL=no
+ifeq ($(INSTALL),no)
+    INSTALL_FLAGS := /p:SkipInstall=true
+else
+    INSTALL_FLAGS :=
+endif
+
+# LAUNCH_ARGS forwards extra args to the post-build launch command
+# Usage: make build LAUNCH_ARGS="-m"
+ifneq ($(strip $(LAUNCH_ARGS)),)
+    LAUNCH_ARGS_FLAGS := /p:LaunchArgs="$(LAUNCH_ARGS)"
+else
+    LAUNCH_ARGS_FLAGS :=
+endif
+
+# Code cleanup configuration (JetBrains ReSharper CLI)
+CLEANUP_SETTINGS ?= Scripts/BroforceMods.DotSettings
+CLEANUP_PROFILE ?= BroforceMods
+JB ?= jb
+
 # For solution builds: extract first .csproj to use for single launch at end
 # (avoids launching once per project in multi-project solutions)
 # Format: Project("{GUID}") = "Name", "Path\To\Project.csproj", "{GUID}"
@@ -39,6 +68,164 @@ IS_SOLUTION := $(filter %.sln,$(SOLUTION))
 
 # Default target shows help
 .DEFAULT_GOAL := help
+
+# Auto-discover projects matching Name/Name/Name.csproj convention
+ifdef AUTO_DISCOVER
+CUSTOM_BUILD := 1
+
+_PROJ_LIST := /tmp/.broforce-projects-$(PROJECT_NAME)
+
+# Discover at parse time: find matching .csproj files, write target<TAB>csproj pairs
+$(shell find . -maxdepth 3 -name '*.csproj' -type f 2>/dev/null | sort | \
+  while IFS= read -r f; do \
+    f="$${f#./}"; \
+    stem=$$(basename "$$f" .csproj); \
+    dir=$$(echo "$$f" | cut -d/ -f1); \
+    parent=$$(basename "$$(dirname "$$f")"); \
+    [ "$$dir" = "$$stem" ] && [ "$$parent" = "$$stem" ] || continue; \
+    skip=false; for ex in $(EXCLUDE); do [ "$$stem" = "$$ex" ] && skip=true; done; \
+    $$skip || printf '%s\t%s\n' \
+      "$$(echo "$$stem" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')" "$$f"; \
+  done > $(_PROJ_LIST))
+
+DISCOVER_TARGETS := $(shell cut -f1 $(_PROJ_LIST))
+
+define EXTRA_HELP
+	@echo "Individual projects:"
+	@cut -f1 $(_PROJ_LIST) | sed 's/^/  make /'
+endef
+
+.PHONY: $(DISCOVER_TARGETS)
+$(DISCOVER_TARGETS):
+	@csproj=$$(awk -F'\t' '$$1 == "$@" {print $$2}' $(_PROJ_LIST)); \
+	"$(MSBUILD)" "$$csproj" $(MSBUILD_FLAGS) $(LAUNCH_FLAGS) $(INSTALL_FLAGS) $(LAUNCH_ARGS_FLAGS)
+
+.PHONY: build
+build:
+ifeq ($(LAUNCH),no)
+	@cut -f2 $(_PROJ_LIST) | while IFS= read -r csproj; do \
+	  "$(MSBUILD)" "$$csproj" $(MSBUILD_FLAGS) /p:CloseBroforceOnBuild=false /p:LaunchBroforceOnBuild=false $(INSTALL_FLAGS) $(LAUNCH_ARGS_FLAGS) || exit 1; \
+	done
+else
+	@cut -f2 $(_PROJ_LIST) | while IFS= read -r csproj; do \
+	  "$(MSBUILD)" "$$csproj" $(MSBUILD_FLAGS) /p:CloseBroforceOnBuild=true /p:LaunchBroforceOnBuild=false $(INSTALL_FLAGS) $(LAUNCH_ARGS_FLAGS) || exit 1; \
+	done
+	@csproj=$$(head -1 $(_PROJ_LIST) | cut -f2); \
+	"$(MSBUILD)" "$$csproj" $(MSBUILD_FLAGS) /p:CloseBroforceOnBuild=false /p:LaunchBroforceOnBuild=true $(INSTALL_FLAGS) $(LAUNCH_ARGS_FLAGS)
+endif
+
+.PHONY: build-no-launch
+build-no-launch:
+	@cut -f2 $(_PROJ_LIST) | while IFS= read -r csproj; do \
+	  "$(MSBUILD)" "$$csproj" $(MSBUILD_FLAGS) /p:CloseBroforceOnBuild=false /p:LaunchBroforceOnBuild=false $(INSTALL_FLAGS) $(LAUNCH_ARGS_FLAGS) || exit 1; \
+	done
+
+.PHONY: clean
+clean:
+	@cut -f2 $(_PROJ_LIST) | while IFS= read -r csproj; do \
+	  "$(MSBUILD)" "$$csproj" /t:Clean $(MSBUILD_FLAGS) $(INSTALL_FLAGS) $(LAUNCH_ARGS_FLAGS) || exit 1; \
+	done
+
+.PHONY: rebuild
+rebuild: clean build-no-launch
+
+endif # AUTO_DISCOVER
+
+# Code cleanup targets
+_CHECK_JB = @command -v $(firstword $(JB)) >/dev/null 2>&1 || { \
+	echo "Error: '$(firstword $(JB))' not found."; \
+	echo "Install with: dotnet tool install -g JetBrains.ReSharper.GlobalTools"; \
+	exit 1; }
+_CHECK_SETTINGS = @test -f "$(CLEANUP_SETTINGS)" || { \
+	echo "Error: $(CLEANUP_SETTINGS) not found. Run Scripts/sync-targets.sh from Broforce-Templates."; \
+	exit 1; }
+
+ifdef AUTO_DISCOVER
+ifdef PROJECT
+_CLEANUP_LIST_CMD = awk -F'\t' '$$1 == "$(PROJECT)" {print $$2}' $(_PROJ_LIST)
+else
+_CLEANUP_LIST_CMD = cut -f2 $(_PROJ_LIST)
+endif
+else
+_CLEANUP_LIST_CMD = printf '%s\n' "$(SOLUTION)"
+endif
+
+_CLEANUP_PREFLIGHT = @L=$$($(_CLEANUP_LIST_CMD) 2>/dev/null); \
+	if [ -z "$$L" ]; then \
+	  if [ -n "$(PROJECT)" ]; then \
+	    echo "Error: PROJECT='$(PROJECT)' not found. Run 'make help' to list available projects."; \
+	  else \
+	    echo "Error: no cleanup targets. Set SOLUTION or AUTO_DISCOVER before including Makefile.common."; \
+	  fi; \
+	  exit 1; \
+	fi
+
+# jb cleanupcode needs a .sln for full C# transforms; a bare .csproj gets reformat-only.
+# Map .csproj → sibling .sln when one exists; skip with a warning otherwise.
+_RESOLVE_CLEANUP_TARGETS = while IFS= read -r f; do \
+	  case "$$f" in \
+	    *.sln) echo "$$f" ;; \
+	    *.csproj) \
+	      sln="$$(dirname "$$(dirname "$$f")")/$$(basename "$$f" .csproj).sln"; \
+	      if [ -f "$$sln" ]; then echo "$$sln"; \
+	      else echo "Skipping $$f: no sibling .sln found" >&2; fi ;; \
+	    *) echo "$$f" ;; \
+	  esac; \
+	done
+
+.PHONY: cleanup
+cleanup:
+	$(_CHECK_JB)
+	$(_CHECK_SETTINGS)
+	$(_CLEANUP_PREFLIGHT)
+	@if [ -n "$(AUTO_DISCOVER)" ] && [ -z "$(PROJECT)" ] && [ -z "$(ALL)" ]; then \
+	  echo "Error: unscoped 'make cleanup' touches every project in this repo."; \
+	  echo "  Scope to one project:  make cleanup PROJECT=<name>"; \
+	  echo "  Or opt into all:       make cleanup ALL=1"; \
+	  exit 1; \
+	fi
+	@$(_CLEANUP_LIST_CMD) | $(_RESOLVE_CLEANUP_TARGETS) | while IFS= read -r t; do \
+	  echo "Cleaning up $$t..."; \
+	  $(JB) cleanupcode "$$t" --settings="$(CLEANUP_SETTINGS)" --profile="$(CLEANUP_PROFILE)" || exit 1; \
+	done
+
+.PHONY: cleanup-changed
+cleanup-changed:
+	$(_CHECK_JB)
+	$(_CHECK_SETTINGS)
+	$(_CLEANUP_PREFLIGHT)
+	@FILES=$$(git diff --name-only --diff-filter=ACMR HEAD -- '*.cs'); \
+	if [ -z "$$FILES" ]; then \
+	  echo "No changed .cs files."; \
+	  exit 0; \
+	fi; \
+	AUTO_PROJECT=; \
+	if [ -z "$(PROJECT)" ] && [ -n "$(AUTO_DISCOVER)" ]; then \
+	  DIRS=$$(echo "$$FILES" | awk -F/ '{print $$1}' | sort -u); \
+	  if [ "$$(echo "$$DIRS" | wc -l)" = "1" ]; then \
+	    AUTO_PROJECT=$$(awk -F'\t' -v d="$$DIRS" '{ split($$2, p, "/"); if (p[1] == d) {print $$1; exit} }' $(_PROJ_LIST)); \
+	    [ -n "$$AUTO_PROJECT" ] && echo "Auto-detected PROJECT=$$AUTO_PROJECT from changed files."; \
+	  fi; \
+	fi; \
+	if [ -n "$$AUTO_PROJECT" ]; then \
+	  LIST=$$(awk -F'\t' -v p="$$AUTO_PROJECT" '$$1 == p {print $$2}' $(_PROJ_LIST)); \
+	else \
+	  LIST=$$($(_CLEANUP_LIST_CMD) 2>/dev/null); \
+	fi; \
+	echo "$$LIST" | $(_RESOLVE_CLEANUP_TARGETS) | while IFS= read -r t; do \
+	  dir="$$(dirname "$$t")"; \
+	  if [ "$$dir" = "." ]; then \
+	    SCOPED="$$FILES"; \
+	  else \
+	    SCOPED=$$(echo "$$FILES" | awk -v d="$$dir/" 'index($$0, d) == 1 { print substr($$0, length(d)+1) }'); \
+	  fi; \
+	  if [ -z "$$SCOPED" ]; then \
+	    echo "No changed .cs files in $$t."; continue; \
+	  fi; \
+	  INCL=$$(echo "$$SCOPED" | paste -sd';' -); \
+	  echo "Cleaning up changed files in $$t..."; \
+	  $(JB) cleanupcode "$$t" --settings="$(CLEANUP_SETTINGS)" --profile="$(CLEANUP_PROFILE)" --include="$$INCL" || exit 1; \
+	done
 
 .PHONY: help
 help:
@@ -49,6 +236,8 @@ help:
 	@echo "  make build-no-launch    Build without disrupting running game"
 	@echo "  make clean              Clean build artifacts"
 	@echo "  make rebuild            Clean and rebuild"
+	@echo "  make cleanup            Run ReSharper code cleanup on all code"
+	@echo "  make cleanup-changed    Run ReSharper code cleanup on git-changed files"
 ifdef EXTRA_HELP
 	@echo ""
 	@$(EXTRA_HELP)
@@ -56,35 +245,39 @@ endif
 	@echo ""
 	@echo "Options:"
 	@echo "  LAUNCH=no               Don't kill or launch game"
+	@echo "  INSTALL=no              Don't copy DLL to game directory"
+	@echo "  LAUNCH_ARGS=\"...\"       Forward extra args to the launch command"
+	@echo "  PROJECT=<name>          Scope cleanup to one project (AUTO_DISCOVER only)"
 	@echo ""
 	@echo "Examples:"
-	@echo "  make build              Standard build with game launch"
-	@echo "  make build LAUNCH=no    Build without disrupting running game"
+	@echo "  make build                  Standard build with game launch"
+	@echo "  make build LAUNCH=no        Build without disrupting running game"
+	@echo "  make build INSTALL=no       Build without installing to game"
 
 # Build targets - can be overridden by setting CUSTOM_BUILD=1 before including
 ifndef CUSTOM_BUILD
 .PHONY: build
 build:
 ifeq ($(LAUNCH),no)
-	"$(MSBUILD)" $(SOLUTION) $(MSBUILD_FLAGS) $(LAUNCH_FLAGS)
+	"$(MSBUILD)" $(SOLUTION) $(MSBUILD_FLAGS) $(LAUNCH_FLAGS) $(INSTALL_FLAGS) $(LAUNCH_ARGS_FLAGS)
 else ifdef IS_SOLUTION
 	@# Solution build: build all with launch disabled, then trigger launch via one project
-	"$(MSBUILD)" $(SOLUTION) $(MSBUILD_FLAGS) /p:CloseBroforceOnBuild=true /p:LaunchBroforceOnBuild=false
-	"$(MSBUILD)" "$(LAUNCH_PROJECT)" $(MSBUILD_FLAGS) /p:CloseBroforceOnBuild=false /p:LaunchBroforceOnBuild=true
+	"$(MSBUILD)" $(SOLUTION) $(MSBUILD_FLAGS) /p:CloseBroforceOnBuild=true /p:LaunchBroforceOnBuild=false $(INSTALL_FLAGS) $(LAUNCH_ARGS_FLAGS)
+	"$(MSBUILD)" "$(LAUNCH_PROJECT)" $(MSBUILD_FLAGS) /p:CloseBroforceOnBuild=false /p:LaunchBroforceOnBuild=true $(INSTALL_FLAGS) $(LAUNCH_ARGS_FLAGS)
 else
 	@# Single project build: normal behavior
-	"$(MSBUILD)" $(SOLUTION) $(MSBUILD_FLAGS) $(LAUNCH_FLAGS)
+	"$(MSBUILD)" $(SOLUTION) $(MSBUILD_FLAGS) $(LAUNCH_FLAGS) $(INSTALL_FLAGS) $(LAUNCH_ARGS_FLAGS)
 endif
 
 .PHONY: build-no-launch
 build-no-launch:
-	"$(MSBUILD)" $(SOLUTION) $(MSBUILD_FLAGS) /p:CloseBroforceOnBuild=false /p:LaunchBroforceOnBuild=false
+	"$(MSBUILD)" $(SOLUTION) $(MSBUILD_FLAGS) /p:CloseBroforceOnBuild=false /p:LaunchBroforceOnBuild=false $(INSTALL_FLAGS) $(LAUNCH_ARGS_FLAGS)
 
 .PHONY: clean
 clean:
-	"$(MSBUILD)" $(SOLUTION) /t:Clean $(MSBUILD_FLAGS)
+	"$(MSBUILD)" $(SOLUTION) /t:Clean $(MSBUILD_FLAGS) $(INSTALL_FLAGS) $(LAUNCH_ARGS_FLAGS)
 
 .PHONY: rebuild
 rebuild: clean
-	"$(MSBUILD)" $(SOLUTION) $(MSBUILD_FLAGS) /p:CloseBroforceOnBuild=false /p:LaunchBroforceOnBuild=false
+	"$(MSBUILD)" $(SOLUTION) $(MSBUILD_FLAGS) /p:CloseBroforceOnBuild=false /p:LaunchBroforceOnBuild=false $(INSTALL_FLAGS) $(LAUNCH_ARGS_FLAGS)
 endif
