@@ -1,0 +1,17 @@
+# Per-repo override on top of the shared root .editorconfig (synced from Broforce-Templates).
+# BroMakerLib keeps its own style: no spaces inside parentheses, parentheses kept for clarity, chopped initializers.
+[*.cs]
+csharp_space_between_method_call_parameter_list_parentheses = false
+csharp_space_between_method_declaration_parameter_list_parentheses = false
+csharp_space_between_parentheses = false
+resharper_csharp_space_within_checked_parentheses = false
+resharper_csharp_space_within_default_parentheses = false
+resharper_csharp_space_within_nameof_parentheses = false
+resharper_csharp_space_within_new_parentheses = false
+resharper_csharp_space_within_sizeof_parentheses = false
+resharper_csharp_space_within_typecast_parentheses = false
+resharper_csharp_space_within_typeof_parentheses = false
+resharper_csharp_wrap_object_and_collection_initializer_style = chop_always
+dotnet_style_parentheses_in_arithmetic_binary_operators = always_for_clarity
+dotnet_style_parentheses_in_relational_binary_operators = always_for_clarity
+csharp_preferred_modifier_order = public,private,protected,internal,file,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,required,volatile,async
