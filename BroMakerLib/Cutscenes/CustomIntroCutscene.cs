@@ -99,7 +99,7 @@ namespace BroMakerLib.Cutscenes
                 rambroCutscene = requestedCutscene;
             }
 
-            var data = new CutsceneIntroDataExtra();
+            var data = ScriptableObject.CreateInstance<CutsceneIntroDataExtra>();
             data.heading = heading;
             data.subtitle1 = subtitle1;
             data.subtitle2 = subtitle2;

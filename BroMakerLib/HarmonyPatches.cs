@@ -206,7 +206,7 @@ namespace BroMakerLib.HarmonyPatches
 
                     if (LoadHero.playCutscene)
                     {
-                        Cutscenes.CustomCutsceneController.LoadHeroCutscene(BroMakerUtilities.GetVariantValue(choice.GetInfo().Cutscene, (bro as CustomHero).CurrentVariant));
+                        Cutscenes.CustomCutsceneController.LoadHeroCutscene(BroMakerUtilities.GetVariantValue(choice.GetInfo().Cutscene, (bro as ICustomHero).CurrentVariant));
                         LoadHero.playCutscene = false;
                     }
                     __instance.changingBroFromTrigger = false;

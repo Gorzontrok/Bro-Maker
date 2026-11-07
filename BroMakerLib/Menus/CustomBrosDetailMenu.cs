@@ -411,7 +411,7 @@ namespace BroMakerLib.Menus
                         levelContainer.IsVisibleAndPositioned = false;
                     }
 
-                    // Only show requirements if bro is locked and has rescue requirements with more than 0 rescues remaining
+                    // Only show requirements if bro is locked and has rescue requirements
                     if (isLocked &&
                         (unlockState.ConfiguredMethod == UnlockMethod.RescueCount ||
                          unlockState.ConfiguredMethod == UnlockMethod.RescueOrLevel))
@@ -422,14 +422,10 @@ namespace BroMakerLib.Menus
                             rescueText.Text = $"Rescue {remaining} more bros" + (unlockState.ConfiguredMethod == UnlockMethod.RescueOrLevel ? "\nOr beat the unlock level" : "");
                             rescueContainer.IsVisibleAndPositioned = true;
                         }
-                        else if (remaining == 1)
+                        else
                         {
                             rescueText.Text = "Rescue 1 more bro" + (unlockState.ConfiguredMethod == UnlockMethod.RescueOrLevel ? "\nOr beat the unlock level" : "");
                             rescueContainer.IsVisibleAndPositioned = true;
-                        }
-                        else
-                        {
-                            rescueContainer.IsVisibleAndPositioned = false;
                         }
                     }
                     else

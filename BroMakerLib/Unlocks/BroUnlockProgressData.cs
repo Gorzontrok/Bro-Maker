@@ -6,6 +6,9 @@ namespace BroMakerLib.Unlocks
     {
         public Dictionary<string, BroUnlockState> BroStates { get; set; } = new Dictionary<string, BroUnlockState>();
         public List<string> PendingUnlocks { get; set; } = new List<string>();
+        // Entries of bros that aren't loaded, held until those bros load again.
+        public Dictionary<string, BroUnlockState> UnloadedBroStates { get; set; } = new Dictionary<string, BroUnlockState>();
+        public List<string> UnloadedPendingUnlocks { get; set; } = new List<string>();
         public int TotalRescues { get; set; } = 0;
         public int Version { get; set; } = 1;
 

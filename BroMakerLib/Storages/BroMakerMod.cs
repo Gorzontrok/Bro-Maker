@@ -51,7 +51,7 @@ namespace BroMakerLib
         {
             if (Name.IsNullOrEmpty())
             {
-                Name = Path.Substring(Directory.GetCurrentDirectory().Length - 1, Path.Length);
+                Name = Path.IsNullOrEmpty() ? "Unnamed Mod" : new DirectoryInfo(Path).Name;
             }
             CustomBros = CheckFiles<CustomBroInfo>(CustomBros);
             Abilities = CheckFiles<AbilityInfo>(Abilities);

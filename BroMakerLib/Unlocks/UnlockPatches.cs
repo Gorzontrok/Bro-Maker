@@ -39,6 +39,10 @@ namespace BroMakerLib.Unlocks
             }
 
             int customBroRemaining = BroUnlockManager.GetRemainingRescuesToUnlockNextBro();
+            if (customBroRemaining == -1)
+            {
+                return;
+            }
             if (__result == -1 || __result > customBroRemaining)
             {
                 __result = customBroRemaining;

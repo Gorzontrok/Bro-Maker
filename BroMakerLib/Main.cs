@@ -83,7 +83,7 @@ namespace BroMakerLib
         {
             CustomHero.SaveAll();
             BroMakerLib.Settings.instance.Save(mod);
-            BroUnlockManager.SaveProgressData();
+            BroUnlockManager.SaveProgressData(synchronous: true);
         }
     }
 }
