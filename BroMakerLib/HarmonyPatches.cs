@@ -148,6 +148,7 @@ namespace BroMakerLib.HarmonyPatches
             }
 
         }
+
         static void Postfix(Player __instance)
         {
             try
@@ -155,11 +156,29 @@ namespace BroMakerLib.HarmonyPatches
                 if (Main.enabled && LoadHero.willReplaceBro[__instance.playerNum])
                 {
                     LoadHero.willReplaceBro[__instance.playerNum] = false;
+
+                    StoredHero choice;
+                    try
+                    {
+                        choice = BroSpawnManager.GetRandomSpawnableBro(true);
+                    }
+                    catch (Exception e)
+                    {
+                        BMLogger.ExceptionLog("Failed to choose a custom bro to spawn, keeping the vanilla bro", e);
+                        BroSpawnManager.RestoreVanillaSpawn(__instance);
+                        return;
+                    }
+
+                    if (choice == null)
+                    {
+                        BMLogger.Error("No spawnable custom bro was found, keeping the vanilla bro");
+                        BroSpawnManager.RestoreVanillaSpawn(__instance);
+                        return;
+                    }
+
                     LoadHero.spawningCustomBro[__instance.playerNum] = true;
                     LoadHero.willPlayCutscene[__instance.playerNum] = false;
                     LoadHero.anyCustomSpawning = true;
-                    Storages.StoredHero choice;
-                    choice = BroSpawnManager.GetRandomSpawnableBro(true);
 
                     if (BroSpawnManager.LastSpawnWasUnlock)
                     {
@@ -175,6 +194,15 @@ namespace BroMakerLib.HarmonyPatches
                     LoadHero.spawnFromPlayer = (__instance.rescuingThisBro != null);
 
                     TestVanDammeAnim bro = choice.LoadBro(__instance.playerNum);
+                    if (bro == null)
+                    {
+                        BMLogger.Error($"Custom bro '{choice.name}' failed to load, keeping the vanilla bro");
+                        __instance.changingBroFromTrigger = false;
+                        LoadHero.spawningCustomBro[__instance.playerNum] = false;
+                        LoadHero.anyCustomSpawning = false;
+                        BroSpawnManager.RestoreVanillaSpawn(__instance);
+                        return;
+                    }
 
                     if (LoadHero.playCutscene)
                     {

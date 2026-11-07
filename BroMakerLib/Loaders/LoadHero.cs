@@ -8,6 +8,7 @@ using HarmonyLib;
 using UnityEngine;
 using World.Generation.MapGenV4;
 using Net = Networking.Networking;
+using Object = UnityEngine.Object;
 
 namespace BroMakerLib.Loaders
 {
@@ -47,6 +48,10 @@ namespace BroMakerLib.Loaders
         {
             tryReplaceAvatar = true;
             TestVanDammeAnim hero = null;
+            GameObject heroObject = null;
+            Player player = null;
+            TestVanDammeAnim previousCharacter = null;
+            bool replacedPreviousCharacter = false;
             try
             {
                 if (!typeof(ICustomHero).IsAssignableFrom(type))
@@ -68,21 +73,20 @@ namespace BroMakerLib.Loaders
                 BMLogger.Debug("Spawner: Start Spawning Process.");
 
                 // Check Player
-                Player player = HeroController.players[playerNum];
+                player = HeroController.players[playerNum];
                 if (player == null)
                     throw new NullReferenceException($"Player number {playerNum} doesn't exist.");
 
 
                 Vector3 previousPosition = Vector3.zero;
-                TestVanDammeAnim previousCharacter = player.character;
+                previousCharacter = player.character;
                 ReactionBubble previousCharacterBubble = null;
                 Traverse previousCharacterTraverse = null;
-                if (player.character != null && player.character.IsAlive())
+                if (previousCharacter != null && previousCharacter.IsAlive())
                 {
-                    previousPosition = player.character.GetFollowPosition();
-                    previousCharacterTraverse = Traverse.Create(player.character);
-                    previousCharacterBubble = player.character.playerBubble;
-                    Net.RPC(PID.TargetAll, new RpcSignature(player.character.RecallBro), false);
+                    previousPosition = previousCharacter.GetFollowPosition();
+                    previousCharacterTraverse = Traverse.Create(previousCharacter);
+                    previousCharacterBubble = previousCharacter.playerBubble;
                 }
 
                 HeroType heroType = GetBaseHeroTypeOfPreset(type);
@@ -101,13 +105,16 @@ namespace BroMakerLib.Loaders
                 }
 
 
-                hero = Net.InstantiateBuffered<GameObject>(original, previousPosition, Quaternion.identity, new object[0], false).GetComponent(type) as TestVanDammeAnim;
+                heroObject = Net.InstantiateBuffered<GameObject>(original, previousPosition, Quaternion.identity, new object[0], false);
+                hero = heroObject.GetComponent(type) as TestVanDammeAnim;
                 hero.gameObject.SetActive(true);
                 BMLogger.Debug($"AfterInstantiation: InstantiateBuffered.");
 
                 var bro = AfterInstantiation(hero, heroType, playerNum, type, previousPosition);
+                replacedPreviousCharacter = true;
                 if (previousCharacterTraverse != null)
                 {
+                    Net.RPC(PID.TargetAll, new RpcSignature(previousCharacter.RecallBro), false);
                     // Make previous character sprite disappear faster
                     previousCharacterTraverse.Field("recallCounter").SetValue(1f);
                     if (previousCharacterBubble != null)
@@ -122,6 +129,15 @@ namespace BroMakerLib.Loaders
                 hero.high5Bubble.gameObject.SetActive(true);
                 high5BubbleTrav.Field("yStart").SetValue(hero.high5Bubble.transform.localPosition.y);
 
+                // Vanilla parents the head HUD to the bro it spawned, so it would be destroyed with it
+                if (player.deathMatchHUD != null)
+                {
+                    player.deathMatchHUD.Setup(player.Lives, playerNum, hero);
+                    player.deathMatchHUD.gameObject.SetActive(true);
+                    player.deathMatchHUD.transform.parent = hero.transform;
+                    player.deathMatchHUD.transform.localPosition = Vector3.zero;
+                }
+
                 // Destroy character we replaced
                 if (previousCharacter != null)
                 {
@@ -135,9 +151,39 @@ namespace BroMakerLib.Loaders
             catch (Exception e)
             {
                 BMLogger.ExceptionLog(e);
+                if (heroObject != null && !replacedPreviousCharacter)
+                {
+                    DiscardFailedBro(heroObject, hero, player, previousCharacter);
+                    hero = null;
+                }
             }
             spawnFromPlayer = false;
             return hero;
+        }
+
+        private static void DiscardFailedBro(GameObject heroObject, TestVanDammeAnim hero, Player player, TestVanDammeAnim previousCharacter)
+        {
+            if (hero != null)
+            {
+                Map.RemoveUnit(hero);
+            }
+            Object.Destroy(heroObject);
+
+            if (hero == null || player.character != hero)
+            {
+                return;
+            }
+            HeroController.SetPlayerCharacter(player.playerNum, previousCharacter);
+            if (player.rescuingThisBro != null)
+            {
+                player.rescuingThisBro.showHeroOnDestroy = previousCharacter;
+            }
+            if (previousCharacter != null)
+            {
+                // The failed bro's registration used up the one-shot custom avatar swap
+                tryReplaceAvatar = true;
+                player.SetHeroType(previousCharacter.heroType);
+            }
         }
 
         private static TestVanDammeAnim AfterInstantiation(TestVanDammeAnim hero, HeroType heroTypeEnum, int playerNum, Type type, Vector3 position)

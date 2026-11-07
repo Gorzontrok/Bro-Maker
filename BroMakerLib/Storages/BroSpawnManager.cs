@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using BroMakerLib.Loaders;
 using BroMakerLib.Loggers;
 using BroMakerLib.Unlocks;
 using RocketLib.CustomTriggers;
@@ -220,14 +221,18 @@ namespace BroMakerLib.Storages
                 // No more bros to unlock or not rescuing
                 else
                 {
-                    int chosen = UnityEngine.Random.Range(0, HardcoreAvailableBros.Count);
-                    string chosenName = HardcoreAvailableBros[chosen];
-                    RescuingHardcoreBro = false;
-
-                    if (!BroMakerStorage.GetStoredHeroByName(chosenName, out chosenBro))
+                    if (HardcoreAvailableBros.Count > 0)
                     {
-                        chosenBro = null;
+                        int chosen = UnityEngine.Random.Range(0, HardcoreAvailableBros.Count);
+                        string chosenName = HardcoreAvailableBros[chosen];
+
+                        if (!BroMakerStorage.GetStoredHeroByName(chosenName, out chosenBro))
+                        {
+                            chosenBro = null;
+                        }
                     }
+
+                    RescuingHardcoreBro = false;
                 }
             }
             // If forcing customs, only return allowed bros
@@ -344,6 +349,8 @@ namespace BroMakerLib.Storages
         {
             BSett.instance._notUnlockedBros[slot] = new List<string>();
             BSett.instance._availableBros[slot] = new List<string>();
+            BSett.instance._unloadedNotUnlockedBros[slot] = new List<string>();
+            BSett.instance._unloadedAvailableBros[slot] = new List<string>();
             foreach (StoredHero bro in GetAllBros())
             {
                 if (BroUnlockManager.IsBroUnlocked(bro.name) && IsBroEnabled(bro.name))
@@ -355,18 +362,35 @@ namespace BroMakerLib.Storages
 
         internal static void CheckForDeletedBros()
         {
-            if (GameModeController.IsHardcoreMode)
+            for (int i = 0; i < BSett.instance._notUnlockedBros.Count; ++i)
             {
-                for (int i = 0; i < 4; ++i)
+                if (BSett.instance._notUnlockedBros[i] != null && BSett.instance._unloadedNotUnlockedBros[i] != null)
                 {
-                    if (BSett.instance._notUnlockedBros[i] != null)
-                    {
-                        BSett.instance._notUnlockedBros[i].RemoveAll(name => !BroMakerStorage.GetStoredHeroByName(name, out _));
-                    }
-                    if (BSett.instance._availableBros[i] != null)
-                    {
-                        BSett.instance._availableBros[i].RemoveAll(name => !BroMakerStorage.GetStoredHeroByName(name, out _));
-                    }
+                    SetAsideUnloadedBros(BSett.instance._notUnlockedBros[i], BSett.instance._unloadedNotUnlockedBros[i]);
+                }
+            }
+            for (int i = 0; i < BSett.instance._availableBros.Count; ++i)
+            {
+                if (BSett.instance._availableBros[i] != null && BSett.instance._unloadedAvailableBros[i] != null)
+                {
+                    SetAsideUnloadedBros(BSett.instance._availableBros[i], BSett.instance._unloadedAvailableBros[i]);
+                }
+            }
+        }
+
+        private static void SetAsideUnloadedBros(List<string> bros, List<string> setAside)
+        {
+            foreach (string broName in bros.FindAll(name => !BroMakerStorage.GetStoredHeroByName(name, out _)))
+            {
+                bros.Remove(broName);
+                setAside.Add(broName);
+            }
+            foreach (string broName in setAside.FindAll(name => BroMakerStorage.GetStoredHeroByName(name, out _)))
+            {
+                setAside.Remove(broName);
+                if (!bros.Contains(broName))
+                {
+                    bros.Add(broName);
                 }
             }
         }
@@ -378,6 +402,26 @@ namespace BroMakerLib.Storages
                 BroStatusCount = int.MinValue;
             }
             ++BroStatusCount;
+        }
+
+        internal static void RestoreVanillaSpawn(Player player)
+        {
+            LoadHero.broBeingRescued = false;
+            LoadHero.willPlayCutscene[player.playerNum] = false;
+            LoadHero.playCutscene = false;
+
+            TestVanDammeAnim vanillaBro = player.character;
+            if (vanillaBro == null)
+            {
+                return;
+            }
+
+            vanillaBro.gameObject.SetActive(true);
+
+            if (LoadHero.previousSpawnInfo[player.playerNum] == Player.SpawnType.AddBroToTransport)
+            {
+                Map.AddBroToHeroTransport(vanillaBro);
+            }
         }
         #endregion
     }

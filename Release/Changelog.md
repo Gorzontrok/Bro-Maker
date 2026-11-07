@@ -2,6 +2,7 @@
 - Add utilities for reducing boilerplate code across custom bros.
 - Fix bug with logging on Linux
 - Fixed frozen custom bros never thawing.
+- Fixed custom bros not spawning, unlocking or displaying correctly.
 
 ## v2.6.2
 - Add handling for exceptions thrown while preloading bro assets.

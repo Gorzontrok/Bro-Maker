@@ -89,9 +89,17 @@ namespace BroMakerLib
             {
                 if (typeof(CustomHero).IsAssignableFrom(kvp.Value))
                 {
-                    CustomHero bro = heroHolder.AddComponent(kvp.Value) as CustomHero;
-                    bro.HarmonyPatches(harmony);
-                    bro.RegisterCustomTriggers();
+                    try
+                    {
+                        CustomHero bro = heroHolder.AddComponent(kvp.Value) as CustomHero;
+                        bro.HarmonyPatches(harmony);
+                        bro.RegisterCustomTriggers();
+                    }
+                    catch (Exception ex)
+                    {
+                        string broName = BroMakerStorage.GetStoredHeroByCustomHeroType(kvp.Value, out StoredHero stored) ? stored.name : kvp.Key;
+                        BMLogger.ExceptionLog($"Exception while applying patches for '{broName}'", ex);
+                    }
                 }
             }
         }

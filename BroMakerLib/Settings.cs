@@ -35,6 +35,9 @@ namespace BroMakerLib
         // These lists are for tracking bro unlocks in IronBro
         public List<List<string>> _notUnlockedBros;
         public List<List<string>> _availableBros;
+        // IronBro entries for bros that aren't loaded, held until those bros load again
+        public List<List<string>> _unloadedNotUnlockedBros;
+        public List<List<string>> _unloadedAvailableBros;
 
         // Settings menu
         public bool showGeneralSettings = true;
@@ -51,6 +54,14 @@ namespace BroMakerLib
             if (instance._availableBros == null)
             {
                 instance._availableBros = new List<List<string>> { new List<string>(), new List<string>(), new List<string>(), new List<string>(), new List<string>() };
+            }
+            if (instance._unloadedNotUnlockedBros == null)
+            {
+                instance._unloadedNotUnlockedBros = new List<List<string>> { new List<string>(), new List<string>(), new List<string>(), new List<string>(), new List<string>() };
+            }
+            if (instance._unloadedAvailableBros == null)
+            {
+                instance._unloadedAvailableBros = new List<List<string>> { new List<string>(), new List<string>(), new List<string>(), new List<string>(), new List<string>() };
             }
             instance.Save(Main.mod);
         }
