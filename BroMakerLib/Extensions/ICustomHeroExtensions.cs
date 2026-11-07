@@ -44,6 +44,7 @@ namespace BroMakerLib
             heroCharacter.specialGrenade = LoadBroforceObjects.GetGrenadeFromName(string.Empty);
             heroCharacter.specialGrenade.playerNum = heroCharacter.playerNum;
             heroCharacter.heroType = character.heroType;
+            heroCharacter.canUnFreeze = character.canUnFreeze;
             heroCharacter.SetFieldValue("wallDragAudio", character.GetFieldValue<AudioSource>("wallDragAudio"));
             heroCharacter.parachute = heroCharacter.GetComponentInChildren<Parachute>();
             heroCharacter.SetOwner(character.Owner);

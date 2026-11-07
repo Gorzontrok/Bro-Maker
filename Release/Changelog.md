@@ -1,6 +1,7 @@
 ## v2.7.0 (unreleased)
 - Add utilities for reducing boilerplate code across custom bros.
 - Fix bug with logging on Linux
+- Fixed frozen custom bros never thawing.
 
 ## v2.6.2
 - Add handling for exceptions thrown while preloading bro assets.
