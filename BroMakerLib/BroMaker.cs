@@ -33,6 +33,7 @@ namespace BroMakerLib
 
                 BroMakerStorage.Initialize();
                 PresetManager.Initialize();
+                BroMakerNetwork.Initialize();
 
                 // Apply all harmony patches if any bros have overridden the method
                 if (harmony != null)
@@ -59,6 +60,7 @@ namespace BroMakerLib
                 }
 
                 BroSpawnManager.CheckForDeletedBros();
+                BroMakerNetwork.PublishInitialManifests();
 
                 // Register Custom Bros menu with MainMenu
                 try

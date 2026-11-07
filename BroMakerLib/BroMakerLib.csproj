@@ -122,6 +122,7 @@
         <Compile Include="Attributes\HeroPresetAttribute.cs"/>
         <Compile Include="Attributes\ParameterAttribute.cs"/>
         <Compile Include="BroMaker.cs"/>
+        <Compile Include="BroMakerNetwork.cs"/>
         <Compile Include="Attributes\CustomObjectPresetAttribute.cs"/>
         <Compile Include="BroMakerUtilities.cs"/>
         <Compile Include="CustomObjects\Projectiles\CustomGrenade.cs"/>

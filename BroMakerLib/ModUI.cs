@@ -432,11 +432,25 @@ namespace BroMakerLib
 
             if (broUnlocked)
             {
-                if (GUILayout.Button(new GUIContent("Switch to Bro", "Switch selected player to this custom bro"), WindowScaling.ScaledWidth(300)))
+                string unavailableReason = BroMakerNetwork.GetBroUnavailableReason(bro);
+                bool broAvailable = unavailableReason == null;
+                bool previousEnabled = GUI.enabled;
+                GUI.enabled = previousEnabled && broAvailable;
+                string switchTooltip = broAvailable
+                    ? "Switch selected player to this custom bro"
+                    : "Unavailable: " + unavailableReason;
+                try
                 {
-                    LoadHero.previousSpawnInfo[selectedPlayerNum] = Player.SpawnType.TriggerSwapBro;
-                    LoadHero.wasFirstDeployment[selectedPlayerNum] = false;
-                    bro.LoadBro(selectedPlayerNum);
+                    if (GUILayout.Button(new GUIContent("Switch to Bro", switchTooltip), WindowScaling.ScaledWidth(300)))
+                    {
+                        LoadHero.previousSpawnInfo[selectedPlayerNum] = Player.SpawnType.TriggerSwapBro;
+                        LoadHero.wasFirstDeployment[selectedPlayerNum] = false;
+                        bro.LoadBro(selectedPlayerNum);
+                    }
+                }
+                finally
+                {
+                    GUI.enabled = previousEnabled;
                 }
 
                 if (GUILayout.Button(new GUIContent("Play Unlock Cutscene", "Play this bro's unlock cutscene if in-game"), WindowScaling.ScaledWidth(300)))

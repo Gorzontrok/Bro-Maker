@@ -84,7 +84,7 @@ namespace BroMakerLib.Storages
                 {
                     if (BroMakerStorage.GetStoredHeroByName(name, out StoredHero hero))
                     {
-                        availableHeroes.Add(hero);
+                        if (BroMakerNetwork.IsBroAvailable(hero)) availableHeroes.Add(hero);
                     }
                 }
                 return availableHeroes;
@@ -92,12 +92,12 @@ namespace BroMakerLib.Storages
             // If forcing customs this level, only return allowed customs
             else if (ForceCustomThisLevel)
             {
-                return ForcedCustoms;
+                return GetNetworkAvailableBros(ForcedCustoms);
             }
             // Otherwise return all enabled bros
             else
             {
-                return GetAllEnabledBros();
+                return GetNetworkAvailableBros(GetAllEnabledBros());
             }
         }
 
@@ -106,7 +106,7 @@ namespace BroMakerLib.Storages
             // If in IronBro, only return available bros
             if (GameModeController.IsHardcoreMode)
             {
-                return HardcoreAvailableBros;
+                return GetNetworkAvailableNames(HardcoreAvailableBros);
             }
             // If forcing customs this level, only return allowed customs
             else if (ForceCustomThisLevel)
@@ -114,14 +114,14 @@ namespace BroMakerLib.Storages
                 List<string> names = new List<string>();
                 foreach (StoredHero hero in ForcedCustoms)
                 {
-                    names.Add(hero.name);
+                    if (hero != null && IsBroAvailableByName(hero.name)) names.Add(hero.name);
                 }
                 return names;
             }
             // Otherwise return all enabled bros
             else
             {
-                return EnabledBrosNames;
+                return EnabledBrosNames.Where(IsBroAvailableByName).ToList();
             }
         }
 
@@ -132,6 +132,9 @@ namespace BroMakerLib.Storages
 
         public static bool IsBroSpawnable(string broName)
         {
+            if (!IsBroAvailableByName(broName))
+                return false;
+
             if (!BroUnlockManager.IsBroUnlocked(broName))
                 return false;
 
@@ -167,6 +170,9 @@ namespace BroMakerLib.Storages
             if (!BroUnlockManager.IsBroUnlocked(broName))
                 return BroState.Locked;
 
+            if (!IsBroAvailableByName(broName))
+                return BroState.Disabled;
+
             if (GameModeController.IsHardcoreMode)
             {
                 return HardcoreAvailableBros.Contains(broName)
@@ -183,7 +189,41 @@ namespace BroMakerLib.Storages
         {
             return BroUnlockManager.HasPendingUnlockedBro();
         }
+
+        internal static int GetCompatibleHardcoreBrosNotYetUnlockedCount()
+        {
+            return GetNetworkAvailableNames(HardcoreBrosNotYetUnlocked).Count;
+        }
         #endregion
+
+        private static bool IsBroAvailableByName(string broName)
+        {
+            StoredHero hero;
+            return BroMakerStorage.GetStoredHeroByName(broName, out hero) && BroMakerNetwork.IsBroAvailable(hero);
+        }
+
+        private static List<string> GetNetworkAvailableNames(IEnumerable<string> names)
+        {
+            List<string> compatible = new List<string>();
+            if (names == null) return compatible;
+            foreach (string name in names)
+                if (IsBroAvailableByName(name) && !compatible.Contains(name)) compatible.Add(name);
+            return compatible;
+        }
+
+        private static List<StoredHero> GetNetworkAvailableBros(IEnumerable<StoredHero> heroes)
+        {
+            List<StoredHero> compatible = new List<StoredHero>();
+            if (heroes == null) return compatible;
+            foreach (StoredHero hero in heroes)
+            {
+                StoredHero registered;
+                if (hero != null && BroMakerStorage.GetStoredHeroByName(hero.name, out registered) &&
+                    ReferenceEquals(hero, registered) && BroMakerNetwork.IsBroAvailable(hero) && !compatible.Contains(hero))
+                    compatible.Add(hero);
+            }
+            return compatible;
+        }
 
         #region Spawning and Modification
         public static StoredHero GetRandomSpawnableBro(bool allowPendingUnlocks = false)
@@ -195,7 +235,8 @@ namespace BroMakerLib.Storages
             if (BSett.instance.overrideNextBroSpawn)
             {
                 BSett.instance.overrideNextBroSpawn = false;
-                if (!BroMakerStorage.GetStoredHeroByName(BSett.instance.nextBroSpawn, out chosenBro))
+                if (!BroMakerStorage.GetStoredHeroByName(BSett.instance.nextBroSpawn, out chosenBro) ||
+                    !BroMakerNetwork.IsBroAvailable(chosenBro))
                 {
                     chosenBro = null;
                 }
@@ -206,10 +247,12 @@ namespace BroMakerLib.Storages
                 // Unlock additional bro if more are left to unlock
                 if (RescuingHardcoreBro && HardcoreBrosNotYetUnlocked.Count > 0)
                 {
-                    int chosen = UnityEngine.Random.Range(0, HardcoreBrosNotYetUnlocked.Count);
-                    string chosenName = HardcoreBrosNotYetUnlocked[chosen];
-                    HardcoreAvailableBros.Add(HardcoreBrosNotYetUnlocked[chosen]);
-                    HardcoreBrosNotYetUnlocked.RemoveAt(chosen);
+                    List<string> compatible = GetNetworkAvailableNames(HardcoreBrosNotYetUnlocked);
+                    if (compatible.Count == 0) return null;
+                    int chosen = UnityEngine.Random.Range(0, compatible.Count);
+                    string chosenName = compatible[chosen];
+                    HardcoreAvailableBros.Add(chosenName);
+                    HardcoreBrosNotYetUnlocked.Remove(chosenName);
                     RescuingHardcoreBro = false;
 
                     if (!BroMakerStorage.GetStoredHeroByName(chosenName, out chosenBro))
@@ -220,8 +263,10 @@ namespace BroMakerLib.Storages
                 // No more bros to unlock or not rescuing
                 else
                 {
-                    int chosen = UnityEngine.Random.Range(0, HardcoreAvailableBros.Count);
-                    string chosenName = HardcoreAvailableBros[chosen];
+                    List<string> compatible = GetNetworkAvailableNames(HardcoreAvailableBros);
+                    if (compatible.Count == 0) return null;
+                    int chosen = UnityEngine.Random.Range(0, compatible.Count);
+                    string chosenName = compatible[chosen];
                     RescuingHardcoreBro = false;
 
                     if (!BroMakerStorage.GetStoredHeroByName(chosenName, out chosenBro))
@@ -233,7 +278,9 @@ namespace BroMakerLib.Storages
             // If forcing customs, only return allowed bros
             else if (ForceCustomThisLevel)
             {
-                chosenBro = ForcedCustoms[UnityEngine.Random.Range(0, ForcedCustoms.Count())];
+                List<StoredHero> compatible = GetNetworkAvailableBros(ForcedCustoms);
+                if (compatible.Count == 0) return null;
+                chosenBro = compatible[UnityEngine.Random.Range(0, compatible.Count)];
             }
             else if (allowPendingUnlocks && BroUnlockManager.HasPendingUnlockedBro())
             {
@@ -248,28 +295,18 @@ namespace BroMakerLib.Storages
                 }
                 else
                 {
-                    if (EnabledBros.Count > 0)
-                    {
-                        chosenBro = EnabledBros[UnityEngine.Random.Range(0, EnabledBros.Count)];
-                    }
-                    else
-                    {
-                        BMLogger.Error("Trying to spawn with no enabled bros");
-                        chosenBro = GetAllBros()[0];
-                    }
+                    List<StoredHero> compatible = GetNetworkAvailableBros(EnabledBros);
+                    if (compatible.Count > 0)
+                        chosenBro = compatible[UnityEngine.Random.Range(0, compatible.Count)];
                 }
             }
             // Return any enabled bro
             else
             {
-                if (EnabledBros.Count > 0)
+                List<StoredHero> compatible = GetNetworkAvailableBros(EnabledBros);
+                if (compatible.Count > 0)
                 {
-                    chosenBro = EnabledBros[UnityEngine.Random.Range(0, EnabledBros.Count)];
-                }
-                else
-                {
-                    BMLogger.Error("Trying to spawn with no enabled bros");
-                    chosenBro = GetAllBros()[0];
+                    chosenBro = compatible[UnityEngine.Random.Range(0, compatible.Count)];
                 }
             }
 
@@ -287,7 +324,7 @@ namespace BroMakerLib.Storages
         {
             if (BSett.instance.equalSpawnProbability)
             {
-                int enabledBroCount = EnabledBrosNames.Count();
+                int enabledBroCount = GetNetworkAvailableBros(EnabledBros).Count;
                 return (enabledBroCount / (41.0f + enabledBroCount)) * 100.0f;
             }
             else

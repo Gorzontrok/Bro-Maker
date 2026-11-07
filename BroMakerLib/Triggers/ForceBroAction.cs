@@ -48,7 +48,7 @@ namespace BroMakerLib.Triggers
                     List<StoredHero> storedHeroes = new List<StoredHero>();
                     foreach (string broName in info.ForcedBros)
                     {
-                        if (BroMakerStorage.GetStoredHeroByName(broName, out StoredHero hero))
+                        if (BroMakerStorage.GetStoredHeroByName(broName, out StoredHero hero) && BroMakerNetwork.IsBroAvailable(hero))
                         {
                             storedHeroes.Add(hero);
                         }
@@ -75,6 +75,20 @@ namespace BroMakerLib.Triggers
                             {
                                 Map.MapData.forcedBro = HeroType.Rambro;
                             }
+                        }
+                    }
+                    else if (info.ForcedBros.Count > 0)
+                    {
+                        BMLogger.Warning("Force Bro Action has no installed, version-compatible custom characters.");
+                        if (isLevelStart)
+                        {
+                            CustomTriggerStateManager.SetForLevelStart("forceCustomBros", false);
+                            CustomTriggerStateManager.SetForLevelStart("forcedCustomBroList", new List<StoredHero>());
+                        }
+                        else
+                        {
+                            CustomTriggerStateManager.SetDuringLevel("forceCustomBros", false);
+                            CustomTriggerStateManager.SetDuringLevel("forcedCustomBroList", new List<StoredHero>());
                         }
                     }
                 }

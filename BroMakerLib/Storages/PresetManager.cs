@@ -18,6 +18,7 @@ namespace BroMakerLib
         public static Dictionary<string, Type> customObjectsPreset = new Dictionary<string, Type>();
         public static Dictionary<string, Type> abilities = new Dictionary<string, Type>();
         public static Dictionary<string, Type> grenades = new Dictionary<string, Type>();
+        private static readonly Dictionary<string, List<Type>> customProjectileTypes = new Dictionary<string, List<Type>>(StringComparer.Ordinal);
 
         public static bool disableWarnings = false;
 
@@ -31,6 +32,7 @@ namespace BroMakerLib
             customObjectsPreset = new Dictionary<string, Type>();
             abilities = new Dictionary<string, Type>();
             parameters = new Dictionary<string, MethodInfo>();
+            customProjectileTypes.Clear();
 
             CheckAssembly(Assembly.GetExecutingAssembly());
 
@@ -126,6 +128,7 @@ namespace BroMakerLib
                     return false;
                 }
 
+                IndexCustomProjectileTypes(types);
 
                 RetrieveParameters(types);
                 var presets = FindPresets(types);
@@ -138,6 +141,60 @@ namespace BroMakerLib
             }
 
             return true;
+        }
+
+        internal static Type[] GetCustomProjectileTypes()
+        {
+            List<Type> result = new List<Type>();
+            foreach (KeyValuePair<string, List<Type>> entry in customProjectileTypes)
+                if (entry.Value.Count == 1) result.Add(entry.Value[0]);
+            result.Sort(delegate(Type left, Type right) { return StringComparer.Ordinal.Compare(left.Name, right.Name); });
+            return result.ToArray();
+        }
+
+        internal static Type FindCustomProjectileType(string typeName)
+        {
+            List<Type> matches;
+            return typeName != null && customProjectileTypes.TryGetValue(typeName, out matches) && matches.Count == 1
+                ? matches[0]
+                : null;
+        }
+
+        internal static Type FindType(string fullName)
+        {
+            if (string.IsNullOrEmpty(fullName)) return null;
+
+            Type match = null;
+            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                Type candidate = assembly.GetType(fullName, false);
+                if (candidate == null) continue;
+                if (match != null && match != candidate) return null;
+                match = candidate;
+            }
+            return match;
+        }
+
+        private static void IndexCustomProjectileTypes(Type[] types)
+        {
+            foreach (Type type in types)
+            {
+                if (type.IsAbstract || type.ContainsGenericParameters ||
+                    type == typeof(CustomObjects.Projectiles.CustomProjectile) ||
+                    type == typeof(CustomObjects.Projectiles.CustomGrenade) ||
+                    type == typeof(CustomObjects.Projectiles.CustomSachelPack) ||
+                    !(typeof(CustomObjects.Projectiles.CustomProjectile).IsAssignableFrom(type) ||
+                      typeof(CustomObjects.Projectiles.CustomGrenade).IsAssignableFrom(type) ||
+                      typeof(CustomObjects.Projectiles.CustomSachelPack).IsAssignableFrom(type))) continue;
+
+                List<Type> matches;
+                if (!customProjectileTypes.TryGetValue(type.Name, out matches))
+                {
+                    matches = new List<Type>();
+                    customProjectileTypes.Add(type.Name, matches);
+                }
+                if (!matches.Contains(type)) matches.Add(type);
+            }
         }
 
         private static void RetrieveParameters(Type[] types)

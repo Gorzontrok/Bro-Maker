@@ -4,6 +4,7 @@ using BroMakerLib.CustomObjects;
 using BroMakerLib.CustomObjects.Bros;
 using BroMakerLib.Infos;
 using BroMakerLib.Loggers;
+using BroMakerLib.Storages;
 using HarmonyLib;
 using UnityEngine;
 using World.Generation.MapGenV4;
@@ -28,6 +29,15 @@ namespace BroMakerLib.Loaders
         public const string GAMEOBJECT_PREFIX = "BM_";
         public static CustomBroInfo currentInfo;
         public static int playerNum = 0;
+        internal static int spawnVariant = -1;
+
+        internal struct SpawnContextState
+        {
+            internal CustomBroInfo Info;
+            internal int PlayerNum;
+            internal int Variant;
+            internal bool Applied;
+        }
 
         private static readonly Dictionary<string, int> prefabIndex = new Dictionary<string, int>();
 
@@ -47,6 +57,9 @@ namespace BroMakerLib.Loaders
         {
             tryReplaceAvatar = true;
             TestVanDammeAnim hero = null;
+            CustomBroInfo previousInfo = currentInfo;
+            int previousPlayerNum = playerNum;
+            int previousVariant = spawnVariant;
             try
             {
                 if (!typeof(ICustomHero).IsAssignableFrom(type))
@@ -61,6 +74,19 @@ namespace BroMakerLib.Loaders
 
                 if (customBroInfo == null)
                     throw new NullReferenceException("Info is null");
+
+                StoredHero storedHero;
+                if (!BroMakerStorage.GetStoredHeroByName(customBroInfo.name, out storedHero))
+                {
+                    BMLogger.Error("Cannot spawn custom bro because it is missing or ambiguous: " + customBroInfo.name);
+                    return null;
+                }
+                string unavailableReason = BroMakerNetwork.GetBroUnavailableReason(storedHero);
+                if (unavailableReason != null)
+                {
+                    BMLogger.Error("Cannot spawn custom bro " + customBroInfo.name + ": " + unavailableReason);
+                    return null;
+                }
 
                 currentInfo = customBroInfo;
 
@@ -87,21 +113,29 @@ namespace BroMakerLib.Loaders
 
                 HeroType heroType = GetBaseHeroTypeOfPreset(type);
 
-                GameObject original = null;
+                GameObject original = GetOrCreateNetworkPrefab(customBroInfo, type);
+                CustomHero customHeroPrefab = original.GetComponent<CustomHero>();
+                int selectedVariant = customHeroPrefab == null
+                    ? UnityEngine.Random.Range(0, customBroInfo.VariantCount)
+                    : customHeroPrefab.ChooseVariantForNetworkSpawn();
+                if (customBroInfo.VariantCount > 0 && selectedVariant >= customBroInfo.VariantCount)
+                    selectedVariant = 0;
+                spawnVariant = selectedVariant;
 
-                if (prefabIndex.ContainsKey(customBroInfo.name))
+                GameObject spawned = Net.InstantiateBuffered<GameObject>(original, previousPosition, Quaternion.identity,
+                    new object[] { BroMakerNetwork.HeroSpawnMarker, customBroInfo.name, selectedPlayerNum, selectedVariant }, false);
+                if (spawned == null)
                 {
-                    int index = prefabIndex[customBroInfo.name];
-                    original = InstantiationController.GetPrefabFromIndex(index);
+                    BMLogger.Error("RocketLib did not create networked bro " + customBroInfo.name);
+                    return null;
                 }
-
-                if (original == null)
+                hero = spawned.GetComponent(type) as TestVanDammeAnim;
+                if (hero == null)
                 {
-                    original = CreateOriginal(heroType, type);
+                    BMLogger.Error("Networked bro prefab is missing component " + type.FullName);
+                    UnityEngine.Object.Destroy(spawned);
+                    return null;
                 }
-
-
-                hero = Net.InstantiateBuffered<GameObject>(original, previousPosition, Quaternion.identity, new object[0], false).GetComponent(type) as TestVanDammeAnim;
                 hero.gameObject.SetActive(true);
                 BMLogger.Debug($"AfterInstantiation: InstantiateBuffered.");
 
@@ -125,7 +159,7 @@ namespace BroMakerLib.Loaders
                 // Destroy character we replaced
                 if (previousCharacter != null)
                 {
-                    UnityEngine.Object.Destroy(previousCharacter.gameObject);
+                    InstantiationController.Destroy_Networked(previousCharacter.gameObject);
                 }
 
                 BMLogger.Debug("Spawner: Finished AfterInstantiation.");
@@ -136,8 +170,76 @@ namespace BroMakerLib.Loaders
             {
                 BMLogger.ExceptionLog(e);
             }
-            spawnFromPlayer = false;
+            finally
+            {
+                spawnFromPlayer = false;
+                if (hero == null) tryReplaceAvatar = false;
+                currentInfo = previousInfo;
+                playerNum = previousPlayerNum;
+                spawnVariant = previousVariant;
+            }
             return hero;
+        }
+
+        internal static bool ApplyNetworkSpawnContext(Component instance, out SpawnContextState state)
+        {
+            state = new SpawnContextState();
+            if (instance == null) return false;
+
+            NetworkObject networkObject = instance.GetComponent<NetworkObject>();
+            if (networkObject == null) return false;
+
+            string broName;
+            int selectedPlayerNum;
+            int selectedVariant;
+            try
+            {
+                if (!BroMakerNetwork.IsHeroSpawnData(networkObject.InstantiationData, out broName,
+                    out selectedPlayerNum, out selectedVariant)) return false;
+            }
+            catch (Exception ex)
+            {
+                BMLogger.Error("Cannot read network bro spawn data: " + ex.Message);
+                return false;
+            }
+
+            string expectedName = GAMEOBJECT_PREFIX + broName;
+            if (instance.gameObject.name != expectedName &&
+                instance.gameObject.name != expectedName + "(Clone)")
+            {
+                BMLogger.Error("Network bro spawn data does not match its resolved prefab: " + broName);
+                return false;
+            }
+
+            StoredHero storedHero;
+            if (!BroMakerStorage.GetStoredHeroByName(broName, out storedHero))
+            {
+                BMLogger.Error("Network bro is missing or ambiguous during initialization: " + broName);
+                return false;
+            }
+            CustomBroInfo info = storedHero.GetInfo();
+            if (info == null || selectedVariant >= (info.VariantCount > 0 ? info.VariantCount : 1))
+            {
+                BMLogger.Error("Network bro variant is invalid for " + broName + ": " + selectedVariant);
+                return false;
+            }
+
+            state.Info = currentInfo;
+            state.PlayerNum = playerNum;
+            state.Variant = spawnVariant;
+            state.Applied = true;
+            currentInfo = info;
+            playerNum = selectedPlayerNum;
+            spawnVariant = selectedVariant;
+            return true;
+        }
+
+        internal static void RestoreNetworkSpawnContext(SpawnContextState state)
+        {
+            if (!state.Applied) return;
+            currentInfo = state.Info;
+            playerNum = state.PlayerNum;
+            spawnVariant = state.Variant;
         }
 
         private static TestVanDammeAnim AfterInstantiation(TestVanDammeAnim hero, HeroType heroTypeEnum, int playerNum, Type type, Vector3 position)
@@ -145,8 +247,7 @@ namespace BroMakerLib.Loaders
             hero.gameObject.SetActive(true);
             if (Registry.GetNID(hero) == NID.NoID)
             {
-                Registry.RegisterDeterminsiticObject(hero);
-                BMLogger.Debug($"AfterInstantiation: Register Object cause it didn't.");
+                BMLogger.Error("RocketLib did not assign a network ID to custom bro " + type.FullName);
             }
 
             Net.RPC<int, HeroType, bool>(PID.TargetAll, new RpcSignature<int, HeroType, bool>(hero.SetUpHero), playerNum, heroTypeEnum, true, false);
@@ -353,6 +454,29 @@ namespace BroMakerLib.Loaders
                 return attributes[0].As<HeroPresetAttribute>().baseType;
             }
             throw new NotImplementedException($"Type {type} as no attribute of {nameof(HeroPresetAttribute)}");
+        }
+
+        internal static GameObject GetOrCreateNetworkPrefab(CustomBroInfo info, Type type)
+        {
+            CustomBroInfo previousInfo = currentInfo;
+            ICustomHeroExtensions.DetermineVariantCount(info);
+            currentInfo = info;
+            try
+            {
+                GameObject prefab = null;
+                int index;
+                if (prefabIndex.TryGetValue(info.name, out index))
+                    prefab = InstantiationController.GetPrefabFromIndex(index);
+                if (prefab == null)
+                    prefab = CreateOriginal(GetBaseHeroTypeOfPreset(type), type);
+
+                BroMakerNetwork.RegisterHeroPrefab(prefab, info.name, type);
+                return prefab;
+            }
+            finally
+            {
+                currentInfo = previousInfo;
+            }
         }
 
         private static GameObject CreateOriginal(HeroType heroType, Type type)

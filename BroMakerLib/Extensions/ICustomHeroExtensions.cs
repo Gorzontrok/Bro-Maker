@@ -158,7 +158,9 @@ namespace BroMakerLib
             if (!(hero is CustomHero))
             {
                 // For vanilla bros, use random selection
-                hero.CurrentVariant = UnityEngine.Random.Range(0, hero.Info.VariantCount);
+                hero.CurrentVariant = LoadHero.spawnVariant >= 0
+                    ? LoadHero.spawnVariant
+                    : UnityEngine.Random.Range(0, hero.Info.VariantCount);
 
                 // Cache current variant parameters
                 hero.CurrentGunSpriteOffset = BroMakerUtilities.GetVariantValue(hero.Info.GunSpriteOffset, hero.CurrentVariant);
@@ -190,12 +192,12 @@ namespace BroMakerLib
             }
             if (glowLightFounded > 1 && lastGlowLight != null)
             {
-                UnityEngine.Object.Destroy(lastGlowLight);
+                UnityEngine.Object.DestroyImmediate(lastGlowLight);
                 BMLogger.Debug("GlowLight Destroyed");
             }
         }
 
-        private static void DetermineVariantCount(Infos.CustomBroInfo info)
+        internal static void DetermineVariantCount(Infos.CustomBroInfo info)
         {
             int maxCount = 1;
 
