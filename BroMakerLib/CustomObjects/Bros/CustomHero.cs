@@ -34,8 +34,8 @@ namespace BroMakerLib.CustomObjects.Bros
             ChevBroliosDrowsy
         }
 
-        [Syncronize] public CustomBroInfo Info { get; set; }
-        [Syncronize] public BroBase Character { get; set; }
+        public CustomBroInfo Info { get; set; }
+        public BroBase Character { get; set; }
         [JsonIgnore] public MuscleTempleFlexEffect FlexEffect { get; set; }
 
         [JsonIgnore] public int CurrentVariant { get; set; }
@@ -125,14 +125,16 @@ namespace BroMakerLib.CustomObjects.Bros
 
         protected override void Awake()
         {
-            Character = this;
-            Info = LoadHero.currentInfo;
+            LoadHero.SpawnContextState spawnContext;
+            bool appliedSpawnContext = LoadHero.ApplyNetworkSpawnContext(this, out spawnContext);
             try
             {
+                Character = this;
+                Info = LoadHero.currentInfo;
                 EnableSyncing(true, true);
 
                 // Select variant
-                CurrentVariant = GetVariant();
+                CurrentVariant = LoadHero.spawnVariant >= 0 ? LoadHero.spawnVariant : GetVariant();
                 if (deduplicateVariants)
                 {
                     RegisterVariant();
@@ -171,6 +173,10 @@ namespace BroMakerLib.CustomObjects.Bros
                 BMLogger.ExceptionLog(ex);
                 enabled = false;
             }
+            finally
+            {
+                LoadHero.RestoreNetworkSpawnContext(spawnContext);
+            }
         }
 
         protected override void Start()
@@ -185,6 +191,11 @@ namespace BroMakerLib.CustomObjects.Bros
 
                 Info.BeforeStart(this);
                 base.Start();
+                // BroBase.Start disables owner syncing until movement; custom bros also need stationary inputs.
+                if (!Connect.IsOffline && IsMine && MustSync())
+                {
+                    SetSyncingInternal(true);
+                }
                 Info.AfterStart(this);
             }
             catch (Exception ex)
@@ -249,7 +260,6 @@ namespace BroMakerLib.CustomObjects.Bros
             base.SetGestureAnimation(gesture);
         }
 
-        // This function is overridden to remove the RPC calls, since they don't work currently
         protected override void CheckForTraps(ref float yIT)
         {
             var num = Y + yIT;
@@ -310,8 +320,8 @@ namespace BroMakerLib.CustomObjects.Bros
                             {
                                 Y = Mathf.Clamp(Y, groundHeight + 2f, groundHeight + 3f);
                                 yIT = 0f;
-                                //Networking.RPC<TestVanDammeAnim>(PID.TargetAll, new RpcSignature<TestVanDammeAnim>(component.spikes.ImpaleUnit), this, false);
-                                component.spikes.ImpaleUnit(this);
+                                Networking.Networking.RPC<TestVanDammeAnim>(PID.TargetAll,
+                                    new RpcSignature<TestVanDammeAnim>(component.spikes.ImpaleUnit), this, false);
                             }
                         }
                         else if (component.spikes.IsBarbedWire(this) && component.spikes.collumn == component.collumn && Y < raycastHit.point.y + 12f && Mathf.Abs(yI) < 50f && Mathf.Abs(xI + xIBlast) > GetSpeed - 2f && (int)Mathf.Sign(xI + xIBlast) == (!left ? 0 : -1) + (!right ? 0 : 1))
@@ -346,8 +356,8 @@ namespace BroMakerLib.CustomObjects.Bros
                             {
                                 Y = Mathf.Clamp(Y, groundHeight + 2f, groundHeight + 3f);
                                 yIT = 0f;
-                                //Networking.RPC<TestVanDammeAnim>(PID.TargetAll, new RpcSignature<TestVanDammeAnim>(component2.spikes.ImpaleUnit), this, false);
-                                component2.spikes.ImpaleUnit(this);
+                                Networking.Networking.RPC<TestVanDammeAnim>(PID.TargetAll,
+                                    new RpcSignature<TestVanDammeAnim>(component2.spikes.ImpaleUnit), this, false);
                             }
                         }
                         else if (component2.spikes.IsBarbedWire(this) && component2.spikes.collumn == component2.collumn && Y < raycastHit2.point.y + 12f && Mathf.Abs(yI) < 50f && Mathf.Abs(xI + xIBlast) > GetSpeed - 2f && (int)Mathf.Sign(xI + xIBlast) == (!left ? 0 : -1) + (!right ? 0 : 1))
@@ -382,8 +392,8 @@ namespace BroMakerLib.CustomObjects.Bros
                             {
                                 Y = Mathf.Clamp(Y, groundHeight + 2f, groundHeight + 3f);
                                 yIT = 0f;
-                                //Networking.RPC<TestVanDammeAnim>(PID.TargetAll, new RpcSignature<TestVanDammeAnim>(component3.spikes.ImpaleUnit), this, false);
-                                component3.spikes.ImpaleUnit(this);
+                                Networking.Networking.RPC<TestVanDammeAnim>(PID.TargetAll,
+                                    new RpcSignature<TestVanDammeAnim>(component3.spikes.ImpaleUnit), this, false);
                             }
                         }
                         else if (component3.spikes.IsBarbedWire(this) && component3.spikes.collumn == component3.collumn && Y < raycastHit3.point.y + 12f && Mathf.Abs(yI) < 50f && Mathf.Abs(xI + xIBlast) > GetSpeed - 2f && (int)Mathf.Sign(xI + xIBlast) == (!left ? 0 : -1) + (!right ? 0 : 1))
@@ -621,6 +631,17 @@ namespace BroMakerLib.CustomObjects.Bros
             }
 
             return Random.Range(0, Info.VariantCount);
+        }
+
+        internal int ChooseVariantForNetworkSpawn()
+        {
+            int variant = GetVariant();
+            if (Info == null || Info.VariantCount <= 0 || variant < 0 || variant >= Info.VariantCount)
+            {
+                BMLogger.Warning("Custom bro returned an invalid network variant; using variant 0: " + name);
+                return 0;
+            }
+            return variant;
         }
 
         /// <summary>

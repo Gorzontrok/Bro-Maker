@@ -201,6 +201,7 @@ namespace BroMakerLib.CustomObjects.Projectiles
         {
             if (CustomProjectilePrefabs.TryGetValue(typeof(T), out CustomProjectile customProjectile) && customProjectile != null)
             {
+                BroMakerNetwork.RegisterProjectilePrefab(customProjectile);
                 return customProjectile as T;
             }
             else
@@ -212,6 +213,7 @@ namespace BroMakerLib.CustomObjects.Projectiles
                 prefab.gameObject.SetActive(false);
                 UnityEngine.Object.DontDestroyOnLoad(prefab.gameObject);
                 CustomProjectilePrefabs.Add(typeof(T), prefab);
+                BroMakerNetwork.RegisterProjectilePrefab(prefab);
                 return prefab;
             }
         }
@@ -226,6 +228,7 @@ namespace BroMakerLib.CustomObjects.Projectiles
         {
             if (CustomProjectilePrefabs.TryGetValue(typeof(T), out CustomProjectile customProjectile) && customProjectile != null)
             {
+                BroMakerNetwork.RegisterProjectilePrefab(customProjectile);
                 return customProjectile as T;
             }
             else
@@ -238,6 +241,7 @@ namespace BroMakerLib.CustomObjects.Projectiles
                 prefab.gameObject.SetActive(false);
                 UnityEngine.Object.DontDestroyOnLoad(prefab.gameObject);
                 CustomProjectilePrefabs.Add(typeof(T), prefab);
+                BroMakerNetwork.RegisterProjectilePrefab(prefab);
                 return prefab;
             }
         }

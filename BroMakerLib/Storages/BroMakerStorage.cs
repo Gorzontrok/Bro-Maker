@@ -31,6 +31,7 @@ namespace BroMakerLib.Storages
         private static List<StoredHero> _bros = new List<StoredHero>();
         private static ReadOnlyCollection<StoredHero> _brosReadOnly;
         private static Dictionary<string, StoredHero> _brosByName = new Dictionary<string, StoredHero>();
+        private static HashSet<string> _ambiguousBroNames = new HashSet<string>(StringComparer.Ordinal);
         private static Dictionary<Type, StoredHero> _brosByType = new Dictionary<Type, StoredHero>();
         private static List<string> _broNames = new List<string>();
         private static ReadOnlyCollection<string> _broNamesReadOnly;
@@ -43,6 +44,7 @@ namespace BroMakerLib.Storages
             _bros = new List<StoredHero>();
             _abilities = new List<StoredAbility>();
             _brosByName = new Dictionary<string, StoredHero>();
+            _ambiguousBroNames = new HashSet<string>(StringComparer.Ordinal);
             _brosByType = new Dictionary<Type, StoredHero>();
             _broNames = new List<string>();
 
@@ -128,10 +130,15 @@ namespace BroMakerLib.Storages
         {
             hero = null;
 
-            if (name.IsNullOrEmpty())
+            if (name.IsNullOrEmpty() || _ambiguousBroNames.Contains(name))
                 return false;
 
             return _brosByName.TryGetValue(name, out hero);
+        }
+
+        internal static bool IsBroNameAmbiguous(string name)
+        {
+            return !string.IsNullOrEmpty(name) && _ambiguousBroNames.Contains(name);
         }
 
         public static bool GetStoredHeroByCustomHeroType<T>(out StoredHero hero) where T : CustomHero
@@ -163,10 +170,8 @@ namespace BroMakerLib.Storages
                     if (File.Exists(path))
                     {
                         var hero = new StoredHero(path, mod);
-                        temp.Add(hero);
-                        _bros.Add(hero);
-                        _brosByName[hero.name] = hero;
-                        _broNames.Add(hero.name);
+                        if (IndexStoredHero(hero)) temp.Add(hero);
+                        else temp.RemoveAll(existing => existing.name == hero.name);
                         BMLogger.Debug($"Found file: '{path}'");
                     }
                 }
@@ -179,13 +184,41 @@ namespace BroMakerLib.Storages
                         cutscene.path = mod.Path;
                     }
                     var hero = new StoredHero(info, mod);
-                    temp.Add(hero);
-                    _bros.Add(hero);
-                    _brosByName[hero.name] = hero;
-                    _broNames.Add(hero.name);
+                    if (IndexStoredHero(hero)) temp.Add(hero);
+                    else temp.RemoveAll(existing => existing.name == hero.name);
                 }
             }
             mod.StoredHeroes = temp.ToArray();
+        }
+
+        private static bool IndexStoredHero(StoredHero hero)
+        {
+            if (hero == null || string.IsNullOrEmpty(hero.name)) return false;
+            if (_ambiguousBroNames.Contains(hero.name)) return false;
+
+            StoredHero existing;
+            if (_brosByName.TryGetValue(hero.name, out existing))
+            {
+                _ambiguousBroNames.Add(hero.name);
+                _brosByName.Remove(hero.name);
+                _bros.RemoveAll(candidate => candidate.name == hero.name);
+                _broNames.RemoveAll(candidate => candidate == hero.name);
+                BroSpawnManager.EnabledBros.RemoveAll(candidate => candidate.name == hero.name);
+                if (existing.mod != null && existing.mod.StoredHeroes != null)
+                {
+                    List<StoredHero> storedHeroes = new List<StoredHero>(existing.mod.StoredHeroes);
+                    storedHeroes.RemoveAll(stored => ReferenceEquals(stored, existing));
+                    existing.mod.StoredHeroes = storedHeroes.ToArray();
+                }
+                BMLogger.Error("Duplicate BroMaker bro name is disabled because network IDs require unique names: " + hero.name +
+                    " (mods '" + existing.mod.Name + "' and '" + hero.mod.Name + "')");
+                return false;
+            }
+
+            _bros.Add(hero);
+            _brosByName.Add(hero.name, hero);
+            _broNames.Add(hero.name);
+            return true;
         }
 
         public static void StoreAbilitiesFromMod(BroMakerMod mod)

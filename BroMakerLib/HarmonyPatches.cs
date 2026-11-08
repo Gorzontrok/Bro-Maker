@@ -74,29 +74,34 @@ namespace BroMakerLib.HarmonyPatches
                 // Handle IronBro spawning
                 else if (GameModeController.IsHardcoreMode)
                 {
-                    if (BSett.instance.automaticSpawn && BroSpawnManager.EnabledBros.Count > 0)
+                    int compatibleHardcoreAvailableCount = BroSpawnManager.GetAllSpawnableBros().Count;
+                    int compatibleHardcoreNotUnlockedCount = BroSpawnManager.GetCompatibleHardcoreBrosNotYetUnlockedCount();
+                    if (BSett.instance.automaticSpawn && (compatibleHardcoreAvailableCount > 0 || compatibleHardcoreNotUnlockedCount > 0))
                     {
                         // Check if we're unlocking a bro
                         if (PlayerProgress.Instance.yetToBePlayedUnlockedHeroes.Count() > 0)
                         {
                             if (BSett.instance.onlyCustomInHardcore)
                             {
-                                LoadHero.willReplaceBro[__instance.playerNum] = true;
+                                LoadHero.willReplaceBro[__instance.playerNum] = compatibleHardcoreAvailableCount > 0 || compatibleHardcoreNotUnlockedCount > 0;
 
-                                PlayerProgress.Instance.yetToBePlayedUnlockedHeroes.Remove(nextHeroType);
-                                GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Remove(nextHeroType);
-                                if (BroSpawnManager.HardcoreBrosNotYetUnlocked.Count() > 0)
+                                if (LoadHero.willReplaceBro[__instance.playerNum])
                                 {
-                                    BroSpawnManager.RescuingHardcoreBro = true;
-                                    LoadHero.playCutscene = true;
+                                    PlayerProgress.Instance.yetToBePlayedUnlockedHeroes.Remove(nextHeroType);
+                                    GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Remove(nextHeroType);
+                                    if (compatibleHardcoreNotUnlockedCount > 0)
+                                    {
+                                        BroSpawnManager.RescuingHardcoreBro = true;
+                                        LoadHero.playCutscene = true;
+                                    }
                                 }
                             }
                             else
                             {
                                 // Probability of a custom bro being unlocked should be the number of custom bros / (number of custom bros + notUnlocked vanilla bros + dead vanilla bros)
                                 // We add 1 because the chosen bro will have already been added to the available bros
-                                LoadHero.willReplaceBro[__instance.playerNum] = UnityEngine.Random.value <= (BroSpawnManager.HardcoreBrosNotYetUnlocked.Count() /
-                                    (BroSpawnManager.HardcoreBrosNotYetUnlocked.Count() + PlayerProgress.Instance.unlockedHeroes.Count() -
+                                LoadHero.willReplaceBro[__instance.playerNum] = UnityEngine.Random.value <= (compatibleHardcoreNotUnlockedCount /
+                                    (compatibleHardcoreNotUnlockedCount + PlayerProgress.Instance.unlockedHeroes.Count() -
                                     GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count() - GameState.Instance.currentWorldmapSave.hardcoreModeDeadBros.Count() + 1.0f));
 
                                 // If replacing hero, remove previously unlocked one from available bros
@@ -112,7 +117,7 @@ namespace BroMakerLib.HarmonyPatches
                         else if (BSett.instance.onlyCustomInHardcore)
                         {
                             // Check if this is the first character being spawned
-                            if (BroSpawnManager.HardcoreAvailableBros.Count() == 0)
+                            if (compatibleHardcoreAvailableCount == 0 && compatibleHardcoreNotUnlockedCount > 0)
                             {
                                 // We use this function to add a character to the pool to start with
                                 BroSpawnManager.RescuingHardcoreBro = true;
@@ -120,10 +125,10 @@ namespace BroMakerLib.HarmonyPatches
                             }
                             LoadHero.willReplaceBro[__instance.playerNum] = true;
                         }
-                        else if (BroSpawnManager.HardcoreAvailableBros.Count() > 0)
+                        else if (compatibleHardcoreAvailableCount > 0)
                         {
-                            LoadHero.willReplaceBro[__instance.playerNum] = UnityEngine.Random.value <= (BroSpawnManager.HardcoreAvailableBros.Count() /
-                            ((float)BroSpawnManager.HardcoreAvailableBros.Count() + GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count()));
+                            LoadHero.willReplaceBro[__instance.playerNum] = UnityEngine.Random.value <= (compatibleHardcoreAvailableCount /
+                            ((float)compatibleHardcoreAvailableCount + GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count()));
                         }
                     }
                 }
@@ -134,7 +139,7 @@ namespace BroMakerLib.HarmonyPatches
                     LoadHero.willPlayCutscene[__instance.playerNum] = true;
                 }
                 // Handle normal spawning
-                else if (BSett.instance.automaticSpawn && BroSpawnManager.EnabledBros.Count > 0)
+                else if (BSett.instance.automaticSpawn && BroSpawnManager.GetAllSpawnableBros().Count > 0)
                 {
                     LoadHero.willReplaceBro[__instance.playerNum] = UnityEngine.Random.value <= (BroSpawnManager.CalculateSpawnProbability() / 100.0f);
                 }
@@ -160,6 +165,20 @@ namespace BroMakerLib.HarmonyPatches
                     LoadHero.anyCustomSpawning = true;
                     Storages.StoredHero choice;
                     choice = BroSpawnManager.GetRandomSpawnableBro(true);
+                    if (choice == null)
+                    {
+                        BMLogger.Warning("No network-compatible BroMaker character is available; keeping the vanilla spawn.");
+                        LoadHero.playCutscene = false;
+                        LoadHero.willPlayCutscene[__instance.playerNum] = false;
+                        __instance.changingBroFromTrigger = false;
+                        LoadHero.spawningCustomBro[__instance.playerNum] = false;
+                        LoadHero.anyCustomSpawning = false;
+                        LoadHero.broBeingRescued = false;
+                        // InstantiateHero hid the vanilla bro while a replacement was pending.
+                        if (__instance.character != null)
+                            __instance.character.gameObject.SetActive(true);
+                        return;
+                    }
 
                     if (BroSpawnManager.LastSpawnWasUnlock)
                     {
@@ -175,6 +194,18 @@ namespace BroMakerLib.HarmonyPatches
                     LoadHero.spawnFromPlayer = (__instance.rescuingThisBro != null);
 
                     TestVanDammeAnim bro = choice.LoadBro(__instance.playerNum);
+                    if (bro == null)
+                    {
+                        LoadHero.playCutscene = false;
+                        LoadHero.willPlayCutscene[__instance.playerNum] = false;
+                        __instance.changingBroFromTrigger = false;
+                        LoadHero.spawningCustomBro[__instance.playerNum] = false;
+                        LoadHero.anyCustomSpawning = false;
+                        LoadHero.broBeingRescued = false;
+                        if (__instance.character != null)
+                            __instance.character.gameObject.SetActive(true);
+                        return;
+                    }
 
                     if (LoadHero.playCutscene)
                     {
@@ -191,6 +222,32 @@ namespace BroMakerLib.HarmonyPatches
             {
                 BMLogger.ExceptionLog(e);
             }
+        }
+    }
+
+    [HarmonyPatch(typeof(TestVanDammeAnim), "RecallBro")]
+    static class TestVanDammeAnim_RecallBro_Patch
+    {
+        static void Postfix(ref bool ___ElgilbleToBeKicked)
+        {
+            // Recalled remote heroes keep updating with playerNum=5 until they fade out.
+            // Their playerBubble is null, so they must no longer be kick candidates.
+            ___ElgilbleToBeKicked = false;
+        }
+    }
+
+    [HarmonyPatch(typeof(ICustomHeroExtensions), "StandardBeforeAwake")]
+    static class ICustomHeroExtensions_StandardBeforeAwake_NetworkContextPatch
+    {
+        static void Prefix(ICustomHero hero, out LoadHero.SpawnContextState __state)
+        {
+            LoadHero.ApplyNetworkSpawnContext(hero as Component, out __state);
+        }
+
+        static Exception Finalizer(Exception __exception, LoadHero.SpawnContextState __state)
+        {
+            LoadHero.RestoreNetworkSpawnContext(__state);
+            return __exception;
         }
     }
 
@@ -623,6 +680,25 @@ namespace BroMakerLib.HarmonyPatches
         }
     }
 
+    // Apply the custom avatar after the vanilla hero setup has selected the base hero avatar.
+    [HarmonyPatch(typeof(TestVanDammeAnim), "SetUpHero", new Type[] { typeof(int), typeof(HeroType), typeof(bool) })]
+    static class TestVanDammeAnim_SetUpHero_Patch
+    {
+        public static void Postfix(TestVanDammeAnim __instance, int PlayerNum)
+        {
+            if (!Main.enabled || !(__instance is ICustomHero))
+            {
+                return;
+            }
+
+            ICustomHero customHero = __instance as ICustomHero;
+            if (customHero.CurrentFirstAvatar != null)
+            {
+                HeroController.SetAvatarMaterial(PlayerNum, customHero.CurrentFirstAvatar);
+            }
+        }
+    }
+
     // Fix custom bros having wrong sprite show up on death screen
     [HarmonyPatch(typeof(GameModeController), "Start")]
     static class GameModeController_Start_Patch
@@ -730,47 +806,6 @@ namespace BroMakerLib.HarmonyPatches
         }
     }
 
-    // Fix grenades thrown by custom bros not having trails setup correctly
-    [HarmonyPatch(typeof(ProjectileController), "SpawnGrenadeOverNetwork")]
-    static class ProjectileController_SpawnGrenadeOverNetwork_Patch
-    {
-        public static bool Prefix(ref Grenade grenadePrefab, ref MonoBehaviour firedBy, ref float x, ref float y, ref float radius, ref float force, ref float xI, ref float yI, ref int playerNum, ref float lifeM, ref Grenade __result)
-        {
-            if (!Main.enabled || !(firedBy is ICustomHero))
-            {
-                return true;
-            }
-
-            __result = ProjectileController.SpawnGrenadeLocally(grenadePrefab, firedBy, x, y, radius, force, xI, yI, playerNum, UnityEngine.Random.Range(0, 10000));
-            if (lifeM < 1f)
-            {
-                __result.ReduceLife(lifeM);
-            }
-            return false;
-        }
-    }
-
-    // Fix airstrike projectiles not working when airstrike grenade is spawned locally
-    [HarmonyPatch(typeof(ProjectileController), "SpawnProjectileOverNetwork")]
-    static class ProjectileController_SpawnProjectileOverNetwork_Patch
-    {
-        public static bool Prefix(ref Projectile prefab, ref MonoBehaviour FiredBy, ref float x, ref float y, ref float xI, ref float yI, ref bool synced, ref int playerNum, ref bool AddTemporaryPlayerTarget, ref bool executeImmediately, ref float _zOffset, ref Projectile __result)
-        {
-            if (!Main.enabled || !(FiredBy is ICustomHero))
-            {
-                return true;
-            }
-
-            __result = ProjectileController.SpawnProjectileLocally(prefab, FiredBy, x, y, xI, yI, playerNum, AddTemporaryPlayerTarget, _zOffset);
-            __result.SetSeed(UnityEngine.Random.Range(-10000, 10000));
-            if (AddTemporaryPlayerTarget)
-            {
-                HeroController.AddTemporaryPlayerTarget(playerNum, __result.transform);
-            }
-            return false;
-        }
-    }
-
     // Ensures custom projectiles are activated after instantiation.
     [HarmonyPatch(typeof(ProjectileController), "SpawnGrenadeLocally")]
     static class ProjectileController_SpawnGrenadeLocally_Patch
@@ -785,6 +820,7 @@ namespace BroMakerLib.HarmonyPatches
             GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(grenadePrefab.gameObject);
             gameObject.SetActive(true);
             __result = gameObject.GetComponent<Grenade>();
+            __result.enabled = true;
             __result.SetupGrenade(seed, playerNum, firedBy);
             __result.Launch(x, y, xI, yI);
             __result.NetworkSetup(PID.MyID);
@@ -805,6 +841,7 @@ namespace BroMakerLib.HarmonyPatches
 
             __result = UnityEngine.Object.Instantiate<Projectile>(projectilePrefab, new Vector3(x, y, 0f), Quaternion.identity);
             __result.gameObject.SetActive(true);
+            __result.enabled = true;
             __result.Fire(x, y, xI, yI, 0f, playerNum, FiredBy);
             return false;
         }
@@ -823,6 +860,7 @@ namespace BroMakerLib.HarmonyPatches
 
             __result = UnityEngine.Object.Instantiate<Projectile>(prefab, new Vector3(x, y, 0f), Quaternion.identity);
             __result.gameObject.SetActive(true);
+            __result.enabled = true;
             __result.Fire(x, y, xI, yI, _zOffset, playerNum, FiredBy);
             return false;
         }
@@ -841,6 +879,7 @@ namespace BroMakerLib.HarmonyPatches
 
             __result = UnityEngine.Object.Instantiate(prefab, new Vector3(x, y, 0f), Quaternion.identity);
             __result.gameObject.SetActive(true);
+            __result.enabled = true;
             __result.Fire(x, y, xI, yI, _zOffset, playerNum, FiredBy);
             return false;
         }
