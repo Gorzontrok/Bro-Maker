@@ -174,6 +174,9 @@ namespace BroMakerLib.HarmonyPatches
                         LoadHero.spawningCustomBro[__instance.playerNum] = false;
                         LoadHero.anyCustomSpawning = false;
                         LoadHero.broBeingRescued = false;
+                        // InstantiateHero hid the vanilla bro while a replacement was pending.
+                        if (__instance.character != null)
+                            __instance.character.gameObject.SetActive(true);
                         return;
                     }
 
@@ -199,6 +202,8 @@ namespace BroMakerLib.HarmonyPatches
                         LoadHero.spawningCustomBro[__instance.playerNum] = false;
                         LoadHero.anyCustomSpawning = false;
                         LoadHero.broBeingRescued = false;
+                        if (__instance.character != null)
+                            __instance.character.gameObject.SetActive(true);
                         return;
                     }
 
