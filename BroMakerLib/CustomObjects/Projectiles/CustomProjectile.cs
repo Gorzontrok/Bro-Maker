@@ -211,7 +211,7 @@ namespace BroMakerLib.CustomObjects.Projectiles
                 prefab.enabled = false;
                 prefab.gameObject.SetActive(false);
                 UnityEngine.Object.DontDestroyOnLoad(prefab.gameObject);
-                CustomProjectilePrefabs.Add(typeof(T), prefab);
+                CustomProjectilePrefabs[typeof(T)] = prefab;
                 return prefab;
             }
         }
@@ -237,7 +237,7 @@ namespace BroMakerLib.CustomObjects.Projectiles
                 prefab.enabled = false;
                 prefab.gameObject.SetActive(false);
                 UnityEngine.Object.DontDestroyOnLoad(prefab.gameObject);
-                CustomProjectilePrefabs.Add(typeof(T), prefab);
+                CustomProjectilePrefabs[typeof(T)] = prefab;
                 return prefab;
             }
         }

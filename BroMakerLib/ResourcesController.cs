@@ -79,9 +79,9 @@ namespace BroMakerLib
         public static Material GetMaterial(string filePath)
         {
             Material result = null;
-            if (materials.ContainsKey(filePath))
+            if (materials.TryGetValue(filePath, out Material cached) && cached)
             {
-                return materials[filePath];
+                return cached;
             }
 
             if (File.Exists(filePath))
@@ -99,7 +99,7 @@ namespace BroMakerLib
 
             if (result != null)
             {
-                materials.Add(filePath, result);
+                materials[filePath] = result;
             }
             return result;
         }
@@ -207,7 +207,9 @@ namespace BroMakerLib
                 tex = CreateTexture(filePath);
 
             if (tex != null)
-                textures.Add(filePath, tex);
+            {
+                textures[filePath] = tex;
+            }
             return tex;
         }
 
@@ -219,10 +221,23 @@ namespace BroMakerLib
         /// <returns></returns>
         public static Texture2D CreateTexture(string filePath)
         {
-            if (!File.Exists(filePath))
-                throw new FileNotFoundException("File not found", filePath);
+            return CreateTexture(filePath, false);
+        }
 
-            return CreateTexture(File.ReadAllBytes(filePath));
+        /// <summary>
+        /// Creates a Texture2D from an image file.
+        /// The Texture2D is not cached, use GetTexture if caching is desired.
+        /// </summary>
+        /// <param name="filePath">Path to an image file</param>
+        /// <param name="readable">Whether the texture's pixels can be read back with GetPixels, which makes loading slower</param>
+        public static Texture2D CreateTexture(string filePath, bool readable)
+        {
+            if (!File.Exists(filePath))
+            {
+                throw new FileNotFoundException("File not found", filePath);
+            }
+
+            return CreateTexture(File.ReadAllBytes(filePath), readable);
         }
 
         /// <summary>
@@ -232,6 +247,17 @@ namespace BroMakerLib
         /// <param name="imageBytes">Byte array to load image from</param>
         /// <returns></returns>
         public static Texture2D CreateTexture(byte[] imageBytes)
+        {
+            return CreateTexture(imageBytes, false);
+        }
+
+        /// <summary>
+        /// Creates a Texture2D from a byte array.
+        /// The Texture2D is not cached, use GetTexture if caching is desired.
+        /// </summary>
+        /// <param name="imageBytes">Byte array to load image from</param>
+        /// <param name="readable">Whether the texture's pixels can be read back with GetPixels, which makes loading slower</param>
+        public static Texture2D CreateTexture(byte[] imageBytes, bool readable)
         {
             if (imageBytes.IsNullOrEmpty())
                 throw new ArgumentException("Is null or empty", nameof(imageBytes));
@@ -249,7 +275,17 @@ namespace BroMakerLib
             convertedTexture.anisoLevel = 1;
             convertedTexture.mipMapBias = 0;
             convertedTexture.wrapMode = TextureWrapMode.Clamp;
-            Graphics.ConvertTexture(tex, convertedTexture);
+            if (readable)
+            {
+                convertedTexture.SetPixels32(tex.GetPixels32());
+                convertedTexture.Apply();
+            }
+            else
+            {
+                // ConvertTexture fills only the GPU copy, so GetPixels on the result returns uninitialized data
+                Graphics.ConvertTexture(tex, convertedTexture);
+            }
+            UnityEngine.Object.Destroy(tex);
             return convertedTexture;
         }
 
@@ -277,9 +313,9 @@ namespace BroMakerLib
         public static AudioClip GetAudioClip(string filePath)
         {
             AudioClip result = null;
-            if (audioClips.ContainsKey(filePath))
+            if (audioClips.TryGetValue(filePath, out AudioClip cached) && cached)
             {
-                return audioClips[filePath];
+                return cached;
             }
 
             if (File.Exists(filePath))
@@ -297,7 +333,7 @@ namespace BroMakerLib
 
             if (result != null)
             {
-                audioClips.Add(filePath, result);
+                audioClips[filePath] = result;
             }
             return result;
         }
@@ -379,7 +415,16 @@ namespace BroMakerLib
             {
                 if (resFilestream == null) return null;
                 byte[] ba = new byte[resFilestream.Length];
-                resFilestream.Read(ba, 0, ba.Length);
+                int offset = 0;
+                while (offset < ba.Length)
+                {
+                    int read = resFilestream.Read(ba, offset, ba.Length - offset);
+                    if (read == 0)
+                    {
+                        break;
+                    }
+                    offset += read;
+                }
                 return ba;
             }
         }

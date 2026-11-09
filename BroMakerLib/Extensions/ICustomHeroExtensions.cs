@@ -42,6 +42,10 @@ namespace BroMakerLib
             heroCharacter.player4Bubble = character.player4Bubble;
             heroCharacter.blood = character.blood;
             heroCharacter.heroTrailPrefab = character.heroTrailPrefab;
+            if (heroCharacter.faderSpritePrefab == null)
+            {
+                heroCharacter.faderSpritePrefab = character.faderSpritePrefab;
+            }
             heroCharacter.high5Bubble = character.high5Bubble;
             heroCharacter.projectile = character.projectile;
             heroCharacter.jetPackSprite = character.jetPackSprite;
