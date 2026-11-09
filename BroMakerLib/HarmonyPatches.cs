@@ -501,55 +501,20 @@ namespace BroMakerLib.HarmonyPatches
         }
     }
 
-    // Fix being unable to enter worm tunnel
+    // Vanilla's consume RPC doesn't run for a custom object the RPC layer can't serialize, so run it locally when it didn't.
     [HarmonyPatch(typeof(AssMouthOrifice), "TryConsumeObject")]
     static class AssMouthOrifice_TryConsumeObject_Patch
     {
-        public static int customObjectIsConsumed = 0;
-        public static void Postfix(AssMouthOrifice __instance, ref BroforceObject obj, ref bool __result, ref bool ___playSwallowAnim, ref float ___swallowFrameTimer, ref int ___swallowFrame, List<BroforceObject> ___consumedThisFrame)
+        public static void Postfix(AssMouthOrifice __instance, BroforceObject obj, bool __result, List<BroforceObject> ___consumedThisFrame)
         {
             if (!Main.enabled)
             {
                 return;
             }
 
-            if (__result && (obj is ICustomHero || obj is ICustomProjectile))
+            if (__result && (obj is ICustomHero || obj is ICustomProjectile) && !___consumedThisFrame.Contains(obj))
             {
-                ++customObjectIsConsumed;
-                ___playSwallowAnim = true;
-                ___swallowFrameTimer = 0f;
-                ___swallowFrame = 0;
-                AssMouthTransportWrapper assMouthTransportWrapper = UnityEngine.Object.Instantiate<AssMouthTransportWrapper>(__instance.wrapperPrefab);
-                assMouthTransportWrapper.Setup(obj, __instance.root);
-                ___consumedThisFrame.Add(obj);
-                __instance.open = true;
-                if (__instance.enterSound)
-                {
-                    Sound.GetInstance().PlaySoundEffect(__instance.enterSound, 0.7f);
-                }
-            }
-
-        }
-    }
-
-    // Fix being unable to exit worm tunnel
-    [HarmonyPatch(typeof(AssMouthTransportWrapper), "RunAssMouthMovement")]
-    static class AssMouthTransportWrapper_RunAssMouthMovement_Patch
-    {
-        public static void Postfix(AssMouthTransportWrapper __instance, object ___transportedObject, AssMouthBlock ___CurrentAssMouthBlock, AssMouthBlock ___PrevAssMouthBlock)
-        {
-            if (!Main.enabled)
-            {
-                return;
-            }
-
-            if (AssMouthOrifice_TryConsumeObject_Patch.customObjectIsConsumed > 0)
-            {
-                if (___CurrentAssMouthBlock == null && (___transportedObject is ICustomHero || ___transportedObject is ICustomProjectile))
-                {
-                    __instance.ExitAssMouth(___PrevAssMouthBlock.orificeInstance);
-                    --AssMouthOrifice_TryConsumeObject_Patch.customObjectIsConsumed;
-                }
+                __instance.CallMethod("ConsumeRPC", obj, Registry.AllocatePlayerUniqueID());
             }
         }
     }
