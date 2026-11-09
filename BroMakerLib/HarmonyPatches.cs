@@ -729,12 +729,30 @@ namespace BroMakerLib.HarmonyPatches
 
                     if (!string.IsNullOrEmpty(spritePath))
                     {
-                        victoryMookDeath.GetComponent<MeshRenderer>().material = ResourcesController.GetMaterial(bro.path, spritePath);
+                        Material bodyMaterial = ResourcesController.GetMaterial(bro.path, spritePath);
+                        SpriteSM bodySprite = victoryMookDeath.GetComponent<SpriteSM>();
+                        if (bodySprite != null)
+                        {
+                            bodySprite.SetMaterialAndRefresh(bodyMaterial);
+                        }
+                        else
+                        {
+                            victoryMookDeath.GetComponent<MeshRenderer>().material = bodyMaterial;
+                        }
                     }
 
                     if (!string.IsNullOrEmpty(gunSpritePath))
                     {
-                        victoryMookDeath.gunSprite.GetComponent<MeshRenderer>().material = ResourcesController.GetMaterial(bro.path, gunSpritePath);
+                        Material gunMaterial = ResourcesController.GetMaterial(bro.path, gunSpritePath);
+                        SpriteSM gunSprite = victoryMookDeath.gunSprite.GetComponent<SpriteSM>();
+                        if (gunSprite != null)
+                        {
+                            gunSprite.SetMaterialAndRefresh(gunMaterial);
+                        }
+                        else
+                        {
+                            victoryMookDeath.gunSprite.GetComponent<MeshRenderer>().material = gunMaterial;
+                        }
                     }
                     victoryMookDeath.gunSprite.SetOffset(gunOffset.x, gunOffset.y, 0);
                 }

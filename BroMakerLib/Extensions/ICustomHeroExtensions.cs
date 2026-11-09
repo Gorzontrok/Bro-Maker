@@ -3,6 +3,7 @@ using BroMakerLib.CustomObjects;
 using BroMakerLib.CustomObjects.Bros;
 using BroMakerLib.Loaders;
 using BroMakerLib.Loggers;
+using HarmonyLib;
 using Networking;
 using RocketLib;
 using UnityEngine;
@@ -11,6 +12,9 @@ namespace BroMakerLib
 {
     public static class ICustomHeroExtensions
     {
+        private static readonly AccessTools.FieldRef<SpriteBase, Texture> spriteTexture = AccessTools.FieldRefAccess<SpriteBase, Texture>("texture");
+        private static readonly AccessTools.FieldRef<SpriteBase, Mesh> spriteMesh = AccessTools.FieldRefAccess<SpriteBase, Mesh>("mesh");
+
         /// <summary>
         /// Before base.Awake()
         /// </summary>
@@ -252,7 +256,7 @@ namespace BroMakerLib
             if (!string.IsNullOrEmpty(spritePath))
             {
                 Material material = ResourcesController.GetMaterial(bro.Info.path, spritePath);
-                character.material = material;
+                character.GetComponent<SpriteSM>().SetMaterialAndRefresh(material);
                 character.SetFieldValue("defaultMaterial", material);
             }
 
@@ -260,7 +264,7 @@ namespace BroMakerLib
             if (!string.IsNullOrEmpty(gunSpritePath))
             {
                 Material gunMaterial = ResourcesController.GetMaterial(bro.Info.path, gunSpritePath);
-                character.gunSprite.meshRender.sharedMaterial = gunMaterial;
+                character.gunSprite.SetMaterialAndRefresh(gunMaterial);
                 character.SetFieldValue("gunMaterial", gunMaterial);
             }
 
@@ -268,6 +272,55 @@ namespace BroMakerLib
             {
                 customHero.SetupAdditionalSprites();
             }
+        }
+
+        /// <summary>
+        /// Assigns a material to the sprite's renderer and refreshes the texture size it maps pixel coordinates against.
+        /// Not for HUD special icons, whose fixed 16x16 rect it would crop.
+        /// </summary>
+        public static void SetMaterialAndRefresh(this SpriteSM sprite, Material material)
+        {
+            if (sprite == null)
+            {
+                return;
+            }
+
+            Renderer renderer = sprite.meshRender != null ? sprite.meshRender : sprite.GetComponent<Renderer>();
+            if (renderer != null)
+            {
+                renderer.sharedMaterial = material;
+            }
+
+            sprite.RefreshTexture();
+        }
+
+        /// <summary>
+        /// Re-reads the sprite's texture size from its current material and re-pushes its UVs, skipping the UV recompute when the size is unchanged.
+        /// Call after changing the texture of a material the sprite already uses.
+        /// </summary>
+        public static void RefreshTexture(this SpriteSM sprite)
+        {
+            if (sprite == null)
+            {
+                return;
+            }
+
+            Texture previousTexture = spriteTexture(sprite);
+            sprite.RecalcTexture();
+            Texture currentTexture = spriteTexture(sprite);
+            if (previousTexture != null && currentTexture != null && previousTexture.width == currentTexture.width && previousTexture.height == currentTexture.height)
+            {
+                return;
+            }
+
+            // Before the sprite awakes there is no mesh to push UVs into, and its own Awake rebuilds them from the new material.
+            if (spriteMesh(sprite) == null)
+            {
+                return;
+            }
+
+            sprite.CalcUVs();
+            sprite.SetBleedCompensation();
         }
 
         /// <summary>

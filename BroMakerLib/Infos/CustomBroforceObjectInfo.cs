@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using BroMakerLib.CustomObjects;
 using BroMakerLib.Loaders;
 using BroMakerLib.Loggers;
 using HarmonyLib;
@@ -57,7 +58,7 @@ namespace BroMakerLib.Infos
                 throw new Exception("beforeAwake null");
             try
             {
-                obj.DynamicFieldsValueSetter(beforeAwake, null, SetFieldData);
+                ApplyLifecycleFields(obj, beforeAwake);
             }
             catch (Exception e)
             {
@@ -70,7 +71,7 @@ namespace BroMakerLib.Infos
                 throw new Exception("afterAwake null");
             try
             {
-                obj.DynamicFieldsValueSetter(afterAwake, null, SetFieldData);
+                ApplyLifecycleFields(obj, afterAwake);
             }
             catch (Exception e)
             {
@@ -83,7 +84,7 @@ namespace BroMakerLib.Infos
                 throw new Exception("beforeStart null");
             try
             {
-                obj.DynamicFieldsValueSetter(beforeStart, null, SetFieldData);
+                ApplyLifecycleFields(obj, beforeStart);
             }
             catch (Exception e)
             {
@@ -96,12 +97,60 @@ namespace BroMakerLib.Infos
                 throw new Exception("afterStart null");
             try
             {
-                obj.DynamicFieldsValueSetter(afterStart, null, SetFieldData);
+                ApplyLifecycleFields(obj, afterStart);
             }
             catch (Exception e)
             {
                 BMLogger.ExceptionLog(e);
             }
+        }
+
+        private const string InjectedGrenadePlayerNumKey = "specialGrenade.playerNum";
+
+        private static readonly Dictionary<string, Component> lifecycleClones = new Dictionary<string, Component>();
+
+        private static readonly HashSet<int> lifecycleCloneIds = new HashSet<int>();
+
+        private void ApplyLifecycleFields(object obj, Dictionary<string, object> map)
+        {
+            Dictionary<string, object> single = new Dictionary<string, object>(1);
+            foreach (KeyValuePair<string, object> kvp in map)
+            {
+                int dot = kvp.Key.IndexOf('.');
+                if (dot > 0 && kvp.Key != InjectedGrenadePlayerNumKey)
+                {
+                    UsePrefabCloneForField(obj, kvp.Key.Substring(0, dot));
+                }
+                single.Clear();
+                single.Add(kvp.Key, kvp.Value);
+                obj.DynamicFieldsValueSetter(single, null, (field, key, value) => SetFieldData(field, key, value, obj));
+            }
+        }
+
+        private void UsePrefabCloneForField(object obj, string fieldName)
+        {
+            Traverse field = Traverse.Create(obj).Field(fieldName);
+            Type fieldType = field.GetValueType();
+            if (fieldType == null || !(typeof(Projectile).IsAssignableFrom(fieldType) || typeof(Grenade).IsAssignableFrom(fieldType)))
+            {
+                return;
+            }
+
+            Component current = field.GetValue() as Component;
+            if (current == null || current is ICustomProjectile || lifecycleCloneIds.Contains(current.GetInstanceID()))
+            {
+                return;
+            }
+
+            string cacheKey = $"{path}|{name}|{fieldName}|{current.GetInstanceID()}";
+            Component clone;
+            if (!lifecycleClones.TryGetValue(cacheKey, out clone) || clone == null)
+            {
+                clone = BroMakerUtilities.ClonePrefab(current);
+                lifecycleClones[cacheKey] = clone;
+                lifecycleCloneIds.Add(clone.GetInstanceID());
+            }
+            field.SetValue(clone);
         }
 
         public virtual void Initialize()
@@ -196,7 +245,21 @@ namespace BroMakerLib.Infos
         }
 
 
-        protected void SetFieldData(Traverse field, string key, object value)
+        private static void RepointMaterialFields(object owner, Material oldMaterial, Material newMaterial)
+        {
+            for (Type type = owner.GetType(); type != null && type != typeof(MonoBehaviour); type = type.BaseType)
+            {
+                foreach (FieldInfo field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
+                {
+                    if (field.FieldType == typeof(Material) && ReferenceEquals(field.GetValue(owner), oldMaterial))
+                    {
+                        field.SetValue(owner, newMaterial);
+                    }
+                }
+            }
+        }
+
+        protected void SetFieldData(Traverse field, string key, object value, object owner)
         {
             try
             {
@@ -206,17 +269,62 @@ namespace BroMakerLib.Infos
                     if (!(value is string))
                         throw new InvalidCastException("can't cast value to string on 'SpriteSM' field");
 
-                    SpriteSM sprite = field.GetValue<SpriteSM>();
-                    sprite.SetTexture(ResourcesController.GetTexture(path, (string)value));
-                    field.SetValue(sprite);
+                    SpriteSM existing = field.GetValue<SpriteSM>();
+                    if (existing == null)
+                    {
+                        BMLogger.Warning($"Cannot assign SpriteSM field '{key}': existing field is null");
+                        return;
+                    }
+
+                    Transform ownerTransform = owner is Component ownerComponent ? ownerComponent.transform : (owner as GameObject)?.transform;
+                    if (ownerTransform == null)
+                    {
+                        BMLogger.Warning($"Cannot assign SpriteSM field '{key}': owner is not a Component, skipping");
+                        return;
+                    }
+
+                    // Instantiate(existing) would duplicate the sprite's object and children, the whole bro for its own sprite.
+                    if (existing.transform.IsChildOf(ownerTransform))
+                    {
+                        Renderer renderer = existing.meshRender != null ? existing.meshRender : existing.GetComponent<Renderer>();
+                        Material oldMaterial = renderer != null ? renderer.sharedMaterial : null;
+                        Material material = ResourcesController.GetMaterial(path, (string)value);
+                        existing.SetMaterialAndRefresh(material);
+                        // Vanilla restore code writes cached materials back to the renderer, so caches of the old material must follow the swap.
+                        if (oldMaterial != null)
+                        {
+                            RepointMaterialFields(owner, oldMaterial, material);
+                        }
+                        return;
+                    }
+
+                    SpriteSM clone = UnityEngine.Object.Instantiate(existing);
+                    clone.transform.SetParent(ownerTransform, false);
+                    clone.transform.localPosition = existing.transform.localPosition;
+                    clone.transform.localRotation = existing.transform.localRotation;
+                    clone.transform.localScale = existing.transform.localScale;
+
+                    if (clone.meshRender == null)
+                    {
+                        BMLogger.Warning($"Cannot set texture on SpriteSM field '{key}': cloned sprite has no MeshRenderer");
+                        field.SetValue(clone);
+                        return;
+                    }
+
+                    if (clone.meshRender.sharedMaterial != null)
+                    {
+                        clone.meshRender.sharedMaterial = new Material(clone.meshRender.sharedMaterial);
+                    }
+
+                    clone.SetTexture(ResourcesController.GetTexture(path, (string)value));
+                    clone.RefreshTexture();
+                    field.SetValue(clone);
                 }
                 else if (fieldType == typeof(Material))
                 {
                     if (!(value is string))
                         throw new InvalidCastException("can't cast value to string on 'Material' field");
-                    Material material = field.GetValue<Material>();
-                    material.mainTexture = ResourcesController.GetTexture(path, (string)value);
-                    field.SetValue(material);
+                    field.SetValue(ResourcesController.GetMaterial(path, (string)value));
                 }
                 else if (fieldType == typeof(Texture))
                 {
@@ -238,7 +346,7 @@ namespace BroMakerLib.Infos
                     }
                     else
                     {
-                        field.SetValue((int)value);
+                        field.SetValue(Convert.ToInt32(value));
                     }
                 }
                 else if (fieldType == typeof(float))
@@ -254,14 +362,14 @@ namespace BroMakerLib.Infos
                     value = Convert.ToInt32(value);
                     field.SetValue(value);
                 }
-                else if (fieldType == typeof(Projectile) || fieldType.IsAssignableFrom(typeof(Projectile)))
+                else if (typeof(Projectile).IsAssignableFrom(fieldType))
                 {
                     var name = (string)value;
                     var proj = LoadBroforceObjects.GetProjectileFromName(name);
                     if (proj != null)
                         field.SetValue(proj);
                 }
-                else if (fieldType == typeof(Grenade) || fieldType.IsAssignableFrom(typeof(Grenade)))
+                else if (typeof(Grenade).IsAssignableFrom(fieldType))
                 {
                     var name = (string)value;
                     var grenade = LoadBroforceObjects.GetGrenadeFromName(name);

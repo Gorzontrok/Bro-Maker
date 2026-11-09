@@ -100,6 +100,7 @@ namespace BroMakerLib.Cutscenes
                 __instance.spriteRenderer.material.mainTexture = _curIntroData.spriteTexture;
 
                 SpriteSM spriteSM = __instance.spriteRenderer.gameObject.GetComponent<SpriteSM>();
+                spriteSM.RefreshTexture();
                 UpdateSpriteSM(spriteSM, _curIntroData);
 
                 // Animation Clip
@@ -207,9 +208,8 @@ namespace BroMakerLib.Cutscenes
             {
                 spriteSM.SetSize(introData.spriteSize.x, introData.spriteSize.y);
             }
-            spriteSM.RecalcTexture();
             spriteSM.CalcUVs();
-            spriteSM.UpdateUVs();
+            spriteSM.SetBleedCompensation();
         }
 
         private static void UpdateAnimatedTexture(CutsceneIntroData introData, Renderer renderer)

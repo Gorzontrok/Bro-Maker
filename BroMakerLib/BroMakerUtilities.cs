@@ -85,6 +85,7 @@ namespace BroMakerLib
                 }
             }
 
+            // No texture refresh: the icon sprite's rect is fixed at 16x16, so refreshing would crop icons of other sizes.
             if (specialMaterials != null)
             {
                 List<Material> specialIcons = specialMaterials;
@@ -127,6 +128,7 @@ namespace BroMakerLib
                 }
             }
 
+            // No texture refresh: the icon sprite's rect is fixed at 16x16, so refreshing would crop icons of other sizes.
             if (specialMaterial != null)
             {
                 for (int i = 0; i < hud.grenadeIcons.Count(); ++i)
@@ -222,6 +224,36 @@ namespace BroMakerLib
             }
             gib.isOnFire = isOnFire;
             return gib;
+        }
+
+        private static GameObject prefabCloneHolder;
+
+        internal static T ClonePrefab<T>(T source) where T : Component
+        {
+            if (prefabCloneHolder == null)
+            {
+                prefabCloneHolder = new GameObject("BroMakerPrefabClones");
+                prefabCloneHolder.SetActive(false);
+                UnityEngine.Object.DontDestroyOnLoad(prefabCloneHolder);
+            }
+
+            bool wasActive = source.gameObject.activeSelf;
+            T clone;
+            if (wasActive)
+            {
+                source.gameObject.SetActive(false);
+            }
+            try
+            {
+                clone = UnityEngine.Object.Instantiate(source);
+            }
+            finally
+            {
+                source.gameObject.SetActive(wasActive);
+            }
+            clone.transform.parent = prefabCloneHolder.transform;
+            clone.gameObject.SetActive(true);
+            return clone;
         }
     }
 }
