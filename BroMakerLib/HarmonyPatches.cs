@@ -727,8 +727,15 @@ namespace BroMakerLib.HarmonyPatches
                     string gunSpritePath = BroMakerUtilities.GetVariantValue(bro.GunSpritePath, variant);
                     Vector2 gunOffset = BroMakerUtilities.GetVariantValue(bro.GunSpriteOffset, variant);
 
-                    victoryMookDeath.GetComponent<MeshRenderer>().material = ResourcesController.GetMaterial(bro.path, spritePath);
-                    victoryMookDeath.gunSprite.GetComponent<MeshRenderer>().material = ResourcesController.GetMaterial(bro.path, gunSpritePath);
+                    if (!string.IsNullOrEmpty(spritePath))
+                    {
+                        victoryMookDeath.GetComponent<MeshRenderer>().material = ResourcesController.GetMaterial(bro.path, spritePath);
+                    }
+
+                    if (!string.IsNullOrEmpty(gunSpritePath))
+                    {
+                        victoryMookDeath.gunSprite.GetComponent<MeshRenderer>().material = ResourcesController.GetMaterial(bro.path, gunSpritePath);
+                    }
                     victoryMookDeath.gunSprite.SetOffset(gunOffset.x, gunOffset.y, 0);
                 }
                 return false;
@@ -749,7 +756,7 @@ namespace BroMakerLib.HarmonyPatches
                 return true;
             }
 
-            if (playerNum < 0 || playerNum > 0 || HeroController.players[playerNum] == null)
+            if (playerNum < 0 || playerNum >= HeroController.players.Length || HeroController.players[playerNum] == null)
             {
                 return true;
             }
