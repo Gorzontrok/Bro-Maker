@@ -76,7 +76,7 @@ namespace BroMakerLib.Menus
                     GridPadding = 10f,  // Reduced padding to use more space for cells
                     WidthMode = SizeMode.Fill,
                     HeightMode = SizeMode.Fill,
-                    TransitionDuration = 0.6f,  // Smooth, slightly slower animation
+                    TransitionDuration = 0.3f,
                     EnableTransitions = true
                 };
             }
