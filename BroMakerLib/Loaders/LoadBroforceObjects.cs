@@ -57,7 +57,7 @@ namespace BroMakerLib.Loaders
             { "KnifeSpray", "networkobjects:Broxmas Knife Spray" },
             { "GrenadeSticky", "networkobjects:Grenade Jensen" },
             { "Sniper", "networkobjects:Bullet DirtyBrory" },
-            { "ShotgunFlame", "networkobjects:DragonBreath Flame Bullet" },
+            { "ShotgunFlame", "sharedassets:DragonBreath Flame Bullet" },
             { "Boomerang", "networkobjects:Boomerang" },
             { "Silence", "networkobjects:Bullet Double Bro Seven" },
             { "PredabroCanon", "networkobjects:Bullet Predabro" },
