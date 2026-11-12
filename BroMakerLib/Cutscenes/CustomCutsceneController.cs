@@ -14,6 +14,12 @@ namespace BroMakerLib.Cutscenes
             {
                 throw new ArgumentNullException(nameof(cutscene));
             }
+            // The game's cutscene start ends a frozen pause only from the top pause menu; otherwise the cutscene's own pause drops the frozen level for good
+            bool canEndPause = PauseController.pauseStatus == PauseStatus.MenuPause && (PauseMenu.instance == null || PauseMenu.instance.MenuActive);
+            if (BroMakerUtilities.IsLevelFrozenByPause() && !canEndPause)
+            {
+                return;
+            }
             cutsceneToLoad = cutscene;
             willLoadCustomCutscene = true;
             if (setFinishCampaignAfterCutscene)

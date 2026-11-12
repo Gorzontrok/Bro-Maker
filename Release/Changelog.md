@@ -4,6 +4,7 @@
 - Fixed frozen custom bros never thawing.
 - Fixed custom bros not spawning, unlocking or displaying correctly.
 - Fixed custom bros dying in IronBro keeping their flex power and not restarting levels the way vanilla bros do.
+- Fixed switching to a custom bro or playing its unlock cutscene while paused breaking the level.
 
 ## v2.6.2
 - Add handling for exceptions thrown while preloading bro assets.

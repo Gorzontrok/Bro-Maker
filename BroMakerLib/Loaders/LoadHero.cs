@@ -208,6 +208,14 @@ namespace BroMakerLib.Loaders
 
             AssignFlexPower(hero);
             BMLogger.Debug("AfterInstantiation: Flex Power Assigned");
+
+            // A pause deactivates the level, so the new bro has to wait inactive with it until the game reactivates both.
+            List<GameObject> pausedObjects = Traverse.Create(typeof(PauseController)).Field("pausedObjects").GetValue<List<GameObject>>();
+            if (BroMakerUtilities.IsLevelFrozenByPause() && pausedObjects != null && pausedObjects.Count > 0)
+            {
+                hero.gameObject.SetActive(false);
+                pausedObjects.Add(hero.gameObject);
+            }
             return hero;
         }
 

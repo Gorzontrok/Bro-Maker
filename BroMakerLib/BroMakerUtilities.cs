@@ -226,6 +226,12 @@ namespace BroMakerLib
             return gib;
         }
 
+        // A cutscene pause, or any pause offline, deactivates the level; an online menu pause deactivates nothing
+        internal static bool IsLevelFrozenByPause()
+        {
+            return PauseController.pauseStatus == PauseStatus.CutscenePause || (PauseController.Paused && Connect.IsOffline);
+        }
+
         private static GameObject prefabCloneHolder;
 
         internal static T ClonePrefab<T>(T source) where T : Component
