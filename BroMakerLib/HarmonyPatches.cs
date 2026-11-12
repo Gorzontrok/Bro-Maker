@@ -438,22 +438,54 @@ namespace BroMakerLib.HarmonyPatches
     [HarmonyPatch(typeof(Player), "RemoveLife")]
     static class Player_RemoveLife_Patch
     {
-        public static bool Prefix(Player __instance)
+        internal class HardcoreDeath
         {
+            public string broName;
+            public HeroType heroType;
+            public int availableIndex;
+            public int deadCount;
+        }
+
+        public static void Prefix(Player __instance, out HardcoreDeath __state)
+        {
+            __state = null;
             if (!Main.enabled)
             {
-                return true;
+                return;
             }
 
             if (GameModeController.IsHardcoreMode && __instance.character is ICustomHero)
             {
                 ICustomHero customHero = (__instance.character as ICustomHero);
-                string broName = customHero.Info.name;
-                BroSpawnManager.HardcoreAvailableBros.Remove(broName);
-                __instance.Lives--;
-                return false;
+                __state = new HardcoreDeath
+                {
+                    broName = customHero.Info.name,
+                    heroType = __instance.character.heroType,
+                    availableIndex = GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.IndexOf(__instance.character.heroType),
+                    deadCount = GameState.Instance.currentWorldmapSave.hardcoreModeDeadBros.Count
+                };
             }
-            return true;
+        }
+
+        // Vanilla moves the custom bro's base hero type from the available to the dead list, so move it back
+        public static void Finalizer(HardcoreDeath __state)
+        {
+            if (__state == null)
+            {
+                return;
+            }
+
+            List<HeroType> deadBros = GameState.Instance.currentWorldmapSave.hardcoreModeDeadBros;
+            if (deadBros.Count <= __state.deadCount)
+            {
+                return;
+            }
+            deadBros.RemoveAt(__state.deadCount);
+            if (__state.availableIndex >= 0)
+            {
+                GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Insert(__state.availableIndex, __state.heroType);
+            }
+            BroSpawnManager.HardcoreAvailableBros.Remove(__state.broName);
         }
     }
 

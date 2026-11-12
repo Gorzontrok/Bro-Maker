@@ -3,6 +3,7 @@
 - Fix bug with logging on Linux
 - Fixed frozen custom bros never thawing.
 - Fixed custom bros not spawning, unlocking or displaying correctly.
+- Fixed custom bros dying in IronBro keeping their flex power and not restarting levels the way vanilla bros do.
 
 ## v2.6.2
 - Add handling for exceptions thrown while preloading bro assets.
