@@ -971,4 +971,23 @@ namespace BroMakerLib.HarmonyPatches
             return true;
         }
     }
+
+    // Unity can destroy BroMaker's projectiles after the map at a level unload or quit, when the map's lists are already null
+    [HarmonyPatch(typeof(Map), "RemoveProjectile")]
+    internal static class Map_RemoveProjectile_Patch
+    {
+        private static bool Prefix(Projectile projectile)
+        {
+            return !(projectile is ICustomProjectile && (Map.projectiles == null || Map.damageableProjectiles == null));
+        }
+    }
+
+    [HarmonyPatch(typeof(Map), "RemoveSachelPack")]
+    internal static class Map_RemoveSachelPack_Patch
+    {
+        private static bool Prefix(SachelPack sachelPack)
+        {
+            return !(sachelPack is ICustomProjectile && Map.sachelPacks == null);
+        }
+    }
 }
