@@ -54,8 +54,6 @@ namespace BroMakerLib
             {
                 CustomBros = CheckFiles<CustomBroInfo>(CustomBros);
                 Abilities = CheckFiles<AbilityInfo>(Abilities);
-
-                BrosNames = GetNames<CustomBroforceObjectInfo>(CustomBros);
             }
         }
 
@@ -111,7 +109,15 @@ namespace BroMakerLib
                     string broName = typeof(T) == typeof(CustomBroInfo) ? (obj.As<JObject>().GetValue("name", StringComparison.OrdinalIgnoreCase) as JValue)?.Value as string : null;
                     using (BMLogger.Scope(null, broName))
                     {
-                        info = obj.As<JObject>().ToObject<T>();
+                        try
+                        {
+                            info = obj.As<JObject>().ToObject<T>();
+                        }
+                        catch (Exception e)
+                        {
+                            BMLogger.Error($"Failed to load an inline {(typeof(T) == typeof(AbilityInfo) ? "ability" : "bro")}", e);
+                            continue;
+                        }
                     }
                     if (info != null)
                     {
@@ -121,43 +127,6 @@ namespace BroMakerLib
                 }
             }
 
-            return temp.ToArray();
-        }
-
-        private string[] GetNames<T>(object[] objects)
-            where T : CustomBroforceObjectInfo
-        {
-            if (objects.IsNullOrEmpty())
-            {
-                return new string[0];
-            }
-
-            List<string> temp = new List<string>();
-            foreach (object obj in objects)
-            {
-                if (obj == null)
-                {
-                    continue;
-                }
-
-                if (obj is string && obj.As<string>().IsNotNullOrEmpty())
-                {
-                    string path = System.IO.Path.Combine(Path, obj.As<string>());
-                    if (File.Exists(path))
-                    {
-                        T info = CustomBroforceObjectInfo.DeserializeJSON<T>(path);
-                        temp.Add(info.name);
-                    }
-                    else
-                    {
-                        BMLogger.Warning($"Can't find '{obj}' at '{path}'");
-                    }
-                }
-                else if (obj is T)
-                {
-                    temp.Add(obj.As<T>().name);
-                }
-            }
             return temp.ToArray();
         }
     }

@@ -119,7 +119,7 @@ namespace BroMakerLib.Infos
                         catch (Exception e)
                         {
                             BMLogger.Error($"Failed to copy the '{fieldName}' prefab for {stage}", e);
-                            return;
+                            continue;
                         }
                     }
                     single.Clear();

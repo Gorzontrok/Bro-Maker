@@ -478,27 +478,37 @@ namespace BroMakerLib.Unlocks
             bool anyNewBros = false;
             foreach (StoredHero bro in allBros)
             {
-                if (!progressData.BroStates.ContainsKey(bro.name))
+                using (BMLogger.Scope(bro.mod?.Name, bro.name))
                 {
-                    BroUnlockConfig unlockConfig = bro.GetInfo()?.UnlockConfig ?? new BroUnlockConfig();
-                    BroUnlockState state = CreateNewBroUnlockState(bro, unlockConfig);
-
-                    progressData.BroStates[bro.name] = state;
-                    anyNewBros = true;
-                }
-                else if (progressData.BroStates.TryGetValue(bro.name, out BroUnlockState currentState))
-                {
-                    // Check if unlock config has changed at all, in case bro was updated
-                    if (bro.GetInfo()?.UnlockConfig != null)
+                    try
                     {
-                        BroUnlockConfig config = bro.GetInfo()?.UnlockConfig;
-                        bool methodUsesLevel = config.Method == UnlockMethod.UnlockLevel || config.Method == UnlockMethod.RescueOrLevel;
-                        // If it has changed, recreate bro unlock state
-                        if (currentState.ConfiguredMethod != config.Method || (methodUsesLevel && currentState.UnlockLevelPath != config.UnlockLevelPath))
+                        if (!progressData.BroStates.ContainsKey(bro.name))
                         {
-                            progressData.BroStates[bro.name] = CreateNewBroUnlockState(bro, config);
+                            BroUnlockConfig unlockConfig = bro.GetInfo()?.UnlockConfig ?? new BroUnlockConfig();
+                            BroUnlockState state = CreateNewBroUnlockState(bro, unlockConfig);
+
+                            progressData.BroStates[bro.name] = state;
                             anyNewBros = true;
                         }
+                        else if (progressData.BroStates.TryGetValue(bro.name, out BroUnlockState currentState))
+                        {
+                            // Check if unlock config has changed at all, in case bro was updated
+                            if (bro.GetInfo()?.UnlockConfig != null)
+                            {
+                                BroUnlockConfig config = bro.GetInfo()?.UnlockConfig;
+                                bool methodUsesLevel = config.Method == UnlockMethod.UnlockLevel || config.Method == UnlockMethod.RescueOrLevel;
+                                // If it has changed, recreate bro unlock state
+                                if (currentState.ConfiguredMethod != config.Method || (methodUsesLevel && currentState.UnlockLevelPath != config.UnlockLevelPath))
+                                {
+                                    progressData.BroStates[bro.name] = CreateNewBroUnlockState(bro, config);
+                                    anyNewBros = true;
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        BMLogger.Error($"Failed to set up how '{bro.name}' is unlocked", ex);
                     }
                 }
             }

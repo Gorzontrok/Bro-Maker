@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using BroMakerLib.Infos;
+using BroMakerLib.Loggers;
 using BroMakerLib.Storages;
 using BroMakerLib.Unlocks;
 using Newtonsoft.Json.Linq;
@@ -303,7 +304,14 @@ namespace BroMakerLib.Menus
 
                 if (!string.IsNullOrEmpty(avatarPath))
                 {
-                    return ResourcesController.GetTexture(broInfo.path, avatarPath);
+                    try
+                    {
+                        return ResourcesController.GetTexture(broInfo.path, avatarPath);
+                    }
+                    catch (System.Exception ex)
+                    {
+                        BMLogger.Warning($"Failed to load the menu avatar for '{broInfo.name}'", ex, storedHero.mod?.Name, broInfo.name);
+                    }
                 }
             }
 

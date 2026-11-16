@@ -35,11 +35,11 @@ namespace BroMakerLib.Storages
         internal static ReadOnlyCollection<BroMakerMod> IncompatibleMods { get; } = _incompatibleMods.AsReadOnly();
         private static List<StoredAbility> _abilities = new List<StoredAbility>();
         private static List<StoredHero> _bros = new List<StoredHero>();
-        private static ReadOnlyCollection<StoredHero> _brosReadOnly;
+        private static ReadOnlyCollection<StoredHero> _brosReadOnly = new List<StoredHero>().AsReadOnly();
         private static Dictionary<string, StoredHero> _brosByName = new Dictionary<string, StoredHero>();
         private static Dictionary<Type, StoredHero> _brosByType = new Dictionary<Type, StoredHero>();
         private static List<string> _broNames = new List<string>();
-        private static ReadOnlyCollection<string> _broNamesReadOnly;
+        private static ReadOnlyCollection<string> _broNamesReadOnly = new List<string>().AsReadOnly();
         private static readonly Dictionary<Assembly, BroMakerMod> _modByAssembly = new Dictionary<Assembly, BroMakerMod>();
 
         internal static void Initialize()
@@ -248,6 +248,7 @@ namespace BroMakerLib.Storages
             }
 
             List<StoredHero> temp = new List<StoredHero>();
+            List<string> names = new List<string>();
             foreach (object broObject in mod.CustomBros)
             {
                 if (broObject as string != null && broObject.As<string>().IsNotNullOrEmpty())
@@ -256,6 +257,11 @@ namespace BroMakerLib.Storages
                     if (File.Exists(path))
                     {
                         StoredHero hero = new StoredHero(path, mod);
+                        names.Add(hero.name);
+                        if (hero.info == null)
+                        {
+                            continue;
+                        }
                         temp.Add(hero);
                         _bros.Add(hero);
                         _brosByName[hero.name] = hero;
@@ -266,15 +272,27 @@ namespace BroMakerLib.Storages
                 else if (broObject as CustomBroInfo != null)
                 {
                     CustomBroInfo info = broObject as CustomBroInfo;
-                    info.path = mod.Path;
-                    info.Mod = mod;
-                    foreach (CustomIntroCutscene cutscene in info.Cutscene)
+                    using (BMLogger.Scope(mod.Name, info.name))
                     {
-                        cutscene.path = mod.Path;
-                        cutscene.Owner = info;
+                        try
+                        {
+                            info.path = mod.Path;
+                            info.Mod = mod;
+                            foreach (CustomIntroCutscene cutscene in info.Cutscene)
+                            {
+                                cutscene.path = mod.Path;
+                                cutscene.Owner = info;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            BMLogger.Error($"Failed to load the bro '{info.name}' written in the mod's manifest", ex);
+                            continue;
+                        }
                     }
 
                     StoredHero hero = new StoredHero(info, mod);
+                    names.Add(hero.name);
                     temp.Add(hero);
                     _bros.Add(hero);
                     _brosByName[hero.name] = hero;
@@ -283,6 +301,7 @@ namespace BroMakerLib.Storages
             }
 
             mod.StoredHeroes = temp.ToArray();
+            mod.BrosNames = names.ToArray();
         }
 
         public static void StoreAbilitiesFromMod(BroMakerMod mod)
@@ -305,7 +324,16 @@ namespace BroMakerLib.Storages
                     string path = Path.Combine(mod.Path, abilityObject as string);
                     if (File.Exists(path))
                     {
-                        StoredAbility ability = new StoredAbility(path);
+                        StoredAbility ability;
+                        try
+                        {
+                            ability = new StoredAbility(path);
+                        }
+                        catch (Exception e)
+                        {
+                            BMLogger.Error($"Failed to load ability JSON at '{path}'", e, mod.Name);
+                            continue;
+                        }
                         temp.Add(ability);
                         _abilities.Add(ability);
                         BMLogger.Debug($"Found file: '{path}'");

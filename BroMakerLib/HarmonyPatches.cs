@@ -705,31 +705,46 @@ namespace BroMakerLib
                     string gunSpritePath = BroMakerUtilities.GetVariantValue(bro.GunSpritePath, variant);
                     Vector2 gunOffset = BroMakerUtilities.GetVariantValue(bro.GunSpriteOffset, variant);
 
+                    // The bro's spawn already reported why a sheet failed to load.
                     if (!string.IsNullOrEmpty(spritePath))
                     {
-                        Material bodyMaterial = ResourcesController.GetMaterial(bro.path, spritePath);
-                        SpriteSM bodySprite = victoryMookDeath.GetComponent<SpriteSM>();
-                        if (bodySprite != null)
+                        try
                         {
-                            bodySprite.SetMaterialAndRefresh(bodyMaterial);
+                            Material bodyMaterial = ResourcesController.LoadMaterial(bro.path, spritePath);
+                            SpriteSM bodySprite = victoryMookDeath.GetComponent<SpriteSM>();
+                            if (bodySprite != null)
+                            {
+                                bodySprite.SetMaterialAndRefresh(bodyMaterial);
+                            }
+                            else
+                            {
+                                victoryMookDeath.GetComponent<MeshRenderer>().material = bodyMaterial;
+                            }
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            victoryMookDeath.GetComponent<MeshRenderer>().material = bodyMaterial;
+                            BMLogger.Log($"Death screen keeps the default sprite for '{bro.name}': {ex.Message}");
                         }
                     }
 
                     if (!string.IsNullOrEmpty(gunSpritePath))
                     {
-                        Material gunMaterial = ResourcesController.GetMaterial(bro.path, gunSpritePath);
-                        SpriteSM gunSprite = victoryMookDeath.gunSprite.GetComponent<SpriteSM>();
-                        if (gunSprite != null)
+                        try
                         {
-                            gunSprite.SetMaterialAndRefresh(gunMaterial);
+                            Material gunMaterial = ResourcesController.LoadMaterial(bro.path, gunSpritePath);
+                            SpriteSM gunSprite = victoryMookDeath.gunSprite.GetComponent<SpriteSM>();
+                            if (gunSprite != null)
+                            {
+                                gunSprite.SetMaterialAndRefresh(gunMaterial);
+                            }
+                            else
+                            {
+                                victoryMookDeath.gunSprite.GetComponent<MeshRenderer>().material = gunMaterial;
+                            }
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            victoryMookDeath.gunSprite.GetComponent<MeshRenderer>().material = gunMaterial;
+                            BMLogger.Log($"Death screen keeps the default sprite for '{bro.name}': {ex.Message}");
                         }
                     }
                     victoryMookDeath.gunSprite.SetOffset(gunOffset.x, gunOffset.y, 0);

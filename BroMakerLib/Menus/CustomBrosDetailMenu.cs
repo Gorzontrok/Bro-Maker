@@ -1,5 +1,6 @@
 using BroMakerLib.Cutscenes;
 using BroMakerLib.Infos;
+using BroMakerLib.Loggers;
 using BroMakerLib.Storages;
 using BroMakerLib.Unlocks;
 using RocketLib.Menus.Core;
@@ -317,7 +318,14 @@ namespace BroMakerLib.Menus
             if (broInfo.Cutscene != null && broInfo.Cutscene.Count > 0 && !string.IsNullOrEmpty(broInfo.Cutscene[0].spritePath))
             {
                 CustomIntroCutscene cutscene = broInfo.Cutscene[0];
-                tex = ResourcesController.GetTexture(broInfo.path, cutscene.spritePath);
+                try
+                {
+                    tex = ResourcesController.GetTexture(broInfo.path, cutscene.spritePath);
+                }
+                catch (System.Exception ex)
+                {
+                    BMLogger.Warning($"Failed to load the menu cutscene image for '{broInfo.name}'", ex, storedHero.mod?.Name, broInfo.name);
+                }
 
                 if (tex != null)
                 {

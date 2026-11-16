@@ -29,9 +29,11 @@ namespace BroMakerLib.Storages
             }
             catch (Exception e)
             {
+                info = null;
                 string fallbackName = Path.GetFileNameWithoutExtension(this.path);
                 BMLogger.Error($"Failed to load bro JSON at '{this.path}'", e, mod?.Name, fallbackName);
                 name = fallbackName;
+                return;
             }
             BroSpawnManager.AddBroIfEnabled(this);
         }

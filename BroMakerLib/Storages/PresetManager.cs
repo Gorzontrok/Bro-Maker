@@ -48,15 +48,25 @@ namespace BroMakerLib
                         mod.Harmony = new Harmony(mod.Name);
                     }
 
-                    foreach (string assemblyPath in mod.Assemblies)
+                    foreach (string assemblyPath in mod.Assemblies ?? new string[0])
                     {
-                        string path = Path.Combine(mod.Path, assemblyPath);
-                        if (!File.Exists(path))
+                        Assembly assembly;
+                        try
                         {
+                            string path = Path.Combine(mod.Path, assemblyPath);
+                            if (!File.Exists(path))
+                            {
+                                continue;
+                            }
+
+                            assembly = Assembly.LoadFile(path);
+                        }
+                        catch (Exception ex)
+                        {
+                            BMLogger.Error($"Error loading assembly {assemblyPath}", ex);
                             continue;
                         }
 
-                        Assembly assembly = Assembly.LoadFile(path);
                         BroMakerStorage.RegisterModAssembly(assembly, mod);
                         bool flag = CheckAssembly(assembly);
                         if (flag && mod.Harmony != null)
@@ -81,7 +91,7 @@ namespace BroMakerLib
         private static Type GetPreset(Dictionary<string, Type> collection, string name)
         {
             Type preset;
-            return collection.TryGetValue(name, out preset) ? preset : null;
+            return name != null && collection.TryGetValue(name, out preset) ? preset : null;
         }
 
         private static ReadOnlyCollection<KeyValuePair<string, Type>> GetAllPresets(Dictionary<string, Type> collection)
@@ -130,7 +140,7 @@ namespace BroMakerLib
         public static MethodInfo GetParameterMethod(string name)
         {
             MethodInfo method;
-            return _parameters.TryGetValue(name, out method) ? method : null;
+            return name != null && _parameters.TryGetValue(name, out method) ? method : null;
         }
 
         public static bool CheckAssembly(Assembly assembly)

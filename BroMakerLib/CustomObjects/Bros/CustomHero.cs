@@ -480,7 +480,14 @@ namespace BroMakerLib.CustomObjects.Bros
         {
             for (int i = 0; i < spritePaths.Count; ++i)
             {
-                ResourcesController.LoadMaterial(directoryPath, spritePaths[i]);
+                try
+                {
+                    ResourcesController.LoadMaterial(directoryPath, spritePaths[i]);
+                }
+                catch (Exception ex)
+                {
+                    BMLogger.Log($"Failed to preload sprite: {ex.Message}");
+                }
             }
         }
 
@@ -493,7 +500,14 @@ namespace BroMakerLib.CustomObjects.Bros
         {
             for (int i = 0; i < soundPaths.Count; ++i)
             {
-                ResourcesController.LoadAudioClip(directoryPath, soundPaths[i]);
+                try
+                {
+                    ResourcesController.LoadAudioClip(directoryPath, soundPaths[i]);
+                }
+                catch (Exception ex)
+                {
+                    BMLogger.Log($"Failed to preload sound: {ex.Message}");
+                }
             }
         }
 

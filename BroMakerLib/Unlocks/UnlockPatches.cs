@@ -18,11 +18,14 @@ namespace BroMakerLib.Unlocks
                     BroUnlockManager.RescuedBro();
                     BroUnlockManager.CheckRescueUnlocks();
                 }
-                HeroUnlockController_GetNumberOfRescuesToNextUnlock_Patch.IgnoreNextCall = false;
             }
             catch (Exception ex)
             {
                 BMLogger.Error("Failed to count a rescue toward unlocking custom bros", ex);
+            }
+            finally
+            {
+                HeroUnlockController_GetNumberOfRescuesToNextUnlock_Patch.IgnoreNextCall = false;
             }
         }
     }
