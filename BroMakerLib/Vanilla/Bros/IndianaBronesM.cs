@@ -53,7 +53,7 @@ namespace BroMakerLib.Vanilla.Bros
 
         protected virtual void FixNullVariableLocal()
         {
-            var bro = HeroController.GetHeroPrefab(HeroType.IndianaBrones).As<IndianaBrones>();
+            IndianaBrones bro = HeroController.GetHeroPrefab(HeroType.IndianaBrones).As<IndianaBrones>();
             whipHitPuff = bro.whipHitPuff;
             whipSprite = this.FindChildOfName("Whip").GetComponent<SpriteSM>();
             materialArmless = bro.materialArmless;

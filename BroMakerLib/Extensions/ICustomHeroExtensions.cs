@@ -1,6 +1,7 @@
 ﻿using System;
 using BroMakerLib.CustomObjects;
 using BroMakerLib.CustomObjects.Bros;
+using BroMakerLib.Infos;
 using BroMakerLib.Loaders;
 using BroMakerLib.Loggers;
 using HarmonyLib;
@@ -24,9 +25,11 @@ namespace BroMakerLib
         public static void AssignNullVariables(this ICustomHero hero, BroBase character)
         {
             if (hero.Character == null)
+            {
                 throw new NullReferenceException("AssignNullVariables: ICustomHero.character is null");
+            }
 
-            var heroCharacter = hero.Character;
+            BroBase heroCharacter = hero.Character;
             BMLogger.Debug($"AssignNullVariables: {heroCharacter.GetType()}: Start Assigning null variables from {character.GetType()}.");
 
             // Global
@@ -67,16 +70,20 @@ namespace BroMakerLib
         public static void FixOtherComponentValues(this ICustomHero hero)
         {
             if (hero.Character == null)
+            {
                 throw new NullReferenceException("FixOtherComponentValues: ICustomHero.character is null");
+            }
 
-            var character = hero.Character;
+            BroBase character = hero.Character;
             if (character.parachute != null)
             {
                 character.parachute.tvd = character;
                 BMLogger.Debug("FixOtherComponentValues: Has set 'tvd' of 'Parachute' component.");
             }
             else
+            {
                 BMLogger.Debug("FixOtherComponentValues: Parachute Not Found");
+            }
             character.RemoveComponent<WavyGrassEffector>();
             BMLogger.Debug($"FixOtherComponentValues: Removed 'WavyGrassEffector' component.");
             character.RemoveComponent<PathAgent>();
@@ -88,14 +95,16 @@ namespace BroMakerLib
         /// </summary>
         public static BroBase GetTheOtherBroBaseComponent(this ICustomHero hero)
         {
-            var character = hero.Character;
+            BroBase character = hero.Character;
             BroBase result = null;
 
             BroBase[] bros = character.GetComponents<BroBase>();
             BMLogger.Debug($"GetTheOtherBroBaseComponent: {character.GetType()}: Has got BroBase components.");
             if (bros.Length > 2)
+            {
                 throw new Exception($"GetTheOtherBroBaseComponent: {bros.Length} components found: {bros.ValuesAsString()}");
-            foreach (var c in bros)
+            }
+            foreach (BroBase c in bros)
             {
                 BMLogger.Debug($"GetTheOtherBroBaseComponent: Find component of {c.GetType()}.");
                 if (c != character)
@@ -115,40 +124,54 @@ namespace BroMakerLib
         [AllowedRPC]
         public static void SetupCustomHero(this ICustomHero hero)
         {
-            var otherBroComponent = hero.GetTheOtherBroBaseComponent();
+            BroBase otherBroComponent = hero.GetTheOtherBroBaseComponent();
             if (otherBroComponent != null)
             {
                 hero.AssignNullVariables(otherBroComponent);
-                var type = otherBroComponent.GetType();
+                Type type = otherBroComponent.GetType();
                 UnityEngine.Object.DestroyImmediate(otherBroComponent);
                 BMLogger.Debug($"SetupCustomHero: Has destroy {type} component.");
                 hero.Info.ReadParameters(hero.Character);
                 BMLogger.Debug("SetupCustomHero: Has read parameters");
             }
             else
+            {
                 BMLogger.Debug("SetupCustomHero: No other bro component founded");
+            }
 
             hero.FixOtherComponentValues();
             hero.RemoveDuplicateGlowLight();
 
             hero.Character.maxHealth = 1;
-            var info = hero.Info;
+            CustomBroInfo info = hero.Info;
             if (!info.beforeAwake.ContainsKey("specialGrenade.playerNum"))
+            {
                 info.beforeAwake.Add("specialGrenade.playerNum", LoadHero.playerNum);
+            }
             if (!info.beforeAwake.ContainsKey("health"))
+            {
                 info.beforeAwake.Add("health", 1);
+            }
 
             if (Settings.instance.maxHealthAtOne)
             {
                 if (info.afterStart.ContainsKey("health"))
+                {
                     info.afterStart["health"] = 1;
+                }
                 else
+                {
                     info.afterStart.Add("health", 1);
+                }
 
                 if (info.afterStart.ContainsKey("maxHealth"))
+                {
                     info.afterStart["maxHealth"] = 1;
+                }
                 else
+                {
                     info.afterStart.Add("maxHealth", 1);
+                }
             }
 
             // Determine variant count from all variant properties
@@ -183,14 +206,14 @@ namespace BroMakerLib
         [AllowedRPC]
         public static void RemoveDuplicateGlowLight(this ICustomHero hero)
         {
-            var transform = hero.Character.transform;
+            Transform transform = hero.Character.transform;
             int childCount = transform.childCount;
             int glowLightFounded = 0;
             GameObject lastGlowLight = null;
 
             for (int i = 0; i < childCount; i++)
             {
-                var child = transform.GetChild(i);
+                Transform child = transform.GetChild(i);
                 if (child.gameObject.name.Contains("Glow Light"))
                 {
                     glowLightFounded++;
@@ -204,24 +227,48 @@ namespace BroMakerLib
             }
         }
 
-        private static void DetermineVariantCount(Infos.CustomBroInfo info)
+        private static void DetermineVariantCount(CustomBroInfo info)
         {
             int maxCount = 1;
 
             // Check all variant property lists
-            if (info.SpritePath?.Count > maxCount) maxCount = info.SpritePath.Count;
-            if (info.GunSpritePath?.Count > maxCount) maxCount = info.GunSpritePath.Count;
-            if (info.GunSpriteOffset?.Count > maxCount) maxCount = info.GunSpriteOffset.Count;
-            if (info.SpecialMaterials?.Count > maxCount) maxCount = info.SpecialMaterials.Count;
-            if (info.SpecialMaterialOffset?.Count > maxCount) maxCount = info.SpecialMaterialOffset.Count;
-            if (info.SpecialMaterialSpacing?.Count > maxCount) maxCount = info.SpecialMaterialSpacing.Count;
-            if (info.FirstAvatar?.Count > maxCount) maxCount = info.FirstAvatar.Count;
-            if (info.Cutscene?.Count > maxCount) maxCount = info.Cutscene.Count;
+            if (info.SpritePath?.Count > maxCount)
+            {
+                maxCount = info.SpritePath.Count;
+            }
+            if (info.GunSpritePath?.Count > maxCount)
+            {
+                maxCount = info.GunSpritePath.Count;
+            }
+            if (info.GunSpriteOffset?.Count > maxCount)
+            {
+                maxCount = info.GunSpriteOffset.Count;
+            }
+            if (info.SpecialMaterials?.Count > maxCount)
+            {
+                maxCount = info.SpecialMaterials.Count;
+            }
+            if (info.SpecialMaterialOffset?.Count > maxCount)
+            {
+                maxCount = info.SpecialMaterialOffset.Count;
+            }
+            if (info.SpecialMaterialSpacing?.Count > maxCount)
+            {
+                maxCount = info.SpecialMaterialSpacing.Count;
+            }
+            if (info.FirstAvatar?.Count > maxCount)
+            {
+                maxCount = info.FirstAvatar.Count;
+            }
+            if (info.Cutscene?.Count > maxCount)
+            {
+                maxCount = info.Cutscene.Count;
+            }
 
             info.VariantCount = maxCount;
         }
 
-        private static void ValidateVariantLists(Infos.CustomBroInfo info)
+        private static void ValidateVariantLists(CustomBroInfo info)
         {
             // Each list must have either 1 item or exactly VariantCount items
             ValidateList(info.SpritePath, "Sprite", info.VariantCount);

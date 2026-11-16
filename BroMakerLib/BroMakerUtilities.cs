@@ -45,9 +45,18 @@ namespace BroMakerLib
         /// <returns>The appropriate value for the variant</returns>
         public static T GetVariantValue<T>(List<T> list, int variantIndex)
         {
-            if (list == null || list.Count == 0) return default(T);
-            if (list.Count == 1) return list[0];
-            if (variantIndex < list.Count) return list[variantIndex];
+            if (list == null || list.Count == 0)
+            {
+                return default(T);
+            }
+            if (list.Count == 1)
+            {
+                return list[0];
+            }
+            if (variantIndex < list.Count)
+            {
+                return list[variantIndex];
+            }
             return list[0]; // Fallback to first if index out of range
         }
 
@@ -59,7 +68,7 @@ namespace BroMakerLib
         public static bool IsBoss(Unit unit)
         {
             return unit.CompareTag("Boss") || unit is DolphLundrenSoldier || unit is SatanMiniboss || (unit is AlienSandWorm && !(unit is AlienWormFacehuggerLauncher)) ||
-                unit is TankBig || unit is Mookopter || unit is GoliathMech || unit is MechWeapon;
+                   unit is TankBig || unit is Mookopter || unit is GoliathMech || unit is MechWeapon;
         }
 
         /// <summary>
@@ -104,11 +113,11 @@ namespace BroMakerLib
             {
                 if (playerNum % 2 == 0)
                 {
-                    hud.grenadeIcons[i].SetOffset(new Vector3(offset.x + i * spacing, offset.y, 0f));
+                    hud.grenadeIcons[i].SetOffset(new Vector3(offset.x + (i * spacing), offset.y, 0f));
                 }
                 else
                 {
-                    hud.grenadeIcons[i].SetOffset(new Vector3(-1 * (offset.x + i * spacing), offset.y, 0f));
+                    hud.grenadeIcons[i].SetOffset(new Vector3(-1 * (offset.x + (i * spacing)), offset.y, 0f));
                 }
             }
 
@@ -147,11 +156,11 @@ namespace BroMakerLib
             {
                 if (playerNum % 2 == 0)
                 {
-                    hud.grenadeIcons[i].SetOffset(new Vector3(offset.x + i * spacing, offset.y, 0f));
+                    hud.grenadeIcons[i].SetOffset(new Vector3(offset.x + (i * spacing), offset.y, 0f));
                 }
                 else
                 {
-                    hud.grenadeIcons[i].SetOffset(new Vector3(-1 * (offset.x + i * spacing), offset.y, 0f));
+                    hud.grenadeIcons[i].SetOffset(new Vector3(-1 * (offset.x + (i * spacing)), offset.y, 0f));
                 }
             }
 

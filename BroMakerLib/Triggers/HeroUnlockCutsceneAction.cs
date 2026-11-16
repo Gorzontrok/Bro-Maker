@@ -11,6 +11,7 @@ namespace BroMakerLib.Triggers
         public bool finishCampaignAfterCutscene = true;
         public string broName = string.Empty;
         public float delay = 1f;
+
         public override void ShowGUI(LevelEditorGUI gui)
         {
             finishCampaignAfterCutscene = GUILayout.Toggle(finishCampaignAfterCutscene, "Finish campaign after cutscene");
@@ -27,12 +28,12 @@ namespace BroMakerLib.Triggers
                 {
                     if (!GUILayout.Toggle(true, hero.name))
                     {
-                        this.broName = string.Empty;
+                        broName = string.Empty;
                     }
                 }
                 else if (GUILayout.Toggle(false, hero.name))
                 {
-                    this.broName = hero.name;
+                    broName = hero.name;
                 }
             }
         }
@@ -41,38 +42,38 @@ namespace BroMakerLib.Triggers
     public class HeroUnlockCutsceneAction : RocketLib.CustomTriggers.CustomTriggerAction<HeroUnlockCutsceneActionInfo>
     {
         public float timer = 0f;
-        StoredHero hero;
+        private StoredHero hero;
 
         public override void Start()
         {
             base.Start();
 
             // Skip cutscene if already unlocked or if not found
-            if (!BroMakerStorage.GetStoredHeroByName(this.info.broName, out this.hero) || BroUnlockManager.IsBroUnlocked(this.info.broName))
+            if (!BroMakerStorage.GetStoredHeroByName(info.broName, out hero) || BroUnlockManager.IsBroUnlocked(info.broName))
             {
-                this.state = TriggerActionState.Done;
+                state = TriggerActionState.Done;
             }
             else
             {
-                this.state = TriggerActionState.Busy;
+                state = TriggerActionState.Busy;
             }
         }
 
         public override void Update()
         {
             timer += Time.deltaTime;
-            if (timer >= this.info.delay)
+            if (timer >= info.delay)
             {
                 try
                 {
                     BroUnlockManager.CheckLevelUnlocks(LevelSelectionController.currentCampaign.name);
                     Cutscenes.CustomCutsceneController.LoadHeroCutscene(BroMakerUtilities.GetVariantValue(hero.GetInfo().Cutscene, 0), 0.2f, true);
-                    this.state = TriggerActionState.Done;
+                    state = TriggerActionState.Done;
                 }
                 catch (Exception ex)
                 {
                     BMLogger.Warning($"Hero unlock cutscene failed for '{info.broName}'", ex, bro: info.broName);
-                    this.state = TriggerActionState.Done;
+                    state = TriggerActionState.Done;
                 }
             }
         }

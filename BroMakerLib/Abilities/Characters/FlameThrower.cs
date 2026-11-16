@@ -1,10 +1,10 @@
 ﻿namespace BroMakerLib.Abilities.Characters
 {
-
     public class FlameThrower : CharacterAbility
     {
         public Projectile projectile2 = null;
         public Projectile projectile3 = null;
+
         public override void UseFire()
         {
         }

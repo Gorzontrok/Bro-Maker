@@ -27,74 +27,79 @@ namespace BroMakerLib.CustomObjects.Bros
 
         protected virtual void DealDamageToGround(float x, float y, Vector3 point, Collider hitCollider)
         {
-            this.MakeEffects(point.x, point.y);
+            MakeEffects(point.x, point.y);
             bool flag = hitCollider.GetComponent<Cage>();
-            int num = this.groundSwordDamage;
-            MapController.Damage_Local(this, hitCollider.gameObject, num + ((!flag) ? 0 : 5), DamageType.Bullet, this.xI, 0f, x, y);
-            if (!this.hasHitWithWall)
+            int num = groundSwordDamage;
+            MapController.Damage_Local(this, hitCollider.gameObject, num + (!flag ? 0 : 5), DamageType.Bullet, xI, 0f, x, y);
+            if (!hasHitWithWall)
             {
                 SortOfFollow.Shake(0.15f);
             }
-            this.hasHitWithWall = true;
+            hasHitWithWall = true;
         }
+
         protected virtual void DeflectProjectiles()
         {
-            if (Map.DeflectProjectiles(this, base.playerNum, 16f, base.X + Mathf.Sign(base.transform.localScale.x) * 6f, base.Y + 6f, Mathf.Sign(base.transform.localScale.x) * 200f, true))
+            if (Map.DeflectProjectiles(this, playerNum, 16f, X + (Mathf.Sign(transform.localScale.x) * 6f), Y + 6f, Mathf.Sign(transform.localScale.x) * 200f, true))
             {
                 PlaySpecial4Sound(1f);
-                this.hasHitWithWall = true;
+                hasHitWithWall = true;
             }
         }
+
         protected override void FireWeapon(float x, float y, float xSpeed, float ySpeed)
         {
-            Map.HurtWildLife(x + base.transform.localScale.x * 13f, y + 5f, 12f);
-            this.deflectProjectilesCounter = this.deflectProjectilesEnergy;
-            this.deflectProjectilesEnergy = 0f;
-            this.DeflectProjectiles();
+            Map.HurtWildLife(x + (transform.localScale.x * 13f), y + 5f, 12f);
+            deflectProjectilesCounter = deflectProjectilesEnergy;
+            deflectProjectilesEnergy = 0f;
+            DeflectProjectiles();
             bool flag;
-            Map.DamageDoodads(3, DamageType.Knifed, x + (float)(base.Direction * 4), y, 0f, 0f, 6f, base.playerNum, out flag, null);
-            this.SetGunSprite(this.gunFrame, 0);
-            float num = base.transform.localScale.x * 12f;
-            this.ConstrainToFragileBarriers(ref num, 16f);
-            if (!this.TryHitWalls(x, y, xSpeed, ySpeed, true))
+            Map.DamageDoodads(3, DamageType.Knifed, x + (float)(Direction * 4), y, 0f, 0f, 6f, playerNum, out flag, null);
+            SetGunSprite(gunFrame, 0);
+            float num = transform.localScale.x * 12f;
+            ConstrainToFragileBarriers(ref num, 16f);
+            if (!TryHitWalls(x, y, xSpeed, ySpeed, true))
             {
-                this.hasHitWithWall = false;
-                this.SwingSword(false);
+                hasHitWithWall = false;
+                SwingSword(false);
             }
         }
+
         protected virtual Vector3 GetSwingAtGroundPosition(float x, float y)
         {
-            return new Vector3(x - Mathf.Sign(base.transform.localScale.x) * 12f, y + 5.5f, 0f);
+            return new Vector3(x - (Mathf.Sign(transform.localScale.x) * 12f), y + 5.5f, 0f);
         }
+
         protected virtual void MakeEffects(float x, float y)
         {
-            EffectsController.CreateShrapnel(this.shrapnelSpark, this.raycastHit.point.x + this.raycastHit.normal.x * 3f, this.raycastHit.point.y + this.raycastHit.normal.y * 3f, 4f, 30f, 3f, this.raycastHit.normal.x * 60f, this.raycastHit.normal.y * 30f);
-            EffectsController.CreateEffect(this.hitPuff, this.raycastHit.point.x + this.raycastHit.normal.x * 3f, this.raycastHit.point.y + this.raycastHit.normal.y * 3f);
+            EffectsController.CreateShrapnel(shrapnelSpark, raycastHit.point.x + (raycastHit.normal.x * 3f), raycastHit.point.y + (raycastHit.normal.y * 3f), 4f, 30f, 3f, raycastHit.normal.x * 60f, raycastHit.normal.y * 30f);
+            EffectsController.CreateEffect(hitPuff, raycastHit.point.x + (raycastHit.normal.x * 3f), raycastHit.point.y + (raycastHit.normal.y * 3f));
         }
+
         protected override void RunGun()
         {
-            this.deflectProjectilesEnergy += this.t * 0.5f;
-            if (this.deflectProjectilesEnergy > 0.45f)
+            deflectProjectilesEnergy += t * 0.5f;
+            if (deflectProjectilesEnergy > 0.45f)
             {
-                this.deflectProjectilesEnergy = 0.45f;
+                deflectProjectilesEnergy = 0.45f;
             }
-            this.deflectProjectilesCounter -= this.t;
-            if (!this.WallDrag && this.gunFrame > 0)
+            deflectProjectilesCounter -= t;
+            if (!WallDrag && gunFrame > 0)
             {
-                if (this.deflectProjectilesCounter > 0f)
+                if (deflectProjectilesCounter > 0f)
                 {
-                    this.DeflectProjectiles();
+                    DeflectProjectiles();
                 }
-                this.gunCounter += this.t;
-                if (this.gunCounter > 0.0334f)
+                gunCounter += t;
+                if (gunCounter > 0.0334f)
                 {
-                    this.gunCounter -= 0.0334f;
-                    this.gunFrame--;
-                    if (this.gunFrame < 0)
+                    gunCounter -= 0.0334f;
+                    gunFrame--;
+                    if (gunFrame < 0)
                     {
-                        this.gunFrame = 0;
+                        gunFrame = 0;
                     }
-                    this.SetGunSprite(this.gunFrame, 0);
+                    SetGunSprite(gunFrame, 0);
                     /*  if (!this.hasPlayedAttackHitSound)
                       {
                           if (this.hasHitWithSlice)
@@ -108,69 +113,76 @@ namespace BroMakerLib.CustomObjects.Bros
                               this.hasPlayedAttackHitSound = true;
                           }
                       }*/
-                    if (this.gunFrame >= 3)
+                    if (gunFrame >= 3)
                     {
-                        this.SwingSword(this.hasHitWithWall);
-                        if (!this.hasHitWithWall)
+                        SwingSword(hasHitWithWall);
+                        if (!hasHitWithWall)
                         {
-                            this.TryHitWalls(base.X + 10f * base.transform.localScale.x, base.Y + 6.5f, this.xI, 0f, false);
+                            TryHitWalls(X + (10f * transform.localScale.x), Y + 6.5f, xI, 0f, false);
                         }
                     }
                 }
             }
         }
+
         protected virtual void SwingSword(bool ground)
         {
-            if (Map.HitUnits(this, base.playerNum, this.enemySwordDamage, DamageType.Blade, ground ? 5f : 15f, base.X, base.Y, base.transform.localScale.x * 420f, 360f, true, true, true, this.alreadyHit, false, false))
+            if (Map.HitUnits(this, playerNum, enemySwordDamage, DamageType.Blade, ground ? 5f : 15f, X, Y, transform.localScale.x * 420f, 360f, true, true, true, alreadyHit, false, false))
             {
-                if (!this.hasHitWithSlice)
+                if (!hasHitWithSlice)
                 {
                     SortOfFollow.Shake(0.15f);
                 }
-                this.hasHitWithSlice = true;
+                hasHitWithSlice = true;
                 if (ground)
-                    this.PlayWallSound();
+                {
+                    PlayWallSound();
+                }
                 else
-                    this.PlaySliceSound();
+                {
+                    PlaySliceSound();
+                }
             }
             else
             {
-                this.hasHitWithSlice = false;
+                hasHitWithSlice = false;
             }
         }
+
         protected virtual bool TryHitWalls(float x, float y, float xSpeed, float ySpeed, bool alsoHitUnits = true)
         {
-            if (Physics.Raycast(this.GetSwingAtGroundPosition(x, y), new Vector3(base.transform.localScale.x, 0f, 0f), out this.raycastHit, 19f, this.groundLayer) || Physics.Raycast(new Vector3(x - Mathf.Sign(base.transform.localScale.x) * 12f, y + 10.5f, 0f), new Vector3(base.transform.localScale.x, 0f, 0f), out this.raycastHit, 19f, this.groundLayer))
+            if (Physics.Raycast(GetSwingAtGroundPosition(x, y), new Vector3(transform.localScale.x, 0f, 0f), out raycastHit, 19f, groundLayer) || Physics.Raycast(new Vector3(x - (Mathf.Sign(transform.localScale.x) * 12f), y + 10.5f, 0f), new Vector3(transform.localScale.x, 0f, 0f), out raycastHit, 19f, groundLayer))
             {
-                this.DealDamageToGround(x, y, this.raycastHit.point, this.raycastHit.collider);
+                DealDamageToGround(x, y, raycastHit.point, raycastHit.collider);
                 if (alsoHitUnits)
                 {
-                    this.SwingSword(true);
+                    SwingSword(true);
                 }
                 return true;
             }
-            Collider[] array = Physics.OverlapSphere(this.GetSwingAtGroundPosition(x, y), 1f, this.groundLayer | 1 << LayerMask.NameToLayer("FLUI"));
+            Collider[] array = Physics.OverlapSphere(GetSwingAtGroundPosition(x, y), 1f, groundLayer | (1 << LayerMask.NameToLayer("FLUI")));
             if (array.Length > 0)
             {
-                this.DealDamageToGround(x, y, this.GetSwingAtGroundPosition(x, y), array[0]);
+                DealDamageToGround(x, y, GetSwingAtGroundPosition(x, y), array[0]);
                 if (alsoHitUnits)
                 {
-                    this.SwingSword(true);
+                    SwingSword(true);
                 }
                 return true;
             }
             return false;
         }
+
         protected override void UseFire()
         {
-            this.alreadyHit.Clear();
-            this.hasHitWithWall = false;
-            this.hasHitWithSlice = false;
-            this.hasPlayedAttackHitSound = false;
-            this.gunFrame = 6;
-            this.FireWeapon(base.X + base.transform.localScale.x * 10f, base.Y + 6.5f, base.transform.localScale.x * 400f, (float)(UnityEngine.Random.Range(0, 40) - 20));
-            this.PlayAttackSound();
-            Map.DisturbWildLife(base.X, base.Y, 60f, base.playerNum);
+            alreadyHit.Clear();
+            hasHitWithWall = false;
+            hasHitWithSlice = false;
+            hasPlayedAttackHitSound = false;
+            gunFrame = 6;
+            FireWeapon(X + (transform.localScale.x * 10f), Y + 6.5f, transform.localScale.x * 400f, (float)(Random.Range(0, 40) - 20));
+            PlayAttackSound();
+            Map.DisturbWildLife(X, Y, 60f, playerNum);
         }
 
         public virtual void PlaySliceSound()
@@ -181,13 +193,13 @@ namespace BroMakerLib.CustomObjects.Bros
         public virtual void PlayWallSound()
         {
 
-            if (this.sound == null)
+            if (sound == null)
             {
-                this.sound = Sound.GetInstance();
+                sound = Sound.GetInstance();
             }
-            if (this.sound != null)
+            if (sound != null)
             {
-                this.sound.PlaySoundEffectAt(this.soundHolder.defendSounds, 0.7f, base.transform.position, 1f, true, false, false, 0f);
+                sound.PlaySoundEffectAt(soundHolder.defendSounds, 0.7f, transform.position, 1f, true, false, false, 0f);
             }
         }
     }

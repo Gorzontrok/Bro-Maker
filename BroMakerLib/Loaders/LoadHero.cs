@@ -256,7 +256,7 @@ namespace BroMakerLib.Loaders
         {
             player.firstDeployment = wasFirstDeployment[player.playerNum];
             Vector3 arg = new Vector3(100f, 100f);
-            Player.SpawnType arg2 = LoadHero.previousSpawnInfo[player.playerNum];
+            Player.SpawnType arg2 = previousSpawnInfo[player.playerNum];
             bool flag = false;
             bool flag2 = false;
             switch (arg2)
@@ -339,7 +339,7 @@ namespace BroMakerLib.Loaders
 
         private static void AssignFlexPower(TestVanDammeAnim testVanDammeAnim)
         {
-            var player = testVanDammeAnim.player;
+            Player player = testVanDammeAnim.player;
 
             if (player.GetFieldValue<PickupType>("_forceFlexPowerupSpawn") != PickupType.None)
             {
@@ -417,7 +417,7 @@ namespace BroMakerLib.Loaders
 
         public static HeroType GetBaseHeroTypeOfPreset(Type type)
         {
-            var attributes = type.GetCustomAttributes(typeof(HeroPresetAttribute), true);
+            object[] attributes = type.GetCustomAttributes(typeof(HeroPresetAttribute), true);
             if (attributes.IsNotNullOrEmpty())
             {
                 return attributes[0].As<HeroPresetAttribute>().baseType;
@@ -429,16 +429,18 @@ namespace BroMakerLib.Loaders
         {
             GameObject prefab = HeroController.GetHeroPrefab(heroType).gameObject;
             prefab.SetActive(false);
-            GameObject inst = UnityEngine.Object.Instantiate(prefab, Vector3.zero, Quaternion.identity);
+            GameObject inst = Object.Instantiate(prefab, Vector3.zero, Quaternion.identity);
             prefab.SetActive(true);
 
             // Ensure prefab is only created once
-            UnityEngine.Object.DontDestroyOnLoad(inst);
+            Object.DontDestroyOnLoad(inst);
 
             inst.AddComponent(type);
             inst.name = GAMEOBJECT_PREFIX + currentInfo.name;
             if (inst == null)
+            {
                 throw new Exception("CreateOriginal: Instantiate has failed is null");
+            }
             BMLogger.Debug("CreateOriginal: Has Instantiate Hero.");
             inst.SetActive(false);
 
@@ -453,14 +455,18 @@ namespace BroMakerLib.Loaders
 
         private static void AddObjectToPrefabList(GameObject gameObject)
         {
-            var prefabListT = Traverse.Create<InstantiationController>().Field("prefabList");
-            var list = prefabListT.GetValue<List<UnityEngine.Object>>();
+            Traverse prefabListT = Traverse.Create<InstantiationController>().Field("prefabList");
+            List<Object> list = prefabListT.GetValue<List<Object>>();
             list.Add(gameObject);
             prefabListT.SetValue(list);
             if (prefabIndex.ContainsKey(currentInfo.name))
+            {
                 prefabIndex[currentInfo.name] = InstantiationController.GetPrefabIndex(gameObject);
+            }
             else
+            {
                 prefabIndex.Add(currentInfo.name, InstantiationController.GetPrefabIndex(gameObject));
+            }
         }
     }
 }

@@ -7,7 +7,7 @@ using UnityEngine;
 namespace BroMakerLib.Cutscenes
 {
     [HarmonyPatch(typeof(CutsceneIntroRoot), "OnLoadComplete", typeof(string), typeof(object))]
-    static class CutsceneIntroRoot_StartCutscene_Patch
+    internal static class CutsceneIntroRoot_StartCutscene_Patch
     {
         public static bool Prefix(CutsceneIntroRoot __instance, string resourceName, object asset, ref CutsceneIntroData ____curIntroData, ref Texture2D ____oldTex, ref string ____curIntroResourceName)
         {
@@ -173,16 +173,22 @@ namespace BroMakerLib.Cutscenes
         private static void UpdateText3D(Text3D text3D, string text, float scale, Color color)
         {
             if (text3D == null || text == null)
+            {
                 return;
+            }
 
             text3D.TextString = text;
             text3D.transform.localScale = new Vector3(scale, scale, scale);
 
             Renderer renderer = text3D.GetComponent<Renderer>();
             if (renderer == null)
+            {
                 return;
+            }
             if (renderer.material == null)
+            {
                 return;
+            }
             text3D.UpdateText();
             renderer.material.color = color;
         }
@@ -228,7 +234,9 @@ namespace BroMakerLib.Cutscenes
             AnimatedTexture animatedTexture = renderer.gameObject.GetOrAddComponent<AnimatedTexture>();
 
             if (animatedTexture == null)
+            {
                 return;
+            }
 
             if (hasExtraData && !dataExtra.isAnimated)
             {
@@ -244,7 +252,7 @@ namespace BroMakerLib.Cutscenes
                 animatedTexture.enabled = true;
                 animatedTexture.Recalc();
                 animatedTexture.Restart(); // Make sure that the animation replay each time
-                animatedTexture.SetFrame();// Make sure the Sprite appears
+                animatedTexture.SetFrame(); // Make sure the Sprite appears
 
                 if (hasExtraData)
                 {
@@ -261,9 +269,9 @@ namespace BroMakerLib.Cutscenes
     }
 
     [HarmonyPatch(typeof(CutsceneIntroRoot), "EndCutscene")]
-    static class CutsceneIntroRoot_EndCutscene_Patch
+    internal static class CutsceneIntroRoot_EndCutscene_Patch
     {
-        static void Prefix(CutsceneIntroRoot __instance, ref CutsceneIntroData ____curIntroData)
+        private static void Prefix(CutsceneIntroRoot __instance, ref CutsceneIntroData ____curIntroData)
         {
             if (____curIntroData != null)
             {
@@ -284,7 +292,7 @@ namespace BroMakerLib.Cutscenes
     }
 
     [HarmonyPatch(typeof(Cutscene), "OnEnable")]
-    static class Cutscene_OnEnable_Patch
+    internal static class Cutscene_OnEnable_Patch
     {
         public static void Postfix(Cutscene __instance)
         {

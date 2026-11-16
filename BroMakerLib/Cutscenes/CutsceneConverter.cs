@@ -34,8 +34,8 @@ namespace BroMakerLib.Cutscenes
                     // Remove variantSprites so it doesn't interfere with deserialization
                     jo.Remove("variantSprites");
 
-                    var cutscenes = new List<CustomIntroCutscene>();
-                    var processedSprites = new HashSet<string>();
+                    List<CustomIntroCutscene> cutscenes = new List<CustomIntroCutscene>();
+                    HashSet<string> processedSprites = new HashSet<string>();
 
                     // Check if there's an existing spritePath
                     string baseSpritePathStr = jo["spritePath"]?.ToString();
@@ -44,7 +44,7 @@ namespace BroMakerLib.Cutscenes
                     if (!string.IsNullOrEmpty(baseSpritePathStr))
                     {
                         bool isInVariants = false;
-                        foreach (var sprite in variantSprites)
+                        foreach (JToken sprite in variantSprites)
                         {
                             if (sprite.ToString() == baseSpritePathStr)
                             {
@@ -56,23 +56,23 @@ namespace BroMakerLib.Cutscenes
                         if (!isInVariants)
                         {
                             // Add the base sprite as the first cutscene
-                            var baseCutscene = jo.ToObject<CustomIntroCutscene>();
+                            CustomIntroCutscene baseCutscene = jo.ToObject<CustomIntroCutscene>();
                             cutscenes.Add(baseCutscene);
                             processedSprites.Add(baseSpritePathStr);
                         }
                     }
 
                     // Create a cutscene for each variant sprite (avoiding duplicates)
-                    foreach (var sprite in variantSprites)
+                    foreach (JToken sprite in variantSprites)
                     {
                         string spritePath = sprite.ToString();
                         if (!processedSprites.Contains(spritePath))
                         {
-                            var cutsceneObj = jo.DeepClone() as JObject;
+                            JObject cutsceneObj = jo.DeepClone() as JObject;
                             cutsceneObj["spritePath"] = sprite;
 
                             // Deserialize and set the path
-                            var cutscene = cutsceneObj.ToObject<CustomIntroCutscene>();
+                            CustomIntroCutscene cutscene = cutsceneObj.ToObject<CustomIntroCutscene>();
                             cutscenes.Add(cutscene);
                             processedSprites.Add(spritePath);
                         }

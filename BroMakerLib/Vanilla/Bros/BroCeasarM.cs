@@ -52,7 +52,7 @@ namespace BroMakerLib.Vanilla.Bros
 
         protected virtual void FixNullVariableLocal()
         {
-            var bro = HeroController.GetHeroPrefab(HeroType.HaleTheBro).As<BroCeasar>();
+            BroCeasar bro = HeroController.GetHeroPrefab(HeroType.HaleTheBro).As<BroCeasar>();
 
             bulletShell = bro.bulletShell;
             miniGunSoundSpinning = bro.miniGunSoundSpinning;

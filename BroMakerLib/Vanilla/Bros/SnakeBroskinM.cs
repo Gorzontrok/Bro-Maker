@@ -52,7 +52,7 @@ namespace BroMakerLib.Vanilla.Bros
 
         protected virtual void FixNullVariableLocal()
         {
-            var bro = HeroController.GetHeroPrefab(HeroType.SnakeBroSkin).As<SnakeBroskin>();
+            SnakeBroskin bro = HeroController.GetHeroPrefab(HeroType.SnakeBroSkin).As<SnakeBroskin>();
             hologramMaterial = bro.hologramMaterial;
             gliderAudio = GetComponent<AudioSource>();
         }

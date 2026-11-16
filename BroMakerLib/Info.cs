@@ -11,6 +11,7 @@ namespace BroMakerLib
 
         // Used to show a warning that if bros are below this version they may experience bugs
         public const string SUGGESTEDMINIMUMVERSION = "2.6.0";
+
         // Used for when BroMaker makes breaking changes that will require Bro mods to be updated
         public const string MINIMUMVERSION = "2.7.0";
 
@@ -19,10 +20,13 @@ namespace BroMakerLib
             get
             {
                 if (_parsedVersion == null)
+                {
                     _parsedVersion = UnityModManager.ParseVersion(VERSION);
+                }
                 return _parsedVersion;
             }
         }
+
         private static System.Version _parsedVersion;
 
         public static System.Version ParsedSuggestedMinimumVersion
@@ -30,10 +34,13 @@ namespace BroMakerLib
             get
             {
                 if (_parsedSuggestedMinimumVersion == null)
+                {
                     _parsedSuggestedMinimumVersion = UnityModManager.ParseVersion(SUGGESTEDMINIMUMVERSION);
+                }
                 return _parsedSuggestedMinimumVersion;
             }
         }
+
         private static System.Version _parsedSuggestedMinimumVersion;
 
         public static System.Version ParsedMinimumVersion
@@ -41,10 +48,13 @@ namespace BroMakerLib
             get
             {
                 if (_parsedMinimumVersion == null)
+                {
                     _parsedMinimumVersion = UnityModManager.ParseVersion(MINIMUMVERSION);
+                }
                 return _parsedMinimumVersion;
             }
         }
+
         private static System.Version _parsedMinimumVersion;
     }
 }

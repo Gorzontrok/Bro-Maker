@@ -52,7 +52,7 @@ namespace BroMakerLib.Vanilla.Bros
 
         protected virtual void FixNullVariableLocal()
         {
-            var bro = HeroController.GetHeroPrefab(HeroType.Brononymous).As<Brononymous>();
+            Brononymous bro = HeroController.GetHeroPrefab(HeroType.Brononymous).As<Brononymous>();
             neuraliserPrefab = bro.neuraliserPrefab;
         }
     }

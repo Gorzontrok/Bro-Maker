@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using BroMakerLib.CustomObjects;
-using BroMakerLib.CustomObjects.Bros;
 using BroMakerLib.CustomObjects.Projectiles;
 using BroMakerLib.Infos;
 using BroMakerLib.Loaders;
@@ -18,9 +17,9 @@ namespace BroMakerLib.HarmonyPatches
 {
     // Automatic spawn
     [HarmonyPatch(typeof(Player), "SpawnHero")]
-    static class Player_SpawnHero_Patch
+    internal static class Player_SpawnHero_Patch
     {
-        static void Prefix(Player __instance, ref HeroType nextHeroType)
+        private static void Prefix(Player __instance, ref HeroType nextHeroType)
         {
             if (Main.enabled)
             {
@@ -71,9 +70,9 @@ namespace BroMakerLib.HarmonyPatches
                             {
                                 // Probability of a custom bro being unlocked should be the number of custom bros / (number of custom bros + notUnlocked vanilla bros + dead vanilla bros)
                                 // We add 1 because the chosen bro will have already been added to the available bros
-                                LoadHero.willReplaceBro[__instance.playerNum] = UnityEngine.Random.value <= (BroSpawnManager.HardcoreBrosNotYetUnlocked.Count() /
+                                LoadHero.willReplaceBro[__instance.playerNum] = UnityEngine.Random.value <= BroSpawnManager.HardcoreBrosNotYetUnlocked.Count() /
                                     (BroSpawnManager.HardcoreBrosNotYetUnlocked.Count() + PlayerProgress.Instance.unlockedHeroes.Count() -
-                                    GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count() - GameState.Instance.currentWorldmapSave.hardcoreModeDeadBros.Count() + 1.0f));
+                                        GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count() - GameState.Instance.currentWorldmapSave.hardcoreModeDeadBros.Count() + 1.0f);
 
                                 // If replacing hero, remove previously unlocked one from available bros
                                 if (LoadHero.willReplaceBro[__instance.playerNum])
@@ -98,8 +97,8 @@ namespace BroMakerLib.HarmonyPatches
                         }
                         else if (BroSpawnManager.HardcoreAvailableBros.Count() > 0)
                         {
-                            LoadHero.willReplaceBro[__instance.playerNum] = UnityEngine.Random.value <= (BroSpawnManager.HardcoreAvailableBros.Count() /
-                            ((float)BroSpawnManager.HardcoreAvailableBros.Count() + GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count()));
+                            LoadHero.willReplaceBro[__instance.playerNum] = UnityEngine.Random.value <= BroSpawnManager.HardcoreAvailableBros.Count() /
+                                ((float)BroSpawnManager.HardcoreAvailableBros.Count() + GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count());
                         }
                     }
                 }
@@ -112,7 +111,7 @@ namespace BroMakerLib.HarmonyPatches
                 // Handle normal spawning
                 else if (BSett.instance.automaticSpawn && BroSpawnManager.EnabledBros.Count > 0)
                 {
-                    LoadHero.willReplaceBro[__instance.playerNum] = UnityEngine.Random.value <= (BroSpawnManager.CalculateSpawnProbability() / 100.0f);
+                    LoadHero.willReplaceBro[__instance.playerNum] = UnityEngine.Random.value <= BroSpawnManager.CalculateSpawnProbability() / 100.0f;
                 }
 
                 if (LoadHero.willReplaceBro[__instance.playerNum])
@@ -125,7 +124,7 @@ namespace BroMakerLib.HarmonyPatches
 
         }
 
-        static void Postfix(Player __instance)
+        private static void Postfix(Player __instance)
         {
             try
             {
@@ -158,8 +157,8 @@ namespace BroMakerLib.HarmonyPatches
 
                     if (BroSpawnManager.LastSpawnWasUnlock)
                     {
-                        var info = choice.GetInfo();
-                        var unlockConfig = info?.UnlockConfig;
+                        CustomBroInfo info = choice.GetInfo();
+                        BroUnlockConfig unlockConfig = info?.UnlockConfig;
 
                         if (info.Cutscene.Count > 0 && info.Cutscene[0].playCutsceneOnFirstSpawn)
                         {
@@ -167,7 +166,7 @@ namespace BroMakerLib.HarmonyPatches
                         }
                     }
 
-                    LoadHero.spawnFromPlayer = (__instance.rescuingThisBro != null);
+                    LoadHero.spawnFromPlayer = __instance.rescuingThisBro != null;
 
                     TestVanDammeAnim bro = choice.LoadBro(__instance.playerNum);
                     if (bro == null)
@@ -200,9 +199,9 @@ namespace BroMakerLib.HarmonyPatches
 
     // Fix vanilla bro being visible for 1 frame in certain spawning situations
     [HarmonyPatch(typeof(Player), "InstantiateHero")]
-    static class Player_InstantiateHero_Patch
+    internal static class Player_InstantiateHero_Patch
     {
-        static void Postfix(Player __instance, ref TestVanDammeAnim __result)
+        private static void Postfix(Player __instance, ref TestVanDammeAnim __result)
         {
             // If mod is disabled or if we aren't loading a custom character don't disable
             if (!Main.enabled || !LoadHero.willReplaceBro[__instance.playerNum])
@@ -215,9 +214,9 @@ namespace BroMakerLib.HarmonyPatches
     }
 
     [HarmonyPatch(typeof(Map), "AddBroToHeroTransport")]
-    static class Map_AddBroToHeroTransport_Patch
+    internal static class Map_AddBroToHeroTransport_Patch
     {
-        static bool Prefix(Map __instance, ref TestVanDammeAnim Bro)
+        private static bool Prefix(Map __instance, ref TestVanDammeAnim Bro)
         {
             // If mod is disabled or if we aren't loading a custom character don't disable
             return !Main.enabled || !LoadHero.willReplaceBro[Bro.playerNum];
@@ -225,9 +224,9 @@ namespace BroMakerLib.HarmonyPatches
     }
 
     [HarmonyPatch(typeof(EffectsController), "CreateHeroIndicator")]
-    static class EffectsController_CreateHeroIndicator_Patch
+    internal static class EffectsController_CreateHeroIndicator_Patch
     {
-        static bool Prefix(ref Unit unit)
+        private static bool Prefix(ref Unit unit)
         {
             if (!Main.enabled)
             {
@@ -243,9 +242,9 @@ namespace BroMakerLib.HarmonyPatches
     }
 
     [HarmonyPatch(typeof(Player), "WorkOutSpawnPosition")]
-    static class Player_WorkOutSpawnPosition_Patch
+    internal static class Player_WorkOutSpawnPosition_Patch
     {
-        static void Prefix(Player __instance, ref TestVanDammeAnim bro)
+        private static void Prefix(Player __instance, ref TestVanDammeAnim bro)
         {
             if (!Main.enabled)
             {
@@ -260,9 +259,9 @@ namespace BroMakerLib.HarmonyPatches
     }
 
     [HarmonyPatch(typeof(Player), "WorkOutSpawnScenario")]
-    static class Player_WorkOutSpawnScenario_Patch
+    internal static class Player_WorkOutSpawnScenario_Patch
     {
-        static void Postfix(Player __instance, ref Player.SpawnType __result)
+        private static void Postfix(Player __instance, ref Player.SpawnType __result)
         {
             if (!Main.enabled)
             {
@@ -283,7 +282,7 @@ namespace BroMakerLib.HarmonyPatches
     }
 
     [HarmonyPatch(typeof(Player), "SetSpawnPositon")]
-    static class Player_SetSpawnPositon_Patch
+    internal static class Player_SetSpawnPositon_Patch
     {
         public static void Prefix(Player __instance, ref TestVanDammeAnim bro)
         {
@@ -301,7 +300,7 @@ namespace BroMakerLib.HarmonyPatches
     }
 
     [HarmonyPatch(typeof(PlayerHUD), "SetGrenadeMaterials", new Type[] { typeof(HeroType) })]
-    static class PlayerHUD_SetGrenadeMaterials_Patch
+    internal static class PlayerHUD_SetGrenadeMaterials_Patch
     {
         public static bool Prefix(PlayerHUD __instance, ref HeroType type, int ___playerNum)
         {
@@ -315,12 +314,12 @@ namespace BroMakerLib.HarmonyPatches
             if (currentCharacter is ICustomHero)
             {
                 ICustomHero customHero = currentCharacter as ICustomHero;
-                var materials = customHero.CurrentSpecialMaterials;
+                List<Material> materials = customHero.CurrentSpecialMaterials;
 
                 if (materials != null && materials.Count > 0)
                 {
-                    var offset = customHero.CurrentSpecialMaterialOffset;
-                    var spacing = customHero.CurrentSpecialMaterialSpacing;
+                    Vector2 offset = customHero.CurrentSpecialMaterialOffset;
+                    float spacing = customHero.CurrentSpecialMaterialSpacing;
 
                     BroMakerUtilities.SetSpecialMaterials(playerNum, materials, offset, spacing);
                     return false;
@@ -338,7 +337,7 @@ namespace BroMakerLib.HarmonyPatches
     }
 
     [HarmonyPatch(typeof(HeroController), "GetHeroType")]
-    static class HeroController_GetHeroType_Patch
+    internal static class HeroController_GetHeroType_Patch
     {
         public static bool Prefix(HeroController __instance, ref HeroType __result)
         {
@@ -359,7 +358,7 @@ namespace BroMakerLib.HarmonyPatches
     }
 
     [HarmonyPatch(typeof(SaveSlotsMenu), "SelectSlot")]
-    static class SaveSlotsMenu_SelectSlot_Patch
+    internal static class SaveSlotsMenu_SelectSlot_Patch
     {
         public static void Prefix(SaveSlotsMenu __instance, ref int slot)
         {
@@ -385,7 +384,7 @@ namespace BroMakerLib.HarmonyPatches
 
     // Ensure we can't gain more lives than we should be able to in IronBro, to prevent the game from softlocking
     [HarmonyPatch(typeof(Player), "AddLife")]
-    static class Player_AddLife_Patch
+    internal static class Player_AddLife_Patch
     {
         public static bool Prefix(Player __instance)
         {
@@ -401,7 +400,7 @@ namespace BroMakerLib.HarmonyPatches
                     return false;
                 }
                 else if (BroSpawnManager.HardcoreBrosNotYetUnlocked.Count() +
-                    GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count() + PlayerProgress.Instance.yetToBePlayedUnlockedHeroes.Count() == 0)
+                         GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count() + PlayerProgress.Instance.yetToBePlayedUnlockedHeroes.Count() == 0)
                 {
                     return false;
                 }
@@ -412,7 +411,7 @@ namespace BroMakerLib.HarmonyPatches
 
     // Ensure we don't remove other characters if we die with a custom character in IronBro
     [HarmonyPatch(typeof(Player), "RemoveLife")]
-    static class Player_RemoveLife_Patch
+    internal static class Player_RemoveLife_Patch
     {
         internal class HardcoreDeath
         {
@@ -432,7 +431,7 @@ namespace BroMakerLib.HarmonyPatches
 
             if (GameModeController.IsHardcoreMode && __instance.character is ICustomHero)
             {
-                ICustomHero customHero = (__instance.character as ICustomHero);
+                ICustomHero customHero = __instance.character as ICustomHero;
                 __state = new HardcoreDeath
                 {
                     broName = customHero.Info.name,
@@ -467,7 +466,7 @@ namespace BroMakerLib.HarmonyPatches
 
     // Count custom bros for this function so that cages still spawn on the map
     [HarmonyPatch(typeof(HeroUnlockController), "AreAnyMoreBrosAvailableToBeSavedInHardcoreMode")]
-    static class HeroUnlockController_AreAnyMoreBrosAvailableToBeSavedInHardcoreMode_Patch
+    internal static class HeroUnlockController_AreAnyMoreBrosAvailableToBeSavedInHardcoreMode_Patch
     {
         public static void Postfix(HeroUnlockController __instance, ref bool __result)
         {
@@ -489,7 +488,7 @@ namespace BroMakerLib.HarmonyPatches
 
     // Fix being unable to pilot mech
     [HarmonyPatch(typeof(Unit), "PilotUnit")]
-    static class Unit_PilotUnit_Patch
+    internal static class Unit_PilotUnit_Patch
     {
         public static bool Prefix(Unit __instance, ref Unit pilotUnit)
         {
@@ -511,7 +510,7 @@ namespace BroMakerLib.HarmonyPatches
 
     // Vanilla's consume RPC doesn't run for a custom object the RPC layer can't serialize, so run it locally when it didn't.
     [HarmonyPatch(typeof(AssMouthOrifice), "TryConsumeObject")]
-    static class AssMouthOrifice_TryConsumeObject_Patch
+    internal static class AssMouthOrifice_TryConsumeObject_Patch
     {
         public static void Postfix(AssMouthOrifice __instance, BroforceObject obj, bool __result, List<BroforceObject> ___consumedThisFrame)
         {
@@ -529,7 +528,7 @@ namespace BroMakerLib.HarmonyPatches
 
     // Fix being unable to be impaled by spikes
     [HarmonyPatch(typeof(Impaler), "ImpaleUnit")]
-    static class Impaler_ImpaleUnit_Patch
+    internal static class Impaler_ImpaleUnit_Patch
     {
         public static bool Prefix(Impaler __instance, ref TestVanDammeAnim unit)
         {
@@ -550,7 +549,7 @@ namespace BroMakerLib.HarmonyPatches
 
     // Fix being unable to pickup items
     [HarmonyPatch(typeof(PickupableController), "UsePickupables")]
-    static class PickupableController_UsePickupables_Patch
+    internal static class PickupableController_UsePickupables_Patch
     {
         public static bool Prefix(ref TestVanDammeAnim self, ref float range, ref float x, ref float y, ref bool onlyAmmo)
         {
@@ -595,7 +594,7 @@ namespace BroMakerLib.HarmonyPatches
 
     // Fix default character avatar's being overwritten by custom ones
     [HarmonyPatch(typeof(HeroController), "SwitchAvatarMaterial")]
-    static class HeroController_SwitchAvatarMaterial_Patch
+    internal static class HeroController_SwitchAvatarMaterial_Patch
     {
         public static bool Prefix(ref SpriteSM sprite, ref bool __result)
         {
@@ -626,7 +625,7 @@ namespace BroMakerLib.HarmonyPatches
 
     // Fix custom bros having wrong sprite show up on death screen
     [HarmonyPatch(typeof(GameModeController), "Start")]
-    static class GameModeController_Start_Patch
+    internal static class GameModeController_Start_Patch
     {
         public static void Prefix()
         {
@@ -641,7 +640,7 @@ namespace BroMakerLib.HarmonyPatches
 
     // Fix custom bros having wrong sprite show up on death screen
     [HarmonyPatch(typeof(StatisticsController), "NotifyMookDeathType", new Type[] { typeof(TestVanDammeAnim), typeof(DeathType) })]
-    static class StatisticsController_NotifyMookDeathType_Patch
+    internal static class StatisticsController_NotifyMookDeathType_Patch
     {
         public static void Prefix(ref TestVanDammeAnim vanDamme, ref DeathType deathType)
         {
@@ -661,7 +660,7 @@ namespace BroMakerLib.HarmonyPatches
 
     // Fix custom bros having wrong sprite show up on death screen
     [HarmonyPatch(typeof(LevelOverScreen), "AddDeath")]
-    static class LevelOverScreen_AddDeath_Patch
+    internal static class LevelOverScreen_AddDeath_Patch
     {
         public static bool Prefix(LevelOverScreen __instance, ref int deathNum, ref int totalDeaths, ref Transform parent, ref ShakeM shakeObject)
         {
@@ -672,20 +671,20 @@ namespace BroMakerLib.HarmonyPatches
 
             if (LoadHero.customBroDeaths.ContainsKey(deathNum))
             {
-                int num = 40 + totalDeaths / 6;
-                int num2 = 1 + totalDeaths / num;
+                int num = 40 + (totalDeaths / 6);
+                int num2 = 1 + (totalDeaths / num);
                 int num3 = deathNum / num;
-                int num4 = deathNum - num3 * num;
+                int num4 = deathNum - (num3 * num);
                 float num5 = 190f / (float)Mathf.Min(num, totalDeaths);
-                float num6 = (num2 > 1) ? (50f / ((float)num2 + 0.85f)) : 0f;
+                float num6 = num2 > 1 ? 50f / ((float)num2 + 0.85f) : 0f;
                 if (num5 > 16f)
                 {
                     num5 = 16f;
                 }
                 float num7 = -num5 * (float)(Mathf.Min(num, totalDeaths) - 1) / 2f;
-                float num8 = (num2 > 1) ? (num6 * ((float)(num2 - 1) / 2f) + 10f) : 10f;
+                float num8 = num2 > 1 ? (num6 * ((float)(num2 - 1) / 2f)) + 10f : 10f;
                 DeathObject deathObject = StatisticsController.GetDeathObject(deathNum);
-                Vector3 position = __instance.mookDeathsHolder.transform.position + new Vector3(num7 + (float)num4 * num5, num8 - (float)num3 * num6, 35f * (float)deathNum / (float)totalDeaths - (float)(num3 * 45));
+                Vector3 position = __instance.mookDeathsHolder.transform.position + new Vector3(num7 + ((float)num4 * num5), num8 - ((float)num3 * num6), (35f * (float)deathNum / (float)totalDeaths) - (float)(num3 * 45));
 
                 if (deathObject != null)
                 {
@@ -738,7 +737,7 @@ namespace BroMakerLib.HarmonyPatches
 
     // Fix avatars flashing for custom bros, for some reason vanilla bros don't have flashing avatars, other than the boondock bros
     [HarmonyPatch(typeof(HeroController), "FlashAvatar")]
-    static class HeroController_FlashAvatar_Patch
+    internal static class HeroController_FlashAvatar_Patch
     {
         public static bool Prefix(ref int playerNum)
         {
@@ -758,7 +757,7 @@ namespace BroMakerLib.HarmonyPatches
 
     // Fix grenades thrown by custom bros not having trails setup correctly
     [HarmonyPatch(typeof(ProjectileController), "SpawnGrenadeOverNetwork")]
-    static class ProjectileController_SpawnGrenadeOverNetwork_Patch
+    internal static class ProjectileController_SpawnGrenadeOverNetwork_Patch
     {
         public static bool Prefix(ref Grenade grenadePrefab, ref MonoBehaviour firedBy, ref float x, ref float y, ref float radius, ref float force, ref float xI, ref float yI, ref int playerNum, ref float lifeM, ref Grenade __result)
         {
@@ -778,7 +777,7 @@ namespace BroMakerLib.HarmonyPatches
 
     // Fix airstrike projectiles not working when airstrike grenade is spawned locally
     [HarmonyPatch(typeof(ProjectileController), "SpawnProjectileOverNetwork")]
-    static class ProjectileController_SpawnProjectileOverNetwork_Patch
+    internal static class ProjectileController_SpawnProjectileOverNetwork_Patch
     {
         public static bool Prefix(ref Projectile prefab, ref MonoBehaviour FiredBy, ref float x, ref float y, ref float xI, ref float yI, ref bool synced, ref int playerNum, ref bool AddTemporaryPlayerTarget, ref bool executeImmediately, ref float _zOffset, ref Projectile __result)
         {
@@ -799,7 +798,7 @@ namespace BroMakerLib.HarmonyPatches
 
     // Ensures custom projectiles are activated after instantiation.
     [HarmonyPatch(typeof(ProjectileController), "SpawnGrenadeLocally")]
-    static class ProjectileController_SpawnGrenadeLocally_Patch
+    internal static class ProjectileController_SpawnGrenadeLocally_Patch
     {
         public static bool Prefix(ref Grenade grenadePrefab, ref MonoBehaviour firedBy, ref float x, ref float y, ref float radius, ref float force, ref float xI, ref float yI, ref int playerNum, ref int seed, ref Grenade __result)
         {
@@ -820,7 +819,7 @@ namespace BroMakerLib.HarmonyPatches
 
     // Ensures custom projectiles are activated after instantiation.
     [HarmonyPatch(typeof(ProjectileController), "SpawnProjectileLocally", new Type[] { typeof(Projectile), typeof(MonoBehaviour), typeof(float), typeof(float), typeof(float), typeof(float), typeof(int) })]
-    static class ProjectileController_SpawnProjectileLocally_Patch
+    internal static class ProjectileController_SpawnProjectileLocally_Patch
     {
         public static bool Prefix(ref Projectile projectilePrefab, ref MonoBehaviour FiredBy, ref float x, ref float y, ref float xI, ref float yI, ref int playerNum, ref Projectile __result)
         {
@@ -838,7 +837,7 @@ namespace BroMakerLib.HarmonyPatches
 
     // Ensures custom projectiles are activated after instantiation.
     [HarmonyPatch(typeof(ProjectileController), "SpawnProjectileLocally", new Type[] { typeof(Projectile), typeof(MonoBehaviour), typeof(float), typeof(float), typeof(float), typeof(float), typeof(int), typeof(bool), typeof(float) })]
-    static class ProjectileController_SpawnProjectileLocally2_Patch
+    internal static class ProjectileController_SpawnProjectileLocally2_Patch
     {
         public static bool Prefix(ref Projectile prefab, ref MonoBehaviour FiredBy, ref float x, ref float y, ref float xI, ref float yI, ref int playerNum, ref bool AddTemporaryPlayerTarget, ref float _zOffset, ref Projectile __result)
         {
@@ -856,7 +855,7 @@ namespace BroMakerLib.HarmonyPatches
 
     // Ensures custom projectiles are activated after instantiation.
     [HarmonyPatch(typeof(ProjectileController), "SpawnProjectileLocally", new Type[] { typeof(Projectile), typeof(MonoBehaviour), typeof(float), typeof(float), typeof(float), typeof(float), typeof(bool), typeof(int), typeof(bool), typeof(bool), typeof(float) })]
-    static class ProjectileController_SpawnProjectileLocally3_Patch
+    internal static class ProjectileController_SpawnProjectileLocally3_Patch
     {
         public static bool Prefix(ref Projectile prefab, ref MonoBehaviour FiredBy, ref float x, ref float y, ref float xI, ref float yI, ref bool synced, ref int playerNum, ref bool AddTemporaryPlayerTarget, ref bool executeImmediately, ref float _zOffset, ref Projectile __result)
         {
@@ -874,7 +873,7 @@ namespace BroMakerLib.HarmonyPatches
 
     // Handle custom pocketted special ammo
     [HarmonyPatch(typeof(BroBase), "SetPlayerHUDAmmo")]
-    static class BroBase_SetPlayerHUDAmmo_Patch
+    internal static class BroBase_SetPlayerHUDAmmo_Patch
     {
         public static bool Prefix(ref BroBase __instance)
         {
@@ -895,7 +894,7 @@ namespace BroMakerLib.HarmonyPatches
     }
 
     [HarmonyPatch(typeof(BroBase), "StartPockettedSpecial")]
-    static class BroBase_StartPockettedSpecial_Patch
+    internal static class BroBase_StartPockettedSpecial_Patch
     {
         public static void Postfix(ref BroBase __instance, ref PockettedSpecialAmmoType ___usingPockettedSpecialType)
         {
@@ -916,7 +915,7 @@ namespace BroMakerLib.HarmonyPatches
     }
 
     [HarmonyPatch(typeof(BroBase), "UsePockettedSpecial")]
-    static class BroBase_UsePockettedSpecial_Patch
+    internal static class BroBase_UsePockettedSpecial_Patch
     {
         public static bool Prefix(ref BroBase __instance, ref int ___pressSpecialFacingDirection)
         {

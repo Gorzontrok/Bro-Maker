@@ -49,9 +49,10 @@ namespace BroMakerLib.Vanilla.Bros
                 enabled = false;
             }
         }
+
         protected virtual void FixNullVariableLocal()
         {
-            var bro = HeroController.GetHeroPrefab(HeroType.Broffy).As<Broffy>();
+            Broffy bro = HeroController.GetHeroPrefab(HeroType.Broffy).As<Broffy>();
             halo = bro.halo;
         }
     }

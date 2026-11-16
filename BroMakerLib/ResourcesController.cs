@@ -65,7 +65,8 @@ namespace BroMakerLib
         /// A failure is shown in BroMaker's Issues panel and then thrown: `FileNotFoundException` when the file doesn't exist, `IOException` when it or the named game asset can't be loaded or decoded.
         /// </summary>
         /// <param name="path">Path to an image or asset</param>
-        /// /// <param name="fileName">Name of an image or asset file</param>
+        /// ///
+        /// <param name="fileName">Name of an image or asset file</param>
         /// <returns></returns>
         public static Material GetMaterial(string path, string fileName)
         {
@@ -182,7 +183,8 @@ namespace BroMakerLib
         /// A failure is shown in BroMaker's Issues panel and then thrown: `FileNotFoundException` when the file doesn't exist, `IOException` when it or the named game asset can't be loaded or decoded.
         /// </summary>
         /// <param name="path">Path to an image or asset</param>
-        /// /// <param name="fileName">Name of an image or asset file</param>
+        /// ///
+        /// <param name="fileName">Name of an image or asset file</param>
         /// <returns></returns>
         public static Texture2D GetTexture(string path, string fileName)
         {
@@ -206,7 +208,9 @@ namespace BroMakerLib
             Texture2D tex = null;
             textures.TryGetValue(filePath, out tex);
             if (tex != null)
+            {
                 return tex;
+            }
 
             if (File.Exists(filePath))
             {
@@ -506,7 +510,10 @@ namespace BroMakerLib
             Assembly a = Assembly.GetExecutingAssembly();
             using (Stream resFilestream = a.GetManifestResourceStream(filename))
             {
-                if (resFilestream == null) return null;
+                if (resFilestream == null)
+                {
+                    return null;
+                }
                 byte[] ba = new byte[resFilestream.Length];
                 int offset = 0;
                 while (offset < ba.Length)
@@ -534,5 +541,3 @@ namespace BroMakerLib
         }
     }
 }
-
-

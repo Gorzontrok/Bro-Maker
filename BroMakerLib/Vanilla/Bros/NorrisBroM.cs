@@ -49,6 +49,5 @@ namespace BroMakerLib.Vanilla.Bros
                 enabled = false;
             }
         }
-
     }
 }

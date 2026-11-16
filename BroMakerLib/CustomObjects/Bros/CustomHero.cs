@@ -122,7 +122,6 @@ namespace BroMakerLib.CustomObjects.Bros
         private static readonly Dictionary<Type, Dictionary<CustomHero, int>> _activeVariants = new Dictionary<Type, Dictionary<CustomHero, int>>();
 
         #region BroBase Methods
-
         protected override void Awake()
         {
             Character = this;
@@ -156,7 +155,7 @@ namespace BroMakerLib.CustomObjects.Bros
                 if (this.parachute == null)
                 {
                     Parachute parachute;
-                    for (var i = 0; i < transform.childCount; ++i)
+                    for (int i = 0; i < transform.childCount; ++i)
                     {
                         if ((parachute = transform.GetChild(i).GetComponent<Parachute>()) != null)
                         {
@@ -252,7 +251,7 @@ namespace BroMakerLib.CustomObjects.Bros
         // This function is overridden to remove the RPC calls, since they don't work currently
         protected override void CheckForTraps(ref float yIT)
         {
-            var num = Y + yIT;
+            float num = Y + yIT;
             if (num <= groundHeight + 1f)
             {
                 num = groundHeight + 1f;
@@ -268,7 +267,7 @@ namespace BroMakerLib.CustomObjects.Bros
                 return;
             }
 
-            var nearestAcid = Map.GetNearestAcid(X, Y + 8f, 2f);
+            DoodadAcidPool nearestAcid = Map.GetNearestAcid(X, Y + 8f, 2f);
             if (nearestAcid != null && nearestAcid.fullness > 0.2f)
             {
                 CoverInAcid();
@@ -293,7 +292,7 @@ namespace BroMakerLib.CustomObjects.Bros
             RaycastHit raycastHit;
             if (impaledByTransform == null && Physics.Raycast(new Vector3(X, num, 0f), Vector3.down, out raycastHit, 25f, groundLayer))
             {
-                var component = raycastHit.collider.GetComponent<Block>();
+                Block component = raycastHit.collider.GetComponent<Block>();
                 if (component != null)
                 {
                     if (raycastHit.distance < 10f && (IsMine || IsEnemy))
@@ -305,7 +304,7 @@ namespace BroMakerLib.CustomObjects.Bros
                     {
                         if (component.spikes.EvaluateImpalent(this))
                         {
-                            var num2 = playerNum >= 0 ? component.spikes.spikeTrapHarmlessHeight : component.spikes.spikeTrapHarmlessHeight * 0.5f;
+                            float num2 = playerNum >= 0 ? component.spikes.spikeTrapHarmlessHeight : component.spikes.spikeTrapHarmlessHeight * 0.5f;
                             if (yI < -150f && raycastHit.point.y > groundHeight - 1f && raycastHit.distance >= num2 && raycastHit.distance < component.spikes.spikeTrapHeight && Y > component.Y + component.spikes.spikeTrapHeight)
                             {
                                 Y = Mathf.Clamp(Y, groundHeight + 2f, groundHeight + 3f);
@@ -329,7 +328,7 @@ namespace BroMakerLib.CustomObjects.Bros
             RaycastHit raycastHit2;
             if (impaledByTransform == null && Physics.Raycast(new Vector3(X - 3f, num, 0f), Vector3.down, out raycastHit2, 25f, groundLayer))
             {
-                var component2 = raycastHit2.collider.GetComponent<Block>();
+                Block component2 = raycastHit2.collider.GetComponent<Block>();
                 if (component2 != null)
                 {
                     if (raycastHit2.distance < 10f && (IsMine || IsEnemy))
@@ -341,7 +340,7 @@ namespace BroMakerLib.CustomObjects.Bros
                     {
                         if (component2.spikes.EvaluateImpalent(this))
                         {
-                            var num3 = playerNum >= 0 ? component2.spikes.spikeTrapHarmlessHeight : component2.spikes.spikeTrapHarmlessHeight * 0.5f;
+                            float num3 = playerNum >= 0 ? component2.spikes.spikeTrapHarmlessHeight : component2.spikes.spikeTrapHarmlessHeight * 0.5f;
                             if (yI < -150f && raycastHit2.point.y > groundHeight - 1f && raycastHit2.distance >= num3 && raycastHit2.distance < component2.spikes.spikeTrapHeight && Y > component2.Y + component2.spikes.spikeTrapHeight)
                             {
                                 Y = Mathf.Clamp(Y, groundHeight + 2f, groundHeight + 3f);
@@ -365,7 +364,7 @@ namespace BroMakerLib.CustomObjects.Bros
             RaycastHit raycastHit3;
             if (impaledByTransform == null && Physics.Raycast(new Vector3(X + 3f, num, 0f), Vector3.down, out raycastHit3, 25f, groundLayer))
             {
-                var component3 = raycastHit3.collider.GetComponent<Block>();
+                Block component3 = raycastHit3.collider.GetComponent<Block>();
                 if (component3 != null)
                 {
                     if (raycastHit3.distance < 10f && (IsMine || IsEnemy))
@@ -377,7 +376,7 @@ namespace BroMakerLib.CustomObjects.Bros
                     {
                         if (component3.spikes.EvaluateImpalent(this))
                         {
-                            var num4 = playerNum >= 0 ? component3.spikes.spikeTrapHarmlessHeight : component3.spikes.spikeTrapHarmlessHeight * 0.5f;
+                            float num4 = playerNum >= 0 ? component3.spikes.spikeTrapHarmlessHeight : component3.spikes.spikeTrapHarmlessHeight * 0.5f;
                             if (yI < -150f && raycastHit3.point.y > groundHeight - 1f && raycastHit3.distance >= num4 && raycastHit3.distance < component3.spikes.spikeTrapHeight && Y > component3.Y + component3.spikes.spikeTrapHeight)
                             {
                                 Y = Mathf.Clamp(Y, groundHeight + 2f, groundHeight + 3f);
@@ -420,11 +419,11 @@ namespace BroMakerLib.CustomObjects.Bros
 
                 if (IsMine)
                 {
-                    var num = 8 + Random.Range(0, 5);
-                    for (var i = 0; i < num; i++)
+                    int num = 8 + Random.Range(0, 5);
+                    for (int i = 0; i < num; i++)
                     {
-                        var angle = -1.88495576f + 1.2f / (float)(num - 1) * 3.14159274f * (float)i;
-                        var vector = Math.Point2OnCircle(angle, 1f);
+                        float angle = -1.88495576f + (1.2f / (float)(num - 1) * 3.14159274f * (float)i);
+                        Vector2 vector = Math.Point2OnCircle(angle, 1f);
                         ProjectileController.SpawnProjectileLocally(ProjectileController.instance.goldenLightProjectile, this, X, Y + 12f, vector.x * 400f, vector.y * 400f, true, 15, false, true, -15f);
                     }
                 }
@@ -439,11 +438,9 @@ namespace BroMakerLib.CustomObjects.Bros
         {
             gunSprite.transform.localPosition = new Vector3(xOffset + CurrentGunSpriteOffset.x, yOffset + CurrentGunSpriteOffset.y, -.001f);
         }
-
         #endregion
 
         #region Custom Methods
-
         /// <summary>
         /// Override this method to have UI options displayed for your custom hero underneath their name in the Custom Bros tab
         /// </summary>
@@ -480,7 +477,7 @@ namespace BroMakerLib.CustomObjects.Bros
         /// <param name="spritePaths">Sprites to load</param>
         public static void PreloadSprites(string directoryPath, List<string> spritePaths)
         {
-            for (var i = 0; i < spritePaths.Count; ++i)
+            for (int i = 0; i < spritePaths.Count; ++i)
             {
                 ResourcesController.LoadMaterial(directoryPath, spritePaths[i]);
             }
@@ -493,7 +490,7 @@ namespace BroMakerLib.CustomObjects.Bros
         /// <param name="soundPaths">Sounds to load</param>
         public static void PreloadSounds(string directoryPath, List<string> soundPaths)
         {
-            for (var i = 0; i < soundPaths.Count; ++i)
+            for (int i = 0; i < soundPaths.Count; ++i)
             {
                 ResourcesController.LoadAudioClip(directoryPath, soundPaths[i]);
             }
@@ -519,7 +516,7 @@ namespace BroMakerLib.CustomObjects.Bros
         internal void PrefabSetup()
         {
             BeforePrefabSetup();
-            var baseHeroType = SoundHolderHeroType;
+            HeroType baseHeroType = SoundHolderHeroType;
             // Use base hero type if SoundHolderHeroType is unassigned
             if (baseHeroType == HeroType.None)
             {
@@ -698,7 +695,7 @@ namespace BroMakerLib.CustomObjects.Bros
         {
             GetComponent<Renderer>().material.SetColor("_TintColor", Color.gray);
             gunSprite.meshRender.material.SetColor("_TintColor", Color.gray);
-            foreach (var mat in tintMaterials)
+            foreach (Material mat in tintMaterials)
             {
                 mat.SetColor("_TintColor", Color.gray);
             }
@@ -717,7 +714,7 @@ namespace BroMakerLib.CustomObjects.Bros
         /// <returns>A variant index not in use by other active instances, or a random one if all are taken</returns>
         protected int GetUniqueVariant(List<int> allowedVariants = null)
         {
-            var broType = GetType();
+            Type broType = GetType();
             List<int> candidates;
 
             if (allowedVariants != null)
@@ -727,7 +724,7 @@ namespace BroMakerLib.CustomObjects.Bros
             else
             {
                 candidates = new List<int>();
-                for (var i = 0; i < Info.VariantCount; i++)
+                for (int i = 0; i < Info.VariantCount; i++)
                 {
                     candidates.Add(i);
                 }
@@ -735,8 +732,8 @@ namespace BroMakerLib.CustomObjects.Bros
 
             if (_activeVariants.ContainsKey(broType))
             {
-                var active = _activeVariants[broType];
-                foreach (var kvp in active)
+                Dictionary<CustomHero, int> active = _activeVariants[broType];
+                foreach (KeyValuePair<CustomHero, int> kvp in active)
                 {
                     if (kvp.Key != this)
                     {
@@ -760,7 +757,7 @@ namespace BroMakerLib.CustomObjects.Bros
 
         private void RegisterVariant()
         {
-            var broType = GetType();
+            Type broType = GetType();
             if (!_activeVariants.ContainsKey(broType))
             {
                 _activeVariants[broType] = new Dictionary<CustomHero, int>();
@@ -771,17 +768,15 @@ namespace BroMakerLib.CustomObjects.Bros
 
         private void UnregisterVariant()
         {
-            var broType = GetType();
+            Type broType = GetType();
             if (_activeVariants.ContainsKey(broType))
             {
                 _activeVariants[broType].Remove(this);
             }
         }
-
         #endregion
 
         #region Save / Load Settings
-
         /// <summary>
         /// Marks a static field or property to be saved/loaded as a persistent setting.
         /// Only static members marked with this attribute will be included in settings serialization.
@@ -831,7 +826,7 @@ namespace BroMakerLib.CustomObjects.Bros
         /// </remarks>
         public virtual void SaveSettings()
         {
-            var type = GetType();
+            Type type = GetType();
 
             // Cache the directory path for this type
             _typeDirectoryCache[type] = DirectoryPath;
@@ -841,10 +836,10 @@ namespace BroMakerLib.CustomObjects.Bros
                 return;
             }
 
-            var saveableMembers = GetSaveableMembers(type);
-            var data = new Dictionary<string, object>();
+            List<MemberInfo> saveableMembers = GetSaveableMembers(type);
+            Dictionary<string, object> data = new Dictionary<string, object>();
 
-            foreach (var member in saveableMembers)
+            foreach (MemberInfo member in saveableMembers)
             {
                 string key = null;
                 object value = null;
@@ -871,10 +866,10 @@ namespace BroMakerLib.CustomObjects.Bros
 
             if (data.Count > 0)
             {
-                var fileName = $"{type.Name}_settings.json";
-                var configPath = GetBroConfigPath(type);
+                string fileName = $"{type.Name}_settings.json";
+                string configPath = GetBroConfigPath(type);
                 Directory.CreateDirectory(configPath);
-                var json = JsonConvert.SerializeObject(data, Formatting.Indented);
+                string json = JsonConvert.SerializeObject(data, Formatting.Indented);
                 File.WriteAllText(Path.Combine(configPath, fileName), json);
             }
         }
@@ -892,7 +887,7 @@ namespace BroMakerLib.CustomObjects.Bros
         /// </remarks>
         public virtual void LoadSettings()
         {
-            var type = GetType();
+            Type type = GetType();
 
             // Cache the directory path for this type
             _typeDirectoryCache[type] = DirectoryPath;
@@ -902,8 +897,8 @@ namespace BroMakerLib.CustomObjects.Bros
                 return;
             }
 
-            var configPath = GetBroConfigPath(type);
-            var fileName = Path.Combine(configPath, $"{type.Name}_settings.json");
+            string configPath = GetBroConfigPath(type);
+            string fileName = Path.Combine(configPath, $"{type.Name}_settings.json");
             if (!File.Exists(fileName))
             {
                 return;
@@ -911,24 +906,24 @@ namespace BroMakerLib.CustomObjects.Bros
 
             try
             {
-                var json = File.ReadAllText(fileName);
-                var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+                string json = File.ReadAllText(fileName);
+                Dictionary<string, object> data = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
 
                 if (data == null)
                 {
                     return;
                 }
 
-                var saveableMembers = GetSaveableMembers(type);
+                List<MemberInfo> saveableMembers = GetSaveableMembers(type);
 
-                foreach (var member in saveableMembers)
+                foreach (MemberInfo member in saveableMembers)
                 {
                     SaveableSettingAttribute attr;
                     string key;
 
                     if (member is FieldInfo)
                     {
-                        var field = (FieldInfo)member;
+                        FieldInfo field = (FieldInfo)member;
                         attr = (SaveableSettingAttribute)field.GetCustomAttributes(typeof(SaveableSettingAttribute), false).FirstOrDefault();
                         key = attr?.Name ?? field.Name;
 
@@ -936,8 +931,8 @@ namespace BroMakerLib.CustomObjects.Bros
                         {
                             try
                             {
-                                var value = data[key];
-                                var convertedValue = ConvertValue(value, field.FieldType);
+                                object value = data[key];
+                                object convertedValue = ConvertValue(value, field.FieldType);
                                 field.SetValue(null, convertedValue);
                             }
                             catch (Exception ex)
@@ -949,7 +944,7 @@ namespace BroMakerLib.CustomObjects.Bros
                     }
                     else if (member is PropertyInfo)
                     {
-                        var property = (PropertyInfo)member;
+                        PropertyInfo property = (PropertyInfo)member;
                         if (property.CanWrite)
                         {
                             attr = (SaveableSettingAttribute)property.GetCustomAttributes(typeof(SaveableSettingAttribute), false).FirstOrDefault();
@@ -959,8 +954,8 @@ namespace BroMakerLib.CustomObjects.Bros
                             {
                                 try
                                 {
-                                    var value = data[key];
-                                    var convertedValue = ConvertValue(value, property.PropertyType);
+                                    object value = data[key];
+                                    object convertedValue = ConvertValue(value, property.PropertyType);
                                     property.SetValue(null, convertedValue, null);
                                 }
                                 catch (Exception ex)
@@ -991,13 +986,13 @@ namespace BroMakerLib.CustomObjects.Bros
         /// </remarks>
         public static void SaveSettings<T>() where T : CustomHero
         {
-            var type = typeof(T);
+            Type type = typeof(T);
 
             // Get or retrieve the directory path
             string directoryPath;
             if (!_typeDirectoryCache.TryGetValue(type, out directoryPath))
             {
-                if (!BroMakerStorage.GetStoredHeroByCustomHeroType<T>(out var storedHero))
+                if (!BroMakerStorage.GetStoredHeroByCustomHeroType<T>(out StoredHero storedHero))
                 {
                     BMLogger.Error($"Settings for {type.Name} were not saved because no loaded bro is built on {type.Name}", bro: type.Name);
                     return;
@@ -1014,15 +1009,15 @@ namespace BroMakerLib.CustomObjects.Bros
             }
 
             // Get saveable members
-            var saveableMembers = GetSaveableMembers(type);
+            List<MemberInfo> saveableMembers = GetSaveableMembers(type);
             if (saveableMembers.Count == 0)
             {
                 return;
             }
 
-            var data = new Dictionary<string, object>();
+            Dictionary<string, object> data = new Dictionary<string, object>();
 
-            foreach (var member in saveableMembers)
+            foreach (MemberInfo member in saveableMembers)
             {
                 string key = null;
                 object value = null;
@@ -1049,10 +1044,10 @@ namespace BroMakerLib.CustomObjects.Bros
 
             if (data.Count > 0)
             {
-                var fileName = $"{type.Name}_settings.json";
-                var configPath = GetBroConfigPath(type);
+                string fileName = $"{type.Name}_settings.json";
+                string configPath = GetBroConfigPath(type);
                 Directory.CreateDirectory(configPath);
-                var json = JsonConvert.SerializeObject(data, Formatting.Indented);
+                string json = JsonConvert.SerializeObject(data, Formatting.Indented);
                 File.WriteAllText(Path.Combine(configPath, fileName), json);
             }
         }
@@ -1069,13 +1064,13 @@ namespace BroMakerLib.CustomObjects.Bros
         /// </remarks>
         public static void LoadSettings<T>() where T : CustomHero
         {
-            var type = typeof(T);
+            Type type = typeof(T);
 
             // Get or retrieve the directory path
             string directoryPath;
             if (!_typeDirectoryCache.TryGetValue(type, out directoryPath))
             {
-                if (!BroMakerStorage.GetStoredHeroByCustomHeroType<T>(out var storedHero))
+                if (!BroMakerStorage.GetStoredHeroByCustomHeroType<T>(out StoredHero storedHero))
                 {
                     BMLogger.Error($"Settings for {type.Name} were not loaded because no loaded bro is built on {type.Name}", bro: type.Name);
                     return;
@@ -1091,8 +1086,8 @@ namespace BroMakerLib.CustomObjects.Bros
                 _typeDirectoryCache[type] = directoryPath;
             }
 
-            var configPath = GetBroConfigPath(type);
-            var fileName = Path.Combine(configPath, $"{type.Name}_settings.json");
+            string configPath = GetBroConfigPath(type);
+            string fileName = Path.Combine(configPath, $"{type.Name}_settings.json");
             if (!File.Exists(fileName))
             {
                 return;
@@ -1100,24 +1095,24 @@ namespace BroMakerLib.CustomObjects.Bros
 
             try
             {
-                var json = File.ReadAllText(fileName);
-                var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+                string json = File.ReadAllText(fileName);
+                Dictionary<string, object> data = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
 
                 if (data == null)
                 {
                     return;
                 }
 
-                var saveableMembers = GetSaveableMembers(type);
+                List<MemberInfo> saveableMembers = GetSaveableMembers(type);
 
-                foreach (var member in saveableMembers)
+                foreach (MemberInfo member in saveableMembers)
                 {
                     SaveableSettingAttribute attr;
                     string key;
 
                     if (member is FieldInfo)
                     {
-                        var field = (FieldInfo)member;
+                        FieldInfo field = (FieldInfo)member;
                         attr = (SaveableSettingAttribute)field.GetCustomAttributes(typeof(SaveableSettingAttribute), false).FirstOrDefault();
                         key = attr?.Name ?? field.Name;
 
@@ -1125,8 +1120,8 @@ namespace BroMakerLib.CustomObjects.Bros
                         {
                             try
                             {
-                                var value = data[key];
-                                var convertedValue = ConvertValue(value, field.FieldType);
+                                object value = data[key];
+                                object convertedValue = ConvertValue(value, field.FieldType);
                                 field.SetValue(null, convertedValue);
                             }
                             catch (Exception ex)
@@ -1138,7 +1133,7 @@ namespace BroMakerLib.CustomObjects.Bros
                     }
                     else if (member is PropertyInfo)
                     {
-                        var property = (PropertyInfo)member;
+                        PropertyInfo property = (PropertyInfo)member;
                         if (property.CanWrite)
                         {
                             attr = (SaveableSettingAttribute)property.GetCustomAttributes(typeof(SaveableSettingAttribute), false).FirstOrDefault();
@@ -1148,8 +1143,8 @@ namespace BroMakerLib.CustomObjects.Bros
                             {
                                 try
                                 {
-                                    var value = data[key];
-                                    var convertedValue = ConvertValue(value, property.PropertyType);
+                                    object value = data[key];
+                                    object convertedValue = ConvertValue(value, property.PropertyType);
                                     property.SetValue(null, convertedValue, null);
                                 }
                                 catch (Exception ex)
@@ -1184,10 +1179,10 @@ namespace BroMakerLib.CustomObjects.Bros
         /// </remarks>
         public static void SaveAll()
         {
-            foreach (var kvp in _saveableMembersCache)
+            foreach (KeyValuePair<Type, List<MemberInfo>> kvp in _saveableMembersCache)
             {
-                var type = kvp.Key;
-                var saveableMembers = kvp.Value;
+                Type type = kvp.Key;
+                List<MemberInfo> saveableMembers = kvp.Value;
 
                 // Skip if we don't have a directory path cached for this custom bro
                 if (!_typeDirectoryCache.TryGetValue(type, out _))
@@ -1203,9 +1198,9 @@ namespace BroMakerLib.CustomObjects.Bros
                     continue;
                 }
 
-                var data = new Dictionary<string, object>();
+                Dictionary<string, object> data = new Dictionary<string, object>();
 
-                foreach (var member in saveableMembers)
+                foreach (MemberInfo member in saveableMembers)
                 {
                     string key = null;
                     object value = null;
@@ -1234,10 +1229,10 @@ namespace BroMakerLib.CustomObjects.Bros
                 {
                     try
                     {
-                        var fileName = $"{type.Name}_settings.json";
-                        var configPath = GetBroConfigPath(type);
+                        string fileName = $"{type.Name}_settings.json";
+                        string configPath = GetBroConfigPath(type);
                         Directory.CreateDirectory(configPath);
-                        var json = JsonConvert.SerializeObject(data, Formatting.Indented);
+                        string json = JsonConvert.SerializeObject(data, Formatting.Indented);
                         File.WriteAllText(Path.Combine(configPath, fileName), json);
                     }
                     catch (Exception ex)
@@ -1251,12 +1246,12 @@ namespace BroMakerLib.CustomObjects.Bros
 
         private bool HasSaveableFields(Type type)
         {
-            if (_hasSaveableFieldsCache.TryGetValue(type, out var hasSaveable))
+            if (_hasSaveableFieldsCache.TryGetValue(type, out bool hasSaveable))
             {
                 return hasSaveable;
             }
 
-            var members = GetSaveableMembers(type);
+            List<MemberInfo> members = GetSaveableMembers(type);
             hasSaveable = members.Count > 0;
 
             _hasSaveableFieldsCache[type] = hasSaveable;
@@ -1266,26 +1261,26 @@ namespace BroMakerLib.CustomObjects.Bros
 
         private static List<MemberInfo> GetSaveableMembers(Type type)
         {
-            if (_saveableMembersCache.TryGetValue(type, out var cached))
+            if (_saveableMembersCache.TryGetValue(type, out List<MemberInfo> cached))
             {
                 return cached;
             }
 
-            var members = new List<MemberInfo>();
-            var flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+            List<MemberInfo> members = new List<MemberInfo>();
+            BindingFlags flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 
-            var fields = type.GetFields(flags)
+            IEnumerable<FieldInfo> fields = type.GetFields(flags)
                 .Where(f => f.GetCustomAttributes(typeof(SaveableSettingAttribute), false).Length > 0);
 
-            foreach (var field in fields)
+            foreach (FieldInfo field in fields)
             {
                 members.Add(field);
             }
 
-            var properties = type.GetProperties(flags)
+            IEnumerable<PropertyInfo> properties = type.GetProperties(flags)
                 .Where(p => p.GetCustomAttributes(typeof(SaveableSettingAttribute), false).Length > 0);
 
-            foreach (var property in properties)
+            foreach (PropertyInfo property in properties)
             {
                 members.Add(property);
             }
@@ -1305,7 +1300,7 @@ namespace BroMakerLib.CustomObjects.Bros
             // Handle Newtonsoft.Json's JObject/JArray types
             if (value is JObject || value is JArray || value is JValue)
             {
-                var jsonString = value.ToString();
+                string jsonString = value.ToString();
                 return JsonConvert.DeserializeObject(jsonString, targetType);
             }
 
@@ -1329,7 +1324,6 @@ namespace BroMakerLib.CustomObjects.Bros
 
             return Convert.ChangeType(value, targetType);
         }
-
         #endregion
     }
 }

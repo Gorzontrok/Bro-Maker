@@ -26,12 +26,12 @@ namespace BroMakerLib.Triggers
                 {
                     if (!GUILayout.Toggle(true, hero.name))
                     {
-                        this.ForcedBros.Remove(hero.name);
+                        ForcedBros.Remove(hero.name);
                     }
                 }
                 else if (GUILayout.Toggle(false, hero.name))
                 {
-                    this.ForcedBros.Add(hero.name);
+                    ForcedBros.Add(hero.name);
                 }
             }
         }

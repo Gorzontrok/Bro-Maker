@@ -18,7 +18,7 @@ namespace BroMakerLib
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            var t = serializer.Deserialize(reader);
+            object t = serializer.Deserialize(reader);
 
             Vector3 result = Vector3.zero;
 
@@ -32,7 +32,9 @@ namespace BroMakerLib
             }
 
             if (result != Vector3.zero)
+            {
                 return result;
+            }
 
             try
             {

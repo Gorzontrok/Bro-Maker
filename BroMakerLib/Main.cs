@@ -7,13 +7,13 @@ using UnityModManagerNet;
 
 namespace BroMakerLib
 {
-    static class Main
+    internal static class Main
     {
         public static UnityModManager.ModEntry mod;
         public static bool enabled;
         internal static int mainThreadId;
 
-        static bool Load(UnityModManager.ModEntry modEntry)
+        private static bool Load(UnityModManager.ModEntry modEntry)
         {
             // Initialize mod
             mod = modEntry;
@@ -41,7 +41,7 @@ namespace BroMakerLib
             return true;
         }
 
-        static void OnGUI(UnityModManager.ModEntry modEntry)
+        private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
             try
             {
@@ -58,7 +58,7 @@ namespace BroMakerLib
             BMLogger.Flush();
         }
 
-        static bool OnToggle(UnityModManager.ModEntry modEntry, bool value)
+        private static bool OnToggle(UnityModManager.ModEntry modEntry, bool value)
         {
             enabled = value;
             if (!value)
@@ -69,7 +69,7 @@ namespace BroMakerLib
             return true;
         }
 
-        static bool OnUnload(UnityModManager.ModEntry modEntry)
+        private static bool OnUnload(UnityModManager.ModEntry modEntry)
         {
             SaveAll();
             return true;
@@ -79,12 +79,13 @@ namespace BroMakerLib
         {
             mod.Logger.Log(str.ToString());
         }
+
         public static void Log(object str, string prefix)
         {
             UnityModManager.Logger.Log(str.ToString(), prefix);
         }
 
-        static void OnSaveGUI(UnityModManager.ModEntry modEntry)
+        private static void OnSaveGUI(UnityModManager.ModEntry modEntry)
         {
             SaveAll();
         }
@@ -92,9 +93,8 @@ namespace BroMakerLib
         public static void SaveAll()
         {
             CustomHero.SaveAll();
-            BroMakerLib.Settings.instance.Save(mod);
+            Settings.instance.Save(mod);
             BroUnlockManager.SaveProgressData(synchronous: true);
         }
     }
 }
-

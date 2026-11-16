@@ -12,6 +12,7 @@ namespace BroMakerLib
         {
             get { return _storageDirectory; }
         }
+
         public static string BrosDirectory { get; private set; }
         public static string WeaponsDirectory { get; private set; }
         public static string AbilitiesDirectory { get; private set; }
@@ -47,7 +48,9 @@ namespace BroMakerLib
         public static void CheckDirectories()
         {
             if (!Directory.Exists(_storageDirectory))
+            {
                 Directory.CreateDirectory(_storageDirectory);
+            }
         }
     }
 }

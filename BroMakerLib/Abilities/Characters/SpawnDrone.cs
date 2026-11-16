@@ -16,8 +16,10 @@ namespace BroMakerLib.Abilities.Characters
     {
         public int droneType = 0;
         public int droneMaxCount = 1;
+
         [JsonConverter(typeof(Vector2Converter))]
         public Vector2 spawnPositionOffset = new Vector2(0, 3f);
+
         [JsonConverter(typeof(Vector2Converter))]
         public Vector2 spawnI = Vector2.zero;
 
@@ -27,7 +29,9 @@ namespace BroMakerLib.Abilities.Characters
         public override void All(string calledFromMethod, params object[] objects)
         {
             if (_characterIsNotBro || IsUnityMethod(calledFromMethod) || _spawnedDrone.Count < droneMaxCount)
+            {
                 return;
+            }
 
             TrySpawnDrone();
         }
@@ -35,7 +39,9 @@ namespace BroMakerLib.Abilities.Characters
         public void TrySpawnDrone()
         {
             if (_characterIsNotBro || _spawnedDrone.Count > droneMaxCount)
+            {
                 return;
+            }
 
             if (droneType < 0 || droneType >= Map.Instance.sharedObjectsReference.Asset.drones.Length)
             {
@@ -45,11 +51,11 @@ namespace BroMakerLib.Abilities.Characters
             try
             {
                 drone = MapController.SpawnDrone_Networked(Map.Instance.sharedObjectsReference.Asset.drones[droneType],
-                owner as BroBase,
-                owner.X + OwnerDirection * spawnPositionOffset.x,
-                owner.Y + spawnPositionOffset.y,
-                spawnI.x,
-                spawnI.y
+                    owner as BroBase,
+                    owner.X + (OwnerDirection * spawnPositionOffset.x),
+                    owner.Y + spawnPositionOffset.y,
+                    spawnI.x,
+                    spawnI.y
                 );
                 if (drone == null)
                 {
@@ -76,9 +82,11 @@ namespace BroMakerLib.Abilities.Characters
         {
             base.Update();
             if (_characterIsNotBro || _spawnedDrone.Count == 0)
+            {
                 return;
+            }
 
-            var temp = new List<Drone>();
+            List<Drone> temp = new List<Drone>();
             foreach (Drone drone in _spawnedDrone)
             {
                 if (drone != null || drone.IsAlive())

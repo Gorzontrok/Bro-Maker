@@ -53,7 +53,7 @@ namespace BroMakerLib.Vanilla.Bros
 
         protected virtual void FixNullVariableLocal()
         {
-            var bro = HeroController.GetHeroPrefab(HeroType.Predabro).As<Predabro>();
+            Predabro bro = HeroController.GetHeroPrefab(HeroType.Predabro).As<Predabro>();
             stealthMaterial = bro.stealthMaterial;
             stealthGunMaterial = bro.stealthGunMaterial;
             targetPrefab = bro.targetPrefab;
@@ -61,19 +61,23 @@ namespace BroMakerLib.Vanilla.Bros
             shoulderCannonSprite = shoulderCannonBaseSprite.FindChildOfName("ShoulderCanon").transform;
             shoulderCannonBullet = bro.shoulderCannonBullet;
 
-            var temp = new List<SpriteSM>();
+            List<SpriteSM> temp = new List<SpriteSM>();
             Transform laserSightParent = null;
             for (int i = 0; i < shoulderCannonSprite.transform.childCount; i++)
             {
-                var child = shoulderCannonSprite.transform.GetChild(i);
+                Transform child = shoulderCannonSprite.transform.GetChild(i);
                 if (child.gameObject.name == "Lazer")
+                {
                     temp.Add(child.GetComponent<SpriteSM>());
+                }
                 else
+                {
                     laserSightParent = child.transform;
+                }
             }
             laserSightLazers = temp.ToArray();
 
-            var temp2 = new List<Transform>();
+            List<Transform> temp2 = new List<Transform>();
             for (int i = 0; i < laserSightParent.childCount; i++)
             {
                 temp2.Add(laserSightParent.GetChild(i).transform);

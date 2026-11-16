@@ -26,16 +26,12 @@ namespace BroMakerLib
         public object[] Grenades = new object[0];
 
         // Not in JSON file
-        [JsonIgnore]
-        public string Path { get; protected set; }
-        [JsonIgnore]
-        public string[] BrosNames { get; protected set; }
-        [JsonIgnore]
-        public StoredHero[] StoredHeroes { get; set; }
-        [JsonIgnore]
-        public StoredAbility[] StoredAbilities { get; set; }
-        [JsonIgnore]
-        public Harmony Harmony = null;
+        [JsonIgnore] public string Path { get; protected set; }
+        [JsonIgnore] public string[] BrosNames { get; protected set; }
+        [JsonIgnore] public StoredHero[] StoredHeroes { get; set; }
+        [JsonIgnore] public StoredAbility[] StoredAbilities { get; set; }
+        [JsonIgnore] public Harmony Harmony = null;
+
         public static BroMakerMod TryLoad(string path)
         {
             BroMakerMod mod = JsonConvert.DeserializeObject<BroMakerMod>(File.ReadAllText(path));
@@ -67,13 +63,15 @@ namespace BroMakerLib
         {
             Name = fileName;
             if (!Directory.Exists(folderPath))
+            {
                 Directory.CreateDirectory(folderPath);
+            }
 
-            var settings = new JsonSerializerSettings()
+            JsonSerializerSettings settings = new JsonSerializerSettings
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             };
-            var json = JsonConvert.SerializeObject(this, Formatting.Indented, settings);
+            string json = JsonConvert.SerializeObject(this, Formatting.Indented, settings);
             File.WriteAllText(System.IO.Path.Combine(folderPath, fileName + ".mod.json"), json);
             return json;
         }
@@ -82,17 +80,21 @@ namespace BroMakerLib
             where T : CustomBroforceObjectInfo
         {
             if (objects.IsNullOrEmpty())
+            {
                 return new object[0];
+            }
 
             List<object> temp = new List<object>();
-            foreach (var obj in objects)
+            foreach (object obj in objects)
             {
                 if (obj == null)
+                {
                     continue;
+                }
 
                 if (obj is string && obj.As<string>().IsNotNullOrEmpty())
                 {
-                    var path = System.IO.Path.Combine(Path, obj.As<string>());
+                    string path = System.IO.Path.Combine(Path, obj.As<string>());
                     if (File.Exists(path))
                     {
                         temp.Add(obj);
@@ -124,17 +126,21 @@ namespace BroMakerLib
             where T : CustomBroforceObjectInfo
         {
             if (objects.IsNullOrEmpty())
+            {
                 return new string[0];
+            }
 
             List<string> temp = new List<string>();
-            foreach (var obj in objects)
+            foreach (object obj in objects)
             {
                 if (obj == null)
+                {
                     continue;
+                }
 
                 if (obj is string && obj.As<string>().IsNotNullOrEmpty())
                 {
-                    var path = System.IO.Path.Combine(Path, obj.As<string>());
+                    string path = System.IO.Path.Combine(Path, obj.As<string>());
                     if (File.Exists(path))
                     {
                         T info = CustomBroforceObjectInfo.DeserializeJSON<T>(path);

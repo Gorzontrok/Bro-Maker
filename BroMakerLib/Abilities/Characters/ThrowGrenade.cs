@@ -27,38 +27,42 @@ namespace BroMakerLib.Abilities.Characters
         {
             Grenade grenade = owner.specialGrenade;
             if (!useCharacterSpecialGrenade && grenade != null)
+            {
                 grenade = this.grenade;
+            }
 
             if (canThrowAtFeet && owner.down && owner.IsOnGround() && owner.IsDucking)
             {
                 ProjectileController.SpawnGrenadeOverNetwork(grenade, owner,
-                    owner.X + Mathf.Sign(owner.transform.localScale.x) * spawnFeetPositionXMultiplier, // x
+                    owner.X + (Mathf.Sign(owner.transform.localScale.x) * spawnFeetPositionXMultiplier), // x
                     owner.Y + spawnFeetPositionYAddition, // y
                     0.001f, 0.011f, // radius and force
                     Mathf.Sign(owner.transform.localScale.x) * spawnForceFeet.x, // xI
                     spawnForceFeet.y, // yI
                     owner.playerNum,
                     lifeMAtFeet
-                    );
+                );
             }
             else
             {
                 ProjectileController.SpawnGrenadeOverNetwork(grenade, owner,
-                    owner.X + Mathf.Sign(owner.transform.localScale.x) * spawnPositionXMultiplier, // x
+                    owner.X + (Mathf.Sign(owner.transform.localScale.x) * spawnPositionXMultiplier), // x
                     owner.Y + spawnPositionYAddition, // y
                     0.001f, 0.011f, // radius and force
                     Mathf.Sign(owner.transform.localScale.x) * spawnForce.x, // xI
                     spawnForce.y, // yI
                     owner.playerNum,
                     lifeM
-                    );
+                );
             }
         }
 
         public override void All(string calledFromMethod, params object[] objects)
         {
             if (calledFromMethod == "Update" || calledFromMethod == "UseSpecial" || calledFromMethod == "Awake" || calledFromMethod == "Start")
+            {
                 return;
+            }
 
             ThrowTheGrenade();
         }

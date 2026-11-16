@@ -53,7 +53,7 @@ namespace BroMakerLib.Vanilla.Bros
 
         protected virtual void FixNullVariableLocal()
         {
-            var bro = HeroController.GetHeroPrefab(HeroType.BroniversalSoldier).As<BroniversalSoldier>();
+            BroniversalSoldier bro = HeroController.GetHeroPrefab(HeroType.BroniversalSoldier).As<BroniversalSoldier>();
             bulletShell = bro.bulletShell;
 #pragma warning disable
             serumParticles = this.FindChildOfName("SerumParticles").GetComponent<ParticleEmitter>();

@@ -7,7 +7,7 @@ namespace BroMakerLib.Loaders
 {
     public class LoadBroforceObjects
     {
-        public static readonly Dictionary<string, string> GrenadesVanilla = new Dictionary<string, string>()
+        public static readonly Dictionary<string, string> GrenadesVanilla = new Dictionary<string, string>
         {
             { "Grenade", "networkobjects:Grenade" },
             { "Default", "networkobjects:Grenade" },
@@ -28,10 +28,10 @@ namespace BroMakerLib.Loaders
             { "AlienPheromones", "networkobjects:Grenade Alien Pheromones" },
             { "EvilSmall", "networkobjects:GrenadeEvilSmall Long fuse" },
             { "EvilBig", "networkobjects:GrenadeEvilBig" },
-            { "EvilBigShortLife", "networkobjects:GrenadeEvilBig Short Life" },
+            { "EvilBigShortLife", "networkobjects:GrenadeEvilBig Short Life" }
         };
 
-        protected static readonly Dictionary<string, string> projectileVanilla = new Dictionary<string, string>()
+        protected static readonly Dictionary<string, string> projectileVanilla = new Dictionary<string, string>
         {
             { "Default", "networkobjects:Bullet" },
             { "Bullet", "networkobjects:Bullet" },
@@ -86,7 +86,7 @@ namespace BroMakerLib.Loaders
             { "ShellHeavyEvil", "networkobjects:Shell Heavy" },
             { "FlameThrower1", "sharedassets:FlameThrower Bullet 1" },
             { "FlameThrower2", "sharedassets:FlameThrower Bullet 2" },
-            { "FlameThrower3", "sharedassets:FlameThrower Bullet 3" },
+            { "FlameThrower3", "sharedassets:FlameThrower Bullet 3" }
         };
 
         public static Grenade GetGrenadeFromName(string name)
@@ -99,12 +99,18 @@ namespace BroMakerLib.Loaders
             {
                 string resourceName = string.Empty;
                 if (name.Contains(":"))
+                {
                     resourceName = name;
+                }
                 else
+                {
                     resourceName = GrenadesVanilla[name];
-                var go = InstantiationController.GetPrefabFromResourceName(resourceName);
+                }
+                GameObject go = InstantiationController.GetPrefabFromResourceName(resourceName);
                 if (go != null)
+                {
                     return go.GetComponent<Grenade>();
+                }
             }
             catch (Exception e)
             {
@@ -119,12 +125,18 @@ namespace BroMakerLib.Loaders
             {
                 string resourceName = string.Empty;
                 if (name.Contains(":"))
+                {
                     resourceName = name;
+                }
                 else
+                {
                     resourceName = projectileVanilla[name];
-                var go = InstantiationController.GetPrefabFromResourceName(resourceName);
+                }
+                GameObject go = InstantiationController.GetPrefabFromResourceName(resourceName);
                 if (go != null)
+                {
                     return go.GetComponent<Projectile>();
+                }
             }
             catch (Exception e)
             {

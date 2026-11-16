@@ -52,7 +52,7 @@ namespace BroMakerLib.Vanilla.Bros
 
         protected virtual void FixNullVariableLocal()
         {
-            var bro = HeroController.GetHeroPrefab(HeroType.Brominator).As<Brominator>();
+            Brominator bro = HeroController.GetHeroPrefab(HeroType.Brominator).As<Brominator>();
 
             miniGunSoundWindup = bro.miniGunSoundWindup;
             miniGunSoundSpinning = bro.miniGunSoundSpinning;

@@ -55,7 +55,7 @@ namespace BroMakerLib.Vanilla.Bros
         {
             mariachiBroType = MariachiBroType.Desperabro;
 
-            var bro = HeroController.GetHeroPrefab(HeroType.Desperabro).As<Desperabro>();
+            Desperabro bro = HeroController.GetHeroPrefab(HeroType.Desperabro).As<Desperabro>();
 
             bulletShell = bro.bulletShell;
             musicParticles = this.FindChildOfName("MusicParticles").GetComponent<ParticleSystem>();

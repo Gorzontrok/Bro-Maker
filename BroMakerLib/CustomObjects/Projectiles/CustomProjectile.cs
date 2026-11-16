@@ -35,8 +35,8 @@ namespace BroMakerLib.CustomObjects.Projectiles
         public bool RanSetup = false;
 
         /// <summary>
-        /// Folder that contains your sprite image file. 
-        /// Defaults to "projectiles". 
+        /// Folder that contains your sprite image file.
+        /// Defaults to "projectiles".
         /// Set this to "" if your sprite is in the same folder as your .dll
         /// </summary>
         public string SpriteFolder = "projectiles";
@@ -61,7 +61,7 @@ namespace BroMakerLib.CustomObjects.Projectiles
 
         /// <summary>
         /// Folder that contains your projectile's sounds.
-        /// Defaults to "sounds". 
+        /// Defaults to "sounds".
         /// Set this to "" if your sounds are in the same folder as your .dll
         /// </summary>
         public string SoundFolder = "sounds";
@@ -73,7 +73,7 @@ namespace BroMakerLib.CustomObjects.Projectiles
         public string SoundPath = string.Empty;
 
         /// <summary>
-        /// Size of one frame of your projectile. 
+        /// Size of one frame of your projectile.
         /// By default this will be the whole image, but if your projectile has multiple frames, you will want to change this.
         /// </summary>
         public Vector2 SpritePixelDimensions = Vector2.zero;
@@ -120,15 +120,15 @@ namespace BroMakerLib.CustomObjects.Projectiles
         /// </summary>
         protected override void Awake()
         {
-            string className = this.GetType().Name;
+            string className = GetType().Name;
             try
             {
                 // Only load sprite if we're creating a prefab and it hasn't been created yet.
-                if (this.Sprite == null && this.SpriteAutoLoad)
+                if (Sprite == null && SpriteAutoLoad)
                 {
-                    this.AssemblyPath = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
-                    this.SpriteDirectoryPath = Path.Combine(AssemblyPath, SpriteFolder);
-                    this.SoundPath = Path.Combine(AssemblyPath, SoundFolder);
+                    AssemblyPath = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
+                    SpriteDirectoryPath = Path.Combine(AssemblyPath, SpriteFolder);
+                    SoundPath = Path.Combine(AssemblyPath, SoundFolder);
 
                     if (SpriteFileName == string.Empty)
                     {
@@ -136,43 +136,43 @@ namespace BroMakerLib.CustomObjects.Projectiles
                     }
 
                     Material mat = ResourcesController.GetMaterial(SpriteDirectoryPath, SpriteFileName);
-                    this.gameObject.GetComponent<MeshRenderer>().material = mat;
+                    gameObject.GetComponent<MeshRenderer>().material = mat;
                     float imageWidth = mat.mainTexture.width;
                     float imageHeight = mat.mainTexture.height;
 
-                    if (this.SpritePixelDimensions == Vector2.zero)
+                    if (SpritePixelDimensions == Vector2.zero)
                     {
-                        this.SpritePixelDimensions = new Vector2(imageWidth, imageHeight);
+                        SpritePixelDimensions = new Vector2(imageWidth, imageHeight);
                     }
-                    if (this.SpriteLowerLeftPixel == Vector2.zero)
+                    if (SpriteLowerLeftPixel == Vector2.zero)
                     {
-                        this.SpriteLowerLeftPixel = new Vector2(0, imageHeight);
+                        SpriteLowerLeftPixel = new Vector2(0, imageHeight);
                     }
-                    if (this.SpriteWidth == -1)
+                    if (SpriteWidth == -1)
                     {
-                        this.SpriteWidth = imageWidth;
+                        SpriteWidth = imageWidth;
                     }
-                    if (this.SpriteHeight == -1)
+                    if (SpriteHeight == -1)
                     {
-                        this.SpriteHeight = imageHeight;
+                        SpriteHeight = imageHeight;
                     }
 
-                    this.Sprite = this.gameObject.GetComponent<SpriteSM>();
-                    this.Sprite.pixelDimensions = SpritePixelDimensions;
-                    this.Sprite.lowerLeftPixel = this.SpriteLowerLeftPixel;
-                    this.Sprite.width = this.SpriteWidth;
-                    this.Sprite.height = this.SpriteHeight;
-                    this.Sprite.offset = this.SpriteOffset;
-                    this.Sprite.plane = SpriteBase.SPRITE_PLANE.XY;
-                    this.Sprite.color = this.SpriteColor;
+                    Sprite = gameObject.GetComponent<SpriteSM>();
+                    Sprite.pixelDimensions = SpritePixelDimensions;
+                    Sprite.lowerLeftPixel = SpriteLowerLeftPixel;
+                    Sprite.width = SpriteWidth;
+                    Sprite.height = SpriteHeight;
+                    Sprite.offset = SpriteOffset;
+                    Sprite.plane = SpriteBase.SPRITE_PLANE.XY;
+                    Sprite.color = SpriteColor;
                 }
 
-                if (this.soundHolder == null)
+                if (soundHolder == null)
                 {
-                    this.soundHolder = UnityEngine.Object.Instantiate(this.DefaultSoundHolder ?? HeroController.GetHeroPrefab(HeroType.Rambro).projectile.soundHolder);
-                    this.soundHolder.gameObject.SetActive(false);
-                    this.soundHolder.gameObject.name = "SoundHolder " + className;
-                    UnityEngine.Object.DontDestroyOnLoad(this.soundHolder);
+                    soundHolder = Instantiate(DefaultSoundHolder ?? HeroController.GetHeroPrefab(HeroType.Rambro).projectile.soundHolder);
+                    soundHolder.gameObject.SetActive(false);
+                    soundHolder.gameObject.name = "SoundHolder " + className;
+                    DontDestroyOnLoad(soundHolder);
                 }
 
                 base.Awake();
@@ -211,7 +211,7 @@ namespace BroMakerLib.CustomObjects.Projectiles
                 prefab.RanSetup = true;
                 prefab.enabled = false;
                 prefab.gameObject.SetActive(false);
-                UnityEngine.Object.DontDestroyOnLoad(prefab.gameObject);
+                DontDestroyOnLoad(prefab.gameObject);
                 CustomProjectilePrefabs[typeof(T)] = prefab;
                 return prefab;
             }
@@ -231,13 +231,13 @@ namespace BroMakerLib.CustomObjects.Projectiles
             }
             else
             {
-                Type[] components = (new List<Type> { typeof(MeshFilter), typeof(MeshRenderer), typeof(SpriteSM), typeof(T) }).Concat(additionalComponents).ToArray();
+                Type[] components = new List<Type> { typeof(MeshFilter), typeof(MeshRenderer), typeof(SpriteSM), typeof(T) }.Concat(additionalComponents).ToArray();
                 T prefab = new GameObject(typeof(T).Name, components).GetComponent<T>();
                 prefab.PrefabSetup();
                 prefab.RanSetup = true;
                 prefab.enabled = false;
                 prefab.gameObject.SetActive(false);
-                UnityEngine.Object.DontDestroyOnLoad(prefab.gameObject);
+                DontDestroyOnLoad(prefab.gameObject);
                 CustomProjectilePrefabs[typeof(T)] = prefab;
                 return prefab;
             }

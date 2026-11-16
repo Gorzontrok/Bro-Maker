@@ -21,21 +21,25 @@ namespace BroMakerLib.Abilities.Characters
         public override void Jump(bool wallJump)
         {
             if (!wallJump)
+            {
                 UseJetpack();
+            }
         }
 
         protected virtual void UseJetpack()
         {
             owner.CallMethod("UseJetpack");
             if (BlastOffFlames) // don't works
+            {
                 owner.CallMethod("CreateBlastOffFlames", Map.GetGroundHeight(owner.X, owner.Y + 2f));
+            }
             SetSpriteActive(ShowSprite);
             owner.SetFieldValue("jetPackTime", JetpackMaxTime);
         }
 
         protected virtual void SetSpriteActive(bool active)
         {
-            var bro = owner as BroBase;
+            BroBase bro = owner as BroBase;
             if (bro && bro.jetPackSprite != null)
             {
                 bro.jetPackSprite.gameObject.SetActive(active);

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using BroMakerLib.Infos;
 using BroMakerLib.Storages;
 using BroMakerLib.Unlocks;
@@ -39,13 +40,13 @@ namespace BroMakerLib.Menus
             FocusRestoreMode = FocusRestoreMode.LastFocused;
 
             // Main vertical container - minimal padding to use 95% of screen
-            var mainContainer = new VerticalLayoutContainer
+            VerticalLayoutContainer mainContainer = new VerticalLayoutContainer
             {
                 Name = "CustomBrosGrid_MainContainer",
                 WidthMode = SizeMode.Fill,
                 HeightMode = SizeMode.Fill,
-                Padding = 5f,  // Minimal padding
-                Spacing = 5f   // Minimal spacing to maximize grid space
+                Padding = 5f, // Minimal padding
+                Spacing = 5f // Minimal spacing to maximize grid space
             };
 
             // Title - larger font but compact height
@@ -56,12 +57,12 @@ namespace BroMakerLib.Menus
                 FontSize = 9f,
                 WidthMode = SizeMode.Fill,
                 HeightMode = SizeMode.Fixed,
-                Height = 35f  // Slightly bigger to fit larger font
+                Height = 35f // Slightly bigger to fit larger font
             };
             mainContainer.AddChild(titleText);
 
             // Check if we have any bros first
-            var bros = BroMakerStorage.Bros;
+            ReadOnlyCollection<StoredHero> bros = BroMakerStorage.Bros;
             bool hasBros = bros != null && bros.Count > 0;
 
             if (hasBros)
@@ -70,10 +71,10 @@ namespace BroMakerLib.Menus
                 paginatedGrid = new PaginatedGridContainer
                 {
                     Name = "CustomBrosGrid_PaginatedGrid",
-                    Columns = 5,  // 5 columns (requirement)
-                    Rows = 2,     // 2 rows (requirement)
-                    GridSpacing = 50f,  // More spacing between cards
-                    GridPadding = 10f,  // Reduced padding to use more space for cells
+                    Columns = 5, // 5 columns (requirement)
+                    Rows = 2, // 2 rows (requirement)
+                    GridSpacing = 50f, // More spacing between cards
+                    GridPadding = 10f, // Reduced padding to use more space for cells
                     WidthMode = SizeMode.Fill,
                     HeightMode = SizeMode.Fill,
                     TransitionDuration = 0.3f,
@@ -82,13 +83,13 @@ namespace BroMakerLib.Menus
             }
             else
             {
-                var topSpacer = new SpacerElement("TopSpacer")
+                SpacerElement topSpacer = new SpacerElement("TopSpacer")
                 {
                     HeightMode = SizeMode.Fixed,
-                    Height = 10f,
+                    Height = 10f
                 };
 
-                var noBrosText = new TextElement("NoBrosMessage")
+                TextElement noBrosText = new TextElement("NoBrosMessage")
                 {
                     Text = "NO CUSTOM BROS INSTALLED",
                     TextColor = Color.gray,
@@ -100,7 +101,7 @@ namespace BroMakerLib.Menus
                     HorizontalAlignmentOverride = HorizontalAlignment.Left
                 };
 
-                var middleSpacer = new SpacerElement("MiddleSpacer")
+                SpacerElement middleSpacer = new SpacerElement("MiddleSpacer")
                 {
                     HeightMode = SizeMode.Fill
                 };
@@ -136,9 +137,9 @@ namespace BroMakerLib.Menus
                 Text = "<",
                 FontSize = 4f,
                 WidthMode = SizeMode.Fixed,
-                Width = 40f,  // Smaller button
+                Width = 40f, // Smaller button
                 HeightMode = SizeMode.Fixed,
-                Height = 30f,  // Smaller button
+                Height = 30f, // Smaller button
                 IsVisible = false, // Initially hidden
                 IsFocusable = false // Initially not focusable
             };
@@ -148,9 +149,9 @@ namespace BroMakerLib.Menus
                 Text = ">",
                 FontSize = 4f,
                 WidthMode = SizeMode.Fixed,
-                Width = 40f,  // Smaller button
+                Width = 40f, // Smaller button
                 HeightMode = SizeMode.Fixed,
-                Height = 30f,  // Smaller button
+                Height = 30f, // Smaller button
                 IsVisible = false, // Initially hidden
                 IsFocusable = false // Initially not focusable
             };
@@ -167,17 +168,17 @@ namespace BroMakerLib.Menus
             mainContainer.AddChild(paginatedGrid);
 
             // Back button container (centered at bottom) - smaller height
-            var buttonContainer = new HorizontalLayoutContainer
+            HorizontalLayoutContainer buttonContainer = new HorizontalLayoutContainer
             {
                 Name = "ButtonContainer",
                 WidthMode = SizeMode.Fill,
                 HeightMode = SizeMode.Fixed,
-                Height = 35f,  // Reduced from 60f
+                Height = 35f, // Reduced from 60f
                 ChildVerticalAlignment = VerticalAlignment.Center
             };
 
             // Spacer to center the back button
-            var spacer = new SpacerElement("Spacer1")
+            SpacerElement spacer = new SpacerElement("Spacer1")
             {
                 WidthMode = SizeMode.Fill,
                 HeightMode = SizeMode.Fixed,
@@ -189,7 +190,7 @@ namespace BroMakerLib.Menus
             backButton = new ActionButton("BackButton")
             {
                 Text = "BACK",
-                FontSize = 4.67f,  // Was FontSize 28 / 6
+                FontSize = 4.67f, // Was FontSize 28 / 6
                 WidthMode = SizeMode.Fixed,
                 Width = 130f,
                 HeightMode = SizeMode.Fixed,
@@ -199,7 +200,7 @@ namespace BroMakerLib.Menus
             buttonContainer.AddChild(backButton);
 
             // Another spacer
-            var spacer2 = new SpacerElement("Spacer2")
+            SpacerElement spacer2 = new SpacerElement("Spacer2")
             {
                 WidthMode = SizeMode.Fill,
                 HeightMode = SizeMode.Fixed,
@@ -217,17 +218,17 @@ namespace BroMakerLib.Menus
             broCards.Clear();
 
             // Get all custom bros from BroMaker
-            var bros = BroMakerStorage.Bros;
+            ReadOnlyCollection<StoredHero> bros = BroMakerStorage.Bros;
 
             // Create list of layout elements for the paginated grid
-            var cardElements = new List<LayoutElement>();
+            List<LayoutElement> cardElements = new List<LayoutElement>();
 
             if (bros != null && bros.Count > 0)
             {
                 // Create a BroCard for each actual bro
-                foreach (var storedHero in bros)
+                foreach (StoredHero storedHero in bros)
                 {
-                    var broCard = CreateBroCard(storedHero);
+                    BroCard broCard = CreateBroCard(storedHero);
                     broCards.Add(broCard);
                     cardElements.Add(broCard);
                 }
@@ -244,7 +245,7 @@ namespace BroMakerLib.Menus
 
         private BroCard CreateBroCard(StoredHero storedHero)
         {
-            var card = new BroCard(storedHero.name)
+            BroCard card = new BroCard(storedHero.name)
             {
                 BroName = storedHero.name,
 
@@ -256,13 +257,13 @@ namespace BroMakerLib.Menus
                 IsSpawnEnabled = BroSpawnManager.IsBroEnabled(storedHero.name),
 
                 // Visual properties
-                LockedTintColor = new Color(0.15f, 0.15f, 0.15f, 1f),  // Much darker for locked
+                LockedTintColor = new Color(0.15f, 0.15f, 0.15f, 1f), // Much darker for locked
 
                 // Size in grid - make cards bigger
                 WidthMode = SizeMode.Percentage,
-                Width = 100f,  // Use full cell width
+                Width = 100f, // Use full cell width
                 HeightMode = SizeMode.Percentage,
-                Height = 100f,  // Use full cell height
+                Height = 100f, // Use full cell height
 
                 // Click handler - opens detail view
                 OnClick = () => OpenDetailView(storedHero),
@@ -277,12 +278,15 @@ namespace BroMakerLib.Menus
         private Texture2D GetAvatarTexture(StoredHero storedHero)
         {
             CustomBroInfo broInfo = storedHero.GetInfo() as CustomBroInfo;
-            if (broInfo == null) return null;
+            if (broInfo == null)
+            {
+                return null;
+            }
 
             if (broInfo.parameters.ContainsKey("Avatar"))
             {
                 string avatarPath = string.Empty;
-                var value = broInfo.parameters["Avatar"];
+                object value = broInfo.parameters["Avatar"];
 
                 if (value is JArray array)
                 {
@@ -312,7 +316,7 @@ namespace BroMakerLib.Menus
 
             if (lastSeenStatusCount != BroSpawnManager.BroStatusCount)
             {
-                this.RefreshBroCards();
+                RefreshBroCards();
             }
         }
 
@@ -330,7 +334,7 @@ namespace BroMakerLib.Menus
 
         private void RefreshBroCards()
         {
-            foreach (var broCard in broCards)
+            foreach (BroCard broCard in broCards)
             {
                 if (broCard.Tag is StoredHero storedHero)
                 {

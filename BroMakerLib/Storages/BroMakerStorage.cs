@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Reflection;
 using BroMakerLib.CustomObjects.Bros;
+using BroMakerLib.Cutscenes;
 using BroMakerLib.Infos;
 using BroMakerLib.Loggers;
 using UnityModManagerNet;
@@ -19,10 +20,12 @@ namespace BroMakerLib.Storages
         {
             get { return _abilities.ToArray(); }
         }
+
         internal static ReadOnlyCollection<StoredHero> Bros
         {
             get { return _brosReadOnly; }
         }
+
         internal static ReadOnlyCollection<string> BroNames
         {
             get { return _broNamesReadOnly; }
@@ -214,7 +217,9 @@ namespace BroMakerLib.Storages
             hero = null;
 
             if (name.IsNullOrEmpty())
+            {
                 return false;
+            }
 
             return _brosByName.TryGetValue(name, out hero);
         }
@@ -229,7 +234,9 @@ namespace BroMakerLib.Storages
             hero = null;
 
             if (customHeroType == null || !typeof(CustomHero).IsAssignableFrom(customHeroType))
+            {
                 return false;
+            }
 
             return _brosByType.TryGetValue(customHeroType, out hero);
         }
@@ -237,17 +244,19 @@ namespace BroMakerLib.Storages
         public static void StoreCharactersFromMod(BroMakerMod mod)
         {
             if (mod == null || mod.CustomBros == null || mod.CustomBros.Length == 0)
+            {
                 return;
+            }
 
-            var temp = new List<StoredHero>();
-            foreach (var broObject in mod.CustomBros)
+            List<StoredHero> temp = new List<StoredHero>();
+            foreach (object broObject in mod.CustomBros)
             {
                 if (broObject as string != null && broObject.As<string>().IsNotNullOrEmpty())
                 {
-                    var path = Path.Combine(mod.Path, broObject as string);
+                    string path = Path.Combine(mod.Path, broObject as string);
                     if (File.Exists(path))
                     {
-                        var hero = new StoredHero(path, mod);
+                        StoredHero hero = new StoredHero(path, mod);
                         temp.Add(hero);
                         _bros.Add(hero);
                         _brosByName[hero.name] = hero;
@@ -260,12 +269,12 @@ namespace BroMakerLib.Storages
                     CustomBroInfo info = broObject as CustomBroInfo;
                     info.path = mod.Path;
                     info.Mod = mod;
-                    foreach (var cutscene in info.Cutscene)
+                    foreach (CustomIntroCutscene cutscene in info.Cutscene)
                     {
                         cutscene.path = mod.Path;
                         cutscene.Owner = info;
                     }
-                    var hero = new StoredHero(info, mod);
+                    StoredHero hero = new StoredHero(info, mod);
                     temp.Add(hero);
                     _bros.Add(hero);
                     _brosByName[hero.name] = hero;
@@ -278,20 +287,24 @@ namespace BroMakerLib.Storages
         public static void StoreAbilitiesFromMod(BroMakerMod mod)
         {
             if (mod == null || mod.Abilities == null || mod.Abilities.Length == 0)
+            {
                 return;
+            }
 
-            var temp = new List<StoredAbility>();
-            foreach (var abilityObject in mod.Abilities)
+            List<StoredAbility> temp = new List<StoredAbility>();
+            foreach (object abilityObject in mod.Abilities)
             {
                 if (abilityObject == null)
+                {
                     continue;
+                }
 
                 if (abilityObject as string != null && abilityObject.As<string>().IsNotNullOrEmpty())
                 {
-                    var path = Path.Combine(mod.Path, abilityObject as string);
+                    string path = Path.Combine(mod.Path, abilityObject as string);
                     if (File.Exists(path))
                     {
-                        var ability = new StoredAbility(path);
+                        StoredAbility ability = new StoredAbility(path);
                         temp.Add(ability);
                         _abilities.Add(ability);
                         BMLogger.Debug($"Found file: '{path}'");
@@ -302,7 +315,7 @@ namespace BroMakerLib.Storages
                     AbilityInfo info = abilityObject as AbilityInfo;
                     info.path = mod.Path;
                     info.Mod = mod;
-                    var ability = new StoredAbility(info);
+                    StoredAbility ability = new StoredAbility(info);
                     temp.Add(ability);
                     _abilities.Add(ability);
                 }

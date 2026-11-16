@@ -28,12 +28,12 @@ namespace BroMakerLib.Infos
         public Dictionary<string, object> beforeStart = new Dictionary<string, object>();
         public Dictionary<string, object> afterStart = new Dictionary<string, object>();
 
-        [JsonIgnore]
-        public string path = string.Empty;
+        [JsonIgnore] public string path = string.Empty;
 
         [JsonIgnore] internal BroMakerMod Mod;
 
         protected string _defaultName = "BroforceObject";
+
         public CustomBroforceObjectInfo()
         {
             name = GetUnknowName();
@@ -42,9 +42,13 @@ namespace BroMakerLib.Infos
         public CustomBroforceObjectInfo(string name)
         {
             if (string.IsNullOrEmpty(name))
+            {
                 this.name = GetUnknowName();
+            }
             else
+            {
                 this.name = name;
+            }
         }
 
         #region Static Methods
@@ -62,6 +66,7 @@ namespace BroMakerLib.Infos
             }
             ApplyLifecycleFields(obj, beforeAwake, "beforeAwake");
         }
+
         public void AfterAwake(object obj)
         {
             if (afterAwake == null)
@@ -70,6 +75,7 @@ namespace BroMakerLib.Infos
             }
             ApplyLifecycleFields(obj, afterAwake, "afterAwake");
         }
+
         public void BeforeStart(object obj)
         {
             if (beforeStart == null)
@@ -78,6 +84,7 @@ namespace BroMakerLib.Infos
             }
             ApplyLifecycleFields(obj, beforeStart, "beforeStart");
         }
+
         public void AfterStart(object obj)
         {
             if (afterStart == null)
@@ -165,18 +172,28 @@ namespace BroMakerLib.Infos
         public virtual void Initialize()
         {
             if (beforeAwake == null)
+            {
                 beforeAwake = new Dictionary<string, object>();
+            }
             if (afterAwake == null)
+            {
                 afterAwake = new Dictionary<string, object>();
+            }
             if (beforeStart == null)
+            {
                 beforeStart = new Dictionary<string, object>();
+            }
             if (afterStart == null)
+            {
                 afterStart = new Dictionary<string, object>();
+            }
         }
+
         public override string ToString()
         {
             return name;
         }
+
         public virtual void ReadParameters(object obj)
         {
             using (BMLogger.Scope(Mod?.Name, name))
@@ -225,19 +242,24 @@ namespace BroMakerLib.Infos
         {
             return null;
         }
+
         public virtual string SerializeJSON(string folderPath)
         {
-            var settings = new JsonSerializerSettings()
+            JsonSerializerSettings settings = new JsonSerializerSettings
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             };
-            var json = JsonConvert.SerializeObject(this, Formatting.Indented, settings);
-            File.WriteAllText(Path.Combine(folderPath, this.name + ".json"), json);
+            string json = JsonConvert.SerializeObject(this, Formatting.Indented, settings);
+            File.WriteAllText(Path.Combine(folderPath, name + ".json"), json);
             return json;
         }
+
         protected T GetParameterValue<T>(string key)
         {
-            if (parameters.IsNullOrEmpty() || !parameters.ContainsKey(key)) return default(T);
+            if (parameters.IsNullOrEmpty() || !parameters.ContainsKey(key))
+            {
+                return default(T);
+            }
             try
             {
                 T val = (T)parameters[key];

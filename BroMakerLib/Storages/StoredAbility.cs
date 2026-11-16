@@ -31,7 +31,7 @@ namespace BroMakerLib.Storages
         {
             info = aInfo;
             name = aInfo.name;
-            this.path = aInfo.path;
+            path = aInfo.path;
         }
 
         public static AbilityInfo GetInfo(string path)
@@ -52,13 +52,15 @@ namespace BroMakerLib.Storages
         public AbilityInfo GetInfo()
         {
             if (info != null)
+            {
                 return info;
-            return GetInfo(this.path);
+            }
+            return GetInfo(path);
         }
 
         public override bool Equals(object obj)
         {
-            return obj is StoredAbility && ((StoredAbility)obj).name == this.name;
+            return obj is StoredAbility && ((StoredAbility)obj).name == name;
         }
 
         public override string ToString()

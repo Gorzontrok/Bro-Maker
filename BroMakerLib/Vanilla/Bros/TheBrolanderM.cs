@@ -53,7 +53,7 @@ namespace BroMakerLib.Vanilla.Bros
 
         protected virtual void FixNullVariableLocal()
         {
-            var bro = HeroController.GetHeroPrefab(HeroType.TheBrolander).As<TheBrolander>();
+            TheBrolander bro = HeroController.GetHeroPrefab(HeroType.TheBrolander).As<TheBrolander>();
             zapper = this.FindChildOfName("ElectricZap").GetComponent<ElectricZap>();
             quickeningAudio = GetComponent<AudioSource>();
             // Blade

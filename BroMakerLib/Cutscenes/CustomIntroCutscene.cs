@@ -16,11 +16,9 @@ namespace BroMakerLib.Cutscenes
         public static readonly string Subtitle1DefaultText = "Joins the Battle!";
         public static readonly Color SubtitleDefaultColor = new Color(0.278f, 0.376f, 0.953f, 1.0f);
 
-        [JsonIgnore, EditorIgnore]
-        public static CutsceneIntroData rambroCutscene, requestedCutscene;
+        [JsonIgnore] [EditorIgnore] public static CutsceneIntroData rambroCutscene, requestedCutscene;
 
-        [JsonIgnore]
-        public string path = string.Empty;
+        [JsonIgnore] public string path = string.Empty;
 
         [JsonIgnore] internal CustomBroInfo Owner;
 
@@ -29,27 +27,34 @@ namespace BroMakerLib.Cutscenes
         // Heading
         public string heading = "Brononymous";
         public float headingScale = 0.15f;
+
         [JsonConverter(typeof(ColorJsonConverter))]
         public Color headingColor = HeadingDefaultColor;
 
         // Subtitle 1
         public string subtitle1 = Subtitle1DefaultText;
+
         [JsonConverter(typeof(ColorJsonConverter))]
         public Color subtitle1Color = SubtitleDefaultColor;
+
         public float subtitleScale = 0.10f;
 
         // Subtitle 2
         public string subtitle2 = string.Empty; // This won't be shown unless we use a cutscene with an existing mesh for this or create our own mesh
+
         [JsonConverter(typeof(ColorJsonConverter))]
         public Color subtitle2Color = SubtitleDefaultColor;
+
         public float subtitle2Scale = 1f;
 
         // Sprite
         public string spritePath = string.Empty;
+
         [JsonConverter(typeof(Vector2Converter))]
         public Vector2 spriteSize = Vector2.zero;
-        [JsonConverter(typeof(RectConverter))]
-        public Rect spriteRect = Rect.zero;
+
+        [JsonConverter(typeof(RectConverter))] public Rect spriteRect = Rect.zero;
+
         [JsonConverter(typeof(Vector2Converter))]
         public Vector2 spriteOffset = Vector2.zero;
 
@@ -58,6 +63,7 @@ namespace BroMakerLib.Cutscenes
         public float animationStartDelay = 0.0f;
         public bool animationPingPong = false;
         public bool animationLoop = false;
+
         [JsonConverter(typeof(CutsceneSpriteAnimatedJsonConverter))]
         public Vector3 spriteAnimRateFramesWidth = Vector3.zero;
 
@@ -81,13 +87,14 @@ namespace BroMakerLib.Cutscenes
         {
             return JsonConvert.DeserializeObject<T>(File.ReadAllText(jsonPath));
         }
+
         public string SerializeJSON(string folderPath, string fileName)
         {
-            var settings = new JsonSerializerSettings()
+            JsonSerializerSettings settings = new JsonSerializerSettings
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             };
-            var json = JsonConvert.SerializeObject(this, Formatting.Indented, settings);
+            string json = JsonConvert.SerializeObject(this, Formatting.Indented, settings);
             File.WriteAllText(Path.Combine(folderPath, fileName + ".json"), json);
             return json;
         }
@@ -101,7 +108,7 @@ namespace BroMakerLib.Cutscenes
                 rambroCutscene = requestedCutscene;
             }
 
-            var data = ScriptableObject.CreateInstance<CutsceneIntroDataExtra>();
+            CutsceneIntroDataExtra data = ScriptableObject.CreateInstance<CutsceneIntroDataExtra>();
             data.heading = heading;
             data.subtitle1 = subtitle1;
             data.subtitle2 = subtitle2;
@@ -207,14 +214,14 @@ namespace BroMakerLib.Cutscenes
             ResourceManager resourceManager = GameSystems.ResourceManager;
             if (resourceManager != null)
             {
-                var _curIntroResourceName = string.Format("{0}:{1}", "cutscenes", resourceName);
+                string _curIntroResourceName = string.Format("{0}:{1}", "cutscenes", resourceName);
                 resourceManager.Load(_curIntroResourceName, false, OnLoadComplete);
             }
         }
+
         private void OnLoadComplete(string resourceName, object asset)
         {
             requestedCutscene = (CutsceneIntroData)asset;
         }
     }
 }
-

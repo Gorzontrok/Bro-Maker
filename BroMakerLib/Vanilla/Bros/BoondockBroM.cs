@@ -53,7 +53,7 @@ namespace BroMakerLib.Vanilla.Bros
         protected virtual void FixNullVariableLocal()
         {
             isLeadBro = true;
-            var bro = HeroController.GetHeroPrefab(HeroType.BoondockBros).As<BoondockBro>();
+            BoondockBro bro = HeroController.GetHeroPrefab(HeroType.BoondockBros).As<BoondockBro>();
             billyConnollyPrefab = bro.billyConnollyPrefab;
             secondBroMaterial = bro.secondBroMaterial;
             avatar1 = bro.avatar1;

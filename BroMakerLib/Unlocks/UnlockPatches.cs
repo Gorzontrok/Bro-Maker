@@ -28,9 +28,10 @@ namespace BroMakerLib.Unlocks
     }
 
     [HarmonyPatch(typeof(HeroUnlockController), "GetNumberOfRescuesToNextUnlock")]
-    static class HeroUnlockController_GetNumberOfRescuesToNextUnlock_Patch
+    internal static class HeroUnlockController_GetNumberOfRescuesToNextUnlock_Patch
     {
         internal static bool IgnoreNextCall = false;
+
         public static void Postfix(ref int __result)
         {
             if (!Main.enabled || IgnoreNextCall)

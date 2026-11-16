@@ -27,7 +27,9 @@ namespace BroMakerLib.Abilities.Characters
         public void StartSpray()
         {
             if (_remainingProjectile > 0)
+            {
                 return;
+            }
 
             _remainingProjectile = numberOfProjectile;
         }
@@ -62,10 +64,10 @@ namespace BroMakerLib.Abilities.Characters
             _fireCount++;
             float angle = GetSprayAngle();
             _sprayAngle = Mathf.LerpAngle(_sprayAngle, angle, 0.33f);
-            _sprayDirection = Math.Point3OnCircle((720f + _sprayAngle - 13.25f + 7.5f * (float)(_fireCount % 3) + 2.5f * (float)(_fireCount % 6)) / 180f * Mathf.PI, 1f);
+            _sprayDirection = Math.Point3OnCircle((720f + _sprayAngle - 13.25f + (7.5f * (float)(_fireCount % 3)) + (2.5f * (float)(_fireCount % 6))) / 180f * Mathf.PI, 1f);
 
-            float x = owner.X + _sprayDirection.x * 10f;
-            float y = owner.Y + _sprayDirection.y * 8f + 8f;
+            float x = owner.X + (_sprayDirection.x * 10f);
+            float y = owner.Y + (_sprayDirection.y * 8f) + 8f;
             float xSpeed = _sprayDirection.x * projectileSpeed;
             float ySpeed = _sprayDirection.y * projectileSpeed;
             ProjectileController.SpawnProjectileLocally(projectile, owner, x, y, xSpeed, ySpeed, PlayerNum);

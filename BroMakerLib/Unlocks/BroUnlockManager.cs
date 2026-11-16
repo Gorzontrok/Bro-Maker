@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -43,7 +44,9 @@ namespace BroMakerLib.Unlocks
         internal static BroUnlockState GetBroUnlockState(string broName)
         {
             if (progressData?.BroStates == null || !progressData.BroStates.TryGetValue(broName, out BroUnlockState state))
+            {
                 return null;
+            }
 
             return state;
         }
@@ -57,7 +60,9 @@ namespace BroMakerLib.Unlocks
         internal static string GetAndClearPendingUnlockedBro()
         {
             if (progressData?.PendingUnlocks == null || progressData.PendingUnlocks.Count < 0)
+            {
                 return null;
+            }
             for (int i = 0; i < progressData.PendingUnlocks.Count; i++)
             {
                 string broName = progressData.PendingUnlocks[i];
@@ -87,11 +92,14 @@ namespace BroMakerLib.Unlocks
 
         internal static int GetRemainingRescuesToUnlockNextBro()
         {
-            if (progressData?.BroStates == null) return -1;
-            int minRemaining = int.MaxValue;
-            foreach (var kvp in progressData.BroStates)
+            if (progressData?.BroStates == null)
             {
-                var state = kvp.Value;
+                return -1;
+            }
+            int minRemaining = int.MaxValue;
+            foreach (KeyValuePair<string, BroUnlockState> kvp in progressData.BroStates)
+            {
+                BroUnlockState state = kvp.Value;
                 if (!state.IsUnlocked && (state.ConfiguredMethod == UnlockMethod.RescueCount || state.ConfiguredMethod == UnlockMethod.RescueOrLevel))
                 {
                     int remaining = Mathf.Max(1, state.TargetRescueCount - progressData.TotalRescues);
@@ -107,7 +115,9 @@ namespace BroMakerLib.Unlocks
         internal static int GetRemainingRescues(string broName)
         {
             if (progressData?.BroStates == null || !progressData.BroStates.TryGetValue(broName, out BroUnlockState state))
+            {
                 return 0;
+            }
 
             int remaining = state.TargetRescueCount - progressData.TotalRescues;
             return Mathf.Max(1, remaining);
@@ -115,12 +125,15 @@ namespace BroMakerLib.Unlocks
 
         internal static List<string> GetBrosWithUnlockLevels()
         {
-            var result = new List<string>();
-            if (progressData?.BroStates == null) return result;
-
-            foreach (var kvp in progressData.BroStates)
+            List<string> result = new List<string>();
+            if (progressData?.BroStates == null)
             {
-                var state = kvp.Value;
+                return result;
+            }
+
+            foreach (KeyValuePair<string, BroUnlockState> kvp in progressData.BroStates)
+            {
+                BroUnlockState state = kvp.Value;
                 if (!state.IsUnlocked &&
                     (state.ConfiguredMethod == UnlockMethod.UnlockLevel ||
                      state.ConfiguredMethod == UnlockMethod.RescueOrLevel) &&
@@ -137,7 +150,10 @@ namespace BroMakerLib.Unlocks
         #region Unlock Logic
         internal static void Initialize()
         {
-            if (Initialized) return;
+            if (Initialized)
+            {
+                return;
+            }
 
             LoadProgressData();
             CheckForDeletedBros();
@@ -153,13 +169,16 @@ namespace BroMakerLib.Unlocks
 
         internal static void CheckRescueUnlocks()
         {
-            if (progressData?.BroStates == null) return;
+            if (progressData?.BroStates == null)
+            {
+                return;
+            }
 
             bool anyUnlocked = false;
             bool anyStillLocked = false;
-            foreach (var kvp in progressData.BroStates)
+            foreach (KeyValuePair<string, BroUnlockState> kvp in progressData.BroStates)
             {
-                var state = kvp.Value;
+                BroUnlockState state = kvp.Value;
                 if (!state.IsUnlocked && (state.ConfiguredMethod == UnlockMethod.RescueCount || state.ConfiguredMethod == UnlockMethod.RescueOrLevel))
                 {
                     anyStillLocked = true;
@@ -185,12 +204,14 @@ namespace BroMakerLib.Unlocks
         internal static bool CheckLevelUnlocks(string campaignName)
         {
             if (progressData?.BroStates == null || string.IsNullOrEmpty(currentUnlockLevelCampaignName))
+            {
                 return false;
+            }
 
             bool anyUnlocked = false;
-            foreach (var kvp in progressData.BroStates)
+            foreach (KeyValuePair<string, BroUnlockState> kvp in progressData.BroStates)
             {
-                var state = kvp.Value;
+                BroUnlockState state = kvp.Value;
                 if (!state.IsUnlocked &&
                     (state.ConfiguredMethod == UnlockMethod.UnlockLevel ||
                      state.ConfiguredMethod == UnlockMethod.RescueOrLevel))
@@ -218,7 +239,10 @@ namespace BroMakerLib.Unlocks
 
         internal static void UnlockBro(BroUnlockState state, bool queueUnlock = true)
         {
-            if (state.IsUnlocked) return;
+            if (state.IsUnlocked)
+            {
+                return;
+            }
 
             state.IsUnlocked = true;
             state.UnlockedDate = DateTime.UtcNow;
@@ -248,7 +272,7 @@ namespace BroMakerLib.Unlocks
             BroSpawnManager.BroStatusChanged();
 
             // Notify callbacks
-            foreach (var callback in broUnlockedCallbacks)
+            foreach (Action<string, StoredHero> callback in broUnlockedCallbacks)
             {
                 callback.Invoke(state.BroName, bro);
             }
@@ -256,9 +280,12 @@ namespace BroMakerLib.Unlocks
 
         internal static void UnlockAllBros()
         {
-            if (progressData?.BroStates == null) return;
+            if (progressData?.BroStates == null)
+            {
+                return;
+            }
 
-            foreach (var kvp in progressData.BroStates)
+            foreach (KeyValuePair<string, BroUnlockState> kvp in progressData.BroStates)
             {
                 if (!kvp.Value.IsUnlocked)
                 {
@@ -274,9 +301,12 @@ namespace BroMakerLib.Unlocks
 
         internal static void LockAllBros()
         {
-            if (progressData?.BroStates == null) return;
+            if (progressData?.BroStates == null)
+            {
+                return;
+            }
 
-            foreach (var kvp in progressData.BroStates)
+            foreach (KeyValuePair<string, BroUnlockState> kvp in progressData.BroStates)
             {
                 if (kvp.Value.IsUnlocked)
                 {
@@ -439,16 +469,19 @@ namespace BroMakerLib.Unlocks
 
         private static void ProcessNewlyInstalledBros()
         {
-            var allBros = BroMakerStorage.Bros;
-            if (allBros == null) return;
+            ReadOnlyCollection<StoredHero> allBros = BroMakerStorage.Bros;
+            if (allBros == null)
+            {
+                return;
+            }
 
             bool anyNewBros = false;
-            foreach (var bro in allBros)
+            foreach (StoredHero bro in allBros)
             {
                 if (!progressData.BroStates.ContainsKey(bro.name))
                 {
-                    var unlockConfig = bro.GetInfo()?.UnlockConfig ?? new BroUnlockConfig();
-                    var state = CreateNewBroUnlockState(bro, unlockConfig);
+                    BroUnlockConfig unlockConfig = bro.GetInfo()?.UnlockConfig ?? new BroUnlockConfig();
+                    BroUnlockState state = CreateNewBroUnlockState(bro, unlockConfig);
 
                     progressData.BroStates[bro.name] = state;
                     anyNewBros = true;
@@ -534,9 +567,12 @@ namespace BroMakerLib.Unlocks
             unlockedBroNames.Clear();
             unlockedBros.Clear();
 
-            if (progressData?.BroStates == null) return;
+            if (progressData?.BroStates == null)
+            {
+                return;
+            }
 
-            foreach (var kvp in progressData.BroStates)
+            foreach (KeyValuePair<string, BroUnlockState> kvp in progressData.BroStates)
             {
                 if (kvp.Value.IsUnlocked)
                 {
@@ -556,7 +592,7 @@ namespace BroMakerLib.Unlocks
 
         private static BroUnlockState CreateNewBroUnlockState(StoredHero bro, BroUnlockConfig unlockConfig)
         {
-            var state = new BroUnlockState
+            BroUnlockState state = new BroUnlockState
             {
                 BroName = bro.name,
                 ConfiguredMethod = unlockConfig.Method,
@@ -592,13 +628,16 @@ namespace BroMakerLib.Unlocks
 
         private static int CalculateStaggeredRescueTarget(int baseRequirement)
         {
-            if (progressData?.BroStates == null) return baseRequirement;
+            if (progressData?.BroStates == null)
+            {
+                return baseRequirement;
+            }
 
             int highestTarget = progressData.TotalRescues;
 
-            foreach (var kvp in progressData.BroStates)
+            foreach (KeyValuePair<string, BroUnlockState> kvp in progressData.BroStates)
             {
-                var state = kvp.Value;
+                BroUnlockState state = kvp.Value;
                 if (!state.IsUnlocked &&
                     (state.ConfiguredMethod == UnlockMethod.RescueCount ||
                      state.ConfiguredMethod == UnlockMethod.RescueOrLevel))
@@ -616,7 +655,9 @@ namespace BroMakerLib.Unlocks
         private static void RecalculateTargetsAfterLevelUnlock(BroUnlockState unlockedBroState)
         {
             if (progressData?.BroStates == null)
+            {
                 return;
+            }
 
             int currentRemaining = Mathf.Max(0, unlockedBroState.TargetRescueCount - progressData.TotalRescues);
             int skippedAmount;
@@ -631,9 +672,9 @@ namespace BroMakerLib.Unlocks
                 skippedAmount = currentRemaining;
             }
 
-            foreach (var kvp in progressData.BroStates)
+            foreach (KeyValuePair<string, BroUnlockState> kvp in progressData.BroStates)
             {
-                var state = kvp.Value;
+                BroUnlockState state = kvp.Value;
                 if (!state.IsUnlocked && (state.ConfiguredMethod == UnlockMethod.RescueCount || state.ConfiguredMethod == UnlockMethod.RescueOrLevel) && state.TargetRescueCount > unlockedBroState.TargetRescueCount)
                 {
 
@@ -645,9 +686,11 @@ namespace BroMakerLib.Unlocks
         private static bool ValidateUnlockLevel(StoredHero bro, string levelPath)
         {
             if (string.IsNullOrEmpty(levelPath))
+            {
                 return false;
+            }
 
-            string fullLevelPath = System.IO.Path.Combine(bro.GetInfo().path, levelPath);
+            string fullLevelPath = Path.Combine(bro.GetInfo().path, levelPath);
             return File.Exists(fullLevelPath) || File.Exists(fullLevelPath + ".bfc");
         }
 

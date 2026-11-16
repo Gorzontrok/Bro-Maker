@@ -6,10 +6,8 @@ namespace BroMakerLib.CustomObjects
 {
     public interface ICustomHero
     {
-        [Syncronize]
-        CustomBroInfo Info { get; set; }
-        [Syncronize]
-        BroBase Character { get; set; }
+        [Syncronize] CustomBroInfo Info { get; set; }
+        [Syncronize] BroBase Character { get; set; }
         MuscleTempleFlexEffect FlexEffect { get; set; }
         int CurrentVariant { get; set; }
         Vector2 CurrentGunSpriteOffset { get; set; }

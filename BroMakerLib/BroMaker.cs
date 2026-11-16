@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using BroMakerLib.CustomObjects.Bros;
+using BroMakerLib.Cutscenes;
 using BroMakerLib.Infos;
 using BroMakerLib.Loggers;
 using BroMakerLib.Storages;
@@ -45,7 +46,7 @@ namespace BroMakerLib
                 // Apply all harmony patches if any bros have overridden the method
                 if (harmony != null)
                 {
-                    BroMaker.ApplyBroPatches(harmony);
+                    ApplyBroPatches(harmony);
                 }
 
                 RocketLib.CustomTriggers.CustomTriggerManager.RegisterCustomTrigger(typeof(ForceBroAction), typeof(ForceBroActionInfo), "BroMaker - Force Custom Bro", "Custom Bros", 10);
@@ -73,7 +74,7 @@ namespace BroMakerLib
                 {
                     RocketLib.Menus.Core.MenuRegistry.RegisterAction(
                         displayText: "CUSTOM BROS",
-                        onSelect: (menu) => BroMakerLib.Menus.CustomBrosGridMenu.Show(menu),
+                        onSelect: (menu) => Menus.CustomBrosGridMenu.Show(menu),
                         targetMenu: RocketLib.Menus.Core.TargetMenu.MainMenu,
                         position: RocketLib.Menus.Core.PositionMode.After,
                         positionReference: "START"
@@ -133,11 +134,13 @@ namespace BroMakerLib
                     }
                     else if (info.parameters["Sprite"] is JArray spriteArray)
                     {
-                        foreach (var item in spriteArray)
+                        foreach (JToken item in spriteArray)
                         {
                             string spritePath = item.ToObject<string>();
                             if (!string.IsNullOrEmpty(spritePath))
+                            {
                                 spritePaths.Add(spritePath);
+                            }
                         }
                     }
                 }
@@ -151,11 +154,13 @@ namespace BroMakerLib
                     }
                     else if (info.parameters["GunSprite"] is JArray gunSpriteArray)
                     {
-                        foreach (var item in gunSpriteArray)
+                        foreach (JToken item in gunSpriteArray)
                         {
                             string gunSpritePath = item.ToObject<string>();
                             if (!string.IsNullOrEmpty(gunSpritePath))
+                            {
                                 spritePaths.Add(gunSpritePath);
+                            }
                         }
                     }
                 }
@@ -168,16 +173,18 @@ namespace BroMakerLib
                     }
                     else if (info.parameters["SpecialIcons"] is JArray paths)
                     {
-                        foreach (var item in paths)
+                        foreach (JToken item in paths)
                         {
                             if (item is JArray variantIcons)
                             {
                                 // Array of arrays - each variant has multiple icons
-                                foreach (var icon in variantIcons)
+                                foreach (JToken icon in variantIcons)
                                 {
                                     string iconPath = icon.ToObject<string>();
                                     if (!string.IsNullOrEmpty(iconPath))
+                                    {
                                         spritePaths.Add(iconPath);
+                                    }
                                 }
                             }
                             else
@@ -185,7 +192,9 @@ namespace BroMakerLib
                                 // Simple array - one icon per variant
                                 string iconPath = item.ToObject<string>();
                                 if (!string.IsNullOrEmpty(iconPath))
+                                {
                                     spritePaths.Add(iconPath);
+                                }
                             }
                         }
                     }
@@ -198,11 +207,13 @@ namespace BroMakerLib
                     }
                     else if (info.parameters["Avatar"] is JArray avatarArray)
                     {
-                        foreach (var item in avatarArray)
+                        foreach (JToken item in avatarArray)
                         {
                             string avatarPath = item.ToObject<string>();
                             if (!string.IsNullOrEmpty(avatarPath))
+                            {
                                 spritePaths.Add(avatarPath);
+                            }
                         }
                     }
                 }
@@ -212,22 +223,26 @@ namespace BroMakerLib
                 {
                     if (info.parameters["SpecialMaterials"] is JArray materialsArray)
                     {
-                        foreach (var item in materialsArray)
+                        foreach (JToken item in materialsArray)
                         {
                             if (item is JArray variantMaterials)
                             {
-                                foreach (var material in variantMaterials)
+                                foreach (JToken material in variantMaterials)
                                 {
                                     string materialPath = material.ToObject<string>();
                                     if (!string.IsNullOrEmpty(materialPath))
+                                    {
                                         spritePaths.Add(materialPath);
+                                    }
                                 }
                             }
                             else
                             {
                                 string materialPath = item.ToObject<string>();
                                 if (!string.IsNullOrEmpty(materialPath))
+                                {
                                     spritePaths.Add(materialPath);
+                                }
                             }
                         }
                     }
@@ -242,16 +257,18 @@ namespace BroMakerLib
                     }
                     else if (info.parameters["FirstAvatar"] is JArray firstAvatarArray)
                     {
-                        foreach (var item in firstAvatarArray)
+                        foreach (JToken item in firstAvatarArray)
                         {
                             string firstAvatarPath = item.ToObject<string>();
                             if (!string.IsNullOrEmpty(firstAvatarPath))
+                            {
                                 spritePaths.Add(firstAvatarPath);
+                            }
                         }
                     }
                 }
 
-                foreach (var cutscene in info.Cutscene)
+                foreach (CustomIntroCutscene cutscene in info.Cutscene)
                 {
                     if (cutscene.spritePath != string.Empty)
                     {

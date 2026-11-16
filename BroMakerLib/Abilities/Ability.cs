@@ -17,15 +17,13 @@ namespace BroMakerLib.Abilities
         }
 
         /// <summary>
-        /// Offset position from <see cref="owner"/>
+        /// Offset position from <see cref="owner" />
         /// </summary>
         [JsonConverter(typeof(Vector2Converter))]
         public Vector2 PositionOffset { get; set; }
 
-        [JsonIgnore]
-        public T owner = null;
-        [JsonIgnore]
-        public AbilityInfo info = null;
+        [JsonIgnore] public T owner = null;
+        [JsonIgnore] public AbilityInfo info = null;
 
         public virtual void AssignOwner(T owner)
         {
@@ -39,16 +37,22 @@ namespace BroMakerLib.Abilities
         }
 
         public virtual void All(string calledFromMethod, params object[] objects)
-        { }
+        {
+        }
 
 
         #region Unity Methods
         protected virtual void Awake()
-        { }
+        {
+        }
+
         protected virtual void Start()
-        { }
+        {
+        }
+
         protected virtual void Update()
-        { }
+        {
+        }
         #endregion
 
         protected bool IsUnityMethod(string methodName)

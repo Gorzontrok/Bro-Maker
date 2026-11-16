@@ -26,6 +26,7 @@ namespace BroMakerLib
                 return BroMakerStorage.mods;
             }
         }
+
         public static List<BroMakerMod> IncompatibleMods
         {
             get
@@ -34,7 +35,7 @@ namespace BroMakerLib
             }
         }
 
-        private static readonly Dictionary<string, Action> _tabs = new Dictionary<string, Action>()
+        private static readonly Dictionary<string, Action> _tabs = new Dictionary<string, Action>
         {
             { "Custom Bros", Spawner },
             { "Settings", Settings },
@@ -104,20 +105,24 @@ namespace BroMakerLib
             WindowScaling.Enabled = BSett.instance.scaleUIWithWindowWidth;
 
             if (!WindowScaling.TryCaptureWidth())
+            {
                 return;
+            }
 
             if (_toolTipStyle == null)
             {
                 _toolTipStyle = new GUIStyle
                 {
                     fontStyle = FontStyle.Bold,
-                    fontSize = 15,
+                    fontSize = 15
                 };
                 _toolTipStyle.normal.textColor = Color.white;
             }
 
             if (_buttonStyle == null)
+            {
                 _buttonStyle = new GUIStyle(GUI.skin.button);
+            }
 
             if (_warningStyle == null)
             {
@@ -306,7 +311,7 @@ namespace BroMakerLib
                         continue;
                     }
 
-                    var name = mod.Name;
+                    string name = mod.Name;
                     // If only one custom bro is in the mod, we can just display them where the mod name would be
                     if (mod.StoredHeroes.Length == 1)
                     {
@@ -320,7 +325,7 @@ namespace BroMakerLib
                     {
                         // show mod information
                         GUILayout.BeginHorizontal("box");
-                        if ((_selectedModIndex == modCount) != GUILayout.Toggle(_selectedModIndex == modCount, name, _buttonStyle, WindowScaling.ScaledWidth(150)))
+                        if (_selectedModIndex == modCount != GUILayout.Toggle(_selectedModIndex == modCount, name, _buttonStyle, WindowScaling.ScaledWidth(150)))
                         {
                             // Deselect
                             if (_selectedModIndex == modCount)
@@ -362,7 +367,7 @@ namespace BroMakerLib
                                     isHorizontalOpen = true;
                                 }
 
-                                if ((_selectedCustomBrosIndex == broIndex) != GUILayout.Toggle(_selectedCustomBrosIndex == broIndex, mod.StoredHeroes[modIndex].name, _buttonStyle, WindowScaling.ScaledWidth(150)))
+                                if (_selectedCustomBrosIndex == broIndex != GUILayout.Toggle(_selectedCustomBrosIndex == broIndex, mod.StoredHeroes[modIndex].name, _buttonStyle, WindowScaling.ScaledWidth(150)))
                                 {
                                     if (_selectedCustomBrosIndex == broIndex)
                                     {
@@ -426,7 +431,7 @@ namespace BroMakerLib
                 {
                     // show mod information
                     GUILayout.BeginHorizontal("box");
-                    if ((_selectedModIndex == modCount) != GUILayout.Toggle(_selectedModIndex == modCount, mod.Name, _buttonStyle, WindowScaling.ScaledWidth(150)))
+                    if (_selectedModIndex == modCount != GUILayout.Toggle(_selectedModIndex == modCount, mod.Name, _buttonStyle, WindowScaling.ScaledWidth(150)))
                     {
                         // Deselect
                         if (_selectedModIndex == modCount)
@@ -544,7 +549,9 @@ namespace BroMakerLib
         private static void SelectedBroUI(StoredHero bro, BroMakerMod mod)
         {
             if (bro.Equals(null))
+            {
                 return;
+            }
 
             GUILayout.BeginVertical("box");
             // Show warning for potentially incompatible version
@@ -562,7 +569,7 @@ namespace BroMakerLib
                 GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false), WindowScaling.ScaledWidth(500));
                 for (int i = 0; i < 4; ++i)
                 {
-                    if ((selectedPlayerNum == i) != GUILayout.Toggle(selectedPlayerNum == i, new GUIContent("Player " + (i + 1), "Select which player to switch to this custom bro when you press switch to bro"), _buttonStyle))
+                    if (selectedPlayerNum == i != GUILayout.Toggle(selectedPlayerNum == i, new GUIContent("Player " + (i + 1), "Select which player to switch to this custom bro when you press switch to bro"), _buttonStyle))
                     {
                         selectedPlayerNum = i;
                     }
@@ -692,7 +699,7 @@ namespace BroMakerLib
         {
             // show mod information
             GUILayout.BeginHorizontal("box");
-            if ((_selectedCustomBrosIndex == broIndex) != GUILayout.Toggle(_selectedCustomBrosIndex == broIndex, mod.StoredHeroes[0].name, _buttonStyle, WindowScaling.ScaledWidth(150)))
+            if (_selectedCustomBrosIndex == broIndex != GUILayout.Toggle(_selectedCustomBrosIndex == broIndex, mod.StoredHeroes[0].name, _buttonStyle, WindowScaling.ScaledWidth(150)))
             {
                 if (_selectedCustomBrosIndex == broIndex)
                 {
@@ -872,7 +879,9 @@ namespace BroMakerLib
             GUILayout.Space(15);
             GUILayout.BeginHorizontal();
             if (GUILayout.Button(new GUIContent("Check Directories", "Creates BroMaker_Storage directory if it doesn't already exist"), GUILayout.ExpandWidth(false)))
+            {
                 DirectoriesManager.Initialize();
+            }
             if (GUILayout.Button(new GUIContent("Show Presets", "Lists all available presets to the log"), GUILayout.ExpandWidth(false)))
             {
                 foreach (KeyValuePair<string, Type> kvp in PresetManager.heroesPreset)

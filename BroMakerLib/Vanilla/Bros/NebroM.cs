@@ -52,7 +52,7 @@ namespace BroMakerLib.Vanilla.Bros
 
         protected virtual void FixNullVariableLocal()
         {
-            var bro = HeroController.GetHeroPrefab(HeroType.Nebro).As<Nebro>();
+            Nebro bro = HeroController.GetHeroPrefab(HeroType.Nebro).As<Nebro>();
             returnZonePrefab = bro.returnZonePrefab;
             materialArmless = bro.materialArmless;
             faderSpriteDownPrefab = bro.faderSpriteDownPrefab;

@@ -134,7 +134,9 @@ namespace BroMakerLib.Storages
         public static bool IsBroSpawnable(string broName)
         {
             if (!BroUnlockManager.IsBroUnlocked(broName))
+            {
                 return false;
+            }
 
             if (GameModeController.IsHardcoreMode)
             {
@@ -163,10 +165,14 @@ namespace BroMakerLib.Storages
         public static BroState GetBroState(string broName)
         {
             if (!BroMakerStorage.GetStoredHeroByName(broName, out _))
+            {
                 return BroState.NotInstalled;
+            }
 
             if (!BroUnlockManager.IsBroUnlocked(broName))
+            {
                 return BroState.Locked;
+            }
 
             if (GameModeController.IsHardcoreMode)
             {
@@ -293,7 +299,7 @@ namespace BroMakerLib.Storages
             if (BSett.instance.equalSpawnProbability)
             {
                 int enabledBroCount = EnabledBrosNames.Count();
-                return (enabledBroCount / (41.0f + enabledBroCount)) * 100.0f;
+                return enabledBroCount / (41.0f + enabledBroCount) * 100.0f;
             }
             else
             {

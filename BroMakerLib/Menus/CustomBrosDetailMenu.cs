@@ -1,6 +1,5 @@
 using BroMakerLib.Cutscenes;
 using BroMakerLib.Infos;
-using BroMakerLib.Loggers;
 using BroMakerLib.Storages;
 using BroMakerLib.Unlocks;
 using RocketLib.Menus.Core;

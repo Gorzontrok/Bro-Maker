@@ -13,7 +13,7 @@ namespace BroMakerLib.Infos
 
         public Ability<T> GetAbility<T>() where T : class
         {
-            var type = PresetManager.GetAbilityPreset(preset);
+            Type type = PresetManager.GetAbilityPreset(preset);
             if (type == null)
             {
                 BMLogger.Log($"Preset {preset} not founded");

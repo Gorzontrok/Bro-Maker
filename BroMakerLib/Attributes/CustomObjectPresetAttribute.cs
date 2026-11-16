@@ -6,6 +6,7 @@ namespace BroMakerLib
     public class CustomObjectPresetAttribute : Attribute
     {
         public string name;
+
         public CustomObjectPresetAttribute(string name)
         {
             this.name = name;

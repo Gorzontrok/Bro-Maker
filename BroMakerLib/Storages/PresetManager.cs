@@ -35,7 +35,7 @@ namespace BroMakerLib
             CheckAssembly(Assembly.GetExecutingAssembly());
 
             // Load assemblies of mods
-            foreach (var mod in BroMakerStorage.mods)
+            foreach (BroMakerMod mod in BroMakerStorage.mods)
             {
                 using (BMLogger.Scope(mod.Name, null))
                 {
@@ -123,7 +123,7 @@ namespace BroMakerLib
 
             try
             {
-                var types = assembly.GetTypes();
+                Type[] types = assembly.GetTypes();
                 if (types.Length == 0)
                 {
                     BMLogger.Warning($"Assembly '{assembly.GetName().Name}' is empty");
@@ -132,7 +132,7 @@ namespace BroMakerLib
 
 
                 RetrieveParameters(types);
-                var presets = FindPresets(types);
+                Type[] presets = FindPresets(types);
                 AddPresets(presets);
             }
             catch (Exception ex)
@@ -146,16 +146,16 @@ namespace BroMakerLib
 
         private static void RetrieveParameters(Type[] types)
         {
-            var paramerterType = types.FirstOrDefault((t) => t.Name == "Parameters");
+            Type paramerterType = types.FirstOrDefault((t) => t.Name == "Parameters");
             if (paramerterType == null || paramerterType.Name != "Parameters")
             {
                 return;
             }
 
-            var methods = paramerterType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
-            foreach (var method in methods)
+            MethodInfo[] methods = paramerterType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+            foreach (MethodInfo method in methods)
             {
-                var attributes = method.GetCustomAttributes(typeof(ParameterAttribute), true);
+                object[] attributes = method.GetCustomAttributes(typeof(ParameterAttribute), true);
                 if (attributes.IsNotNullOrEmpty())
                 {
                     if (method.GetParameters().Length != 2)
@@ -178,11 +178,11 @@ namespace BroMakerLib
 
         private static Type[] FindPresets(Type[] types)
         {
-            var result = new List<Type>();
+            List<Type> result = new List<Type>();
 
-            foreach (var type in types)
+            foreach (Type type in types)
             {
-                var attributes = type.GetCustomAttributes(typeof(CustomObjectPresetAttribute), true);
+                object[] attributes = type.GetCustomAttributes(typeof(CustomObjectPresetAttribute), true);
                 if (attributes.IsNotNullOrEmpty())
                 {
                     result.Add(type);
@@ -194,15 +194,15 @@ namespace BroMakerLib
 
         private static void AddPresets(Type[] types)
         {
-            foreach (var type in types)
+            foreach (Type type in types)
             {
-                var attributes = type.GetCustomAttributes(typeof(CustomObjectPresetAttribute), true);
+                object[] attributes = type.GetCustomAttributes(typeof(CustomObjectPresetAttribute), true);
                 if (attributes.IsNotNullOrEmpty())
                 {
-                    var first = attributes[0];
+                    object first = attributes[0];
                     try
                     {
-                        var presetCollection = GetPresetCollection(first);
+                        Dictionary<string, Type> presetCollection = GetPresetCollection(first);
 
                         if (presetCollection == null)
                         {

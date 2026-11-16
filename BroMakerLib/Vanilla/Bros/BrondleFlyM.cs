@@ -52,7 +52,7 @@ namespace BroMakerLib.Vanilla.Bros
 
         protected virtual void FixNullVariableLocal()
         {
-            var bro = HeroController.GetHeroPrefab(HeroType.BrondleFly).As<BrondleFly>();
+            BrondleFly bro = HeroController.GetHeroPrefab(HeroType.BrondleFly).As<BrondleFly>();
 
             bulletShell = bro.bulletShell;
             teleportOutAnimation = bro.teleportOutAnimation;

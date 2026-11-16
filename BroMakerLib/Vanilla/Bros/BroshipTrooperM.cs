@@ -52,10 +52,10 @@ namespace BroMakerLib.Vanilla.Bros
 
         protected virtual void FixNullVariableLocal()
         {
-            var bro = HeroController.GetHeroPrefab(HeroType.Rambro).As<Rambro>();
+            Rambro bro = HeroController.GetHeroPrefab(HeroType.Rambro).As<Rambro>();
             bulletShell = bro.bulletShell;
 
-            var bro2 = HeroController.GetHeroPrefab(HeroType.DoubleBroSeven).As<DoubleBroSeven>();
+            DoubleBroSeven bro2 = HeroController.GetHeroPrefab(HeroType.DoubleBroSeven).As<DoubleBroSeven>();
             liftOffBlastFlameWall = bro2.liftOffBlastFlameWall;
         }
     }
