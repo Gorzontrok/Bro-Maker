@@ -7,6 +7,7 @@ using BroMakerLib.CustomObjects.Bros;
 using BroMakerLib.Cutscenes;
 using BroMakerLib.Infos;
 using BroMakerLib.Loggers;
+using BroMakerLib.Unlocks;
 using UnityModManagerNet;
 
 namespace BroMakerLib.Storages
@@ -140,6 +141,59 @@ namespace BroMakerLib.Storages
             }
             BroMakerMod mod;
             return _modByAssembly.TryGetValue(assembly, out mod) ? mod : null;
+        }
+
+        internal static void MarkModIncompatible(BroMakerMod mod)
+        {
+            if (mod != null && !_incompatibleMods.Contains(mod))
+            {
+                _incompatibleMods.Add(mod);
+                UnregisterMod(mod);
+            }
+        }
+
+        internal static void UnregisterMod(BroMakerMod mod)
+        {
+            if (mod == null || mod.StoredHeroes.IsNullOrEmpty())
+            {
+                return;
+            }
+
+            foreach (StoredHero hero in mod.StoredHeroes)
+            {
+                if (hero == null)
+                {
+                    continue;
+                }
+
+                _bros.Remove(hero);
+                _broNames.Remove(hero.name);
+                BroSpawnManager.RemoveBro(hero);
+                BroUnlockManager.RemoveBro(hero);
+
+                StoredHero registered;
+                if (_brosByName.TryGetValue(hero.name, out registered) && ReferenceEquals(registered, hero))
+                {
+                    _brosByName.Remove(hero.name);
+                }
+            }
+
+            List<Type> removedTypes = new List<Type>();
+            foreach (KeyValuePair<Type, StoredHero> kvp in _brosByType)
+            {
+                if (Array.IndexOf(mod.StoredHeroes, kvp.Value) >= 0)
+                {
+                    removedTypes.Add(kvp.Key);
+                }
+            }
+            foreach (Type type in removedTypes)
+            {
+                _brosByType.Remove(type);
+            }
+
+            mod.StoredHeroes = new StoredHero[0];
+
+            BroSpawnManager.BroStatusChanged();
         }
 
         internal static void RegisterModAssembly(Assembly assembly, BroMakerMod mod)

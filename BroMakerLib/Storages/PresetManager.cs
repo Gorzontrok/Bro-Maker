@@ -67,9 +67,16 @@ namespace BroMakerLib
                             }
 
                             assembly = Assembly.LoadFile(path);
+                            // Assembly.LoadFile doesn't resolve types, so GetTypes surfaces type-load failures here
+                            assembly.GetTypes();
                         }
                         catch (Exception ex)
                         {
+                            if (BMLogger.IsIncompatibleAssembly(ex))
+                            {
+                                mod.ErrorMessage = BMLogger.FormatIncompatibleAssemblyMessage(mod.Name, ex);
+                                BroMakerStorage.MarkModIncompatible(mod);
+                            }
                             BMLogger.Error($"Error loading assembly {assemblyPath}", ex);
                             continue;
                         }
@@ -173,6 +180,15 @@ namespace BroMakerLib
             }
             catch (Exception ex)
             {
+                if (BMLogger.IsIncompatibleAssembly(ex))
+                {
+                    BroMakerMod mod = BroMakerStorage.GetModByAssembly(assembly);
+                    if (mod != null)
+                    {
+                        mod.ErrorMessage = BMLogger.FormatIncompatibleAssemblyMessage(mod.Name, ex);
+                        BroMakerStorage.MarkModIncompatible(mod);
+                    }
+                }
                 BMLogger.Error($"Failed to scan assembly '{assembly.GetName().Name}'", ex);
                 return false;
             }

@@ -247,14 +247,15 @@ namespace BroMakerLib.Unlocks
             state.IsUnlocked = true;
             state.UnlockedDate = DateTime.UtcNow;
 
-            // Update the unlocked lists
-            unlockedBroNames.Add(state.BroName);
-            if (BroMakerStorage.GetStoredHeroByName(state.BroName, out StoredHero bro))
+            if (!BroMakerStorage.GetStoredHeroByName(state.BroName, out StoredHero bro))
             {
-                unlockedBros.Add(bro);
+                return;
             }
 
-            if (queueUnlock && bro != null)
+            unlockedBroNames.Add(state.BroName);
+            unlockedBros.Add(bro);
+
+            if (queueUnlock)
             {
                 CustomBroInfo info = bro.GetInfo();
                 if (info != null && info.Cutscene.Count > 0 && info.Cutscene[0].playCutsceneOnFirstSpawn)
@@ -275,6 +276,30 @@ namespace BroMakerLib.Unlocks
             foreach (Action<string, StoredHero> callback in broUnlockedCallbacks)
             {
                 callback.Invoke(state.BroName, bro);
+            }
+        }
+
+        internal static void RemoveBro(StoredHero bro)
+        {
+            if (bro == null)
+            {
+                return;
+            }
+
+            bool removed = unlockedBros.Remove(bro);
+            if (unlockedBroNames.Remove(bro.name))
+            {
+                removed = true;
+            }
+
+            if (progressData?.PendingUnlocks != null && progressData.PendingUnlocks.Remove(bro.name))
+            {
+                SaveProgressData();
+            }
+
+            if (removed)
+            {
+                BroSpawnManager.BroStatusChanged();
             }
         }
 

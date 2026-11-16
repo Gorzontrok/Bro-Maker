@@ -338,6 +338,31 @@ namespace BroMakerLib.Storages
             }
         }
 
+        internal static void RemoveBro(StoredHero bro)
+        {
+            bool removed = _enabledBros.Remove(bro);
+
+            List<StoredHero> forcedCustoms = ForcedCustoms;
+            if (forcedCustoms.Remove(bro))
+            {
+                removed = true;
+
+                if (forcedCustoms.Count == 0 && ForceCustomThisLevel)
+                {
+                    CustomTriggerStateManager.SetDuringLevel("forceCustomBros", false);
+                    if (Map.MapData != null)
+                    {
+                        Map.MapData.forcedBro = HeroType.Random;
+                    }
+                }
+            }
+
+            if (removed)
+            {
+                BroStatusChanged();
+            }
+        }
+
         internal static void AddBroIfEnabled(StoredHero bro)
         {
             if (EnabledBrosNamesStore.Contains(bro.name) && !_enabledBros.Contains(bro))
