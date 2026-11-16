@@ -11,119 +11,123 @@ namespace BroMakerLib.Cutscenes
     {
         public static bool Prefix(CutsceneIntroRoot __instance, string resourceName, object asset, ref CutsceneIntroData ____curIntroData, ref Texture2D ____oldTex, ref string ____curIntroResourceName)
         {
-            try
+            if (!Main.enabled || !CustomCutsceneController.willLoadCustomCutscene)
             {
-                if (!Main.enabled || !CustomCutsceneController.willLoadCustomCutscene)
+                return true;
+            }
+
+            CustomIntroCutscene cutscene = CustomCutsceneController.cutsceneToLoad;
+            using (BMLogger.Scope(cutscene?.Owner?.Mod?.Name, cutscene?.Owner?.name))
+            {
+                try
                 {
-                    return true;
-                }
+                    ____curIntroResourceName = string.Format("{0}:{1}", "cutscenes", "Intro_Bro_Rambro");
 
-                ____curIntroResourceName = string.Format("{0}:{1}", "cutscenes", "Intro_Bro_Rambro");
+                    CutsceneIntroData _curIntroData = cutscene.ToCutsceneIntroData(__instance);
 
-                CutsceneIntroData _curIntroData = CustomCutsceneController.cutsceneToLoad.ToCutsceneIntroData(__instance);
+                    if (CustomCutsceneController.cutsceneToLoad.fanfarePath.IsNotNullOrEmpty())
+                    {
+                        __instance.fanfareSource = __instance.gameObject.AddComponent<AudioSource>();
+                    }
 
-                if (CustomCutsceneController.cutsceneToLoad.fanfarePath.IsNotNullOrEmpty())
-                {
-                    __instance.fanfareSource = __instance.gameObject.AddComponent<AudioSource>();
-                }
+                    ____curIntroData = _curIntroData;
 
-                ____curIntroData = _curIntroData;
+                    CutsceneIntroDataExtra dataExtra = _curIntroData as CutsceneIntroDataExtra;
+                    bool hasExtraData = dataExtra != null;
 
-                CutsceneIntroDataExtra dataExtra = _curIntroData as CutsceneIntroDataExtra;
-                bool hasExtraData = dataExtra != null;
+                    if (_curIntroData == null)
+                    {
+                        __instance.EndCutscene();
+                        return false;
+                    }
 
-                if (_curIntroData == null)
-                {
-                    __instance.EndCutscene();
+                    // Heading
+                    UpdateText3D(__instance.headingMesh, _curIntroData.heading, _curIntroData.headingScale,
+                        hasExtraData ? dataExtra.headingColor : CustomIntroCutscene.HeadingDefaultColor
+                    );
+
+                    // Subtitle 1
+                    string subtitle1Text = _curIntroData.subtitle1.IsNullOrEmpty() ? CustomIntroCutscene.Subtitle1DefaultText : _curIntroData.subtitle1;
+                    UpdateText3D(__instance.subtitle1Mesh,
+                        subtitle1Text,
+                        _curIntroData.subtitleScale,
+                        hasExtraData ? dataExtra.subtitle1Color : CustomIntroCutscene.SubtitleDefaultColor
+                    );
+
+
+                    // Create Subtitle 2
+                    if (__instance.subtitle2Mesh == null)
+                    {
+                        const float SUBTITLE2_LOCALPOSITION_Y = -0.48f;
+
+                        __instance.subtitle2Mesh = UnityEngine.Object.Instantiate<Text3D>(__instance.subtitle1Mesh, __instance.subtitle1Mesh.transform);
+                        __instance.subtitle2Mesh.TextString = "";
+                        __instance.subtitle2Mesh.gameObject.SetActive(false);
+
+                        __instance.subtitle2Mesh.Anchor = Text3D.AnchorPoint.TopMiddle;
+
+                        Vector3 subtitle2LocalPosition = Vector2.zero;
+                        // To make sure the 2 subtitles touch, we should multiply the Y position with the scale.
+                        // So apparently to be aligned the position is -8 + 1/4 of the scale
+                        subtitle2LocalPosition.y = SUBTITLE2_LOCALPOSITION_Y * (hasExtraData ? dataExtra.subtitle2Scale : 1);
+
+                        __instance.subtitle2Mesh.transform.localPosition = subtitle2LocalPosition;
+                        __instance.subtitle2Mesh.transform.localRotation = Quaternion.identity;
+
+                        Renderer renderer = __instance.subtitle2Mesh.GetComponent<Renderer>();
+                        renderer.material = new Material(renderer.sharedMaterial);
+                    }
+
+                    if (__instance.subtitle2Mesh != null && __instance.subtitle2Mesh.TextString == null)
+                    {
+                        __instance.subtitle2Mesh.TextString = "";
+                    }
+
+                    // Subtitle 2
+                    if (_curIntroData.subtitle2.IsNullOrEmpty())
+                    {
+                        __instance.subtitle2Mesh.gameObject.SetActive(false);
+                    }
+                    else
+                    {
+                        __instance.subtitle2Mesh.gameObject.SetActive(true);
+                        UpdateText3D(__instance.subtitle2Mesh,
+                            _curIntroData.subtitle2,
+                            hasExtraData ? dataExtra.subtitle2Scale : _curIntroData.subtitleScale,
+                            hasExtraData ? dataExtra.subtitle2Color : CustomIntroCutscene.SubtitleDefaultColor
+                        );
+                    }
+
+                    // Sprite
+                    ____oldTex = __instance.spriteRenderer.material.mainTexture as Texture2D;
+                    __instance.spriteRenderer.material.mainTexture = _curIntroData.spriteTexture;
+
+                    SpriteSM spriteSM = __instance.spriteRenderer.gameObject.GetComponent<SpriteSM>();
+                    spriteSM.RefreshTexture();
+                    UpdateSpriteSM(spriteSM, _curIntroData);
+
+                    // Animation Clip
+                    __instance.anim.AddClip(_curIntroData.animClip, _curIntroData.animClip.name);
+                    __instance.anim.clip = _curIntroData.animClip;
+
+                    // Sounds
+                    __instance.barkSource.clip = _curIntroData.bark;
+                    if (__instance.fanfareSource != null && _curIntroData.introFanfare != null)
+                    {
+                        __instance.fanfareSource.clip = _curIntroData.introFanfare;
+                    }
+
+                    __instance.cutsceneRoot.SetActive(true);
+
+                    // Animation
+                    UpdateAnimatedTexture(_curIntroData, __instance.spriteRenderer);
+
                     return false;
                 }
-
-                // Heading
-                UpdateText3D(__instance.headingMesh, _curIntroData.heading, _curIntroData.headingScale,
-                    hasExtraData ? dataExtra.headingColor : CustomIntroCutscene.HeadingDefaultColor
-                );
-
-                // Subtitle 1
-                string subtitle1Text = _curIntroData.subtitle1.IsNullOrEmpty() ? CustomIntroCutscene.Subtitle1DefaultText : _curIntroData.subtitle1;
-                UpdateText3D(__instance.subtitle1Mesh,
-                    subtitle1Text,
-                    _curIntroData.subtitleScale,
-                    hasExtraData ? dataExtra.subtitle1Color : CustomIntroCutscene.SubtitleDefaultColor
-                );
-
-
-                // Create Subtitle 2
-                if (__instance.subtitle2Mesh == null)
+                catch (Exception ex)
                 {
-                    const float SUBTITLE2_LOCALPOSITION_Y = -0.48f;
-
-                    __instance.subtitle2Mesh = UnityEngine.Object.Instantiate<Text3D>(__instance.subtitle1Mesh, __instance.subtitle1Mesh.transform);
-                    __instance.subtitle2Mesh.TextString = "";
-                    __instance.subtitle2Mesh.gameObject.SetActive(false);
-
-                    __instance.subtitle2Mesh.Anchor = Text3D.AnchorPoint.TopMiddle;
-
-                    Vector3 subtitle2LocalPosition = Vector2.zero;
-                    // To make sure the 2 subtitles touch, we should multiply the Y position with the scale.
-                    // So apparently to be aligned the position is -8 + 1/4 of the scale
-                    subtitle2LocalPosition.y = SUBTITLE2_LOCALPOSITION_Y * (hasExtraData ? dataExtra.subtitle2Scale : 1);
-
-                    __instance.subtitle2Mesh.transform.localPosition = subtitle2LocalPosition;
-                    __instance.subtitle2Mesh.transform.localRotation = Quaternion.identity;
-
-                    Renderer renderer = __instance.subtitle2Mesh.GetComponent<Renderer>();
-                    renderer.material = new Material(renderer.sharedMaterial);
+                    BMLogger.Error("Failed to set up the bro's intro cutscene, showing the default one instead", ex);
                 }
-
-                if (__instance.subtitle2Mesh != null && __instance.subtitle2Mesh.TextString == null)
-                {
-                    __instance.subtitle2Mesh.TextString = "";
-                }
-
-                // Subtitle 2
-                if (_curIntroData.subtitle2.IsNullOrEmpty())
-                {
-                    __instance.subtitle2Mesh.gameObject.SetActive(false);
-                }
-                else
-                {
-                    __instance.subtitle2Mesh.gameObject.SetActive(true);
-                    UpdateText3D(__instance.subtitle2Mesh,
-                        _curIntroData.subtitle2,
-                        hasExtraData ? dataExtra.subtitle2Scale : _curIntroData.subtitleScale,
-                        hasExtraData ? dataExtra.subtitle2Color : CustomIntroCutscene.SubtitleDefaultColor
-                    );
-                }
-
-                // Sprite
-                ____oldTex = __instance.spriteRenderer.material.mainTexture as Texture2D;
-                __instance.spriteRenderer.material.mainTexture = _curIntroData.spriteTexture;
-
-                SpriteSM spriteSM = __instance.spriteRenderer.gameObject.GetComponent<SpriteSM>();
-                spriteSM.RefreshTexture();
-                UpdateSpriteSM(spriteSM, _curIntroData);
-
-                // Animation Clip
-                __instance.anim.AddClip(_curIntroData.animClip, _curIntroData.animClip.name);
-                __instance.anim.clip = _curIntroData.animClip;
-
-                // Sounds
-                __instance.barkSource.clip = _curIntroData.bark;
-                if (__instance.fanfareSource != null && _curIntroData.introFanfare != null)
-                {
-                    __instance.fanfareSource.clip = _curIntroData.introFanfare;
-                }
-
-                __instance.cutsceneRoot.SetActive(true);
-
-                // Animation
-                UpdateAnimatedTexture(_curIntroData, __instance.spriteRenderer);
-
-                return false;
-            }
-            catch (Exception ex)
-            {
-                BMLogger.ExceptionLog(ex);
             }
             return true;
         }
@@ -135,28 +139,32 @@ namespace BroMakerLib.Cutscenes
                 return;
             }
 
-            try
+            CustomIntroCutscene cutscene = CustomCutsceneController.cutsceneToLoad;
+            using (BMLogger.Scope(cutscene?.Owner?.Mod?.Name, cutscene?.Owner?.name))
             {
-                if (CustomCutsceneController.cutsceneToLoad.fanfarePath.IsNotNullOrEmpty())
+                try
                 {
-                    __instance.fanfareSource.Play();
-                }
-
-                if (!CustomCutsceneController.cutsceneToLoad.playDefaultFanfare)
-                {
-                    AudioSource[] allSources = UnityEngine.Object.FindObjectsOfType<AudioSource>();
-                    for (int i = 0; i < allSources.Length; ++i)
+                    if (cutscene.fanfarePath.IsNotNullOrEmpty())
                     {
-                        if (allSources[i].isPlaying && allSources[i].name == "camShake")
+                        __instance.fanfareSource.Play();
+                    }
+
+                    if (!cutscene.playDefaultFanfare)
+                    {
+                        AudioSource[] allSources = UnityEngine.Object.FindObjectsOfType<AudioSource>();
+                        for (int i = 0; i < allSources.Length; ++i)
                         {
-                            allSources[i].Pause();
+                            if (allSources[i].isPlaying && allSources[i].name == "camShake")
+                            {
+                                allSources[i].Pause();
+                            }
                         }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                BMLogger.ExceptionLog(ex);
+                catch (Exception ex)
+                {
+                    BMLogger.Error("Failed to play the intro cutscene's fanfare", ex);
+                }
             }
 
             CustomCutsceneController.willLoadCustomCutscene = false;

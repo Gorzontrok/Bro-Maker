@@ -168,7 +168,7 @@ namespace BroMakerLib.CustomObjects.Bros
             }
             catch (Exception ex)
             {
-                BMLogger.ExceptionLog(ex);
+                this.LogError($"Couldn't set up '{Info?.name}' when it spawned", ex);
                 enabled = false;
             }
         }
@@ -189,7 +189,7 @@ namespace BroMakerLib.CustomObjects.Bros
             }
             catch (Exception ex)
             {
-                BMLogger.ExceptionLog(ex);
+                this.LogError($"Couldn't finish setting up '{Info?.name}' when it spawned", ex);
                 enabled = false;
             }
         }
@@ -482,7 +482,7 @@ namespace BroMakerLib.CustomObjects.Bros
         {
             for (var i = 0; i < spritePaths.Count; ++i)
             {
-                ResourcesController.GetMaterial(directoryPath, spritePaths[i]);
+                ResourcesController.LoadMaterial(directoryPath, spritePaths[i]);
             }
         }
 
@@ -495,7 +495,7 @@ namespace BroMakerLib.CustomObjects.Bros
         {
             for (var i = 0; i < soundPaths.Count; ++i)
             {
-                ResourcesController.GetAudioClip(directoryPath, soundPaths[i]);
+                ResourcesController.LoadAudioClip(directoryPath, soundPaths[i]);
             }
         }
 
@@ -579,7 +579,7 @@ namespace BroMakerLib.CustomObjects.Bros
             }
             catch (Exception ex)
             {
-                BMLogger.ExceptionLog("Failed to load settings in SetupPrefab: ", ex);
+                BMLogger.Error($"Failed to load settings for '{LoadHero.currentInfo?.name}'", ex);
             }
 
             Character = this;
@@ -942,7 +942,8 @@ namespace BroMakerLib.CustomObjects.Bros
                             }
                             catch (Exception ex)
                             {
-                                BMLogger.Error($"Error loading {key}: {ex.Message}");
+                                BroMakerStorage.GetStoredHeroByCustomHeroType(type, out StoredHero stored);
+                                BMLogger.Error($"Error loading setting '{key}'", ex, stored?.mod?.Name, stored?.name);
                             }
                         }
                     }
@@ -964,7 +965,8 @@ namespace BroMakerLib.CustomObjects.Bros
                                 }
                                 catch (Exception ex)
                                 {
-                                    BMLogger.Error($"Error loading {key}: {ex.Message}");
+                                    BroMakerStorage.GetStoredHeroByCustomHeroType(type, out StoredHero stored);
+                                    BMLogger.Error($"Error loading setting '{key}'", ex, stored?.mod?.Name, stored?.name);
                                 }
                             }
                         }
@@ -973,7 +975,8 @@ namespace BroMakerLib.CustomObjects.Bros
             }
             catch (Exception ex)
             {
-                BMLogger.Error($"Error loading settings from {fileName}: {ex.Message}");
+                BroMakerStorage.GetStoredHeroByCustomHeroType(type, out StoredHero stored);
+                BMLogger.Error($"Error loading settings from {fileName}", ex, stored?.mod?.Name, stored?.name);
             }
         }
 
@@ -996,14 +999,14 @@ namespace BroMakerLib.CustomObjects.Bros
             {
                 if (!BroMakerStorage.GetStoredHeroByCustomHeroType<T>(out var storedHero))
                 {
-                    BMLogger.Error($"Error: Could not find stored hero for custom bro {type.Name}");
+                    BMLogger.Error($"Settings for {type.Name} were not saved because no loaded bro is built on {type.Name}", bro: type.Name);
                     return;
                 }
 
                 directoryPath = storedHero.GetInfo().path;
                 if (string.IsNullOrEmpty(directoryPath))
                 {
-                    BMLogger.Error($"Error: Could not determine directory path for custom bro {type.Name}");
+                    BMLogger.Error($"Settings for custom bro {type.Name} were not saved because its folder is unknown", mod: storedHero.mod?.Name, bro: storedHero.name);
                     return;
                 }
 
@@ -1074,14 +1077,14 @@ namespace BroMakerLib.CustomObjects.Bros
             {
                 if (!BroMakerStorage.GetStoredHeroByCustomHeroType<T>(out var storedHero))
                 {
-                    BMLogger.Error($"Error: Could not find stored hero for custom bro {type.Name}");
+                    BMLogger.Error($"Settings for {type.Name} were not loaded because no loaded bro is built on {type.Name}", bro: type.Name);
                     return;
                 }
 
                 directoryPath = storedHero.GetInfo().path;
                 if (string.IsNullOrEmpty(directoryPath))
                 {
-                    BMLogger.Error($"Error: Could not determine directory path for custom bro {type.Name}");
+                    BMLogger.Error($"Settings for custom bro {type.Name} were not loaded because its folder is unknown", mod: storedHero.mod?.Name, bro: storedHero.name);
                     return;
                 }
 
@@ -1128,7 +1131,8 @@ namespace BroMakerLib.CustomObjects.Bros
                             }
                             catch (Exception ex)
                             {
-                                BMLogger.Error($"Error loading {key}: {ex.Message}");
+                                BroMakerStorage.GetStoredHeroByCustomHeroType(type, out StoredHero stored);
+                                BMLogger.Error($"Error loading setting '{key}'", ex, stored?.mod?.Name, stored?.name);
                             }
                         }
                     }
@@ -1150,7 +1154,8 @@ namespace BroMakerLib.CustomObjects.Bros
                                 }
                                 catch (Exception ex)
                                 {
-                                    BMLogger.Error($"Error loading {key}: {ex.Message}");
+                                    BroMakerStorage.GetStoredHeroByCustomHeroType(type, out StoredHero stored);
+                                    BMLogger.Error($"Error loading setting '{key}'", ex, stored?.mod?.Name, stored?.name);
                                 }
                             }
                         }
@@ -1159,7 +1164,8 @@ namespace BroMakerLib.CustomObjects.Bros
             }
             catch (Exception ex)
             {
-                BMLogger.Error($"Error loading settings from {fileName}: {ex.Message}");
+                BroMakerStorage.GetStoredHeroByCustomHeroType(type, out StoredHero stored);
+                BMLogger.Error($"Error loading settings from {fileName}", ex, stored?.mod?.Name, stored?.name);
             }
         }
 
@@ -1186,7 +1192,8 @@ namespace BroMakerLib.CustomObjects.Bros
                 // Skip if we don't have a directory path cached for this custom bro
                 if (!_typeDirectoryCache.TryGetValue(type, out _))
                 {
-                    BMLogger.Warning($"Warning: No directory path cached for custom bro {type.Name}, skipping...");
+                    BroMakerStorage.GetStoredHeroByCustomHeroType(type, out StoredHero stored);
+                    BMLogger.Warning($"Settings for custom bro {type.Name} were not saved because its folder is unknown", mod: stored?.mod?.Name, bro: stored?.name);
                     continue;
                 }
 
@@ -1235,7 +1242,8 @@ namespace BroMakerLib.CustomObjects.Bros
                     }
                     catch (Exception ex)
                     {
-                        BMLogger.Error($"Error saving settings for custom bro {type.Name}: {ex.Message}");
+                        BroMakerStorage.GetStoredHeroByCustomHeroType(type, out StoredHero stored);
+                        BMLogger.Error($"Error saving settings for custom bro {type.Name}", ex, stored?.mod?.Name, stored?.name);
                     }
                 }
             }

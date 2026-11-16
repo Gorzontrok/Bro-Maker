@@ -153,7 +153,6 @@
         <Compile Include="CustomObjects\ICustomHero.cs"/>
         <Compile Include="Infos\CustomBroInfo.cs"/>
         <Compile Include="Loaders\LoadHero.cs"/>
-        <Compile Include="Loggers\Log.cs"/>
         <Compile Include="Loggers\BMLogger.cs"/>
         <Compile Include="Menus\CustomBrosGridMenu.cs"/>
         <Compile Include="Menus\CustomBrosDetailMenu.cs"/>

@@ -224,23 +224,23 @@ namespace BroMakerLib
         private static void ValidateVariantLists(Infos.CustomBroInfo info)
         {
             // Each list must have either 1 item or exactly VariantCount items
-            ValidateList(info.SpritePath, "SpritePath", info.VariantCount);
-            ValidateList(info.GunSpritePath, "GunSpritePath", info.VariantCount);
+            ValidateList(info.SpritePath, "Sprite", info.VariantCount);
+            ValidateList(info.GunSpritePath, "GunSprite", info.VariantCount);
             ValidateList(info.GunSpriteOffset, "GunSpriteOffset", info.VariantCount);
-            ValidateList(info.SpecialMaterials, "SpecialMaterials", info.VariantCount);
-            ValidateList(info.SpecialMaterialOffset, "SpecialMaterialOffset", info.VariantCount);
-            ValidateList(info.SpecialMaterialSpacing, "SpecialMaterialSpacing", info.VariantCount);
-            ValidateList(info.FirstAvatar, "FirstAvatar", info.VariantCount);
-            ValidateList(info.Cutscene, "Cutscene", info.VariantCount);
+            ValidateList(info.SpecialMaterials, "SpecialIcons", info.VariantCount);
+            ValidateList(info.SpecialMaterialOffset, "SpecialIconOffset", info.VariantCount);
+            ValidateList(info.SpecialMaterialSpacing, "SpecialIconSpacing", info.VariantCount);
+            ValidateList(info.FirstAvatar, "Avatar", info.VariantCount);
+            ValidateList(info.Cutscene, "cutscene", info.VariantCount);
         }
 
-        private static void ValidateList<T>(System.Collections.Generic.List<T> list, string propertyName, int expectedCount)
+        private static void ValidateList<T>(System.Collections.Generic.List<T> list, string jsonKey, int expectedCount)
         {
             if (list != null && list.Count > 1 && list.Count != expectedCount)
             {
                 throw new InvalidOperationException(
-                    $"{propertyName} has {list.Count} items but VariantCount is {expectedCount}. " +
-                    $"Lists must have either 1 item (shared across variants) or exactly {expectedCount} items (one per variant).");
+                    $"{jsonKey} lists {list.Count} variants but another setting lists {expectedCount}. " +
+                    $"Every setting with variants needs either 1 entry, shared by every variant, or exactly {expectedCount}, one per variant.");
             }
         }
 
@@ -367,6 +367,49 @@ namespace BroMakerLib
         public static void StandardAfterStart(this ICustomHero hero)
         {
             hero.Info.AfterStart(hero);
+        }
+
+        /// <summary>Log a message prefixed with the bro's name and mod.</summary>
+        public static void Log(this ICustomHero hero, string message)
+        {
+            BMLogger.Log(FormatHeroPrefix(hero) + " " + message);
+        }
+
+        /// <summary>Logs a debug message prefixed with the bro's name and mod, shown only when BroMaker's debug logs setting is on.</summary>
+        public static void LogDebug(this ICustomHero hero, string message)
+        {
+            if (!BMLogger.DebugEnabled)
+            {
+                return;
+            }
+            BMLogger.Debug(FormatHeroPrefix(hero) + " " + message);
+        }
+
+        /// <summary>Log a warning that is shown in the Issues panel and as a notification.</summary>
+        public static void LogWarning(this ICustomHero hero, string message, Exception ex = null)
+        {
+            BMLogger.Warning(message, ex, HeroModName(hero), HeroBroName(hero));
+        }
+
+        /// <summary>Log an error that is shown in the Issues panel and as a notification.</summary>
+        public static void LogError(this ICustomHero hero, string message, Exception ex = null)
+        {
+            BMLogger.Error(message, ex, HeroModName(hero), HeroBroName(hero));
+        }
+
+        private static string HeroModName(ICustomHero hero)
+        {
+            return hero != null && hero.Info != null ? hero.Info.Mod?.Name : null;
+        }
+
+        private static string HeroBroName(ICustomHero hero)
+        {
+            return hero != null && hero.Info != null ? hero.Info.name : null;
+        }
+
+        private static string FormatHeroPrefix(ICustomHero hero)
+        {
+            return "[" + BMLogger.FormatSource(HeroModName(hero), HeroBroName(hero)) + "]";
         }
     }
 }

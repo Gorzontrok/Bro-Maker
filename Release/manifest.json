@@ -6,6 +6,6 @@
   "description": "BroMaker allows you to load custom bros into the game.",
   "dependencies": [
     "UMM-UMM-1.1.0",
-    "RocketLib-RocketLib-2.4.2"
+    "RocketLib-RocketLib-2.4.4"
   ]
 }

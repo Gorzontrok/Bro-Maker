@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using BroMakerLib.CustomObjects.Bros;
 using BroMakerLib.Loggers;
 using BroMakerLib.Unlocks;
@@ -10,16 +11,21 @@ namespace BroMakerLib
     {
         public static UnityModManager.ModEntry mod;
         public static bool enabled;
+        internal static int mainThreadId;
 
         static bool Load(UnityModManager.ModEntry modEntry)
         {
             // Initialize mod
             mod = modEntry;
+            mainThreadId = Thread.CurrentThread.ManagedThreadId;
 
             modEntry.OnGUI = OnGUI;
+            modEntry.OnUpdate = OnUpdate;
             modEntry.OnToggle = OnToggle;
             modEntry.OnSaveGUI = OnSaveGUI;
             modEntry.OnUnload = OnUnload;
+            modEntry.OnShowGUI = _ => ModUI.OnShowGUI();
+            modEntry.OnHideGUI = _ => ModUI.OnHideGUI();
             modEntry.Info.DisplayName = "<color=\"#d68c16\">BroMaker Unity</color>";
 
             try
@@ -29,13 +35,7 @@ namespace BroMakerLib
             }
             catch (Exception ex)
             {
-                Main.Log("Error while loading BroMaker.\n" + ex);
-            }
-
-            // Log missed messages
-            for (int i = 0; i < BMLogger.logs.Count; ++i)
-            {
-                Main.Log(BMLogger.logs[i], BroMakerLib.Loggers.Log.PREFIX);
+                BMLogger.Error("BroMaker failed to load", ex);
             }
 
             return true;
@@ -49,13 +49,23 @@ namespace BroMakerLib
             }
             catch (Exception e)
             {
-                Log("UI\n" + e);
+                BMLogger.Error("BroMaker's settings window failed to draw", e);
             }
+        }
+
+        private static void OnUpdate(UnityModManager.ModEntry modEntry, float deltaTime)
+        {
+            BMLogger.Flush();
         }
 
         static bool OnToggle(UnityModManager.ModEntry modEntry, bool value)
         {
             enabled = value;
+            if (!value)
+            {
+                // UMM skips OnHideGUI for an inactive mod, so a filter set by ShowIssue would stay.
+                ModUI.OnHideGUI();
+            }
             return true;
         }
 

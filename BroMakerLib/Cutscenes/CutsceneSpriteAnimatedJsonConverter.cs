@@ -28,7 +28,7 @@ namespace BroMakerLib
             }
             catch (Exception ex)
             {
-                BMLogger.ExceptionLog("'spriteAnimRateFramesWidth' Cant convert to 'CutsceneSpriteAnimated'", ex);
+                BMLogger.Warning("Can't read 'spriteAnimRateFramesWidth' as FrameRate, TotalFrames and FrameWidth", ex);
             }
 
             if (result != Vector3.zero)
@@ -40,7 +40,7 @@ namespace BroMakerLib
             }
             catch (Exception ex)
             {
-                BMLogger.ExceptionLog("'spriteAnimRateFramesWidth' Cant convert to Vector3", ex);
+                BMLogger.Warning("Can't read 'spriteAnimRateFramesWidth' as x, y and z values", ex);
             }
             return result;
         }

@@ -259,7 +259,7 @@ namespace BroMakerLib.Storages
                     }
                     else
                     {
-                        BMLogger.Error("Trying to spawn with no enabled bros");
+                        BMLogger.Error("No custom bros are enabled, so the first loaded custom bro spawns");
                         chosenBro = GetAllBros()[0];
                     }
                 }
@@ -273,7 +273,7 @@ namespace BroMakerLib.Storages
                 }
                 else
                 {
-                    BMLogger.Error("Trying to spawn with no enabled bros");
+                    BMLogger.Error("No custom bros are enabled, so the first loaded custom bro spawns");
                     chosenBro = GetAllBros()[0];
                 }
             }

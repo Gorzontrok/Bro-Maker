@@ -22,7 +22,7 @@ namespace BroMakerLib.Unlocks
             }
             catch (Exception ex)
             {
-                BMLogger.Error($"Error in FreeBro patch: {ex.Message}");
+                BMLogger.Error("Failed to count a rescue toward unlocking custom bros", ex);
             }
         }
     }

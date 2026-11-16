@@ -472,10 +472,7 @@ namespace BroMakerLib.Menus
         {
             SetReturnTarget(parentGridMenu);
 
-            if (!BroUnlockManager.LoadUnlockLevel(currentHero.name))
-            {
-                BMLogger.Error($"Failed to load unlock level for {currentHero.name}");
-            }
+            BroUnlockManager.LoadUnlockLevel(currentHero.name);
         }
 
         protected override void OnDestroy()

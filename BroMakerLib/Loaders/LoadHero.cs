@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using BroMakerLib.CustomObjects;
 using BroMakerLib.CustomObjects.Bros;
 using BroMakerLib.Infos;
@@ -52,109 +53,124 @@ namespace BroMakerLib.Loaders
             Player player = null;
             TestVanDammeAnim previousCharacter = null;
             bool replacedPreviousCharacter = false;
-            try
+            string broName = customBroInfo?.name ?? type?.Name;
+            using (BMLogger.Scope(customBroInfo?.Mod?.Name, broName))
             {
-                if (!typeof(ICustomHero).IsAssignableFrom(type))
-                    throw new ArgumentException($"Type '{type.Name}' should inherit from 'ICustomHero'", "type");
-
-                if (selectedPlayerNum < 0)
-                    throw new IndexOutOfRangeException("Player Num must be greater than or equal to 0");
-                else if (selectedPlayerNum > 3)
-                    throw new IndexOutOfRangeException("Player Num must be smaller than or equal to 3");
-
-                playerNum = selectedPlayerNum;
-
-                if (customBroInfo == null)
-                    throw new NullReferenceException("Info is null");
-
-                currentInfo = customBroInfo;
-
-                // Start Spawning Process
-                BMLogger.Debug("Spawner: Start Spawning Process.");
-
-                // Check Player
-                player = HeroController.players[playerNum];
-                if (player == null)
-                    throw new NullReferenceException($"Player number {playerNum} doesn't exist.");
-
-
-                Vector3 previousPosition = Vector3.zero;
-                previousCharacter = player.character;
-                ReactionBubble previousCharacterBubble = null;
-                Traverse previousCharacterTraverse = null;
-                if (previousCharacter != null && previousCharacter.IsAlive())
+                try
                 {
-                    previousPosition = previousCharacter.GetFollowPosition();
-                    previousCharacterTraverse = Traverse.Create(previousCharacter);
-                    previousCharacterBubble = previousCharacter.playerBubble;
-                }
-
-                HeroType heroType = GetBaseHeroTypeOfPreset(type);
-
-                GameObject original = null;
-
-                if (prefabIndex.ContainsKey(customBroInfo.name))
-                {
-                    int index = prefabIndex[customBroInfo.name];
-                    original = InstantiationController.GetPrefabFromIndex(index);
-                }
-
-                if (original == null)
-                {
-                    original = CreateOriginal(heroType, type);
-                }
-
-
-                heroObject = Net.InstantiateBuffered<GameObject>(original, previousPosition, Quaternion.identity, new object[0], false);
-                hero = heroObject.GetComponent(type) as TestVanDammeAnim;
-                hero.gameObject.SetActive(true);
-                BMLogger.Debug($"AfterInstantiation: InstantiateBuffered.");
-
-                var bro = AfterInstantiation(hero, heroType, playerNum, type, previousPosition);
-                replacedPreviousCharacter = true;
-                if (previousCharacterTraverse != null)
-                {
-                    Net.RPC(PID.TargetAll, new RpcSignature(previousCharacter.RecallBro), false);
-                    // Make previous character sprite disappear faster
-                    previousCharacterTraverse.Field("recallCounter").SetValue(1f);
-                    if (previousCharacterBubble != null)
+                    if (type == null)
                     {
-                        previousCharacterBubble.GoAway();
+                        throw new ArgumentException($"No hero preset found for '{customBroInfo?.CharacterPreset}'. Valid presets: {string.Join(", ", PresetManager.heroesPreset.Select(p => p.Key).ToArray())}");
                     }
+
+                    if (!typeof(ICustomHero).IsAssignableFrom(type))
+                    {
+                        throw new ArgumentException($"Type '{type.Name}' should inherit from 'ICustomHero'", "type");
+                    }
+
+                    if (selectedPlayerNum < 0 || selectedPlayerNum > 3)
+                    {
+                        throw new IndexOutOfRangeException($"Player Num {selectedPlayerNum} out of range (must be 0-3)");
+                    }
+
+                    playerNum = selectedPlayerNum;
+
+                    if (customBroInfo == null)
+                    {
+                        throw new NullReferenceException($"Info is null for preset type '{type.Name}' (player {selectedPlayerNum})");
+                    }
+
+                    currentInfo = customBroInfo;
+
+                    // Start Spawning Process
+                    BMLogger.Debug("Spawner: Start Spawning Process.");
+
+                    // Check Player
+                    player = HeroController.players[playerNum];
+                    if (player == null)
+                    {
+                        throw new NullReferenceException($"Player number {playerNum} doesn't exist.");
+                    }
+
+
+                    Vector3 previousPosition = Vector3.zero;
+                    previousCharacter = player.character;
+                    ReactionBubble previousCharacterBubble = null;
+                    Traverse previousCharacterTraverse = null;
+                    if (previousCharacter != null && previousCharacter.IsAlive())
+                    {
+                        previousPosition = previousCharacter.GetFollowPosition();
+                        previousCharacterTraverse = Traverse.Create(previousCharacter);
+                        previousCharacterBubble = previousCharacter.playerBubble;
+                    }
+
+                    HeroType heroType = GetBaseHeroTypeOfPreset(type);
+
+                    GameObject original = null;
+
+                    if (prefabIndex.ContainsKey(customBroInfo.name))
+                    {
+                        int index = prefabIndex[customBroInfo.name];
+                        original = InstantiationController.GetPrefabFromIndex(index);
+                    }
+
+                    if (original == null)
+                    {
+                        original = CreateOriginal(heroType, type);
+                    }
+
+
+                    heroObject = Net.InstantiateBuffered<GameObject>(original, previousPosition, Quaternion.identity, new object[0], false);
+                    hero = heroObject.GetComponent(type) as TestVanDammeAnim;
+                    hero.gameObject.SetActive(true);
+                    BMLogger.Debug($"AfterInstantiation: InstantiateBuffered.");
+
+                    TestVanDammeAnim bro = AfterInstantiation(hero, heroType, playerNum, type, previousPosition);
+                    replacedPreviousCharacter = true;
+                    if (previousCharacterTraverse != null)
+                    {
+                        Net.RPC(PID.TargetAll, new RpcSignature(previousCharacter.RecallBro), false);
+                        // Make previous character sprite disappear faster
+                        previousCharacterTraverse.Field("recallCounter").SetValue(1f);
+                        if (previousCharacterBubble != null)
+                        {
+                            previousCharacterBubble.GoAway();
+                        }
+                    }
+
+                    // This ensures the high5Bubble is 5 pixels higher than the player bubble, which is apparently the correct place based off of how the vanilla bros work
+                    hero.high5Bubble.SetPosition(hero.high5Bubble.transform.localPosition);
+                    Traverse high5BubbleTrav = Traverse.Create(hero.high5Bubble);
+                    hero.high5Bubble.gameObject.SetActive(true);
+                    high5BubbleTrav.Field("yStart").SetValue(hero.high5Bubble.transform.localPosition.y);
+
+                    // Vanilla parents the head HUD to the bro it spawned, so it would be destroyed with it
+                    if (player.deathMatchHUD != null)
+                    {
+                        player.deathMatchHUD.Setup(player.Lives, playerNum, hero);
+                        player.deathMatchHUD.gameObject.SetActive(true);
+                        player.deathMatchHUD.transform.parent = hero.transform;
+                        player.deathMatchHUD.transform.localPosition = Vector3.zero;
+                    }
+
+                    // Destroy character we replaced
+                    if (previousCharacter != null)
+                    {
+                        Object.Destroy(previousCharacter.gameObject);
+                    }
+
+                    BMLogger.Debug("Spawner: Finished AfterInstantiation.");
+
+                    BMLogger.Debug("Spawner: Spawning Process has ended.");
                 }
-
-                // This ensures the high5Bubble is 5 pixels higher than the player bubble, which is apparently the correct place based off of how the vanilla bros work
-                hero.high5Bubble.SetPosition(hero.high5Bubble.transform.localPosition);
-                Traverse high5BubbleTrav = Traverse.Create(hero.high5Bubble);
-                hero.high5Bubble.gameObject.SetActive(true);
-                high5BubbleTrav.Field("yStart").SetValue(hero.high5Bubble.transform.localPosition.y);
-
-                // Vanilla parents the head HUD to the bro it spawned, so it would be destroyed with it
-                if (player.deathMatchHUD != null)
+                catch (Exception e)
                 {
-                    player.deathMatchHUD.Setup(player.Lives, playerNum, hero);
-                    player.deathMatchHUD.gameObject.SetActive(true);
-                    player.deathMatchHUD.transform.parent = hero.transform;
-                    player.deathMatchHUD.transform.localPosition = Vector3.zero;
-                }
-
-                // Destroy character we replaced
-                if (previousCharacter != null)
-                {
-                    UnityEngine.Object.Destroy(previousCharacter.gameObject);
-                }
-
-                BMLogger.Debug("Spawner: Finished AfterInstantiation.");
-
-                BMLogger.Debug("Spawner: Spawning Process has ended.");
-            }
-            catch (Exception e)
-            {
-                BMLogger.ExceptionLog(e);
-                if (heroObject != null && !replacedPreviousCharacter)
-                {
-                    DiscardFailedBro(heroObject, hero, player, previousCharacter);
-                    hero = null;
+                    BMLogger.Error($"Failed to spawn '{broName ?? "custom bro"}'", e);
+                    if (heroObject != null && !replacedPreviousCharacter)
+                    {
+                        DiscardFailedBro(heroObject, hero, player, previousCharacter);
+                        hero = null;
+                    }
                 }
             }
             spawnFromPlayer = false;
@@ -406,7 +422,7 @@ namespace BroMakerLib.Loaders
             {
                 return attributes[0].As<HeroPresetAttribute>().baseType;
             }
-            throw new NotImplementedException($"Type {type} as no attribute of {nameof(HeroPresetAttribute)}");
+            throw new NotImplementedException($"Type {type.FullName} is not registered as a bro preset, it must include the [HeroPreset] attribute to be used as a CharacterPreset.");
         }
 
         private static GameObject CreateOriginal(HeroType heroType, Type type)

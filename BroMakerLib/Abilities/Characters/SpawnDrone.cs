@@ -60,7 +60,7 @@ namespace BroMakerLib.Abilities.Characters
             }
             catch (Exception ex)
             {
-                BMLogger.Error(ex);
+                BMLogger.Error("Failed to spawn drone", ex);
             }
         }
 

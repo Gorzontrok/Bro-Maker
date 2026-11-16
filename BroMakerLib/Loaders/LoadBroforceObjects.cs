@@ -108,7 +108,7 @@ namespace BroMakerLib.Loaders
             }
             catch (Exception e)
             {
-                BMLogger.Log($"Error with loading {name}\n{e}", LogType.Warning);
+                BMLogger.Warning($"Unknown grenade '{name}', using the default grenade", e);
             }
             return InstantiationController.GetPrefabFromResourceName(GrenadesVanilla["Default"]).GetComponent<Grenade>();
         }
@@ -128,7 +128,7 @@ namespace BroMakerLib.Loaders
             }
             catch (Exception e)
             {
-                BMLogger.Log(e.ToString(), UnityEngine.LogType.Warning);
+                BMLogger.Warning($"Unknown projectile '{name}', using the default projectile", e);
             }
             return InstantiationController.GetPrefabFromResourceName(projectileVanilla["Default"]).GetComponent<Projectile>();
         }

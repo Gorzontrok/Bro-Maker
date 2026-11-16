@@ -294,19 +294,19 @@ namespace BroMakerLib.Unlocks
         {
             if (progressData?.BroStates == null || !progressData.BroStates.TryGetValue(broName, out BroUnlockState state))
             {
-                BMLogger.Error($"Cannot load unlock level - bro '{broName}' not found");
+                BMLogger.Error($"Can't load the unlock level because the bro '{broName}' wasn't found", bro: broName);
                 return false;
             }
 
             if (string.IsNullOrEmpty(state.UnlockLevelPath))
             {
-                BMLogger.Error($"Bro '{broName}' has no unlock level configured");
+                BMLogger.Error($"Bro '{broName}' has no unlock level configured", bro: broName);
                 return false;
             }
 
             if (!BroMakerStorage.GetStoredHeroByName(broName, out StoredHero bro))
             {
-                BMLogger.Error($"Cannot find bro '{broName}' in storage");
+                BMLogger.Error($"Can't find a loaded bro named '{broName}'", bro: broName);
                 return false;
             }
 
@@ -319,7 +319,7 @@ namespace BroMakerLib.Unlocks
 
             if (!File.Exists(fullLevelPath))
             {
-                BMLogger.Error($"Unlock level file not found: {fullLevelPath}");
+                BMLogger.Error($"Unlock level file not found: {fullLevelPath}", bro: broName);
                 return false;
             }
 
@@ -355,13 +355,13 @@ namespace BroMakerLib.Unlocks
                 }
                 else
                 {
-                    BMLogger.Error($"Invalid campaign file or no levels found: {fullLevelPath}");
+                    BMLogger.Error($"Invalid campaign file or no levels found: {fullLevelPath}", bro: broName);
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                BMLogger.Error($"Error loading unlock level for '{broName}': {ex.Message}");
+                BMLogger.Error($"Error loading unlock level for '{broName}'", ex, bro: broName);
                 return false;
             }
         }
@@ -385,7 +385,7 @@ namespace BroMakerLib.Unlocks
             }
             catch (Exception ex)
             {
-                BMLogger.Error($"Failed to load unlock progress: {ex.Message}");
+                BMLogger.Error("Failed to load unlock progress", ex);
             }
 
             if (progressData == null)
@@ -426,14 +426,14 @@ namespace BroMakerLib.Unlocks
                         }
                         catch (Exception ex)
                         {
-                            BMLogger.Error($"Failed to save unlock progress: {ex.Message}");
+                            BMLogger.Error("Failed to save unlock progress", ex);
                         }
                     });
                 }
             }
             catch (Exception ex)
             {
-                BMLogger.Error($"Failed to serialize unlock progress: {ex.Message}");
+                BMLogger.Error("Failed to prepare unlock progress for saving", ex);
             }
         }
 
@@ -583,7 +583,7 @@ namespace BroMakerLib.Unlocks
                 if (!string.IsNullOrEmpty(unlockConfig.UnlockLevelPath) &&
                     !ValidateUnlockLevel(bro, unlockConfig.UnlockLevelPath))
                 {
-                    BMLogger.Error($"Bro '{bro.name}' has invalid unlock level: {unlockConfig.UnlockLevelPath}");
+                    BMLogger.Error($"Bro '{bro.name}' has invalid unlock level: {unlockConfig.UnlockLevelPath}", bro: bro.name);
                 }
             }
 

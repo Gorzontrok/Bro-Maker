@@ -13,13 +13,22 @@ namespace BroMakerLib.Infos
 {
     internal static class Parameters
     {
+        private static T Target<T>(object obj, string parameter) where T : class
+        {
+            T target = obj as T;
+            if (target == null)
+            {
+                BMLogger.Warning($"{parameter} only works on bros");
+            }
+            return target;
+        }
+
         [Parameter]
         private static void Halo(object obj, bool value)
         {
-            var character = obj as TestVanDammeAnim;
-            if (!character)
+            TestVanDammeAnim character = Target<TestVanDammeAnim>(obj, nameof(Halo));
+            if (character == null)
             {
-                BMLogger.Warning("HaloPreset parameter works only with characters.");
                 return;
             }
 
@@ -34,22 +43,22 @@ namespace BroMakerLib.Infos
         [Parameter]
         private static void HaloPreset(object obj, string value)
         {
+            string broName = (obj as ICustomHero)?.Info?.name;
             if (value.IsNullOrEmpty())
             {
-                BMLogger.Warning("HaloPreset is empty or null");
+                BMLogger.Warning("HaloPreset is empty", bro: broName);
                 return;
             }
 
-            var character = obj as TestVanDammeAnim;
-            if (!character)
+            TestVanDammeAnim character = Target<TestVanDammeAnim>(obj, nameof(HaloPreset));
+            if (character == null)
             {
-                BMLogger.Warning("HaloPreset parameter works only with characters.");
                 return;
             }
 
             if (character.halo == null)
             {
-                BMLogger.Warning("Halo is null, can't apply preset.");
+                BMLogger.Warning("HaloPreset needs Halo set to true", bro: broName);
                 return;
             }
 
@@ -59,17 +68,16 @@ namespace BroMakerLib.Infos
             }
             else
             {
-                BMLogger.Log($"Halo preset {value} not founded.", LogType.Warning);
+                BMLogger.Warning($"Halo preset '{value}' was not found", bro: broName);
             }
         }
 
         [Parameter]
         private static void BetterAnimation(object obj, bool value)
         {
-            var character = obj as TestVanDammeAnim;
-            if (!character)
+            TestVanDammeAnim character = Target<TestVanDammeAnim>(obj, nameof(BetterAnimation));
+            if (character == null)
             {
-                BMLogger.Warning($"{nameof(BetterAnimation)} parameter works only with characters.");
                 return;
             }
 
@@ -92,10 +100,9 @@ namespace BroMakerLib.Infos
         [Parameter]
         private static void JetPackSprite(object obj, bool value)
         {
-            var broBase = obj as BroBase;
-            if (!broBase)
+            BroBase broBase = Target<BroBase>(obj, nameof(JetPackSprite));
+            if (broBase == null)
             {
-                BMLogger.Warning($"{nameof(JetPackSprite)} parameter works only with Bros.");
                 return;
             }
 
@@ -110,10 +117,9 @@ namespace BroMakerLib.Infos
         [Parameter]
         private static void SpecialIcons(object obj, object value)
         {
-            var hero = obj as ICustomHero;
+            ICustomHero hero = Target<ICustomHero>(obj, nameof(SpecialIcons));
             if (hero == null)
             {
-                BMLogger.Warning($"{nameof(SpecialIcons)} parameter works only with Bros.");
                 return;
             }
 
@@ -187,17 +193,16 @@ namespace BroMakerLib.Infos
             }
             else
             {
-                BMLogger.Warning($"SpecialIcons value is type of {value.GetType()} it must be a String, String Array, or Array of String Arrays");
+                BMLogger.Warning($"SpecialIcons can't be {BroMakerUtilities.DescribeJsonValue(value.GetType()) ?? "that kind of value"}. It must be a file name, a list of file names, or a list of lists of file names", bro: hero.Info?.name);
             }
         }
 
         [Parameter]
         private static void SpecialIconOffset(object obj, object value)
         {
-            var hero = obj as ICustomHero;
+            ICustomHero hero = Target<ICustomHero>(obj, nameof(SpecialIconOffset));
             if (hero == null)
             {
-                BMLogger.Warning($"{nameof(SpecialIconOffset)} parameter works only with Bros.");
                 return;
             }
 
@@ -248,22 +253,21 @@ namespace BroMakerLib.Infos
                 }
                 else
                 {
-                    BMLogger.Error("Can't load SpecialIconOffset value. It should be { \"x\": 0, \"y\": 0 } or an array of such objects");
+                    BMLogger.Error("Can't load SpecialIconOffset value. It should be { \"x\": 0, \"y\": 0 } or an array of such objects", bro: hero.Info?.name);
                 }
             }
             catch (Exception ex)
             {
-                BMLogger.ExceptionLog(ex);
+                BMLogger.Error($"Can't read SpecialIconOffset for '{hero.Info?.name}'", ex, bro: hero.Info?.name);
             }
         }
 
         [Parameter]
         private static void SpecialIconSpacing(object obj, object value)
         {
-            var hero = obj as ICustomHero;
+            ICustomHero hero = Target<ICustomHero>(obj, nameof(SpecialIconSpacing));
             if (hero == null)
             {
-                BMLogger.Warning($"{nameof(SpecialIconSpacing)} parameter works only with Bros.");
                 return;
             }
 
@@ -304,17 +308,16 @@ namespace BroMakerLib.Infos
             }
             catch (Exception ex)
             {
-                BMLogger.ExceptionLog(ex);
+                BMLogger.Error($"Can't read SpecialIconSpacing for '{hero.Info?.name}'", ex, bro: hero.Info?.name);
             }
         }
 
         [Parameter]
         private static void Avatar(object obj, object value)
         {
-            var hero = obj as ICustomHero;
+            ICustomHero hero = Target<ICustomHero>(obj, nameof(Avatar));
             if (hero == null)
             {
-                BMLogger.Warning($"{nameof(Avatar)} parameter works only with Bros.");
                 return;
             }
 
@@ -371,10 +374,9 @@ namespace BroMakerLib.Infos
         [Parameter]
         private static void GunSpriteOffset(object obj, object value)
         {
-            var hero = obj as ICustomHero;
+            ICustomHero hero = Target<ICustomHero>(obj, nameof(GunSpriteOffset));
             if (hero == null)
             {
-                BMLogger.Warning($"{nameof(GunSpriteOffset)} parameter works only with Bros.");
                 return;
             }
 
@@ -425,22 +427,21 @@ namespace BroMakerLib.Infos
                 }
                 else
                 {
-                    BMLogger.Error("Can't load GunSpriteOffset value. It should be { \"x\": 0, \"y\": 0 } or an array of such objects");
+                    BMLogger.Error("Can't load GunSpriteOffset value. It should be { \"x\": 0, \"y\": 0 } or an array of such objects", bro: hero.Info?.name);
                 }
             }
             catch (Exception ex)
             {
-                BMLogger.ExceptionLog(ex);
+                BMLogger.Error($"Can't read GunSpriteOffset for '{hero.Info?.name}'", ex, bro: hero.Info?.name);
             }
         }
 
         [Parameter]
         private static void Sprite(object obj, object value)
         {
-            var hero = obj as ICustomHero;
+            ICustomHero hero = Target<ICustomHero>(obj, nameof(Sprite));
             if (hero == null)
             {
-                BMLogger.Warning($"{nameof(Sprite)} parameter works only with Bros.");
                 return;
             }
 
@@ -481,10 +482,9 @@ namespace BroMakerLib.Infos
         [Parameter]
         private static void GunSprite(object obj, object value)
         {
-            var hero = obj as ICustomHero;
+            ICustomHero hero = Target<ICustomHero>(obj, nameof(GunSprite));
             if (hero == null)
             {
-                BMLogger.Warning($"{nameof(GunSprite)} parameter works only with Bros.");
                 return;
             }
 

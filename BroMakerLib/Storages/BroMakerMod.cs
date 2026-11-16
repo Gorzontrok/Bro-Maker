@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using BroMakerLib.Infos;
 using BroMakerLib.Loggers;
@@ -42,21 +43,23 @@ namespace BroMakerLib
             if (mod != null)
             {
                 mod.Path = Directory.GetParent(path).ToString();
-
+                if (mod.Name.IsNullOrEmpty())
+                {
+                    mod.Name = new DirectoryInfo(mod.Path).Name;
+                }
             }
             return mod;
         }
 
         public void Initialize()
         {
-            if (Name.IsNullOrEmpty())
+            using (BMLogger.Scope(Name, null))
             {
-                Name = Path.IsNullOrEmpty() ? "Unnamed Mod" : new DirectoryInfo(Path).Name;
-            }
-            CustomBros = CheckFiles<CustomBroInfo>(CustomBros);
-            Abilities = CheckFiles<AbilityInfo>(Abilities);
+                CustomBros = CheckFiles<CustomBroInfo>(CustomBros);
+                Abilities = CheckFiles<AbilityInfo>(Abilities);
 
-            BrosNames = GetNames<CustomBroforceObjectInfo>(CustomBros);
+                BrosNames = GetNames<CustomBroforceObjectInfo>(CustomBros);
+            }
         }
 
 
@@ -101,7 +104,12 @@ namespace BroMakerLib
                 }
                 else if (obj is JObject && obj.As<JObject>().Count > 0)
                 {
-                    T info = obj.As<JObject>().ToObject<T>();
+                    T info;
+                    string broName = typeof(T) == typeof(CustomBroInfo) ? (obj.As<JObject>().GetValue("name", StringComparison.OrdinalIgnoreCase) as JValue)?.Value as string : null;
+                    using (BMLogger.Scope(null, broName))
+                    {
+                        info = obj.As<JObject>().ToObject<T>();
+                    }
                     if (info != null)
                     {
                         temp.Add(info);

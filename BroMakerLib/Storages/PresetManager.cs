@@ -37,31 +37,35 @@ namespace BroMakerLib
             // Load assemblies of mods
             foreach (var mod in BroMakerStorage.mods)
             {
-                if (mod.HasHarmonyPatch)
+                using (BMLogger.Scope(mod.Name, null))
                 {
-                    mod.Harmony = new Harmony(mod.Name);
-                }
-
-                foreach (var assemblyPath in mod.Assemblies)
-                {
-                    var path = Path.Combine(mod.Path, assemblyPath);
-                    if (!File.Exists(path))
+                    if (mod.HasHarmonyPatch)
                     {
-                        continue;
+                        mod.Harmony = new Harmony(mod.Name);
                     }
 
-                    var assembly = Assembly.LoadFile(path);
-                    var flag = CheckAssembly(assembly);
-                    if (flag && mod.Harmony != null)
+                    foreach (string assemblyPath in mod.Assemblies)
                     {
-                        try
+                        string path = Path.Combine(mod.Path, assemblyPath);
+                        if (!File.Exists(path))
                         {
-                            mod.Harmony.PatchAll(assembly);
-                            BMLogger.Log($"{assemblyPath} patched!");
+                            continue;
                         }
-                        catch (Exception ex)
+
+                        Assembly assembly = Assembly.LoadFile(path);
+                        BroMakerStorage.RegisterModAssembly(assembly, mod);
+                        bool flag = CheckAssembly(assembly);
+                        if (flag && mod.Harmony != null)
                         {
-                            BMLogger.ExceptionLog($"Error patching {assemblyPath}", ex);
+                            try
+                            {
+                                mod.Harmony.PatchAll(assembly);
+                                BMLogger.Log($"{assemblyPath} patched!");
+                            }
+                            catch (Exception ex)
+                            {
+                                BMLogger.Error($"Error patching {assemblyPath}", ex);
+                            }
                         }
                     }
                 }
@@ -122,7 +126,7 @@ namespace BroMakerLib
                 var types = assembly.GetTypes();
                 if (types.Length == 0)
                 {
-                    BMLogger.Warning($"Assembly '{assembly.GetName().Name}' is somehow empty ( ͠° ͟ʖ ͡°)");
+                    BMLogger.Warning($"Assembly '{assembly.GetName().Name}' is empty");
                     return false;
                 }
 
@@ -133,7 +137,7 @@ namespace BroMakerLib
             }
             catch (Exception ex)
             {
-                BMLogger.ExceptionLog($"{assembly.FullName} - " + ex);
+                BMLogger.Error($"Failed to scan assembly '{assembly.GetName().Name}'", ex);
                 return false;
             }
 
@@ -156,13 +160,13 @@ namespace BroMakerLib
                 {
                     if (method.GetParameters().Length != 2)
                     {
-                        BMLogger.Warning($"Parameter '{method.Name}' should have two parameter.");
+                        BMLogger.Warning($"Parameter '{method.Name}' must take exactly two arguments", mod: BroMakerStorage.GetModByAssembly(paramerterType.Assembly)?.Name);
                         continue;
                     }
 
                     if (parameters.ContainsKey(method.Name))
                     {
-                        BMLogger.Warning($"Parameter of name {method.Name} already exist in assembly {paramerterType.Assembly.FullName}");
+                        BMLogger.Warning($"A parameter named '{method.Name}' already exists, so the one in {paramerterType.Assembly.GetName().Name} is ignored", mod: BroMakerStorage.GetModByAssembly(paramerterType.Assembly)?.Name);
                     }
                     else
                     {
@@ -209,7 +213,7 @@ namespace BroMakerLib
                     }
                     catch (Exception ex)
                     {
-                        BMLogger.ExceptionLog($"{first.As<CustomObjectPresetAttribute>().name}", ex);
+                        BMLogger.Error($"Failed to register preset '{first.As<CustomObjectPresetAttribute>().name}'", ex, BroMakerStorage.GetModByAssembly(type.Assembly)?.Name);
                     }
                 }
             }
@@ -261,7 +265,8 @@ namespace BroMakerLib
             {
                 if (!disableWarnings)
                 {
-                    BMLogger.Warning($"{collectionName} Preset of name {name} already exist. Type: {preset} ; Assembly: {preset.Assembly.FullName}");
+                    Type winningType = collection[name];
+                    BMLogger.Warning($"{(collectionName.IsNullOrEmpty() ? "Preset" : collectionName + " preset")} '{name}' from {preset} in {preset.Assembly.GetName().Name} was ignored because {winningType} in {winningType.Assembly.GetName().Name} already uses that name", mod: BroMakerStorage.GetModByAssembly(preset.Assembly)?.Name);
                 }
             }
             else

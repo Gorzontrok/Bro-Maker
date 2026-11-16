@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using BroMakerLib.Loggers;
+using BroMakerLib.Storages;
 using UnityEngine;
 
 namespace BroMakerLib.CustomObjects.Projectiles
@@ -168,7 +169,7 @@ namespace BroMakerLib.CustomObjects.Projectiles
             }
             catch (Exception exception)
             {
-                BMLogger.Log(className + " threw an exception in awake: " + exception.ToString());
+                BMLogger.Error($"Couldn't set up the grenade '{className}'", exception, BroMakerStorage.GetModByAssembly(GetType().Assembly)?.Name);
             }
         }
 

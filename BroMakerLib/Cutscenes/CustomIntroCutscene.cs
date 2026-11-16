@@ -22,6 +22,8 @@ namespace BroMakerLib.Cutscenes
         [JsonIgnore]
         public string path = string.Empty;
 
+        [JsonIgnore] internal CustomBroInfo Owner;
+
         public bool playCutsceneOnFirstSpawn = false;
 
         // Heading
@@ -119,7 +121,7 @@ namespace BroMakerLib.Cutscenes
                 }
                 catch (Exception ex)
                 {
-                    BMLogger.Log(ex);
+                    BMLogger.Warning("Cutscene sprite failed to load, using the default sprite", ex);
                     data.spriteTexture = rambroCutscene.spriteTexture;
                 }
             }
@@ -151,7 +153,7 @@ namespace BroMakerLib.Cutscenes
                 }
                 catch (Exception ex)
                 {
-                    BMLogger.Log(ex);
+                    BMLogger.Warning("Cutscene bark failed to load", ex);
                     data.bark = null;
                 }
             }
@@ -169,7 +171,7 @@ namespace BroMakerLib.Cutscenes
                 }
                 catch (Exception ex)
                 {
-                    BMLogger.Log(ex);
+                    BMLogger.Warning("Cutscene fanfare failed to load", ex);
                     data.introFanfare = null;
                 }
             }
@@ -193,7 +195,7 @@ namespace BroMakerLib.Cutscenes
                 }
                 catch (Exception ex)
                 {
-                    BMLogger.Log(ex);
+                    BMLogger.Warning("Cutscene background failed to load", ex);
                 }
             }
 

@@ -31,6 +31,8 @@ namespace BroMakerLib.Infos
         [JsonIgnore]
         public string path = string.Empty;
 
+        [JsonIgnore] internal BroMakerMod Mod;
+
         protected string _defaultName = "BroforceObject";
         public CustomBroforceObjectInfo()
         {
@@ -55,54 +57,34 @@ namespace BroMakerLib.Infos
         public void BeforeAwake(object obj)
         {
             if (beforeAwake == null)
+            {
                 throw new Exception("beforeAwake null");
-            try
-            {
-                ApplyLifecycleFields(obj, beforeAwake);
             }
-            catch (Exception e)
-            {
-                BMLogger.ExceptionLog(e);
-            }
+            ApplyLifecycleFields(obj, beforeAwake, "beforeAwake");
         }
         public void AfterAwake(object obj)
         {
             if (afterAwake == null)
+            {
                 throw new Exception("afterAwake null");
-            try
-            {
-                ApplyLifecycleFields(obj, afterAwake);
             }
-            catch (Exception e)
-            {
-                BMLogger.ExceptionLog(e);
-            }
+            ApplyLifecycleFields(obj, afterAwake, "afterAwake");
         }
         public void BeforeStart(object obj)
         {
             if (beforeStart == null)
+            {
                 throw new Exception("beforeStart null");
-            try
-            {
-                ApplyLifecycleFields(obj, beforeStart);
             }
-            catch (Exception e)
-            {
-                BMLogger.ExceptionLog(e);
-            }
+            ApplyLifecycleFields(obj, beforeStart, "beforeStart");
         }
         public void AfterStart(object obj)
         {
             if (afterStart == null)
+            {
                 throw new Exception("afterStart null");
-            try
-            {
-                ApplyLifecycleFields(obj, afterStart);
             }
-            catch (Exception e)
-            {
-                BMLogger.ExceptionLog(e);
-            }
+            ApplyLifecycleFields(obj, afterStart, "afterStart");
         }
 
         private const string InjectedGrenadePlayerNumKey = "specialGrenade.playerNum";
@@ -111,19 +93,46 @@ namespace BroMakerLib.Infos
 
         private static readonly HashSet<int> lifecycleCloneIds = new HashSet<int>();
 
-        private void ApplyLifecycleFields(object obj, Dictionary<string, object> map)
+        private void ApplyLifecycleFields(object obj, Dictionary<string, object> map, string stage)
         {
-            Dictionary<string, object> single = new Dictionary<string, object>(1);
-            foreach (KeyValuePair<string, object> kvp in map)
+            using (BMLogger.Scope(Mod?.Name, name))
             {
-                int dot = kvp.Key.IndexOf('.');
-                if (dot > 0 && kvp.Key != InjectedGrenadePlayerNumKey)
+                Dictionary<string, object> single = new Dictionary<string, object>(1);
+                foreach (KeyValuePair<string, object> kvp in map)
                 {
-                    UsePrefabCloneForField(obj, kvp.Key.Substring(0, dot));
+                    int dot = kvp.Key.IndexOf('.');
+                    if (dot > 0 && kvp.Key != InjectedGrenadePlayerNumKey)
+                    {
+                        string fieldName = kvp.Key.Substring(0, dot);
+                        try
+                        {
+                            UsePrefabCloneForField(obj, fieldName);
+                        }
+                        catch (Exception e)
+                        {
+                            BMLogger.Error($"Failed to copy the '{fieldName}' prefab for {stage}", e);
+                            return;
+                        }
+                    }
+                    single.Clear();
+                    single.Add(kvp.Key, kvp.Value);
+                    obj.DynamicFieldsValueSetter(single, null,
+                        (field, key, value) => SetFieldData(field, key, value, obj),
+                        context: $"{name} {stage}",
+                        onProblem: (key, message, problem) => ReportLifecycleProblem(stage, key, kvp.Value, message, problem));
                 }
-                single.Clear();
-                single.Add(kvp.Key, kvp.Value);
-                obj.DynamicFieldsValueSetter(single, null, (field, key, value) => SetFieldData(field, key, value, obj));
+            }
+        }
+
+        private static void ReportLifecycleProblem(string stage, string key, object value, string message, Exception problem)
+        {
+            if (problem == null)
+            {
+                BMLogger.Warning(message);
+            }
+            else
+            {
+                BMLogger.Error($"Failed to set {stage} field '{key}' (value: {value})", problem);
             }
         }
 
@@ -170,39 +179,44 @@ namespace BroMakerLib.Infos
         }
         public virtual void ReadParameters(object obj)
         {
-            foreach (KeyValuePair<string, object> pair in parameters)
+            using (BMLogger.Scope(Mod?.Name, name))
             {
-                try
+                foreach (KeyValuePair<string, object> pair in parameters)
                 {
-                    string key = pair.Key;
-                    MethodInfo methodInfo = PresetManager.GetParameterMethod(key);
-                    if (methodInfo == null)
+                    try
                     {
-                        BMLogger.Error($"[{name}] There is no parameter '{key}'. Check if you are not missing a mod.");
-                        continue;
-                    }
+                        string key = pair.Key;
+                        MethodInfo methodInfo = PresetManager.GetParameterMethod(key);
+                        if (methodInfo == null)
+                        {
+                            BMLogger.Error($"There is no parameter '{key}'. Check its spelling, or whether it needs a mod that isn't installed");
+                            continue;
+                        }
 
-                    var parameters = methodInfo.GetParameters();
-                    Type firstParameterType = parameters[0].ParameterType;
-                    Type askerType = obj.GetType();
-                    if (askerType != firstParameterType && !askerType.IsSubclassOf(firstParameterType))
-                    {
-                        BMLogger.Error($"[{name}] \"{key}\": Can't cast {askerType} to {firstParameterType} at first parameter. (Not a user Error)");
-                        continue;
-                    }
+                        ParameterInfo[] parameters = methodInfo.GetParameters();
+                        Type firstParameterType = parameters[0].ParameterType;
+                        Type askerType = obj.GetType();
+                        if (askerType != firstParameterType && !askerType.IsSubclassOf(firstParameterType))
+                        {
+                            BMLogger.Error($"Parameter '{key}' doesn't work on '{name}'");
+                            continue;
+                        }
 
-                    Type secondMethodParameterType = parameters[1].ParameterType;
-                    Type valueType = pair.Value.GetType();
-                    if (valueType != secondMethodParameterType && !valueType.IsSubclassOf(secondMethodParameterType))
-                    {
-                        BMLogger.Error($"[{name}] \"{key}\": {valueType} is not type of {secondMethodParameterType} at second parameter.");
-                        continue;
+                        Type secondMethodParameterType = parameters[1].ParameterType;
+                        Type valueType = pair.Value.GetType();
+                        if (valueType != secondMethodParameterType && !valueType.IsSubclassOf(secondMethodParameterType))
+                        {
+                            string given = BroMakerUtilities.DescribeJsonValue(valueType) ?? "that kind of value";
+                            string needed = BroMakerUtilities.DescribeJsonValue(secondMethodParameterType);
+                            BMLogger.Error(needed != null ? $"Parameter '{key}' needs {needed}, not {given}" : $"Parameter '{key}' can't take {given}");
+                            continue;
+                        }
+                        methodInfo.Invoke(null, new object[] { obj, pair.Value });
                     }
-                    methodInfo.Invoke(null, new object[] { obj, pair.Value });
-                }
-                catch (Exception e)
-                {
-                    BMLogger.ExceptionLog(e);
+                    catch (Exception e)
+                    {
+                        BMLogger.Error($"Exception applying parameter '{pair.Key}' for '{name}'", e);
+                    }
                 }
             }
         }
@@ -231,7 +245,7 @@ namespace BroMakerLib.Infos
             }
             catch (Exception ex)
             {
-                BMLogger.ExceptionLog($"{key} value is not type of {typeof(T)}", ex);
+                BMLogger.Error($"Parameter '{key}' needs a value of type {typeof(T)}", ex, Mod?.Name, name);
             }
             return default(T);
         }
@@ -261,129 +275,134 @@ namespace BroMakerLib.Infos
 
         protected void SetFieldData(Traverse field, string key, object value, object owner)
         {
-            try
+            Type fieldType = field.GetValueType();
+            if (fieldType == typeof(SpriteSM))
             {
-                Type fieldType = field.GetValueType();
-                if (fieldType == typeof(SpriteSM))
+                if (!(value is string))
                 {
-                    if (!(value is string))
-                        throw new InvalidCastException("can't cast value to string on 'SpriteSM' field");
+                    throw new InvalidCastException("can't cast value to string on 'SpriteSM' field");
+                }
 
-                    SpriteSM existing = field.GetValue<SpriteSM>();
-                    if (existing == null)
+                SpriteSM existing = field.GetValue<SpriteSM>();
+                if (existing == null)
+                {
+                    BMLogger.Warning($"Can't set sprite field '{key}' because the bro has no sprite there");
+                    return;
+                }
+
+                Transform ownerTransform = owner is Component ownerComponent ? ownerComponent.transform : (owner as GameObject)?.transform;
+                if (ownerTransform == null)
+                {
+                    BMLogger.Warning($"Sprite field '{key}' can only be set on a bro, so it was skipped");
+                    return;
+                }
+
+                // Instantiate(existing) would duplicate the sprite's object and children, the whole bro for its own sprite.
+                if (existing.transform.IsChildOf(ownerTransform))
+                {
+                    Renderer renderer = existing.meshRender != null ? existing.meshRender : existing.GetComponent<Renderer>();
+                    Material oldMaterial = renderer != null ? renderer.sharedMaterial : null;
+                    Material material = ResourcesController.GetMaterial(path, (string)value);
+                    existing.SetMaterialAndRefresh(material);
+                    // Vanilla restore code writes cached materials back to the renderer, so caches of the old material must follow the swap.
+                    if (oldMaterial != null)
                     {
-                        BMLogger.Warning($"Cannot assign SpriteSM field '{key}': existing field is null");
-                        return;
+                        RepointMaterialFields(owner, oldMaterial, material);
                     }
+                    return;
+                }
 
-                    Transform ownerTransform = owner is Component ownerComponent ? ownerComponent.transform : (owner as GameObject)?.transform;
-                    if (ownerTransform == null)
-                    {
-                        BMLogger.Warning($"Cannot assign SpriteSM field '{key}': owner is not a Component, skipping");
-                        return;
-                    }
+                SpriteSM clone = UnityEngine.Object.Instantiate(existing);
+                clone.transform.SetParent(ownerTransform, false);
+                clone.transform.localPosition = existing.transform.localPosition;
+                clone.transform.localRotation = existing.transform.localRotation;
+                clone.transform.localScale = existing.transform.localScale;
 
-                    // Instantiate(existing) would duplicate the sprite's object and children, the whole bro for its own sprite.
-                    if (existing.transform.IsChildOf(ownerTransform))
-                    {
-                        Renderer renderer = existing.meshRender != null ? existing.meshRender : existing.GetComponent<Renderer>();
-                        Material oldMaterial = renderer != null ? renderer.sharedMaterial : null;
-                        Material material = ResourcesController.GetMaterial(path, (string)value);
-                        existing.SetMaterialAndRefresh(material);
-                        // Vanilla restore code writes cached materials back to the renderer, so caches of the old material must follow the swap.
-                        if (oldMaterial != null)
-                        {
-                            RepointMaterialFields(owner, oldMaterial, material);
-                        }
-                        return;
-                    }
-
-                    SpriteSM clone = UnityEngine.Object.Instantiate(existing);
-                    clone.transform.SetParent(ownerTransform, false);
-                    clone.transform.localPosition = existing.transform.localPosition;
-                    clone.transform.localRotation = existing.transform.localRotation;
-                    clone.transform.localScale = existing.transform.localScale;
-
-                    if (clone.meshRender == null)
-                    {
-                        BMLogger.Warning($"Cannot set texture on SpriteSM field '{key}': cloned sprite has no MeshRenderer");
-                        field.SetValue(clone);
-                        return;
-                    }
-
-                    if (clone.meshRender.sharedMaterial != null)
-                    {
-                        clone.meshRender.sharedMaterial = new Material(clone.meshRender.sharedMaterial);
-                    }
-
-                    clone.SetTexture(ResourcesController.GetTexture(path, (string)value));
-                    clone.RefreshTexture();
+                if (clone.meshRender == null)
+                {
+                    BMLogger.Warning($"Can't set the image of sprite field '{key}' because its copy has no renderer");
                     field.SetValue(clone);
+                    return;
                 }
-                else if (fieldType == typeof(Material))
+
+                if (clone.meshRender.sharedMaterial != null)
                 {
-                    if (!(value is string))
-                        throw new InvalidCastException("can't cast value to string on 'Material' field");
-                    field.SetValue(ResourcesController.GetMaterial(path, (string)value));
+                    clone.meshRender.sharedMaterial = new Material(clone.meshRender.sharedMaterial);
                 }
-                else if (fieldType == typeof(Texture))
+
+                clone.SetTexture(ResourcesController.GetTexture(path, (string)value));
+                clone.RefreshTexture();
+                field.SetValue(clone);
+            }
+            else if (fieldType == typeof(Material))
+            {
+                if (!(value is string))
                 {
-                    if (!(value is string))
-                        throw new InvalidCastException("can't cast value to string on 'Texture' field");
-                    field.SetValue(ResourcesController.GetTexture(path, (string)value));
+                    throw new InvalidCastException("can't cast value to string on 'Material' field");
                 }
-                else if (fieldType == typeof(Texture2D))
+                field.SetValue(ResourcesController.GetMaterial(path, (string)value));
+            }
+            else if (fieldType == typeof(Texture))
+            {
+                if (!(value is string))
                 {
-                    if (!(value is string))
-                        throw new InvalidCastException("can't cast value to string on 'Texture2D' field");
-                    field.SetValue((Texture2D)ResourcesController.GetTexture(path, (string)value));
+                    throw new InvalidCastException("can't cast value to string on 'Texture' field");
                 }
-                else if (fieldType.IsEnum)
+                field.SetValue(ResourcesController.GetTexture(path, (string)value));
+            }
+            else if (fieldType == typeof(Texture2D))
+            {
+                if (!(value is string))
                 {
-                    if (value is string)
-                    {
-                        field.SetValue(Enum.Parse(fieldType, (string)value));
-                    }
-                    else
-                    {
-                        field.SetValue(Convert.ToInt32(value));
-                    }
+                    throw new InvalidCastException("can't cast value to string on 'Texture2D' field");
                 }
-                else if (fieldType == typeof(float))
+                field.SetValue((Texture2D)ResourcesController.GetTexture(path, (string)value));
+            }
+            else if (fieldType.IsEnum)
+            {
+                if (value is string)
                 {
-                    if (value is double)
-                    {
-                        value = Convert.ToSingle(value);
-                    }
-                    field.SetValue(value);
-                }
-                else if (fieldType == typeof(Int32))
-                {
-                    value = Convert.ToInt32(value);
-                    field.SetValue(value);
-                }
-                else if (typeof(Projectile).IsAssignableFrom(fieldType))
-                {
-                    var name = (string)value;
-                    var proj = LoadBroforceObjects.GetProjectileFromName(name);
-                    if (proj != null)
-                        field.SetValue(proj);
-                }
-                else if (typeof(Grenade).IsAssignableFrom(fieldType))
-                {
-                    var name = (string)value;
-                    var grenade = LoadBroforceObjects.GetGrenadeFromName(name);
-                    if (grenade != null)
-                        field.SetValue(grenade);
+                    field.SetValue(Enum.Parse(fieldType, (string)value));
                 }
                 else
                 {
-                    field.SetValue(value);
+                    field.SetValue(Convert.ToInt32(value));
                 }
             }
-            catch (Exception ex)
+            else if (fieldType == typeof(float))
             {
-                BMLogger.ExceptionLog($"Key: {key} ; Value: {value}\n", ex);
+                if (value is double)
+                {
+                    value = Convert.ToSingle(value);
+                }
+                field.SetValue(value);
+            }
+            else if (fieldType == typeof(Int32))
+            {
+                value = Convert.ToInt32(value);
+                field.SetValue(value);
+            }
+            else if (typeof(Projectile).IsAssignableFrom(fieldType))
+            {
+                string name = (string)value;
+                Projectile proj = LoadBroforceObjects.GetProjectileFromName(name);
+                if (proj != null)
+                {
+                    field.SetValue(proj);
+                }
+            }
+            else if (typeof(Grenade).IsAssignableFrom(fieldType))
+            {
+                string name = (string)value;
+                Grenade grenade = LoadBroforceObjects.GetGrenadeFromName(name);
+                if (grenade != null)
+                {
+                    field.SetValue(grenade);
+                }
+            }
+            else
+            {
+                field.SetValue(value);
             }
         }
     }

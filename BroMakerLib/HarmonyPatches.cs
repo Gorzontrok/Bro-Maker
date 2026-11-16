@@ -16,30 +16,6 @@ using BSett = BroMakerLib.Settings;
 
 namespace BroMakerLib.HarmonyPatches
 {
-    // Collect Logs
-    [HarmonyPatch(typeof(BMLogger), "Log", new Type[] { typeof(string), typeof(LogType), typeof(bool) })]
-    static class BMLogger_Log_Patch
-    {
-        static void Postfix()
-        {
-            if (Main.enabled)
-            {
-                Main.Log(BMLogger.logs.Last(), Log.PREFIX);
-            }
-
-        }
-    }
-
-    [HarmonyPatch(typeof(BMLogger), "Debug")]
-    static class BMLogger_Debug_Patch
-    {
-        static void Postfix()
-        {
-            if (Main.enabled && BSett.instance.debugLogs)
-                Main.Log(BMLogger.debugLogs.Last(), Log.PREFIX);
-        }
-    }
-
     // Automatic spawn
     [HarmonyPatch(typeof(Player), "SpawnHero")]
     static class Player_SpawnHero_Patch
@@ -164,7 +140,7 @@ namespace BroMakerLib.HarmonyPatches
                     }
                     catch (Exception e)
                     {
-                        BMLogger.ExceptionLog("Failed to choose a custom bro to spawn, keeping the vanilla bro", e);
+                        BMLogger.Error("Failed to choose a custom bro to spawn, keeping the vanilla bro", e);
                         BroSpawnManager.RestoreVanillaSpawn(__instance);
                         return;
                     }
@@ -196,7 +172,7 @@ namespace BroMakerLib.HarmonyPatches
                     TestVanDammeAnim bro = choice.LoadBro(__instance.playerNum);
                     if (bro == null)
                     {
-                        BMLogger.Error($"Custom bro '{choice.name}' failed to load, keeping the vanilla bro");
+                        BMLogger.Log($"Custom bro '{choice.name}' failed to load, keeping the vanilla bro");
                         __instance.changingBroFromTrigger = false;
                         LoadHero.spawningCustomBro[__instance.playerNum] = false;
                         LoadHero.anyCustomSpawning = false;
@@ -217,7 +193,7 @@ namespace BroMakerLib.HarmonyPatches
             }
             catch (Exception e)
             {
-                BMLogger.ExceptionLog(e);
+                BMLogger.Error("Failed to spawn a custom bro in place of the vanilla bro", e);
             }
         }
     }
@@ -401,7 +377,7 @@ namespace BroMakerLib.HarmonyPatches
                 }
                 catch (Exception e)
                 {
-                    BMLogger.ExceptionLog(e);
+                    BMLogger.Error("Failed to set up custom bros for the new save", e);
                 }
             }
         }

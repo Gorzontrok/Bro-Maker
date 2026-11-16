@@ -6,6 +6,7 @@
 - Fixed custom bros dying in IronBro keeping their flex power and not restarting levels the way vanilla bros do.
 - Fixed switching to a custom bro or playing its unlock cutscene while paused breaking the level.
 - Fixed bros given the ShotgunFlame projectile firing plain bullets.
+- Added an Issues panel and in-game notifications for mod errors and warnings.
 
 ## v2.6.2
 - Add handling for exceptions thrown while preloading bro assets.

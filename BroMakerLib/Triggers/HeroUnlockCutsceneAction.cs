@@ -1,4 +1,6 @@
-﻿using BroMakerLib.Storages;
+﻿using System;
+using BroMakerLib.Loggers;
+using BroMakerLib.Storages;
 using BroMakerLib.Unlocks;
 using UnityEngine;
 
@@ -67,8 +69,9 @@ namespace BroMakerLib.Triggers
                     Cutscenes.CustomCutsceneController.LoadHeroCutscene(BroMakerUtilities.GetVariantValue(hero.GetInfo().Cutscene, 0), 0.2f, true);
                     this.state = TriggerActionState.Done;
                 }
-                catch
+                catch (Exception ex)
                 {
+                    BMLogger.Warning($"Hero unlock cutscene failed for '{info.broName}'", ex, bro: info.broName);
                     this.state = TriggerActionState.Done;
                 }
             }

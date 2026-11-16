@@ -103,7 +103,7 @@ namespace BroMakerLib.Triggers
             }
             catch (Exception ex)
             {
-                BMLogger.Log("Exception in force bro trigger: " + ex.ToString());
+                BMLogger.Error("The 'BroMaker - Force Custom Bro' trigger failed", ex);
             }
         }
     }

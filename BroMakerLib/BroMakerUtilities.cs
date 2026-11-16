@@ -1,13 +1,40 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace BroMakerLib
 {
     public static class BroMakerUtilities
     {
+        internal static string DescribeJsonValue(Type type)
+        {
+            if (type == typeof(string))
+            {
+                return "text";
+            }
+            if (type == typeof(bool))
+            {
+                return "true or false";
+            }
+            if (type == typeof(long) || type == typeof(int) || type == typeof(short) || type == typeof(byte) || type == typeof(double) || type == typeof(float) || type == typeof(decimal))
+            {
+                return "a number";
+            }
+            if (typeof(JObject).IsAssignableFrom(type) || typeof(IDictionary).IsAssignableFrom(type))
+            {
+                return "an object";
+            }
+            if (typeof(JArray).IsAssignableFrom(type) || typeof(IList).IsAssignableFrom(type))
+            {
+                return "a list";
+            }
+            return null;
+        }
+
         /// <summary>
         /// Gets the appropriate value from a variant list based on the variant index.
         /// Returns the value at variantIndex if available, otherwise returns the first item, or default(T) if list is empty.

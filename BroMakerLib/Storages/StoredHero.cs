@@ -28,8 +28,9 @@ namespace BroMakerLib.Storages
             }
             catch (Exception e)
             {
-                BMLogger.ExceptionLog(e);
-                this.name = Path.GetFileNameWithoutExtension(this.path);
+                string fallbackName = Path.GetFileNameWithoutExtension(this.path);
+                BMLogger.Error($"Failed to load bro JSON at '{this.path}'", e, mod?.Name, fallbackName);
+                name = fallbackName;
             }
             BroSpawnManager.AddBroIfEnabled(this);
         }
@@ -51,11 +52,16 @@ namespace BroMakerLib.Storages
             string extension = Path.GetExtension(path).ToLower();
             if (extension == JSON_EXTENSION)
             {
-                info = CustomBroInfo.DeserializeJSON<CustomBroInfo>(path);
+                using (BMLogger.Scope(mod?.Name, string.IsNullOrEmpty(name) ? Path.GetFileNameWithoutExtension(path) : name))
+                {
+                    info = CustomBroInfo.DeserializeJSON<CustomBroInfo>(path);
+                }
                 info.path = Path.GetDirectoryName(path);
+                info.Mod = mod;
                 foreach (var cutscene in info.Cutscene)
                 {
                     cutscene.path = info.path;
+                    cutscene.Owner = info;
                 }
             }
             BMLogger.Debug("End Deserialization");
@@ -72,7 +78,7 @@ namespace BroMakerLib.Storages
             }
             catch (Exception e)
             {
-                BMLogger.ExceptionLog(e);
+                BMLogger.Error($"Failed to load bro '{name}'", e, mod?.Name, name);
             }
             return null;
         }

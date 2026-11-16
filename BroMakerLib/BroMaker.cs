@@ -9,6 +9,7 @@ using BroMakerLib.Triggers;
 using BroMakerLib.Unlocks;
 using HarmonyLib;
 using Newtonsoft.Json.Linq;
+using RocketLib.UI;
 using UnityEngine;
 
 namespace BroMakerLib
@@ -24,6 +25,13 @@ namespace BroMakerLib
             if (!_hasInit)
             {
                 BMLogger.Log("Initialization of BroMaker");
+
+                BMLogger.OnNewIssue += entry =>
+                {
+                    NotificationSeverity sev = entry.Severity == IssueSeverity.Error ? NotificationSeverity.Error : NotificationSeverity.Warning;
+                    string source = BMLogger.FormatSource(entry.ModName, entry.BroName);
+                    Notification.Show(entry.Message, sev, 6f, source, onClick: () => ModUI.ShowIssue(entry));
+                };
 
                 harmony = new Harmony("BroMakerLib");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
@@ -55,7 +63,7 @@ namespace BroMakerLib
                 }
                 catch (Exception ex)
                 {
-                    BMLogger.ExceptionLog("Error during asset preloading (some bros may not work)", ex);
+                    BMLogger.Error("Failed to preload custom bro assets, so some bros may not work", ex);
                 }
 
                 BroSpawnManager.CheckForDeletedBros();
@@ -73,7 +81,7 @@ namespace BroMakerLib
                 }
                 catch (Exception ex)
                 {
-                    Main.Log("Error while registering Custom Bros menu.\n" + ex);
+                    BMLogger.Error("Failed to register the Custom Bros menu", ex);
                 }
 
                 BMLogger.Log("Finish Initialization");
@@ -89,16 +97,19 @@ namespace BroMakerLib
             {
                 if (typeof(CustomHero).IsAssignableFrom(kvp.Value))
                 {
-                    try
+                    BroMakerStorage.GetStoredHeroByCustomHeroType(kvp.Value, out StoredHero stored);
+                    using (BMLogger.Scope(stored?.mod?.Name, stored?.name))
                     {
-                        CustomHero bro = heroHolder.AddComponent(kvp.Value) as CustomHero;
-                        bro.HarmonyPatches(harmony);
-                        bro.RegisterCustomTriggers();
-                    }
-                    catch (Exception ex)
-                    {
-                        string broName = BroMakerStorage.GetStoredHeroByCustomHeroType(kvp.Value, out StoredHero stored) ? stored.name : kvp.Key;
-                        BMLogger.ExceptionLog($"Exception while applying patches for '{broName}'", ex);
+                        try
+                        {
+                            CustomHero bro = heroHolder.AddComponent(kvp.Value) as CustomHero;
+                            bro.HarmonyPatches(harmony);
+                            bro.RegisterCustomTriggers();
+                        }
+                        catch (Exception ex)
+                        {
+                            BMLogger.Error($"Exception while applying patches for '{stored?.name ?? kvp.Key}'", ex);
+                        }
                     }
                 }
             }
@@ -267,22 +278,22 @@ namespace BroMakerLib
             {
                 if (typeof(CustomHero).IsAssignableFrom(kvp.Value))
                 {
-                    try
+                    BroMakerStorage.GetStoredHeroByCustomHeroType(kvp.Value, out StoredHero storedHero);
+                    using (BMLogger.Scope(storedHero?.mod?.Name, storedHero?.name))
                     {
-                        CustomHero bro = heroHolder.AddComponent(kvp.Value) as CustomHero;
                         try
                         {
-                            if (BroMakerStorage.GetStoredHeroByCustomHeroType(kvp.Value, out StoredHero storedHero))
+                            CustomHero bro = heroHolder.AddComponent(kvp.Value) as CustomHero;
+                            if (storedHero != null)
                             {
                                 bro.AssignDirectoryPaths(storedHero.GetInfo().path);
                                 bro.PreloadAssets();
                             }
                         }
-                        catch { }
-                    }
-                    catch (Exception ex)
-                    {
-                        BMLogger.ExceptionLog($"Exception occurred while preloading {kvp.Key}'s assets:", ex);
+                        catch (Exception ex)
+                        {
+                            BMLogger.Error($"Failed to preload assets for '{storedHero?.name ?? kvp.Key}'", ex);
+                        }
                     }
                 }
             }
