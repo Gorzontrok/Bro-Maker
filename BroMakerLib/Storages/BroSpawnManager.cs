@@ -23,10 +23,10 @@ namespace BroMakerLib.Storages
 
         private static readonly List<StoredHero> _enabledBros = new List<StoredHero>();
 
-        private static List<string> EnabledBrosNamesStore => BSett.instance._enabledBros;
+        private static List<string> SavedEnabledBrosNames => BSett.instance._enabledBros;
 
         /// <summary>Names of every bro the player has enabled.</summary>
-        public static ReadOnlyCollection<string> EnabledBrosNames => EnabledBrosNamesStore.AsReadOnly();
+        public static ReadOnlyCollection<string> EnabledBrosNames => SavedEnabledBrosNames.AsReadOnly();
 
         /// <summary>Every bro the player has enabled.</summary>
         public static ReadOnlyCollection<StoredHero> EnabledBros => _enabledBros.AsReadOnly();
@@ -124,7 +124,7 @@ namespace BroMakerLib.Storages
             // Otherwise return all enabled bros
             else
             {
-                return EnabledBrosNamesStore;
+                return SavedEnabledBrosNames;
             }
         }
 
@@ -156,12 +156,12 @@ namespace BroMakerLib.Storages
                 return false;
             }
 
-            return EnabledBrosNamesStore.Contains(broName);
+            return SavedEnabledBrosNames.Contains(broName);
         }
 
         public static bool IsBroEnabled(string broName)
         {
-            return EnabledBrosNamesStore.Contains(broName);
+            return SavedEnabledBrosNames.Contains(broName);
         }
 
         public static BroState GetBroState(string broName)
@@ -183,7 +183,7 @@ namespace BroMakerLib.Storages
                     : BroState.Disabled;
             }
 
-            bool isEnabled = EnabledBrosNamesStore.Contains(broName);
+            bool isEnabled = SavedEnabledBrosNames.Contains(broName);
 
             return isEnabled ? BroState.Available : BroState.Disabled;
         }
@@ -300,7 +300,7 @@ namespace BroMakerLib.Storages
         {
             if (BSett.instance.equalSpawnProbability)
             {
-                int enabledBroCount = EnabledBrosNamesStore.Count;
+                int enabledBroCount = SavedEnabledBrosNames.Count;
                 return enabledBroCount / (41.0f + enabledBroCount) * 100.0f;
             }
             else
@@ -315,12 +315,12 @@ namespace BroMakerLib.Storages
             {
                 return;
             }
-            bool wasEnabled = EnabledBrosNamesStore.Contains(broName);
+            bool wasEnabled = SavedEnabledBrosNames.Contains(broName);
             if (wasEnabled != enabled)
             {
                 if (enabled)
                 {
-                    EnabledBrosNamesStore.Add(broName);
+                    SavedEnabledBrosNames.Add(broName);
                     if (BroMakerStorage.GetStoredHeroByName(broName, out StoredHero bro))
                     {
                         _enabledBros.Add(bro);
@@ -332,7 +332,7 @@ namespace BroMakerLib.Storages
                     {
                         _enabledBros.Remove(bro);
                     }
-                    EnabledBrosNamesStore.Remove(broName);
+                    SavedEnabledBrosNames.Remove(broName);
                 }
                 BroStatusChanged();
             }
@@ -365,7 +365,7 @@ namespace BroMakerLib.Storages
 
         internal static void AddBroIfEnabled(StoredHero bro)
         {
-            if (EnabledBrosNamesStore.Contains(bro.name) && !_enabledBros.Contains(bro))
+            if (SavedEnabledBrosNames.Contains(bro.name) && !_enabledBros.Contains(bro))
             {
                 _enabledBros.Add(bro);
             }
