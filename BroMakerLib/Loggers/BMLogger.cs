@@ -250,7 +250,7 @@ namespace BroMakerLib.Loggers
         internal static bool IsSingleBroMod(string modName)
         {
             BroMakerMod mod = BroMakerStorage.GetModByName(modName);
-            return mod != null && mod.BrosNames != null && mod.BrosNames.Length == 1 && !string.IsNullOrEmpty(mod.BrosNames[0]);
+            return mod != null && mod.BrosNames.Length == 1 && !string.IsNullOrEmpty(mod.BrosNames[0]);
         }
 
         private static Exception RootCause(Exception ex)

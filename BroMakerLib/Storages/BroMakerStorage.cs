@@ -154,7 +154,7 @@ namespace BroMakerLib.Storages
 
         internal static void UnregisterMod(BroMakerMod mod)
         {
-            if (mod == null || mod.StoredHeroes.IsNullOrEmpty())
+            if (mod == null || mod.StoredHeroes.Length == 0)
             {
                 return;
             }

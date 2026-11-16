@@ -306,7 +306,7 @@ namespace BroMakerLib
             {
                 foreach (BroMakerMod mod in Mods)
                 {
-                    if (mod.StoredHeroes.IsNullOrEmpty() || IncompatibleMods.Contains(mod))
+                    if (mod.StoredHeroes.Length == 0 || IncompatibleMods.Contains(mod))
                     {
                         continue;
                     }

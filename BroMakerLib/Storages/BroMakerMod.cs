@@ -28,9 +28,9 @@ namespace BroMakerLib
         // Not in JSON file
         [JsonIgnore] public string Path { get; protected set; }
         [JsonIgnore] internal string ManifestFileName { get; private set; }
-        [JsonIgnore] public string[] BrosNames { get; internal set; }
-        [JsonIgnore] public StoredHero[] StoredHeroes { get; internal set; }
-        [JsonIgnore] public StoredAbility[] StoredAbilities { get; internal set; }
+        [JsonIgnore] public string[] BrosNames { get; internal set; } = new string[0];
+        [JsonIgnore] public StoredHero[] StoredHeroes { get; internal set; } = new StoredHero[0];
+        [JsonIgnore] public StoredAbility[] StoredAbilities { get; internal set; } = new StoredAbility[0];
         [JsonIgnore] public Harmony Harmony = null;
 
         public static BroMakerMod TryLoad(string path)
