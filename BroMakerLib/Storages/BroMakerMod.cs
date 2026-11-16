@@ -27,6 +27,7 @@ namespace BroMakerLib
 
         // Not in JSON file
         [JsonIgnore] public string Path { get; protected set; }
+        [JsonIgnore] internal string ManifestFileName { get; private set; }
         [JsonIgnore] public string[] BrosNames { get; internal set; }
         [JsonIgnore] public StoredHero[] StoredHeroes { get; internal set; }
         [JsonIgnore] public StoredAbility[] StoredAbilities { get; internal set; }
@@ -39,6 +40,7 @@ namespace BroMakerLib
             if (mod != null)
             {
                 mod.Path = Directory.GetParent(path).ToString();
+                mod.ManifestFileName = System.IO.Path.GetFileName(path);
                 if (mod.Name.IsNullOrEmpty())
                 {
                     mod.Name = new DirectoryInfo(mod.Path).Name;

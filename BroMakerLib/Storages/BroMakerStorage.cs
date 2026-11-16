@@ -289,6 +289,7 @@ namespace BroMakerLib.Storages
                             BMLogger.Error($"Failed to load the bro '{info.name}' written in the mod's manifest", ex);
                             continue;
                         }
+                        info.WarnUnknownKeys(mod.ManifestFileName);
                     }
 
                     StoredHero hero = new StoredHero(info, mod);

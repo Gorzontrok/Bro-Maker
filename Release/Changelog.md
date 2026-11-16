@@ -8,6 +8,7 @@
 - Fixed bros given the ShotgunFlame projectile firing plain bullets.
 - Fixed one broken bro stopping the other bros from loading.
 - Added an Issues panel and in-game notifications for mod errors and warnings.
+- A misspelled key in a bro's JSON now shows as a warning.
 
 ## v2.6.2
 - Add handling for exceptions thrown while preloading bro assets.

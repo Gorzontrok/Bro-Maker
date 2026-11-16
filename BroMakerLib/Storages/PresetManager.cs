@@ -50,12 +50,19 @@ namespace BroMakerLib
 
                     foreach (string assemblyPath in mod.Assemblies ?? new string[0])
                     {
+                        if (string.IsNullOrEmpty(assemblyPath))
+                        {
+                            BMLogger.Warning("The mod's Assemblies list has an empty entry, which was skipped");
+                            continue;
+                        }
+
                         Assembly assembly;
                         try
                         {
                             string path = Path.Combine(mod.Path, assemblyPath);
                             if (!File.Exists(path))
                             {
+                                BMLogger.Warning($"Can't find '{assemblyPath}' at '{path}', so it wasn't loaded");
                                 continue;
                             }
 

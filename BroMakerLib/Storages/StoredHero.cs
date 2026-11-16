@@ -69,6 +69,10 @@ namespace BroMakerLib.Storages
                     cutscene.path = info.path;
                     cutscene.Owner = info;
                 }
+                using (BMLogger.Scope(mod?.Name, info.name))
+                {
+                    info.WarnUnknownKeys(Path.GetFileName(path));
+                }
             }
             BMLogger.Debug("End Deserialization");
             return info;
