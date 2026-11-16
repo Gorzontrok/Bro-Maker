@@ -25,10 +25,10 @@ namespace BroMakerLib.Storages
 
         private static List<string> SavedEnabledBrosNames => BSett.instance._enabledBros;
 
-        /// <summary>Names of every bro the player has enabled.</summary>
-        public static ReadOnlyCollection<string> EnabledBrosNames => SavedEnabledBrosNames.AsReadOnly();
+        /// <summary>Names of every loaded bro the player has enabled.</summary>
+        public static ReadOnlyCollection<string> EnabledBrosNames => GetEnabledBroNames().AsReadOnly();
 
-        /// <summary>Every bro the player has enabled.</summary>
+        /// <summary>Every loaded bro the player has enabled.</summary>
         public static ReadOnlyCollection<StoredHero> EnabledBros => _enabledBros.AsReadOnly();
 
         public static List<string> HardcoreBrosNotYetUnlocked
@@ -124,7 +124,7 @@ namespace BroMakerLib.Storages
             // Otherwise return all enabled bros
             else
             {
-                return SavedEnabledBrosNames;
+                return GetEnabledBroNames();
             }
         }
 
@@ -156,7 +156,7 @@ namespace BroMakerLib.Storages
                 return false;
             }
 
-            return SavedEnabledBrosNames.Contains(broName);
+            return _enabledBros.Exists(bro => bro.name == broName);
         }
 
         public static bool IsBroEnabled(string broName)
@@ -300,7 +300,7 @@ namespace BroMakerLib.Storages
         {
             if (BSett.instance.equalSpawnProbability)
             {
-                int enabledBroCount = SavedEnabledBrosNames.Count;
+                int enabledBroCount = _enabledBros.Count;
                 return enabledBroCount / (41.0f + enabledBroCount) * 100.0f;
             }
             else
@@ -378,6 +378,11 @@ namespace BroMakerLib.Storages
         #endregion
 
         #region Internal Helpers
+        private static List<string> GetEnabledBroNames()
+        {
+            return _enabledBros.ConvertAll(bro => bro.name);
+        }
+
         internal static void CreateHardcoreLists(int slot)
         {
             BSett.instance._notUnlockedBros[slot] = new List<string>();
