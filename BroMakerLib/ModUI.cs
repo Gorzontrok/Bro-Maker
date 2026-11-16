@@ -854,7 +854,7 @@ namespace BroMakerLib
             if (BSett.instance.equalSpawnProbability)
             {
                 float current = BroSpawnManager.CalculateSpawnProbability();
-                float now = RGUI.HorizontalSlider("Spawn Probability: ", "Probability of a custom bro spawning. The probability of any given custom bro spawning is equal to this divided by however many bros you have installed and enabled, which is " + (BroSpawnManager.CalculateSpawnProbability() / BroSpawnManager.EnabledBros.Count) + "%", BroSpawnManager.CalculateSpawnProbability(), 0f, 100f);
+                float now = RGUI.HorizontalSlider("Spawn Probability: ", "Probability of a custom bro spawning. The probability of any given custom bro spawning is equal to this divided by however many bros you have installed and enabled, which is " + PerBroSpawnProbability() + "%", BroSpawnManager.CalculateSpawnProbability(), 0f, 100f);
                 if (current != now)
                 {
                     BSett.instance.automaticSpawnProbabilty = now;
@@ -863,7 +863,7 @@ namespace BroMakerLib
             }
             else
             {
-                BSett.instance.automaticSpawnProbabilty = RGUI.HorizontalSlider("Spawn Probability: ", "Probability of a custom bro spawning. The probability of any given custom bro spawning is equal to this divided by however many bros you have installed and enabled, which is " + (BroSpawnManager.CalculateSpawnProbability() / BroSpawnManager.EnabledBros.Count) + "%", BroSpawnManager.CalculateSpawnProbability(), 0f, 100f);
+                BSett.instance.automaticSpawnProbabilty = RGUI.HorizontalSlider("Spawn Probability: ", "Probability of a custom bro spawning. The probability of any given custom bro spawning is equal to this divided by however many bros you have installed and enabled, which is " + PerBroSpawnProbability() + "%", BroSpawnManager.CalculateSpawnProbability(), 0f, 100f);
             }
 
             GUILayout.Space(15);
@@ -872,6 +872,12 @@ namespace BroMakerLib
             BSett.instance.maxHealthAtOne = GUILayout.Toggle(BSett.instance.maxHealthAtOne, new GUIContent("Max health always at 1", "This makes sure that bros default to 1 health even if it's not explicitly set in the json file"));
             GUILayout.Space(15);
             BSett.instance.disableCustomAvatarFlash = GUILayout.Toggle(BSett.instance.disableCustomAvatarFlash, new GUIContent("Disable avatar flashing for custom bros", "Prevents avatar flash effect on custom bros that plays when invulnerable or idle. This is disabled on vanilla bros by default."));
+        }
+
+        private static float PerBroSpawnProbability()
+        {
+            int enabledBroCount = BroSpawnManager.EnabledBros.Count;
+            return enabledBroCount == 0 ? 0f : BroSpawnManager.CalculateSpawnProbability() / enabledBroCount;
         }
 
         private static void ShowDeveloperSettings()
