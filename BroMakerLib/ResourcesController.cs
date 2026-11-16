@@ -21,7 +21,7 @@ namespace BroMakerLib
         /// <summary>
         /// Unlit/Depth Cutout With ColouredImage
         /// </summary>
-        public static Shader Unlit_DepthCutout => Shader.Find("Unlit/Depth Cutout With ColouredImage");
+        public static Shader Unlit_DepthCutoutColouredImage => Shader.Find("Unlit/Depth Cutout With ColouredImage");
 
         /// <summary>
         /// Particle/Additive
@@ -35,7 +35,7 @@ namespace BroMakerLib
         private static readonly Dictionary<string, AudioClip> _audioClips = new Dictionary<string, AudioClip>();
 
         /// <summary>
-        /// Creates a Material using the shader Unlit_DepthCutout.
+        /// Creates a Material using the shader Unlit_DepthCutoutColouredImage.
         /// Loads Material from cache if created previously.
         /// A failure is shown in BroMaker's Issues panel and then thrown: `FileNotFoundException` when the file doesn't exist, `IOException` when it or the named game asset can't be loaded or decoded.
         /// </summary>
@@ -53,7 +53,7 @@ namespace BroMakerLib
         }
 
         /// <summary>
-        /// Creates a Material using the shader Unlit_DepthCutout.
+        /// Creates a Material using the shader Unlit_DepthCutoutColouredImage.
         /// Loads Material from cache if created previously.
         /// A failure is shown in BroMaker's Issues panel and then thrown: `FileNotFoundException` when the file doesn't exist, `IOException` when it or the named game asset can't be loaded or decoded.
         /// </summary>
@@ -74,7 +74,7 @@ namespace BroMakerLib
 
             if (File.Exists(filePath))
             {
-                result = LoadMaterialFile(filePath, Unlit_DepthCutout, null);
+                result = LoadMaterialFile(filePath, Unlit_DepthCutoutColouredImage, null);
             }
             else if (filePath.Contains(":") && filePath[1] != ':') // Second condition is here to make sure it is not a disk path
             {
@@ -100,7 +100,7 @@ namespace BroMakerLib
         }
 
         /// <summary>
-        /// Creates a Material from an array of bytes using the shader Unlit_DepthCutout.
+        /// Creates a Material from an array of bytes using the shader Unlit_DepthCutoutColouredImage.
         /// The Material is not cached, use GetMaterial if caching is desired.
         /// A failure is shown in BroMaker's Issues panel and then thrown: `ArgumentException` when the data is empty, `InvalidDataException` when it can't be decoded as an image.
         /// </summary>
@@ -111,7 +111,7 @@ namespace BroMakerLib
             return Reporting(null, () =>
             {
                 Texture2D tex = LoadTexture(imageBytes, false);
-                Material mat = new Material(Unlit_DepthCutout);
+                Material mat = new Material(Unlit_DepthCutoutColouredImage);
                 mat.mainTexture = tex;
                 return mat;
             });

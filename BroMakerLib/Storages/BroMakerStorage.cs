@@ -42,7 +42,7 @@ namespace BroMakerLib.Storages
         private static ReadOnlyCollection<string> _broNamesReadOnly;
         private static readonly Dictionary<Assembly, BroMakerMod> _modByAssembly = new Dictionary<Assembly, BroMakerMod>();
 
-        public static void Initialize()
+        internal static void Initialize()
         {
             _mods = new List<BroMakerMod>();
             Mods = _mods.AsReadOnly();
@@ -182,11 +182,6 @@ namespace BroMakerLib.Storages
                         // Versions are compatible
                         else
                         {
-                            // Let user know the bro may have compatibility issues with this version
-                            if (Info.ParsedSuggestedMinimumVersion > modVersion)
-                            {
-                                mod.ErrorMessage = mod.Name + " was created using an outdated version of BroMaker (" + mod.BroMakerVersion + ") you may experience bugs using it on this version of BroMaker. It's recommended that you update " + mod.Name + " to a newer version if possible.";
-                            }
                             mod.Initialize();
                             _mods.Add(mod);
                         }
@@ -202,7 +197,7 @@ namespace BroMakerLib.Storages
             BMLogger.Debug("Finish Loading Mods");
         }
 
-        public static void PopulateTypesDictionary()
+        internal static void PopulateTypesDictionary()
         {
             _brosByType.Clear();
 
@@ -245,7 +240,7 @@ namespace BroMakerLib.Storages
             return _brosByType.TryGetValue(customHeroType, out hero);
         }
 
-        public static void StoreCharactersFromMod(BroMakerMod mod)
+        internal static void StoreCharactersFromMod(BroMakerMod mod)
         {
             if (mod == null || mod.CustomBros == null || mod.CustomBros.Length == 0)
             {

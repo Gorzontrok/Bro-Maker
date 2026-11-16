@@ -1,10 +1,22 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace BroMakerLib.CustomObjects.Projectiles
 {
     public abstract class CustomPockettedSpecial
     {
-        public static List<List<CustomPockettedSpecial>> PockettedSpecials = new List<List<CustomPockettedSpecial>> { new List<CustomPockettedSpecial>(), new List<CustomPockettedSpecial>(), new List<CustomPockettedSpecial>(), new List<CustomPockettedSpecial>() };
+        private static readonly List<List<CustomPockettedSpecial>> _pockettedSpecials = new List<List<CustomPockettedSpecial>> { new List<CustomPockettedSpecial>(), new List<CustomPockettedSpecial>(), new List<CustomPockettedSpecial>(), new List<CustomPockettedSpecial>() };
+
+        /// <summary>Returns the pocketted specials a player currently holds.</summary>
+        public static ReadOnlyCollection<CustomPockettedSpecial> GetPockettedSpecials(int playerNum)
+        {
+            return _pockettedSpecials[playerNum].AsReadOnly();
+        }
+
+        internal static void RemovePockettedSpecial(int playerNum, CustomPockettedSpecial special)
+        {
+            _pockettedSpecials[playerNum].Remove(special);
+        }
 
         /// <summary>
         /// Gives a custom pocketted special to a bro
@@ -15,7 +27,7 @@ namespace BroMakerLib.CustomObjects.Projectiles
         {
             if (character is BroBase bro)
             {
-                PockettedSpecials[bro.playerNum].Add(special);
+                _pockettedSpecials[bro.playerNum].Add(special);
                 bro.pockettedSpecialAmmo.Add(PockettedSpecialAmmoType.None);
                 special.SetSpecialMaterials(bro);
                 bro.player.hud.SetGrenades(1);
@@ -29,7 +41,7 @@ namespace BroMakerLib.CustomObjects.Projectiles
         /// <param name="playerNum"></param>
         public static void ClearPockettedSpecials(int playerNum)
         {
-            PockettedSpecials[playerNum].Clear();
+            _pockettedSpecials[playerNum].Clear();
         }
 
         /// <summary>

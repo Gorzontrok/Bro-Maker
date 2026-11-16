@@ -22,14 +22,14 @@ namespace BroMakerLib
 
         private static string _storageDirectory;
 
-        public static void Initialize()
+        internal static void Initialize()
         {
             UpdateDirectories();
             CheckDirectories();
             BMLogger.Debug("DirectoriesManager Initialized.");
         }
 
-        public static void UpdateDirectories()
+        internal static void UpdateDirectories()
         {
             if (string.IsNullOrEmpty(_storageDirectory))
             {
@@ -45,7 +45,7 @@ namespace BroMakerLib
             CutscenesDirectory = Path.Combine(StorageDirectory, "Cutscenes");
         }
 
-        public static void CheckDirectories()
+        internal static void CheckDirectories()
         {
             if (!Directory.Exists(_storageDirectory))
             {

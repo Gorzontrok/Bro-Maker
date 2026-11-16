@@ -14,7 +14,7 @@ namespace BroMakerLib.Unlocks
         public int TotalRescues { get; set; } = 0;
         public int Version { get; set; } = 1;
 
-        public static BroUnlockProgressData MigrateData(BroUnlockProgressData oldData)
+        internal static BroUnlockProgressData MigrateData(BroUnlockProgressData oldData)
         {
             switch (oldData.Version)
             {

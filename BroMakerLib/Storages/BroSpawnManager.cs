@@ -21,13 +21,15 @@ namespace BroMakerLib.Storages
             Available
         }
 
-        public static List<string> EnabledBrosNames
-        {
-            get => BSett.instance._enabledBros;
-            set => BSett.instance._enabledBros = value;
-        }
+        private static readonly List<StoredHero> _enabledBros = new List<StoredHero>();
 
-        public static List<StoredHero> EnabledBros { get; set; } = new List<StoredHero>();
+        private static List<string> EnabledBrosNamesStore => BSett.instance._enabledBros;
+
+        /// <summary>Names of every bro the player has enabled.</summary>
+        public static ReadOnlyCollection<string> EnabledBrosNames => EnabledBrosNamesStore.AsReadOnly();
+
+        /// <summary>Every bro the player has enabled.</summary>
+        public static ReadOnlyCollection<StoredHero> EnabledBros => _enabledBros.AsReadOnly();
 
         public static List<string> HardcoreBrosNotYetUnlocked
         {
@@ -70,12 +72,12 @@ namespace BroMakerLib.Storages
             return BroUnlockManager.UnlockedBroNames;
         }
 
-        public static List<StoredHero> GetAllEnabledBros()
+        public static ReadOnlyCollection<StoredHero> GetAllEnabledBros()
         {
             return EnabledBros;
         }
 
-        public static List<StoredHero> GetAllSpawnableBros()
+        public static ReadOnlyCollection<StoredHero> GetAllSpawnableBros()
         {
             // If in IronBro, only return available bros
             if (GameModeController.IsHardcoreMode)
@@ -88,12 +90,12 @@ namespace BroMakerLib.Storages
                         availableHeroes.Add(hero);
                     }
                 }
-                return availableHeroes;
+                return availableHeroes.AsReadOnly();
             }
             // If forcing customs this level, only return allowed customs
             else if (ForceCustomThisLevel)
             {
-                return ForcedCustoms;
+                return ForcedCustoms.AsReadOnly();
             }
             // Otherwise return all enabled bros
             else
@@ -122,7 +124,7 @@ namespace BroMakerLib.Storages
             // Otherwise return all enabled bros
             else
             {
-                return EnabledBrosNames;
+                return EnabledBrosNamesStore;
             }
         }
 
@@ -154,12 +156,12 @@ namespace BroMakerLib.Storages
                 return false;
             }
 
-            return EnabledBrosNames.Contains(broName);
+            return EnabledBrosNamesStore.Contains(broName);
         }
 
         public static bool IsBroEnabled(string broName)
         {
-            return EnabledBrosNames.Contains(broName);
+            return EnabledBrosNamesStore.Contains(broName);
         }
 
         public static BroState GetBroState(string broName)
@@ -181,7 +183,7 @@ namespace BroMakerLib.Storages
                     : BroState.Disabled;
             }
 
-            bool isEnabled = EnabledBrosNames.Contains(broName);
+            bool isEnabled = EnabledBrosNamesStore.Contains(broName);
 
             return isEnabled ? BroState.Available : BroState.Disabled;
         }
@@ -259,9 +261,9 @@ namespace BroMakerLib.Storages
                 }
                 else
                 {
-                    if (EnabledBros.Count > 0)
+                    if (_enabledBros.Count > 0)
                     {
-                        chosenBro = EnabledBros[UnityEngine.Random.Range(0, EnabledBros.Count)];
+                        chosenBro = _enabledBros[UnityEngine.Random.Range(0, _enabledBros.Count)];
                     }
                     else
                     {
@@ -273,9 +275,9 @@ namespace BroMakerLib.Storages
             // Return any enabled bro
             else
             {
-                if (EnabledBros.Count > 0)
+                if (_enabledBros.Count > 0)
                 {
-                    chosenBro = EnabledBros[UnityEngine.Random.Range(0, EnabledBros.Count)];
+                    chosenBro = _enabledBros[UnityEngine.Random.Range(0, _enabledBros.Count)];
                 }
                 else
                 {
@@ -298,7 +300,7 @@ namespace BroMakerLib.Storages
         {
             if (BSett.instance.equalSpawnProbability)
             {
-                int enabledBroCount = EnabledBrosNames.Count;
+                int enabledBroCount = EnabledBrosNamesStore.Count;
                 return enabledBroCount / (41.0f + enabledBroCount) * 100.0f;
             }
             else
@@ -313,24 +315,24 @@ namespace BroMakerLib.Storages
             {
                 return;
             }
-            bool wasEnabled = EnabledBrosNames.Contains(broName);
+            bool wasEnabled = EnabledBrosNamesStore.Contains(broName);
             if (wasEnabled != enabled)
             {
                 if (enabled)
                 {
-                    EnabledBrosNames.Add(broName);
+                    EnabledBrosNamesStore.Add(broName);
                     if (BroMakerStorage.GetStoredHeroByName(broName, out StoredHero bro))
                     {
-                        EnabledBros.Add(bro);
+                        _enabledBros.Add(bro);
                     }
                 }
                 else
                 {
                     if (BroMakerStorage.GetStoredHeroByName(broName, out StoredHero bro))
                     {
-                        EnabledBros.Remove(bro);
+                        _enabledBros.Remove(bro);
                     }
-                    EnabledBrosNames.Remove(broName);
+                    EnabledBrosNamesStore.Remove(broName);
                 }
                 BroStatusChanged();
             }
@@ -338,9 +340,9 @@ namespace BroMakerLib.Storages
 
         internal static void AddBroIfEnabled(StoredHero bro)
         {
-            if (EnabledBrosNames.Contains(bro.name) && !EnabledBros.Contains(bro))
+            if (EnabledBrosNamesStore.Contains(bro.name) && !_enabledBros.Contains(bro))
             {
-                EnabledBros.Add(bro);
+                _enabledBros.Add(bro);
             }
         }
 

@@ -13,21 +13,28 @@ namespace BroMakerLib
 {
     public static class PresetManager
     {
-        public static Dictionary<string, MethodInfo> parameters = new Dictionary<string, MethodInfo>();
+        private static Dictionary<string, MethodInfo> _parameters = new Dictionary<string, MethodInfo>();
 
-        public static Dictionary<string, Type> heroesPreset = new Dictionary<string, Type>();
-        public static Dictionary<string, Type> customObjectsPreset = new Dictionary<string, Type>();
+        private static Dictionary<string, Type> _heroesPreset = new Dictionary<string, Type>();
+        private static Dictionary<string, Type> _customObjectsPreset = new Dictionary<string, Type>();
         public static Dictionary<string, Type> abilities = new Dictionary<string, Type>();
         public static Dictionary<string, Type> grenades = new Dictionary<string, Type>();
 
-        public static bool disableWarnings = false;
+        /// <summary>The live registry of `[Parameter]` methods, keyed by parameter name.</summary>
+        public static Dictionary<string, MethodInfo> parameters => _parameters;
 
-        public static void Initialize()
+        /// <summary>The live registry of hero preset types, keyed by preset name.</summary>
+        public static Dictionary<string, Type> heroesPreset => _heroesPreset;
+
+        /// <summary>The live registry of custom object preset types, keyed by preset name.</summary>
+        public static Dictionary<string, Type> customObjectsPreset => _customObjectsPreset;
+
+        internal static void Initialize()
         {
-            heroesPreset = new Dictionary<string, Type>();
-            customObjectsPreset = new Dictionary<string, Type>();
+            _heroesPreset = new Dictionary<string, Type>();
+            _customObjectsPreset = new Dictionary<string, Type>();
             abilities = new Dictionary<string, Type>();
-            parameters = new Dictionary<string, MethodInfo>();
+            _parameters = new Dictionary<string, MethodInfo>();
 
             CheckAssembly(Assembly.GetExecutingAssembly());
 
@@ -85,19 +92,19 @@ namespace BroMakerLib
         /// <summary>Returns the hero type registered under a name, or null if no such preset exists.</summary>
         public static Type GetHeroPreset(string presetName)
         {
-            return GetPreset(heroesPreset, presetName);
+            return GetPreset(_heroesPreset, presetName);
         }
 
         /// <summary>Returns the custom-object type registered under a name, or null if no such preset exists.</summary>
         internal static Type GetCustomObjectPreset(string name)
         {
-            return GetPreset(customObjectsPreset, name);
+            return GetPreset(_customObjectsPreset, name);
         }
 
         /// <summary>Returns every registered hero preset as name/type pairs.</summary>
         internal static ReadOnlyCollection<KeyValuePair<string, Type>> GetAllHeroPresets()
         {
-            return GetAllPresets(heroesPreset);
+            return GetAllPresets(_heroesPreset);
         }
 
         public static Type GetAbilityPreset(string name)
@@ -123,7 +130,7 @@ namespace BroMakerLib
         public static MethodInfo GetParameterMethod(string name)
         {
             MethodInfo method;
-            return parameters.TryGetValue(name, out method) ? method : null;
+            return _parameters.TryGetValue(name, out method) ? method : null;
         }
 
         public static bool CheckAssembly(Assembly assembly)
@@ -176,13 +183,13 @@ namespace BroMakerLib
                         continue;
                     }
 
-                    if (parameters.ContainsKey(method.Name))
+                    if (_parameters.ContainsKey(method.Name))
                     {
                         BMLogger.Warning($"A parameter named '{method.Name}' already exists, so the one in {paramerterType.Assembly.GetName().Name} is ignored", mod: BroMakerStorage.GetModByAssembly(paramerterType.Assembly)?.Name);
                     }
                     else
                     {
-                        parameters.Add(method.Name, method);
+                        _parameters.Add(method.Name, method);
                     }
                 }
             }
@@ -240,7 +247,7 @@ namespace BroMakerLib
 
             if (attribute is HeroPresetAttribute)
             {
-                return heroesPreset;
+                return _heroesPreset;
             }
 
             if (attribute is AbilityPresetAttribute)
@@ -253,7 +260,7 @@ namespace BroMakerLib
                 return grenades;
             }
 
-            return customObjectsPreset;
+            return _customObjectsPreset;
         }
 
         private static void AddPresetToCollection(Dictionary<string, Type> collection, Type preset, string name, string collectionName = "")
@@ -275,11 +282,8 @@ namespace BroMakerLib
 
             if (collection.ContainsKey(name))
             {
-                if (!disableWarnings)
-                {
-                    Type winningType = collection[name];
-                    BMLogger.Warning($"{(collectionName.IsNullOrEmpty() ? "Preset" : collectionName + " preset")} '{name}' from {preset} in {preset.Assembly.GetName().Name} was ignored because {winningType} in {winningType.Assembly.GetName().Name} already uses that name", mod: BroMakerStorage.GetModByAssembly(preset.Assembly)?.Name);
-                }
+                Type winningType = collection[name];
+                BMLogger.Warning($"{(collectionName.IsNullOrEmpty() ? "Preset" : collectionName + " preset")} '{name}' from {preset} in {preset.Assembly.GetName().Name} was ignored because {winningType} in {winningType.Assembly.GetName().Name} already uses that name", mod: BroMakerStorage.GetModByAssembly(preset.Assembly)?.Name);
             }
             else
             {

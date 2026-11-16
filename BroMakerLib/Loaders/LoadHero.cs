@@ -15,13 +15,13 @@ namespace BroMakerLib.Loaders
 {
     public struct CustomBroDeath
     {
-        public CustomBroInfo info;
-        public int variantIndex;
+        public CustomBroInfo Info;
+        public int VariantIndex;
 
         public CustomBroDeath(CustomBroInfo info, int variantIndex)
         {
-            this.info = info;
-            this.variantIndex = variantIndex;
+            Info = info;
+            VariantIndex = variantIndex;
         }
     }
 
@@ -43,7 +43,25 @@ namespace BroMakerLib.Loaders
         public static bool tryReplaceAvatar = false;
         public static Player.SpawnType[] previousSpawnInfo = new Player.SpawnType[] { Player.SpawnType.Unknown, Player.SpawnType.Unknown, Player.SpawnType.Unknown, Player.SpawnType.Unknown };
         public static bool[] wasFirstDeployment = new bool[] { false, false, false, false };
-        public static Dictionary<int, CustomBroDeath> customBroDeaths;
+
+        private static Dictionary<int, CustomBroDeath> _customBroDeaths;
+
+        internal static void ClearCustomBroDeaths()
+        {
+            _customBroDeaths = new Dictionary<int, CustomBroDeath>();
+        }
+
+        /// <summary>Records that the death at this position in the level's death list was the given custom bro, so the level-over screen draws it with that bro's sprites.</summary>
+        internal static void RegisterCustomBroDeath(int deathNum, CustomBroDeath death)
+        {
+            _customBroDeaths.Add(deathNum, death);
+        }
+
+        /// <summary>Returns which custom bro and variant the death at this position in the level's death list was, or false if it wasn't a custom bro.</summary>
+        public static bool TryGetCustomBroDeath(int deathNum, out CustomBroDeath death)
+        {
+            return _customBroDeaths.TryGetValue(deathNum, out death);
+        }
 
         public static TestVanDammeAnim WithCustomBroInfo(int selectedPlayerNum, CustomBroInfo customBroInfo, Type type)
         {

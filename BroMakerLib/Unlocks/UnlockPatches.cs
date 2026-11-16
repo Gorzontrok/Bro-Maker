@@ -5,7 +5,7 @@ using HarmonyLib;
 namespace BroMakerLib.Unlocks
 {
     [HarmonyPatch(typeof(PlayerProgress), "FreeBro")]
-    public static class PlayerProgress_FreeBro_Patch
+    internal static class PlayerProgress_FreeBro_Patch
     {
         public static void Prefix()
         {

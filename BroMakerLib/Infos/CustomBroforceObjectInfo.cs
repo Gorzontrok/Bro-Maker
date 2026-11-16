@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using BroMakerLib.CustomObjects;
+using BroMakerLib.Extensions;
 using BroMakerLib.Loaders;
 using BroMakerLib.Loggers;
 using HarmonyLib;

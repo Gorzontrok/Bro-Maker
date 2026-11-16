@@ -9,7 +9,7 @@ using Networking;
 using RocketLib;
 using UnityEngine;
 
-namespace BroMakerLib
+namespace BroMakerLib.Extensions
 {
     public static class ICustomHeroExtensions
     {

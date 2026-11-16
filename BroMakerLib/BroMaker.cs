@@ -15,7 +15,7 @@ using UnityEngine;
 
 namespace BroMakerLib
 {
-    public static class BroMaker
+    internal static class BroMaker
     {
         internal static Harmony harmony;
 

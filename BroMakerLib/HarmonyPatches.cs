@@ -4,6 +4,7 @@ using System.Linq;
 using BroMakerLib.CustomObjects;
 using BroMakerLib.CustomObjects.Projectiles;
 using BroMakerLib.Cutscenes;
+using BroMakerLib.Extensions;
 using BroMakerLib.Infos;
 using BroMakerLib.Loaders;
 using BroMakerLib.Loggers;
@@ -640,7 +641,7 @@ namespace BroMakerLib
                 return;
             }
 
-            LoadHero.customBroDeaths = new Dictionary<int, CustomBroDeath>();
+            LoadHero.ClearCustomBroDeaths();
         }
     }
 
@@ -658,7 +659,7 @@ namespace BroMakerLib
             if (vanDamme is ICustomHero && deathType != DeathType.None)
             {
                 ICustomHero customHero = vanDamme as ICustomHero;
-                LoadHero.customBroDeaths.Add(SingletonNetObj<StatisticsController>.Instance.currentStats.deathList.Count,
+                LoadHero.RegisterCustomBroDeath(SingletonNetObj<StatisticsController>.Instance.currentStats.deathList.Count,
                     new CustomBroDeath(customHero.Info, customHero.CurrentVariant));
             }
         }
@@ -675,7 +676,7 @@ namespace BroMakerLib
                 return true;
             }
 
-            if (LoadHero.customBroDeaths.ContainsKey(deathNum))
+            if (LoadHero.TryGetCustomBroDeath(deathNum, out CustomBroDeath broDeath))
             {
                 int num = 40 + (totalDeaths / 6);
                 int num2 = 1 + (totalDeaths / num);
@@ -695,9 +696,8 @@ namespace BroMakerLib
                 if (deathObject != null)
                 {
                     VictoryMookDeath victoryMookDeath = Object.Instantiate<VictoryMookDeath>(__instance.broDeathGenericPrefab, position, Quaternion.identity);
-                    CustomBroDeath broDeath = LoadHero.customBroDeaths[deathNum];
-                    CustomBroInfo bro = broDeath.info;
-                    int variant = broDeath.variantIndex;
+                    CustomBroInfo bro = broDeath.Info;
+                    int variant = broDeath.VariantIndex;
 
                     victoryMookDeath.Setup(deathObject, 0.2f, parent, shakeObject);
 
@@ -888,9 +888,9 @@ namespace BroMakerLib
                 return true;
             }
 
-            if (__instance.pockettedSpecialAmmo.Count > 0 && __instance.pockettedSpecialAmmo[__instance.pockettedSpecialAmmo.Count - 1] == PockettedSpecialAmmoType.None && CustomPockettedSpecial.PockettedSpecials[__instance.playerNum].Count > 0)
+            if (__instance.pockettedSpecialAmmo.Count > 0 && __instance.pockettedSpecialAmmo[__instance.pockettedSpecialAmmo.Count - 1] == PockettedSpecialAmmoType.None && CustomPockettedSpecial.GetPockettedSpecials(__instance.playerNum).Count > 0)
             {
-                CustomPockettedSpecial.PockettedSpecials[__instance.playerNum].Last().SetSpecialMaterials(__instance);
+                CustomPockettedSpecial.GetPockettedSpecials(__instance.playerNum).Last().SetSpecialMaterials(__instance);
                 __instance.player.hud.SetGrenades(1);
                 return false;
             }
@@ -909,10 +909,10 @@ namespace BroMakerLib
                 return;
             }
 
-            if (__instance.pockettedSpecialAmmo.Count > 0 && __instance.pockettedSpecialAmmo[__instance.pockettedSpecialAmmo.Count - 1] == PockettedSpecialAmmoType.None && CustomPockettedSpecial.PockettedSpecials[__instance.playerNum].Count > 0)
+            if (__instance.pockettedSpecialAmmo.Count > 0 && __instance.pockettedSpecialAmmo[__instance.pockettedSpecialAmmo.Count - 1] == PockettedSpecialAmmoType.None && CustomPockettedSpecial.GetPockettedSpecials(__instance.playerNum).Count > 0)
             {
                 // If the pocketted special uses the throwing animation then we need to set the usingPockettedSpecialType to something other than None, which defaults to the flex animation
-                if (CustomPockettedSpecial.PockettedSpecials[__instance.playerNum].Last().UseThrowingAnimation())
+                if (CustomPockettedSpecial.GetPockettedSpecials(__instance.playerNum).Last().UseThrowingAnimation())
                 {
                     ___usingPockettedSpecialType = PockettedSpecialAmmoType.Airstrike;
                 }
@@ -930,12 +930,12 @@ namespace BroMakerLib
                 return true;
             }
 
-            if (__instance.pockettedSpecialAmmo.Count > 0 && __instance.pockettedSpecialAmmo[__instance.pockettedSpecialAmmo.Count - 1] == PockettedSpecialAmmoType.None && CustomPockettedSpecial.PockettedSpecials[__instance.playerNum].Count > 0)
+            if (__instance.pockettedSpecialAmmo.Count > 0 && __instance.pockettedSpecialAmmo[__instance.pockettedSpecialAmmo.Count - 1] == PockettedSpecialAmmoType.None && CustomPockettedSpecial.GetPockettedSpecials(__instance.playerNum).Count > 0)
             {
                 ___pressSpecialFacingDirection = 0;
-                CustomPockettedSpecial special = CustomPockettedSpecial.PockettedSpecials[__instance.playerNum].Last();
+                CustomPockettedSpecial special = CustomPockettedSpecial.GetPockettedSpecials(__instance.playerNum).Last();
                 special.UseSpecial(__instance);
-                CustomPockettedSpecial.PockettedSpecials[__instance.playerNum].Remove(special);
+                CustomPockettedSpecial.RemovePockettedSpecial(__instance.playerNum, special);
                 __instance.pockettedSpecialAmmo.RemoveAt(__instance.pockettedSpecialAmmo.Count - 1);
 
                 // Reset bro's specials to original count if this pocketted special allows it
