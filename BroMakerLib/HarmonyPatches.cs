@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using BroMakerLib.CustomObjects;
 using BroMakerLib.CustomObjects.Projectiles;
+using BroMakerLib.Cutscenes;
 using BroMakerLib.Infos;
 using BroMakerLib.Loaders;
 using BroMakerLib.Loggers;
@@ -12,8 +12,12 @@ using BroMakerLib.Unlocks;
 using HarmonyLib;
 using UnityEngine;
 using BSett = BroMakerLib.Settings;
+using Object = UnityEngine.Object;
+using Random = UnityEngine.Random;
 
-namespace BroMakerLib.HarmonyPatches
+// ReSharper disable UnusedMember.Local
+
+namespace BroMakerLib
 {
     // Automatic spawn
     [HarmonyPatch(typeof(Player), "SpawnHero")]
@@ -30,7 +34,8 @@ namespace BroMakerLib.HarmonyPatches
                     nextHeroType = HeroType.Rambro;
                     return;
                 }
-                else if (BSett.instance.disableSpawning)
+
+                if (BSett.instance.disableSpawning)
                 {
                     LoadHero.willReplaceBro[__instance.playerNum] = false;
                     return;
@@ -70,7 +75,7 @@ namespace BroMakerLib.HarmonyPatches
                             {
                                 // Probability of a custom bro being unlocked should be the number of custom bros / (number of custom bros + notUnlocked vanilla bros + dead vanilla bros)
                                 // We add 1 because the chosen bro will have already been added to the available bros
-                                LoadHero.willReplaceBro[__instance.playerNum] = UnityEngine.Random.value <= BroSpawnManager.HardcoreBrosNotYetUnlocked.Count() /
+                                LoadHero.willReplaceBro[__instance.playerNum] = Random.value <= BroSpawnManager.HardcoreBrosNotYetUnlocked.Count() /
                                     (BroSpawnManager.HardcoreBrosNotYetUnlocked.Count() + PlayerProgress.Instance.unlockedHeroes.Count() -
                                         GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count() - GameState.Instance.currentWorldmapSave.hardcoreModeDeadBros.Count() + 1.0f);
 
@@ -97,7 +102,7 @@ namespace BroMakerLib.HarmonyPatches
                         }
                         else if (BroSpawnManager.HardcoreAvailableBros.Count() > 0)
                         {
-                            LoadHero.willReplaceBro[__instance.playerNum] = UnityEngine.Random.value <= BroSpawnManager.HardcoreAvailableBros.Count() /
+                            LoadHero.willReplaceBro[__instance.playerNum] = Random.value <= BroSpawnManager.HardcoreAvailableBros.Count() /
                                 ((float)BroSpawnManager.HardcoreAvailableBros.Count() + GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count());
                         }
                     }
@@ -111,7 +116,7 @@ namespace BroMakerLib.HarmonyPatches
                 // Handle normal spawning
                 else if (BSett.instance.automaticSpawn && BroSpawnManager.EnabledBros.Count > 0)
                 {
-                    LoadHero.willReplaceBro[__instance.playerNum] = UnityEngine.Random.value <= BroSpawnManager.CalculateSpawnProbability() / 100.0f;
+                    LoadHero.willReplaceBro[__instance.playerNum] = Random.value <= BroSpawnManager.CalculateSpawnProbability() / 100.0f;
                 }
 
                 if (LoadHero.willReplaceBro[__instance.playerNum])
@@ -181,7 +186,7 @@ namespace BroMakerLib.HarmonyPatches
 
                     if (LoadHero.playCutscene)
                     {
-                        Cutscenes.CustomCutsceneController.LoadHeroCutscene(BroMakerUtilities.GetVariantValue(choice.GetInfo().Cutscene, (bro as ICustomHero).CurrentVariant));
+                        CustomCutsceneController.LoadHeroCutscene(BroMakerUtilities.GetVariantValue(choice.GetInfo().Cutscene, (bro as ICustomHero).CurrentVariant));
                         LoadHero.playCutscene = false;
                     }
                     __instance.changingBroFromTrigger = false;
@@ -216,7 +221,7 @@ namespace BroMakerLib.HarmonyPatches
     [HarmonyPatch(typeof(Map), "AddBroToHeroTransport")]
     internal static class Map_AddBroToHeroTransport_Patch
     {
-        private static bool Prefix(Map __instance, ref TestVanDammeAnim Bro)
+        private static bool Prefix(ref TestVanDammeAnim Bro)
         {
             // If mod is disabled or if we aren't loading a custom character don't disable
             return !Main.enabled || !LoadHero.willReplaceBro[Bro.playerNum];
@@ -233,7 +238,7 @@ namespace BroMakerLib.HarmonyPatches
                 return true;
             }
             // Check Unit's pos because sometimes this function is called with a unit that has not had its position set yet
-            else if (LoadHero.anyCustomSpawning && (!LoadHero.broBeingRescued || (unit.X <= 0 && unit.Y <= 0)))
+            if (LoadHero.anyCustomSpawning && (!LoadHero.broBeingRescued || (unit.X <= 0 && unit.Y <= 0)))
             {
                 return false;
             }
@@ -244,7 +249,7 @@ namespace BroMakerLib.HarmonyPatches
     [HarmonyPatch(typeof(Player), "WorkOutSpawnPosition")]
     internal static class Player_WorkOutSpawnPosition_Patch
     {
-        private static void Prefix(Player __instance, ref TestVanDammeAnim bro)
+        private static void Prefix(Player __instance)
         {
             if (!Main.enabled)
             {
@@ -399,8 +404,9 @@ namespace BroMakerLib.HarmonyPatches
                 {
                     return false;
                 }
-                else if (BroSpawnManager.HardcoreBrosNotYetUnlocked.Count() +
-                         GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count() + PlayerProgress.Instance.yetToBePlayedUnlockedHeroes.Count() == 0)
+
+                if (BroSpawnManager.HardcoreBrosNotYetUnlocked.Count() +
+                    GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count() + PlayerProgress.Instance.yetToBePlayedUnlockedHeroes.Count() == 0)
                 {
                     return false;
                 }
@@ -575,7 +581,7 @@ namespace BroMakerLib.HarmonyPatches
                                 if (pickupable.pickupType == PickupType.FlexAirJump || pickupable.pickupType == PickupType.FlexGoldenLight || pickupable.pickupType == PickupType.FlexInvulnerability ||
                                     pickupable.pickupType == PickupType.FlexTeleport || pickupable.pickupType == PickupType.FlexAlluring)
                                 {
-                                    pickupable.AddFlexPowerRPC(self, pickupable.pickupType, false);
+                                    pickupable.AddFlexPowerRPC(self, pickupable.pickupType);
                                 }
                                 else
                                 {
@@ -688,7 +694,7 @@ namespace BroMakerLib.HarmonyPatches
 
                 if (deathObject != null)
                 {
-                    VictoryMookDeath victoryMookDeath = UnityEngine.Object.Instantiate<VictoryMookDeath>(__instance.broDeathGenericPrefab, position, Quaternion.identity);
+                    VictoryMookDeath victoryMookDeath = Object.Instantiate<VictoryMookDeath>(__instance.broDeathGenericPrefab, position, Quaternion.identity);
                     CustomBroDeath broDeath = LoadHero.customBroDeaths[deathNum];
                     CustomBroInfo bro = broDeath.info;
                     int variant = broDeath.variantIndex;
@@ -766,7 +772,7 @@ namespace BroMakerLib.HarmonyPatches
                 return true;
             }
 
-            __result = ProjectileController.SpawnGrenadeLocally(grenadePrefab, firedBy, x, y, radius, force, xI, yI, playerNum, UnityEngine.Random.Range(0, 10000));
+            __result = ProjectileController.SpawnGrenadeLocally(grenadePrefab, firedBy, x, y, radius, force, xI, yI, playerNum, Random.Range(0, 10000));
             if (lifeM < 1f)
             {
                 __result.ReduceLife(lifeM);
@@ -787,7 +793,7 @@ namespace BroMakerLib.HarmonyPatches
             }
 
             __result = ProjectileController.SpawnProjectileLocally(prefab, FiredBy, x, y, xI, yI, playerNum, AddTemporaryPlayerTarget, _zOffset);
-            __result.SetSeed(UnityEngine.Random.Range(-10000, 10000));
+            __result.SetSeed(Random.Range(-10000, 10000));
             if (AddTemporaryPlayerTarget)
             {
                 HeroController.AddTemporaryPlayerTarget(playerNum, __result.transform);
@@ -807,7 +813,7 @@ namespace BroMakerLib.HarmonyPatches
                 return true;
             }
 
-            GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(grenadePrefab.gameObject);
+            GameObject gameObject = Object.Instantiate<GameObject>(grenadePrefab.gameObject);
             gameObject.SetActive(true);
             __result = gameObject.GetComponent<Grenade>();
             __result.SetupGrenade(seed, playerNum, firedBy);
@@ -828,7 +834,7 @@ namespace BroMakerLib.HarmonyPatches
                 return true;
             }
 
-            __result = UnityEngine.Object.Instantiate<Projectile>(projectilePrefab, new Vector3(x, y, 0f), Quaternion.identity);
+            __result = Object.Instantiate<Projectile>(projectilePrefab, new Vector3(x, y, 0f), Quaternion.identity);
             __result.gameObject.SetActive(true);
             __result.Fire(x, y, xI, yI, 0f, playerNum, FiredBy);
             return false;
@@ -846,7 +852,7 @@ namespace BroMakerLib.HarmonyPatches
                 return true;
             }
 
-            __result = UnityEngine.Object.Instantiate<Projectile>(prefab, new Vector3(x, y, 0f), Quaternion.identity);
+            __result = Object.Instantiate<Projectile>(prefab, new Vector3(x, y, 0f), Quaternion.identity);
             __result.gameObject.SetActive(true);
             __result.Fire(x, y, xI, yI, _zOffset, playerNum, FiredBy);
             return false;
@@ -864,7 +870,7 @@ namespace BroMakerLib.HarmonyPatches
                 return true;
             }
 
-            __result = UnityEngine.Object.Instantiate(prefab, new Vector3(x, y, 0f), Quaternion.identity);
+            __result = Object.Instantiate(prefab, new Vector3(x, y, 0f), Quaternion.identity);
             __result.gameObject.SetActive(true);
             __result.Fire(x, y, xI, yI, _zOffset, playerNum, FiredBy);
             return false;
@@ -938,8 +944,7 @@ namespace BroMakerLib.HarmonyPatches
                     __instance.ResetSpecialAmmo();
                 }
 
-                // Call private method SetPlayerHUDAmmo
-                typeof(BroBase).GetMethod("SetPlayerHUDAmmo", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { });
+                __instance.CallMethod("SetPlayerHUDAmmo");
                 return false;
             }
 

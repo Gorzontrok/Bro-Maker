@@ -62,7 +62,8 @@ namespace BroMakerLib.Infos
                 return;
             }
 
-            if (PresetManager.customObjectsPreset.TryGetValue(value, out Type haloType))
+            Type haloType = PresetManager.GetCustomObjectPreset(value);
+            if (haloType != null)
             {
                 character.halo.gameObject.AddComponent(haloType);
             }

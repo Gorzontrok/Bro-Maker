@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -21,10 +22,6 @@ namespace BroMakerLib
 
         public static bool disableWarnings = false;
 
-        static PresetManager()
-        {
-        }
-
         public static void Initialize()
         {
             heroesPreset = new Dictionary<string, Type>();
@@ -35,7 +32,7 @@ namespace BroMakerLib
             CheckAssembly(Assembly.GetExecutingAssembly());
 
             // Load assemblies of mods
-            foreach (BroMakerMod mod in BroMakerStorage.mods)
+            foreach (BroMakerMod mod in BroMakerStorage.Mods)
             {
                 using (BMLogger.Scope(mod.Name, null))
                 {
@@ -74,14 +71,33 @@ namespace BroMakerLib
             BroMakerStorage.PopulateTypesDictionary();
         }
 
+        private static Type GetPreset(Dictionary<string, Type> collection, string name)
+        {
+            Type preset;
+            return collection.TryGetValue(name, out preset) ? preset : null;
+        }
+
+        private static ReadOnlyCollection<KeyValuePair<string, Type>> GetAllPresets(Dictionary<string, Type> collection)
+        {
+            return new List<KeyValuePair<string, Type>>(collection).AsReadOnly();
+        }
+
+        /// <summary>Returns the hero type registered under a name, or null if no such preset exists.</summary>
         public static Type GetHeroPreset(string presetName)
         {
-            if (!heroesPreset.ContainsKey(presetName))
-            {
-                return null;
-            }
+            return GetPreset(heroesPreset, presetName);
+        }
 
-            return heroesPreset[presetName];
+        /// <summary>Returns the custom-object type registered under a name, or null if no such preset exists.</summary>
+        internal static Type GetCustomObjectPreset(string name)
+        {
+            return GetPreset(customObjectsPreset, name);
+        }
+
+        /// <summary>Returns every registered hero preset as name/type pairs.</summary>
+        internal static ReadOnlyCollection<KeyValuePair<string, Type>> GetAllHeroPresets()
+        {
+            return GetAllPresets(heroesPreset);
         }
 
         public static Type GetAbilityPreset(string name)
@@ -106,12 +122,8 @@ namespace BroMakerLib
 
         public static MethodInfo GetParameterMethod(string name)
         {
-            if (!parameters.ContainsKey(name))
-            {
-                return null;
-            }
-
-            return parameters[name];
+            MethodInfo method;
+            return parameters.TryGetValue(name, out method) ? method : null;
         }
 
         public static bool CheckAssembly(Assembly assembly)

@@ -31,7 +31,7 @@ namespace BroMakerLib.Loaders
         public static CustomBroInfo currentInfo;
         public static int playerNum = 0;
 
-        private static readonly Dictionary<string, int> prefabIndex = new Dictionary<string, int>();
+        private static readonly Dictionary<string, int> _prefabIndex = new Dictionary<string, int>();
 
         public static bool spawnFromPlayer = false;
         public static bool[] willReplaceBro = new bool[] { false, false, false, false };
@@ -60,12 +60,12 @@ namespace BroMakerLib.Loaders
                 {
                     if (type == null)
                     {
-                        throw new ArgumentException($"No hero preset found for '{customBroInfo?.CharacterPreset}'. Valid presets: {string.Join(", ", PresetManager.heroesPreset.Select(p => p.Key).ToArray())}");
+                        throw new ArgumentException($"No hero preset found for '{customBroInfo?.CharacterPreset}'. Valid presets: {string.Join(", ", PresetManager.GetAllHeroPresets().Select(p => p.Key).ToArray())}");
                     }
 
                     if (!typeof(ICustomHero).IsAssignableFrom(type))
                     {
-                        throw new ArgumentException($"Type '{type.Name}' should inherit from 'ICustomHero'", "type");
+                        throw new ArgumentException($"Type '{type.Name}' should inherit from 'ICustomHero'", nameof(type));
                     }
 
                     if (selectedPlayerNum < 0 || selectedPlayerNum > 3)
@@ -79,7 +79,6 @@ namespace BroMakerLib.Loaders
                     {
                         throw new NullReferenceException($"Info is null for preset type '{type.Name}' (player {selectedPlayerNum})");
                     }
-
                     currentInfo = customBroInfo;
 
                     // Start Spawning Process
@@ -108,9 +107,8 @@ namespace BroMakerLib.Loaders
 
                     GameObject original = null;
 
-                    if (prefabIndex.ContainsKey(customBroInfo.name))
+                    if (_prefabIndex.TryGetValue(customBroInfo.name, out int index))
                     {
-                        int index = prefabIndex[customBroInfo.name];
                         original = InstantiationController.GetPrefabFromIndex(index);
                     }
 
@@ -125,11 +123,11 @@ namespace BroMakerLib.Loaders
                     hero.gameObject.SetActive(true);
                     BMLogger.Debug($"AfterInstantiation: InstantiateBuffered.");
 
-                    TestVanDammeAnim bro = AfterInstantiation(hero, heroType, playerNum, type, previousPosition);
+                    AfterInstantiation(hero, heroType, playerNum, previousPosition);
                     replacedPreviousCharacter = true;
                     if (previousCharacterTraverse != null)
                     {
-                        Net.RPC(PID.TargetAll, new RpcSignature(previousCharacter.RecallBro), false);
+                        Net.RPC(PID.TargetAll, previousCharacter.RecallBro, false);
                         // Make previous character sprite disappear faster
                         previousCharacterTraverse.Field("recallCounter").SetValue(1f);
                         if (previousCharacterBubble != null)
@@ -202,7 +200,7 @@ namespace BroMakerLib.Loaders
             }
         }
 
-        private static TestVanDammeAnim AfterInstantiation(TestVanDammeAnim hero, HeroType heroTypeEnum, int playerNum, Type type, Vector3 position)
+        private static void AfterInstantiation(TestVanDammeAnim hero, HeroType heroTypeEnum, int playerNum, Vector3 position)
         {
             hero.gameObject.SetActive(true);
             if (Registry.GetNID(hero) == NID.NoID)
@@ -211,7 +209,7 @@ namespace BroMakerLib.Loaders
                 BMLogger.Debug($"AfterInstantiation: Register Object cause it didn't.");
             }
 
-            Net.RPC<int, HeroType, bool>(PID.TargetAll, new RpcSignature<int, HeroType, bool>(hero.SetUpHero), playerNum, heroTypeEnum, true, false);
+            Net.RPC<int, HeroType, bool>(PID.TargetAll, hero.SetUpHero, playerNum, heroTypeEnum, true, false);
             BMLogger.Debug("AfterInstantiation: SetUpHero");
 
             FixSpawnPosition(hero, position);
@@ -232,7 +230,6 @@ namespace BroMakerLib.Loaders
                 hero.gameObject.SetActive(false);
                 pausedObjects.Add(hero.gameObject);
             }
-            return hero;
         }
 
         private static void FixSpawnPosition(TestVanDammeAnim hero, Vector3 position)
@@ -344,7 +341,7 @@ namespace BroMakerLib.Loaders
             if (player.GetFieldValue<PickupType>("_forceFlexPowerupSpawn") != PickupType.None)
             {
                 player.AddFlexPower(player.GetFieldValue<PickupType>("_forceFlexPowerupSpawn"), true);
-                Net.RPC<PickupType, bool>(PID.TargetOthers, new RpcSignature<PickupType, bool>(player.AddFlexPower), player.GetFieldValue<PickupType>("_forceFlexPowerupSpawn"), true, false);
+                Net.RPC<PickupType, bool>(PID.TargetOthers, player.AddFlexPower, player.GetFieldValue<PickupType>("_forceFlexPowerupSpawn"), true, false);
             }
             else
             {
@@ -459,13 +456,13 @@ namespace BroMakerLib.Loaders
             List<Object> list = prefabListT.GetValue<List<Object>>();
             list.Add(gameObject);
             prefabListT.SetValue(list);
-            if (prefabIndex.ContainsKey(currentInfo.name))
+            if (_prefabIndex.ContainsKey(currentInfo.name))
             {
-                prefabIndex[currentInfo.name] = InstantiationController.GetPrefabIndex(gameObject);
+                _prefabIndex[currentInfo.name] = InstantiationController.GetPrefabIndex(gameObject);
             }
             else
             {
-                prefabIndex.Add(currentInfo.name, InstantiationController.GetPrefabIndex(gameObject));
+                _prefabIndex.Add(currentInfo.name, InstantiationController.GetPrefabIndex(gameObject));
             }
         }
     }

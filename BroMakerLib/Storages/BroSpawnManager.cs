@@ -298,7 +298,7 @@ namespace BroMakerLib.Storages
         {
             if (BSett.instance.equalSpawnProbability)
             {
-                int enabledBroCount = EnabledBrosNames.Count();
+                int enabledBroCount = EnabledBrosNames.Count;
                 return enabledBroCount / (41.0f + enabledBroCount) * 100.0f;
             }
             else
@@ -316,7 +316,7 @@ namespace BroMakerLib.Storages
             bool wasEnabled = EnabledBrosNames.Contains(broName);
             if (wasEnabled != enabled)
             {
-                if (enabled && !EnabledBrosNames.Contains(broName))
+                if (enabled)
                 {
                     EnabledBrosNames.Add(broName);
                     if (BroMakerStorage.GetStoredHeroByName(broName, out StoredHero bro))

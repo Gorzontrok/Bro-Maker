@@ -7,6 +7,8 @@ using BroMakerLib.Storages;
 using TFBGames.Systems;
 using UnityEngine;
 
+// ReSharper disable ShaderLabShaderReferenceNotResolved
+
 namespace BroMakerLib
 {
     public static class ResourcesController
@@ -14,50 +16,23 @@ namespace BroMakerLib
         /// <summary>
         /// Particles/Alpha Blended
         /// </summary>
-        public static Shader Particle_AlphaBlend
-        {
-            get
-            {
-                return Shader.Find("Particles/Alpha Blended");
-            }
-        }
+        public static Shader Particle_AlphaBlend => Shader.Find("Particles/Alpha Blended");
 
         /// <summary>
         /// Unlit/Depth Cutout With ColouredImage
         /// </summary>
-        public static Shader Unlit_DepthCutout
-        {
-            get
-            {
-                return Shader.Find("Unlit/Depth Cutout With ColouredImage");
-            }
-        }
+        public static Shader Unlit_DepthCutout => Shader.Find("Unlit/Depth Cutout With ColouredImage");
 
         /// <summary>
         /// Particle/Additive
         /// </summary>
-        public static Shader Particle
-        {
-            get
-            {
-                return Shader.Find("Particle/Additive");
-            }
-        }
-
-
-        private static string AssetsFolder
-        {
-            get
-            {
-                return Path.Combine(Directory.GetCurrentDirectory(), "assets");
-            }
-        }
+        public static Shader Particle => Shader.Find("Particle/Additive");
 
         public static string resourceFolder = "BroMaker.Assets.";
 
-        private static readonly Dictionary<string, Material> materials = new Dictionary<string, Material>();
-        private static readonly Dictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
-        private static readonly Dictionary<string, AudioClip> audioClips = new Dictionary<string, AudioClip>();
+        private static readonly Dictionary<string, Material> _materials = new Dictionary<string, Material>();
+        private static readonly Dictionary<string, Texture2D> _textures = new Dictionary<string, Texture2D>();
+        private static readonly Dictionary<string, AudioClip> _audioClips = new Dictionary<string, AudioClip>();
 
         /// <summary>
         /// Creates a Material using the shader Unlit_DepthCutout.
@@ -65,7 +40,6 @@ namespace BroMakerLib
         /// A failure is shown in BroMaker's Issues panel and then thrown: `FileNotFoundException` when the file doesn't exist, `IOException` when it or the named game asset can't be loaded or decoded.
         /// </summary>
         /// <param name="path">Path to an image or asset</param>
-        /// ///
         /// <param name="fileName">Name of an image or asset file</param>
         /// <returns></returns>
         public static Material GetMaterial(string path, string fileName)
@@ -92,8 +66,8 @@ namespace BroMakerLib
 
         private static Material LoadMaterial(string filePath)
         {
-            Material result = null;
-            if (materials.TryGetValue(filePath, out Material cached) && cached)
+            Material result;
+            if (_materials.TryGetValue(filePath, out Material cached) && cached)
             {
                 return cached;
             }
@@ -118,9 +92,9 @@ namespace BroMakerLib
                 throw new FileNotFoundException($"Material file not found: '{filePath}'", filePath);
             }
 
-            if (result != null)
+            if (result)
             {
-                materials[filePath] = result;
+                _materials[filePath] = result;
             }
             return result;
         }
@@ -183,7 +157,6 @@ namespace BroMakerLib
         /// A failure is shown in BroMaker's Issues panel and then thrown: `FileNotFoundException` when the file doesn't exist, `IOException` when it or the named game asset can't be loaded or decoded.
         /// </summary>
         /// <param name="path">Path to an image or asset</param>
-        /// ///
         /// <param name="fileName">Name of an image or asset file</param>
         /// <returns></returns>
         public static Texture2D GetTexture(string path, string fileName)
@@ -205,22 +178,21 @@ namespace BroMakerLib
 
         private static Texture2D LoadTexture(string filePath)
         {
-            Texture2D tex = null;
-            textures.TryGetValue(filePath, out tex);
-            if (tex != null)
+            Texture2D texture;
+            if (_textures.TryGetValue(filePath, out texture) && texture)
             {
-                return tex;
+                return texture;
             }
 
             if (File.Exists(filePath))
             {
-                tex = LoadTextureFile(filePath, false);
+                texture = LoadTextureFile(filePath, false);
             }
             else if (filePath.Contains(":") && filePath[1] != ':') // Second condition is here to make sure it is not a disk path
             {
                 try
                 {
-                    tex = LoadAssetSync<Texture2D>(filePath);
+                    texture = LoadAssetSync<Texture2D>(filePath);
                 }
                 catch (Exception ex)
                 {
@@ -232,15 +204,15 @@ namespace BroMakerLib
                 throw new FileNotFoundException($"Texture file not found: '{filePath}'", filePath);
             }
 
-            if (tex != null)
+            if (texture)
             {
-                textures[filePath] = tex;
+                _textures[filePath] = texture;
             }
-            return tex;
+            return texture;
         }
 
         /// <summary>
-        /// Creates a Texture2D from an image or asset file.
+        /// Creates a Texture2D from an image file.
         /// The Texture2D is not cached, use GetTexture if caching is desired.
         /// A failure is shown in BroMaker's Issues panel and then thrown: `FileNotFoundException` when the file doesn't exist, `IOException` when it can't be read or decoded.
         /// </summary>
@@ -377,8 +349,8 @@ namespace BroMakerLib
 
         private static AudioClip LoadAudioClip(string filePath)
         {
-            AudioClip result = null;
-            if (audioClips.TryGetValue(filePath, out AudioClip cached) && cached)
+            AudioClip result;
+            if (_audioClips.TryGetValue(filePath, out AudioClip cached) && cached)
             {
                 return cached;
             }
@@ -403,9 +375,9 @@ namespace BroMakerLib
                 throw new FileNotFoundException($"Audio file not found: '{filePath}'", filePath);
             }
 
-            if (result != null)
+            if (result)
             {
-                audioClips[filePath] = result;
+                _audioClips[filePath] = result;
             }
             return result;
         }
@@ -471,7 +443,6 @@ namespace BroMakerLib
             while (!getClip.isDone)
             {
             }
-            ;
 
             if (getClip.error != null)
             {

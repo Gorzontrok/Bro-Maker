@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using BroMakerLib.CustomObjects.Bros;
@@ -94,7 +94,7 @@ namespace BroMakerLib
             GameObject heroHolder = new GameObject();
             heroHolder.SetActive(false);
 
-            foreach (KeyValuePair<string, Type> kvp in PresetManager.heroesPreset)
+            foreach (KeyValuePair<string, Type> kvp in PresetManager.GetAllHeroPresets())
             {
                 if (typeof(CustomHero).IsAssignableFrom(kvp.Value))
                 {
@@ -291,7 +291,7 @@ namespace BroMakerLib
             // Allow bro developers to preload assets
             GameObject heroHolder = new GameObject();
             heroHolder.SetActive(false);
-            foreach (KeyValuePair<string, Type> kvp in PresetManager.heroesPreset)
+            foreach (KeyValuePair<string, Type> kvp in PresetManager.GetAllHeroPresets())
             {
                 if (typeof(CustomHero).IsAssignableFrom(kvp.Value))
                 {

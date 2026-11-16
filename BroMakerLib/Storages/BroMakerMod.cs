@@ -44,6 +44,7 @@ namespace BroMakerLib
                     mod.Name = new DirectoryInfo(mod.Path).Name;
                 }
             }
+
             return mod;
         }
 
@@ -119,6 +120,7 @@ namespace BroMakerLib
                     }
                 }
             }
+
             return temp.ToArray();
         }
 

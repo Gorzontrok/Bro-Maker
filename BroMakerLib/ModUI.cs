@@ -19,19 +19,19 @@ namespace BroMakerLib
 {
     internal static class ModUI
     {
-        public static List<BroMakerMod> Mods
+        public static ReadOnlyCollection<BroMakerMod> Mods
         {
             get
             {
-                return BroMakerStorage.mods;
+                return BroMakerStorage.Mods;
             }
         }
 
-        public static List<BroMakerMod> IncompatibleMods
+        public static ReadOnlyCollection<BroMakerMod> IncompatibleMods
         {
             get
             {
-                return BroMakerStorage.incompatibleMods;
+                return BroMakerStorage.IncompatibleMods;
             }
         }
 
@@ -514,11 +514,11 @@ namespace BroMakerLib
                     {
                         throw new NullReferenceException("'characterPreset' is null or empty");
                     }
-                    if (!PresetManager.heroesPreset.ContainsKey(preset))
+                    Type presetType = PresetManager.GetHeroPreset(preset);
+                    if (presetType == null)
                     {
                         throw new Exception($"'characterPreset': {preset} doesn't exist. Check if you have the preset installed or if there is a typo.");
                     }
-                    Type presetType = PresetManager.heroesPreset[preset];
                     if (!typeof(CustomHero).IsAssignableFrom(presetType))
                     {
                         _selectedHero = null;
@@ -884,7 +884,7 @@ namespace BroMakerLib
             }
             if (GUILayout.Button(new GUIContent("Show Presets", "Lists all available presets to the log"), GUILayout.ExpandWidth(false)))
             {
-                foreach (KeyValuePair<string, Type> kvp in PresetManager.heroesPreset)
+                foreach (KeyValuePair<string, Type> kvp in PresetManager.GetAllHeroPresets())
                 {
                     Main.Log($"{kvp.Key}\t{kvp.Value}");
                 }

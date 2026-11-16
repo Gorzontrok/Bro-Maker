@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -521,7 +521,7 @@ namespace BroMakerLib.Loggers
 
         private static string TryResolveModFromException(Exception ex)
         {
-            if (BroMakerStorage.mods.Count == 0)
+            if (BroMakerStorage.Mods.Count == 0)
             {
                 return null;
             }
@@ -548,7 +548,7 @@ namespace BroMakerLib.Loggers
 
         private static string TryResolveModFromCaller()
         {
-            if (BroMakerStorage.mods.Count == 0)
+            if (BroMakerStorage.Mods.Count == 0)
             {
                 return null;
             }

@@ -155,23 +155,9 @@ namespace BroMakerLib
 
             if (Settings.instance.maxHealthAtOne)
             {
-                if (info.afterStart.ContainsKey("health"))
-                {
-                    info.afterStart["health"] = 1;
-                }
-                else
-                {
-                    info.afterStart.Add("health", 1);
-                }
+                info.afterStart["health"] = 1;
 
-                if (info.afterStart.ContainsKey("maxHealth"))
-                {
-                    info.afterStart["maxHealth"] = 1;
-                }
-                else
-                {
-                    info.afterStart.Add("maxHealth", 1);
-                }
+                info.afterStart["maxHealth"] = 1;
             }
 
             // Determine variant count from all variant properties

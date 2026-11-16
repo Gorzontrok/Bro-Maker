@@ -689,7 +689,7 @@ namespace BroMakerLib.CustomObjects.Bros
         /// <summary>
         /// Resets the _TintColor on the main renderer, gun sprite, and all registered tint materials to Color.gray.
         /// Called automatically when invulnerability ends if <see cref="trackInvulnerabilityTint" /> is enabled.
-        /// Can also be called directly for cases where tint needs to be reset manually (e.g. clearing invulnerability early).
+        /// Can also be called directly when the tint needs resetting by hand, such as after ending invulnerability early.
         /// </summary>
         public void ResetTintColors()
         {
@@ -808,7 +808,7 @@ namespace BroMakerLib.CustomObjects.Bros
         /// Gets the config directory path for a custom bro type.
         /// </summary>
         /// <param name="broType">The custom bro type</param>
-        /// <returns>Path to the bro's config directory (e.g., Config/BroMaker/Bros/{BroName}/)</returns>
+        /// <returns>Path to the bro's config directory under UnityModManager's config path.</returns>
         public static string GetBroConfigPath(Type broType)
         {
             return Path.Combine(Path.Combine(Path.Combine(UnityModManager.configPath, "BroMaker"), "Bros"), broType.Name);

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -13,8 +13,7 @@ namespace BroMakerLib.Storages
 {
     public static class BroMakerStorage
     {
-        internal static List<BroMakerMod> mods = new List<BroMakerMod>();
-        internal static List<BroMakerMod> incompatibleMods = new List<BroMakerMod>();
+        internal static ReadOnlyCollection<BroMakerMod> Mods { get; private set; } = new List<BroMakerMod>().AsReadOnly();
 
         internal static StoredAbility[] Abiltities
         {
@@ -31,6 +30,9 @@ namespace BroMakerLib.Storages
             get { return _broNamesReadOnly; }
         }
 
+        private static List<BroMakerMod> _mods = new List<BroMakerMod>();
+        private static readonly List<BroMakerMod> _incompatibleMods = new List<BroMakerMod>();
+        internal static ReadOnlyCollection<BroMakerMod> IncompatibleMods { get; } = _incompatibleMods.AsReadOnly();
         private static List<StoredAbility> _abilities = new List<StoredAbility>();
         private static List<StoredHero> _bros = new List<StoredHero>();
         private static ReadOnlyCollection<StoredHero> _brosReadOnly;
@@ -42,7 +44,8 @@ namespace BroMakerLib.Storages
 
         public static void Initialize()
         {
-            mods = new List<BroMakerMod>();
+            _mods = new List<BroMakerMod>();
+            Mods = _mods.AsReadOnly();
             LoadMods();
 
             _bros = new List<StoredHero>();
@@ -52,7 +55,7 @@ namespace BroMakerLib.Storages
             _broNames = new List<string>();
             _modByAssembly.Clear();
 
-            foreach (BroMakerMod mod in mods)
+            foreach (BroMakerMod mod in _mods)
             {
                 StoreCharactersFromMod(mod);
                 StoreAbilitiesFromMod(mod);
@@ -72,7 +75,7 @@ namespace BroMakerLib.Storages
             {
                 return null;
             }
-            foreach (BroMakerMod mod in mods)
+            foreach (BroMakerMod mod in _mods)
             {
                 if (string.Equals(mod.Name, modName, StringComparison.Ordinal))
                 {
@@ -107,7 +110,7 @@ namespace BroMakerLib.Storages
             string file = filePath.Replace('\\', '/');
             BroMakerMod best = null;
             int bestLength = -1;
-            foreach (BroMakerMod mod in mods)
+            foreach (BroMakerMod mod in _mods)
             {
                 if (string.IsNullOrEmpty(mod.Path))
                 {
@@ -165,14 +168,14 @@ namespace BroMakerLib.Storages
                         // Mod requires a newer version of BroMaker
                         if (Info.ParsedVersion < modVersion)
                         {
-                            incompatibleMods.Add(mod);
+                            _incompatibleMods.Add(mod);
                             BMLogger.Error($"{mod.Name} requires a version of BroMaker >={mod.BroMakerVersion}. Current BroMaker version is {Info.VERSION}", mod: mod.Name);
                             mod.ErrorMessage = mod.Name + " requires a newer version of BroMaker: " + mod.BroMakerVersion + ". Current BroMaker version is: " + Info.VERSION + ". You must update BroMaker.";
                         }
                         // Mod is too old for this version of BroMaker
                         else if (Info.ParsedMinimumVersion > modVersion)
                         {
-                            incompatibleMods.Add(mod);
+                            _incompatibleMods.Add(mod);
                             BMLogger.Error($"{mod.Name} will not work with this version of BroMaker. You must update {mod.Name}.", mod: mod.Name);
                             mod.ErrorMessage = mod.Name + " was created using an outdated version of BroMaker (" + mod.BroMakerVersion + ") you must update " + mod.Name + " to a version that supports BroMaker " + Info.ParsedMinimumVersion + ".";
                         }
@@ -185,7 +188,7 @@ namespace BroMakerLib.Storages
                                 mod.ErrorMessage = mod.Name + " was created using an outdated version of BroMaker (" + mod.BroMakerVersion + ") you may experience bugs using it on this version of BroMaker. It's recommended that you update " + mod.Name + " to a newer version if possible.";
                             }
                             mod.Initialize();
-                            mods.Add(mod);
+                            _mods.Add(mod);
                         }
                     }
                 }
@@ -195,6 +198,7 @@ namespace BroMakerLib.Storages
                     BMLogger.Error($"Unable to load BroMaker Mod at {jsonFile}", ex, modName);
                 }
             }
+
             BMLogger.Debug("Finish Loading Mods");
         }
 
@@ -274,6 +278,7 @@ namespace BroMakerLib.Storages
                         cutscene.path = mod.Path;
                         cutscene.Owner = info;
                     }
+
                     StoredHero hero = new StoredHero(info, mod);
                     temp.Add(hero);
                     _bros.Add(hero);
@@ -281,6 +286,7 @@ namespace BroMakerLib.Storages
                     _broNames.Add(hero.name);
                 }
             }
+
             mod.StoredHeroes = temp.ToArray();
         }
 
