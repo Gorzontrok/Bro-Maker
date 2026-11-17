@@ -15,9 +15,7 @@ namespace BroMakerLib
 
         public static string BrosDirectory { get; private set; }
         public static string WeaponsDirectory { get; private set; }
-        public static string AbilitiesDirectory { get; private set; }
         public static string ProjectilesDirectory { get; private set; }
-        public static string GrenadesDirectory { get; private set; }
         public static string CutscenesDirectory { get; private set; }
 
         private static string _storageDirectory;
@@ -37,10 +35,7 @@ namespace BroMakerLib
             }
 
             BrosDirectory = Path.Combine(StorageDirectory, "Bros");
-            AbilitiesDirectory = Path.Combine(StorageDirectory, "Abilities");
             WeaponsDirectory = Path.Combine(StorageDirectory, "Weapons");
-            AbilitiesDirectory = Path.Combine(StorageDirectory, "Abilties");
-            GrenadesDirectory = Path.Combine(StorageDirectory, "Grenades");
             ProjectilesDirectory = Path.Combine(StorageDirectory, "Projectiles");
             CutscenesDirectory = Path.Combine(StorageDirectory, "Cutscenes");
         }

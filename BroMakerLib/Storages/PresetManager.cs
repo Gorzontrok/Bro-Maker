@@ -17,8 +17,6 @@ namespace BroMakerLib
 
         private static Dictionary<string, Type> _heroesPreset = new Dictionary<string, Type>();
         private static Dictionary<string, Type> _customObjectsPreset = new Dictionary<string, Type>();
-        public static Dictionary<string, Type> abilities = new Dictionary<string, Type>();
-        public static Dictionary<string, Type> grenades = new Dictionary<string, Type>();
 
         /// <summary>The live registry of `[Parameter]` methods, keyed by parameter name.</summary>
         public static Dictionary<string, MethodInfo> parameters => _parameters;
@@ -33,7 +31,6 @@ namespace BroMakerLib
         {
             _heroesPreset = new Dictionary<string, Type>();
             _customObjectsPreset = new Dictionary<string, Type>();
-            abilities = new Dictionary<string, Type>();
             _parameters = new Dictionary<string, MethodInfo>();
 
             CheckAssembly(Assembly.GetExecutingAssembly());
@@ -129,26 +126,6 @@ namespace BroMakerLib
         internal static ReadOnlyCollection<KeyValuePair<string, Type>> GetAllHeroPresets()
         {
             return GetAllPresets(_heroesPreset);
-        }
-
-        public static Type GetAbilityPreset(string name)
-        {
-            if (!abilities.ContainsKey(name))
-            {
-                return null;
-            }
-
-            return abilities[name];
-        }
-
-        public static Type GetGrenadePreset(string name)
-        {
-            if (!grenades.ContainsKey(name))
-            {
-                return null;
-            }
-
-            return grenades[name];
         }
 
         public static MethodInfo GetParameterMethod(string name)
@@ -283,16 +260,6 @@ namespace BroMakerLib
                 return _heroesPreset;
             }
 
-            if (attribute is AbilityPresetAttribute)
-            {
-                return abilities;
-            }
-
-            if (attribute is GrenadePresetAttribute)
-            {
-                return grenades;
-            }
-
             return _customObjectsPreset;
         }
 
@@ -329,16 +296,6 @@ namespace BroMakerLib
             if (attribute is HeroPresetAttribute)
             {
                 return "Hero";
-            }
-
-            if (attribute is AbilityPresetAttribute)
-            {
-                return "Ability";
-            }
-
-            if (attribute is GrenadePresetAttribute)
-            {
-                return "Grenade";
             }
 
             return string.Empty;

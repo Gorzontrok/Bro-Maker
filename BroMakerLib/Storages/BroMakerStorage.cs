@@ -16,11 +16,6 @@ namespace BroMakerLib.Storages
     {
         internal static ReadOnlyCollection<BroMakerMod> Mods { get; private set; } = new List<BroMakerMod>().AsReadOnly();
 
-        internal static StoredAbility[] Abiltities
-        {
-            get { return _abilities.ToArray(); }
-        }
-
         internal static ReadOnlyCollection<StoredHero> Bros
         {
             get { return _brosReadOnly; }
@@ -34,7 +29,6 @@ namespace BroMakerLib.Storages
         private static List<BroMakerMod> _mods = new List<BroMakerMod>();
         private static readonly List<BroMakerMod> _incompatibleMods = new List<BroMakerMod>();
         internal static ReadOnlyCollection<BroMakerMod> IncompatibleMods { get; } = _incompatibleMods.AsReadOnly();
-        private static List<StoredAbility> _abilities = new List<StoredAbility>();
         private static List<StoredHero> _bros = new List<StoredHero>();
         private static ReadOnlyCollection<StoredHero> _brosReadOnly = new List<StoredHero>().AsReadOnly();
         private static Dictionary<string, StoredHero> _brosByName = new Dictionary<string, StoredHero>();
@@ -50,7 +44,6 @@ namespace BroMakerLib.Storages
             LoadMods();
 
             _bros = new List<StoredHero>();
-            _abilities = new List<StoredAbility>();
             _brosByName = new Dictionary<string, StoredHero>();
             _brosByType = new Dictionary<Type, StoredHero>();
             _broNames = new List<string>();
@@ -59,7 +52,6 @@ namespace BroMakerLib.Storages
             foreach (BroMakerMod mod in _mods)
             {
                 StoreCharactersFromMod(mod);
-                StoreAbilitiesFromMod(mod);
             }
 
             _broNames.Sort();
@@ -357,54 +349,6 @@ namespace BroMakerLib.Storages
 
             mod.StoredHeroes = temp.ToArray();
             mod.BrosNames = names.ToArray();
-        }
-
-        public static void StoreAbilitiesFromMod(BroMakerMod mod)
-        {
-            if (mod == null || mod.Abilities == null || mod.Abilities.Length == 0)
-            {
-                return;
-            }
-
-            List<StoredAbility> temp = new List<StoredAbility>();
-            foreach (object abilityObject in mod.Abilities)
-            {
-                if (abilityObject == null)
-                {
-                    continue;
-                }
-
-                if (abilityObject as string != null && abilityObject.As<string>().IsNotNullOrEmpty())
-                {
-                    string path = Path.Combine(mod.Path, abilityObject as string);
-                    if (File.Exists(path))
-                    {
-                        StoredAbility ability;
-                        try
-                        {
-                            ability = new StoredAbility(path);
-                        }
-                        catch (Exception e)
-                        {
-                            BMLogger.Error($"Failed to load ability JSON at '{path}'", e, mod.Name);
-                            continue;
-                        }
-                        temp.Add(ability);
-                        _abilities.Add(ability);
-                        BMLogger.Debug($"Found file: '{path}'");
-                    }
-                }
-                else if (abilityObject as AbilityInfo != null)
-                {
-                    AbilityInfo info = abilityObject as AbilityInfo;
-                    info.path = mod.Path;
-                    info.Mod = mod;
-                    StoredAbility ability = new StoredAbility(info);
-                    temp.Add(ability);
-                    _abilities.Add(ability);
-                }
-            }
-            mod.StoredAbilities = temp.ToArray();
         }
     }
 }

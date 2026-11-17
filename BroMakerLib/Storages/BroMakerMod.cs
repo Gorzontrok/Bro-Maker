@@ -22,15 +22,12 @@ namespace BroMakerLib
 
         public string[] Assemblies = new string[0];
         public object[] CustomBros = new object[0];
-        public object[] Abilities = new object[0];
-        public object[] Grenades = new object[0];
 
         // Not in JSON file
         [JsonIgnore] public string Path { get; protected set; }
         [JsonIgnore] internal string ManifestFileName { get; private set; }
         [JsonIgnore] public string[] BrosNames { get; internal set; } = new string[0];
         [JsonIgnore] public StoredHero[] StoredHeroes { get; internal set; } = new StoredHero[0];
-        [JsonIgnore] public StoredAbility[] StoredAbilities { get; internal set; } = new StoredAbility[0];
         [JsonIgnore] public Harmony Harmony = null;
 
         public static BroMakerMod TryLoad(string path)
@@ -55,7 +52,6 @@ namespace BroMakerLib
             using (BMLogger.Scope(Name, null))
             {
                 CustomBros = CheckFiles<CustomBroInfo>(CustomBros);
-                Abilities = CheckFiles<AbilityInfo>(Abilities);
             }
         }
 
@@ -108,7 +104,7 @@ namespace BroMakerLib
                 else if (obj is JObject && obj.As<JObject>().Count > 0)
                 {
                     T info;
-                    string broName = typeof(T) == typeof(CustomBroInfo) ? (obj.As<JObject>().GetValue("name", StringComparison.OrdinalIgnoreCase) as JValue)?.Value as string : null;
+                    string broName = (obj.As<JObject>().GetValue("name", StringComparison.OrdinalIgnoreCase) as JValue)?.Value as string;
                     using (BMLogger.Scope(null, broName))
                     {
                         try
@@ -117,7 +113,7 @@ namespace BroMakerLib
                         }
                         catch (Exception e)
                         {
-                            BMLogger.Error($"Failed to load an inline {(typeof(T) == typeof(AbilityInfo) ? "ability" : "bro")}", e);
+                            BMLogger.Error("Failed to load an inline bro", e);
                             continue;
                         }
                     }
