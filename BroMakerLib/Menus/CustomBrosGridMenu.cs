@@ -74,7 +74,7 @@ namespace BroMakerLib.Menus
                     Name = "CustomBrosGrid_PaginatedGrid",
                     Columns = 5, // 5 columns (requirement)
                     Rows = 2, // 2 rows (requirement)
-                    GridSpacing = 50f, // More spacing between cards
+                    GridSpacing = 10f,
                     GridPadding = 10f, // Reduced padding to use more space for cells
                     WidthMode = SizeMode.Fill,
                     HeightMode = SizeMode.Fill,
