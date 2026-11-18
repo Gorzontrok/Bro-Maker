@@ -52,7 +52,10 @@ namespace BroMakerLib.Extensions
             heroCharacter.high5Bubble = character.high5Bubble;
             heroCharacter.projectile = character.projectile;
             heroCharacter.jetPackSprite = character.jetPackSprite;
-            heroCharacter.specialGrenade = LoadBroforceObjects.GetGrenadeFromName(string.Empty);
+            if (heroCharacter.specialGrenade == null)
+            {
+                heroCharacter.specialGrenade = LoadBroforceObjects.GetGrenadeFromName(string.Empty);
+            }
             heroCharacter.specialGrenade.playerNum = heroCharacter.playerNum;
             heroCharacter.heroType = character.heroType;
             heroCharacter.canUnFreeze = character.canUnFreeze;
