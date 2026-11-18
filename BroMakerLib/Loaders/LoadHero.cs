@@ -44,23 +44,28 @@ namespace BroMakerLib.Loaders
         public static Player.SpawnType[] previousSpawnInfo = new Player.SpawnType[] { Player.SpawnType.Unknown, Player.SpawnType.Unknown, Player.SpawnType.Unknown, Player.SpawnType.Unknown };
         public static bool[] wasFirstDeployment = new bool[] { false, false, false, false };
 
-        private static Dictionary<int, CustomBroDeath> _customBroDeaths;
+        private static readonly Dictionary<DeathObject, CustomBroDeath> _customBroDeaths = new Dictionary<DeathObject, CustomBroDeath>();
 
         internal static void ClearCustomBroDeaths()
         {
-            _customBroDeaths = new Dictionary<int, CustomBroDeath>();
+            // A super-checkpoint restart keeps the deaths from before the checkpoint for the level-end screen.
+            if (Map.startFromSuperCheckPoint)
+            {
+                return;
+            }
+            _customBroDeaths.Clear();
         }
 
-        /// <summary>Records that the death at this position in the level's death list was the given custom bro, so the level-over screen draws it with that bro's sprites.</summary>
-        internal static void RegisterCustomBroDeath(int deathNum, CustomBroDeath death)
+        /// <summary>Records that this death was the given custom bro, so the end screens draw it with that bro's sprites.</summary>
+        internal static void RegisterCustomBroDeath(DeathObject deathObject, CustomBroDeath death)
         {
-            _customBroDeaths.Add(deathNum, death);
+            _customBroDeaths[deathObject] = death;
         }
 
-        /// <summary>Returns which custom bro and variant the death at this position in the level's death list was, or false if it wasn't a custom bro.</summary>
-        public static bool TryGetCustomBroDeath(int deathNum, out CustomBroDeath death)
+        /// <summary>Returns which custom bro and variant this death was, or false if it wasn't a custom bro.</summary>
+        public static bool TryGetCustomBroDeath(DeathObject deathObject, out CustomBroDeath death)
         {
-            return _customBroDeaths.TryGetValue(deathNum, out death);
+            return _customBroDeaths.TryGetValue(deathObject, out death);
         }
 
         public static TestVanDammeAnim WithCustomBroInfo(int selectedPlayerNum, CustomBroInfo customBroInfo, Type type)

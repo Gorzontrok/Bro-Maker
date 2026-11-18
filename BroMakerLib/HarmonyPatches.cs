@@ -646,113 +646,90 @@ namespace BroMakerLib
     }
 
     // Fix custom bros having wrong sprite show up on death screen
-    [HarmonyPatch(typeof(StatisticsController), "NotifyMookDeathType", new Type[] { typeof(TestVanDammeAnim), typeof(DeathType) })]
-    internal static class StatisticsController_NotifyMookDeathType_Patch
+    [HarmonyPatch(typeof(DeathObject), MethodType.Constructor, new Type[] { typeof(NID), typeof(DeathType), typeof(HeroType), typeof(float), typeof(float) })]
+    internal static class DeathObject_Constructor_Patch
     {
-        public static void Prefix(ref TestVanDammeAnim vanDamme, ref DeathType deathType)
+        // Recorded at construction because the bro may be gone by the time an end screen draws its death.
+        public static void Postfix(DeathObject __instance)
         {
-            if (!Main.enabled || GameModeController.LevelFinished)
+            if (!Main.enabled)
             {
                 return;
             }
 
-            if (vanDamme is ICustomHero && deathType != DeathType.None)
+            if (__instance.unitID.Obj is ICustomHero hero)
             {
-                ICustomHero customHero = vanDamme as ICustomHero;
-                LoadHero.RegisterCustomBroDeath(SingletonNetObj<StatisticsController>.Instance.currentStats.deathList.Count,
-                    new CustomBroDeath(customHero.Info, customHero.CurrentVariant));
+                LoadHero.RegisterCustomBroDeath(__instance, new CustomBroDeath(hero.Info, hero.CurrentVariant));
             }
         }
     }
 
     // Fix custom bros having wrong sprite show up on death screen
-    [HarmonyPatch(typeof(LevelOverScreen), "AddDeath")]
-    internal static class LevelOverScreen_AddDeath_Patch
+    [HarmonyPatch(typeof(VictoryBroDeath), "Setup", new Type[] { typeof(DeathObject), typeof(float), typeof(Transform), typeof(ShakeM) })]
+    internal static class VictoryBroDeath_Setup_Patch
     {
-        public static bool Prefix(LevelOverScreen __instance, ref int deathNum, ref int totalDeaths, ref Transform parent, ref ShakeM shakeObject)
+        public static void Postfix(VictoryBroDeath __instance, DeathObject deathObject)
         {
             if (!Main.enabled)
             {
-                return true;
+                return;
             }
 
-            if (LoadHero.TryGetCustomBroDeath(deathNum, out CustomBroDeath broDeath))
+            if (!LoadHero.TryGetCustomBroDeath(deathObject, out CustomBroDeath broDeath))
             {
-                int num = 40 + (totalDeaths / 6);
-                int num2 = 1 + (totalDeaths / num);
-                int num3 = deathNum / num;
-                int num4 = deathNum - (num3 * num);
-                float num5 = 190f / (float)Mathf.Min(num, totalDeaths);
-                float num6 = num2 > 1 ? 50f / ((float)num2 + 0.85f) : 0f;
-                if (num5 > 16f)
-                {
-                    num5 = 16f;
-                }
-                float num7 = -num5 * (float)(Mathf.Min(num, totalDeaths) - 1) / 2f;
-                float num8 = num2 > 1 ? (num6 * ((float)(num2 - 1) / 2f)) + 10f : 10f;
-                DeathObject deathObject = StatisticsController.GetDeathObject(deathNum);
-                Vector3 position = __instance.mookDeathsHolder.transform.position + new Vector3(num7 + ((float)num4 * num5), num8 - ((float)num3 * num6), (35f * (float)deathNum / (float)totalDeaths) - (float)(num3 * 45));
-
-                if (deathObject != null)
-                {
-                    VictoryMookDeath victoryMookDeath = Object.Instantiate<VictoryMookDeath>(__instance.broDeathGenericPrefab, position, Quaternion.identity);
-                    CustomBroInfo bro = broDeath.Info;
-                    int variant = broDeath.VariantIndex;
-
-                    victoryMookDeath.Setup(deathObject, 0.2f, parent, shakeObject);
-
-                    string spritePath = BroMakerUtilities.GetVariantValue(bro.SpritePath, variant);
-                    string gunSpritePath = BroMakerUtilities.GetVariantValue(bro.GunSpritePath, variant);
-                    Vector2 gunOffset = BroMakerUtilities.GetVariantValue(bro.GunSpriteOffset, variant);
-
-                    // The bro's spawn already reported why a sheet failed to load.
-                    if (!string.IsNullOrEmpty(spritePath))
-                    {
-                        try
-                        {
-                            Material bodyMaterial = ResourcesController.LoadMaterial(bro.path, spritePath);
-                            SpriteSM bodySprite = victoryMookDeath.GetComponent<SpriteSM>();
-                            if (bodySprite != null)
-                            {
-                                bodySprite.SetMaterialAndRefresh(bodyMaterial);
-                            }
-                            else
-                            {
-                                victoryMookDeath.GetComponent<MeshRenderer>().material = bodyMaterial;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            BMLogger.Log($"Death screen keeps the default sprite for '{bro.name}': {ex.Message}");
-                        }
-                    }
-
-                    if (!string.IsNullOrEmpty(gunSpritePath))
-                    {
-                        try
-                        {
-                            Material gunMaterial = ResourcesController.LoadMaterial(bro.path, gunSpritePath);
-                            SpriteSM gunSprite = victoryMookDeath.gunSprite.GetComponent<SpriteSM>();
-                            if (gunSprite != null)
-                            {
-                                gunSprite.SetMaterialAndRefresh(gunMaterial);
-                            }
-                            else
-                            {
-                                victoryMookDeath.gunSprite.GetComponent<MeshRenderer>().material = gunMaterial;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            BMLogger.Log($"Death screen keeps the default sprite for '{bro.name}': {ex.Message}");
-                        }
-                    }
-                    victoryMookDeath.gunSprite.SetOffset(gunOffset.x, gunOffset.y, 0);
-                }
-                return false;
+                return;
             }
 
-            return true;
+            CustomBroInfo bro = broDeath.Info;
+            int variant = broDeath.VariantIndex;
+
+            string spritePath = BroMakerUtilities.GetVariantValue(bro.SpritePath, variant);
+            string gunSpritePath = BroMakerUtilities.GetVariantValue(bro.GunSpritePath, variant);
+            Vector2 gunOffset = BroMakerUtilities.GetVariantValue(bro.GunSpriteOffset, variant);
+
+            // The bro's spawn already reported why a sheet failed to load.
+            if (!string.IsNullOrEmpty(spritePath))
+            {
+                try
+                {
+                    Material bodyMaterial = ResourcesController.LoadMaterial(bro.path, spritePath);
+                    SpriteSM bodySprite = __instance.GetComponent<SpriteSM>();
+                    if (bodySprite != null)
+                    {
+                        bodySprite.SetMaterialAndRefresh(bodyMaterial);
+                    }
+                    else
+                    {
+                        __instance.GetComponent<MeshRenderer>().material = bodyMaterial;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    BMLogger.Log($"Death screen keeps the default sprite for '{bro.name}': {ex.Message}");
+                }
+            }
+
+            if (!string.IsNullOrEmpty(gunSpritePath))
+            {
+                try
+                {
+                    Material gunMaterial = ResourcesController.LoadMaterial(bro.path, gunSpritePath);
+                    SpriteSM gunSprite = __instance.gunSprite.GetComponent<SpriteSM>();
+                    if (gunSprite != null)
+                    {
+                        gunSprite.SetMaterialAndRefresh(gunMaterial);
+                    }
+                    else
+                    {
+                        __instance.gunSprite.GetComponent<MeshRenderer>().material = gunMaterial;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    BMLogger.Log($"Death screen keeps the default sprite for '{bro.name}': {ex.Message}");
+                }
+            }
+            __instance.gunSprite.SetOffset(gunOffset.x, gunOffset.y, 0);
         }
     }
 
