@@ -342,6 +342,21 @@ namespace BroMakerLib
         }
     }
 
+    // The game's switch swaps the avatar materials without re-reading their texture sizes.
+    [HarmonyPatch(typeof(PlayerHUD), "GoToDoubleAvatarMode")]
+    internal static class PlayerHUD_GoToDoubleAvatarMode_Patch
+    {
+        private static void Postfix(PlayerHUD __instance)
+        {
+            if (!Main.enabled || __instance.avatar == null || __instance.secondAvatar == null)
+            {
+                return;
+            }
+            __instance.avatar.RefreshTexture();
+            __instance.secondAvatar.RefreshTexture();
+        }
+    }
+
     [HarmonyPatch(typeof(HeroController), "GetHeroType")]
     internal static class HeroController_GetHeroType_Patch
     {
