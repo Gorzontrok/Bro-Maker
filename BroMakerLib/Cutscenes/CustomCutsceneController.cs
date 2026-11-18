@@ -20,6 +20,7 @@ namespace BroMakerLib.Cutscenes
         private static GameObject backgroundOverlay;
         private static bool backgroundOverlayWasActive;
 
+        /// <summary>Plays a custom bro's intro cutscene; `setFinishCampaignAfterCutscene` is ignored while the level editor is open.</summary>
         public static void LoadHeroCutscene(CustomIntroCutscene cutscene, float delay = 0.2f, bool setFinishCampaignAfterCutscene = false)
         {
             if (cutscene == null)
@@ -34,7 +35,8 @@ namespace BroMakerLib.Cutscenes
             }
             cutsceneToLoad = cutscene;
             willLoadCustomCutscene = true;
-            if (setFinishCampaignAfterCutscene)
+            // In the level editor the game defers the finish until the scene unloads, so leaving play mode would end the campaign.
+            if (setFinishCampaignAfterCutscene && !LevelEditorGUI.IsActive)
             {
                 finishCampaignAfterCutscene = true;
             }

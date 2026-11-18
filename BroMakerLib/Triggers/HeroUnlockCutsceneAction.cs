@@ -66,8 +66,12 @@ namespace BroMakerLib.Triggers
             {
                 try
                 {
-                    BroUnlockManager.CheckLevelUnlocks(LevelSelectionController.currentCampaign.name);
-                    Cutscenes.CustomCutsceneController.LoadHeroCutscene(BroMakerUtilities.GetVariantValue(hero.GetInfo().Cutscene, 0), 0.2f, true);
+                    // An editor test run can hold a stale campaign, or none.
+                    if (!LevelEditorGUI.IsActive)
+                    {
+                        BroUnlockManager.CheckLevelUnlocks(LevelSelectionController.currentCampaign.name);
+                    }
+                    Cutscenes.CustomCutsceneController.LoadHeroCutscene(BroMakerUtilities.GetVariantValue(hero.GetInfo().Cutscene, 0), 0.2f, info.finishCampaignAfterCutscene);
                     state = TriggerActionState.Done;
                 }
                 catch (Exception ex)
