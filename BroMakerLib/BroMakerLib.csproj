@@ -160,7 +160,6 @@
         <Compile Include="Unlocks\UnlockPatches.cs"/>
         <Compile Include="Vanilla\Bros\AshBrolliamsM.cs"/>
         <Compile Include="Vanilla\Bros\BaBroracusM.cs"/>
-        <Compile Include="Vanilla\Bros\BillyConnollyM.cs"/>
         <Compile Include="Vanilla\Bros\BladeM.cs"/>
         <Compile Include="Vanilla\Bros\BoondockBroM.cs"/>
         <Compile Include="Vanilla\Bros\BrobocopM.cs"/>
@@ -198,8 +197,6 @@
         <Compile Include="Vanilla\Bros\LeeBroxmasM.cs"/>
         <Compile Include="Vanilla\Bros\McBroverM.cs"/>
         <Compile Include="Vanilla\Bros\NebroM.cs"/>
-        <Compile Include="Vanilla\Bros\NorrisBroM.cs"/>
-        <Compile Include="Vanilla\Bros\PistolWhipBroM.cs"/>
         <Compile Include="Vanilla\Bros\PredabroM.cs"/>
         <Compile Include="Vanilla\Bros\RambroM.cs"/>
         <Compile Include="Vanilla\Bros\ScorpionBroM.cs"/>
