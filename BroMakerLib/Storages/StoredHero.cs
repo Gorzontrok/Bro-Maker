@@ -33,9 +33,7 @@ namespace BroMakerLib.Storages
                 string fallbackName = Path.GetFileNameWithoutExtension(this.path);
                 BMLogger.Error($"Failed to load bro JSON at '{this.path}'", e, mod?.Name, fallbackName);
                 name = fallbackName;
-                return;
             }
-            BroSpawnManager.AddBroIfEnabled(this);
         }
 
         public StoredHero(CustomBroInfo bInfo, BroMakerMod mod)
@@ -43,7 +41,6 @@ namespace BroMakerLib.Storages
             info = bInfo;
             path = bInfo.path;
             name = bInfo.name;
-            BroSpawnManager.AddBroIfEnabled(this);
             this.mod = mod;
         }
 

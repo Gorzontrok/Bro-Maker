@@ -226,6 +226,19 @@ namespace BroMakerLib.Storages
                             mod.ErrorMessage = mod.Name + " was created using an outdated version of BroMaker (" + mod.BroMakerVersion + ") you must update " + mod.Name + " to a version that supports BroMaker " + Info.ParsedMinimumVersion + ".";
                         }
                         // Versions are compatible
+                        else if (GetModByName(mod.Name) is BroMakerMod loaded)
+                        {
+                            BroMakerMod kept = loaded;
+                            BroMakerMod skipped = mod;
+                            if (UnityModManager.ParseVersion(mod.Version) > UnityModManager.ParseVersion(loaded.Version))
+                            {
+                                mod.Initialize();
+                                _mods[_mods.IndexOf(loaded)] = mod;
+                                kept = mod;
+                                skipped = loaded;
+                            }
+                            BMLogger.Warning($"Two copies of the mod '{mod.Name}' are installed: the one at '{kept.Path}' was loaded and the one at '{skipped.Path}' was not.", mod: mod.Name);
+                        }
                         else
                         {
                             mod.Initialize();
@@ -304,14 +317,11 @@ namespace BroMakerLib.Storages
                     {
                         StoredHero hero = new StoredHero(path, mod);
                         names.Add(hero.name);
-                        if (hero.info == null)
+                        if (hero.info == null || !TryRegisterBro(hero))
                         {
                             continue;
                         }
                         temp.Add(hero);
-                        _bros.Add(hero);
-                        _brosByName[hero.name] = hero;
-                        _broNames.Add(hero.name);
                         BMLogger.Debug($"Found file: '{path}'");
                     }
                 }
@@ -340,15 +350,31 @@ namespace BroMakerLib.Storages
 
                     StoredHero hero = new StoredHero(info, mod);
                     names.Add(hero.name);
-                    temp.Add(hero);
-                    _bros.Add(hero);
-                    _brosByName[hero.name] = hero;
-                    _broNames.Add(hero.name);
+                    if (TryRegisterBro(hero))
+                    {
+                        temp.Add(hero);
+                    }
                 }
             }
 
             mod.StoredHeroes = temp.ToArray();
             mod.BrosNames = names.ToArray();
+        }
+
+        private static bool TryRegisterBro(StoredHero hero)
+        {
+            StoredHero existing;
+            if (_brosByName.TryGetValue(hero.name, out existing))
+            {
+                BMLogger.Warning($"Two bros named '{hero.name}' are installed: the one at '{existing.path}' was loaded and the one at '{hero.path}' was not.", mod: hero.mod?.Name, bro: hero.name);
+                return false;
+            }
+
+            _bros.Add(hero);
+            _brosByName[hero.name] = hero;
+            _broNames.Add(hero.name);
+            BroSpawnManager.AddBroIfEnabled(hero);
+            return true;
         }
     }
 }
