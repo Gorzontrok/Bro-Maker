@@ -76,6 +76,9 @@ namespace BroMakerLib.Cutscenes
         public string fanfarePath = string.Empty;
         public string anim = string.Empty;
 
+        /// <summary>
+        /// Path, relative to the bro's folder, of an image drawn on the flag's waving banner behind the portrait in place of the flag, of which only the middle shows.
+        /// </summary>
         public string backgroundPath = string.Empty;
 
         // To Implement
@@ -195,7 +198,6 @@ namespace BroMakerLib.Cutscenes
 
             if (!string.IsNullOrEmpty(backgroundPath))
             {
-                // Load default sprite when the Json doesn't provide one
                 try
                 {
                     data.backgroundTexture = ResourcesController.GetTexture(path, backgroundPath);

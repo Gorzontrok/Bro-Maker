@@ -123,6 +123,11 @@ namespace BroMakerLib.Cutscenes
                     // Animation
                     UpdateAnimatedTexture(_curIntroData, __instance.spriteRenderer);
 
+                    if (hasExtraData && dataExtra.backgroundTexture != null)
+                    {
+                        CustomCutsceneController.ApplyBackground(__instance, dataExtra.backgroundTexture);
+                    }
+
                     return false;
                 }
                 catch (Exception ex)
@@ -274,6 +279,8 @@ namespace BroMakerLib.Cutscenes
     {
         private static void Prefix(CutsceneIntroRoot __instance, ref CutsceneIntroData ____curIntroData)
         {
+            CustomCutsceneController.RestoreBackground(__instance);
+
             if (____curIntroData != null)
             {
                 ____curIntroData.subtitle1 = null;
