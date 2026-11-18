@@ -148,23 +148,11 @@ namespace BroMakerLib.CustomObjects.Bros
                 Character.specialGrenade.playerNum = LoadHero.playerNum;
 
                 Info.BeforeAwake(this);
+                // The game's Awake resets maxFallSpeed to this once the bro has its parachute.
+                originalMaxFallSpeed = maxFallSpeed;
                 base.Awake();
                 this.SetSprites();
                 Info.AfterAwake(this);
-
-                // Make sure parachute isn't null, for some reason the game's default way of handling this doesn't work
-                if (this.parachute == null)
-                {
-                    Parachute parachute;
-                    for (int i = 0; i < transform.childCount; ++i)
-                    {
-                        if ((parachute = transform.GetChild(i).GetComponent<Parachute>()) != null)
-                        {
-                            this.parachute = parachute;
-                            break;
-                        }
-                    }
-                }
             }
             catch (Exception ex)
             {
