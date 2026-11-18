@@ -63,6 +63,7 @@ namespace BroMakerLib.CustomObjects.Bros
                 hasHitWithWall = false;
                 SwingSword(false);
             }
+            TriggerBroFireEvent();
         }
 
         protected virtual Vector3 GetSwingAtGroundPosition(float x, float y)

@@ -37,7 +37,6 @@ namespace BroMakerLib.CustomObjects.Bros
 
         [Syncronize] public CustomBroInfo Info { get; set; }
         [Syncronize] public BroBase Character { get; set; }
-        [JsonIgnore] public MuscleTempleFlexEffect FlexEffect { get; set; }
 
         [JsonIgnore] public int CurrentVariant { get; set; }
         [JsonIgnore] public Vector2 CurrentGunSpriteOffset { get; set; }
@@ -384,42 +383,6 @@ namespace BroMakerLib.CustomObjects.Bros
                         }
                     }
                 }
-            }
-        }
-
-        protected override void TriggerFlexEvent()
-        {
-            if (player.HasFlexPower(PickupType.FlexAlluring))
-            {
-                Map.AttractMooks(X, Y, 96f, 30f);
-            }
-
-            if (player.HasFlexPower(PickupType.FlexGoldenLight))
-            {
-                if (FlexEffect == null)
-                {
-                    FlexEffect = Traverse.Create(this as BroBase).GetFieldValue("flexEffect") as MuscleTempleFlexEffect;
-                }
-
-                if (FlexEffect != null)
-                {
-                    FlexEffect.PlaySoundEffect();
-                }
-
-                if (IsMine)
-                {
-                    int num = 8 + Random.Range(0, 5);
-                    for (int i = 0; i < num; i++)
-                    {
-                        float angle = -1.88495576f + (1.2f / (float)(num - 1) * 3.14159274f * (float)i);
-                        Vector2 vector = Math.Point2OnCircle(angle, 1f);
-                        ProjectileController.SpawnProjectileLocally(ProjectileController.instance.goldenLightProjectile, this, X, Y + 12f, vector.x * 400f, vector.y * 400f, true, 15, false, true, -15f);
-                    }
-                }
-            }
-            else if (player.HasFlexPower(PickupType.FlexInvulnerability) && FlexEffect != null)
-            {
-                FlexEffect.PlaySoundEffect();
             }
         }
 
