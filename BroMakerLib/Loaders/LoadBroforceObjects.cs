@@ -12,6 +12,7 @@ namespace BroMakerLib.Loaders
             { "Grenade", "networkobjects:Grenade" },
             { "Default", "networkobjects:Grenade" },
             { "Martini", "networkobjects:Martini Grenade" },
+            { "MartiniGlass", "networkobjects:Martini Grenade" },
             { "TearGas", "networkobjects:GrenadeTearGas" },
             { "FlameWave", "networkobjects:GrenadeFlameWave" },
             { "AirStrike", "networkobjects:Grenade Airstrike" },
@@ -111,6 +112,7 @@ namespace BroMakerLib.Loaders
                 {
                     return go.GetComponent<Grenade>();
                 }
+                BMLogger.Warning($"Unknown grenade '{name}', using the default grenade");
             }
             catch (Exception e)
             {
@@ -137,6 +139,7 @@ namespace BroMakerLib.Loaders
                 {
                     return go.GetComponent<Projectile>();
                 }
+                BMLogger.Warning($"Unknown projectile '{name}', using the default projectile");
             }
             catch (Exception e)
             {
