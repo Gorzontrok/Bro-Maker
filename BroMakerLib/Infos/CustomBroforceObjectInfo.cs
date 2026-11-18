@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using BroMakerLib.CustomObjects;
@@ -9,6 +10,7 @@ using BroMakerLib.Loaders;
 using BroMakerLib.Loggers;
 using HarmonyLib;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace BroMakerLib.Infos
@@ -296,6 +298,104 @@ namespace BroMakerLib.Infos
             }
         }
 
+        private static readonly Dictionary<Type, string[]> StructComponentNames = new Dictionary<Type, string[]>
+        {
+            { typeof(Vector2), new string[] { "x", "y" } },
+            { typeof(Vector3), new string[] { "x", "y", "z" } },
+            { typeof(Color), new string[] { "r", "g", "b", "a" } }
+        };
+
+        private static int MinimumStructArrayLength(Type fieldType)
+        {
+            return fieldType == typeof(Color) ? 3 : StructComponentNames[fieldType].Length;
+        }
+
+        private static string DescribeStructForms(Type fieldType)
+        {
+            string[] names = StructComponentNames[fieldType];
+            int minimum = MinimumStructArrayLength(fieldType);
+            string count = minimum == names.Length ? names.Length.ToString() : $"{minimum} or {names.Length}";
+            return $"an array of {count} numbers or an object with any of {string.Join(", ", names)}";
+        }
+
+        private static bool IsJsonNumber(JToken token)
+        {
+            return token.Type == JTokenType.Integer || token.Type == JTokenType.Float;
+        }
+
+        private static object ReadStructComponents(Type fieldType, object current, object value)
+        {
+            string[] names = StructComponentNames[fieldType];
+            float[] components = new float[names.Length];
+            if (current is Vector2 currentVector2)
+            {
+                components[0] = currentVector2.x;
+                components[1] = currentVector2.y;
+            }
+            else if (current is Vector3 currentVector3)
+            {
+                components[0] = currentVector3.x;
+                components[1] = currentVector3.y;
+                components[2] = currentVector3.z;
+            }
+            else if (current is Color currentColor)
+            {
+                components[0] = currentColor.r;
+                components[1] = currentColor.g;
+                components[2] = currentColor.b;
+                components[3] = currentColor.a;
+            }
+
+            if (value is JArray array)
+            {
+                if (array.Count < MinimumStructArrayLength(fieldType) || array.Count > names.Length)
+                {
+                    return null;
+                }
+                for (int i = 0; i < names.Length; i++)
+                {
+                    if (i >= array.Count)
+                    {
+                        components[i] = 1f;
+                    }
+                    else if (IsJsonNumber(array[i]))
+                    {
+                        components[i] = array[i].Value<float>();
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+            }
+            else if (value is JObject jObject)
+            {
+                foreach (JProperty property in jObject.Properties())
+                {
+                    int index = Array.IndexOf(names, property.Name);
+                    if (index < 0 || !IsJsonNumber(property.Value))
+                    {
+                        return null;
+                    }
+                    components[index] = property.Value.Value<float>();
+                }
+            }
+            else
+            {
+                return null;
+            }
+
+            if (fieldType == typeof(Vector2))
+            {
+                return new Vector2(components[0], components[1]);
+            }
+            if (fieldType == typeof(Vector3))
+            {
+                return new Vector3(components[0], components[1], components[2]);
+            }
+            return new Color(components[0], components[1], components[2], components[3]);
+        }
+
         protected void SetFieldData(Traverse field, string key, object value, object owner)
         {
             Type fieldType = field.GetValueType();
@@ -381,11 +481,42 @@ namespace BroMakerLib.Infos
                 }
                 field.SetValue((Texture2D)ResourcesController.GetTexture(path, (string)value));
             }
+            else if (fieldType == typeof(AudioClip))
+            {
+                if (!(value is string))
+                {
+                    throw new InvalidCastException("can't cast value to string on 'AudioClip' field");
+                }
+                field.SetValue(ResourcesController.GetAudioClip(path, (string)value));
+            }
+            else if (fieldType == typeof(AudioClip[]))
+            {
+                string[] fileNames;
+                if (value is JArray jArray)
+                {
+                    fileNames = jArray.Select(t => t.ToString()).ToArray();
+                }
+                else if (value is string[] strArray)
+                {
+                    fileNames = strArray;
+                }
+                else
+                {
+                    throw new InvalidCastException("can't cast value to string[] on 'AudioClip[]' field");
+                }
+
+                AudioClip[] clips = new AudioClip[fileNames.Length];
+                for (int i = 0; i < fileNames.Length; i++)
+                {
+                    clips[i] = ResourcesController.GetAudioClip(path, fileNames[i]);
+                }
+                field.SetValue(clips);
+            }
             else if (fieldType.IsEnum)
             {
                 if (value is string)
                 {
-                    field.SetValue(Enum.Parse(fieldType, (string)value));
+                    field.SetValue(Enum.Parse(fieldType, (string)value, true));
                 }
                 else
                 {
@@ -404,6 +535,33 @@ namespace BroMakerLib.Infos
             {
                 value = Convert.ToInt32(value);
                 field.SetValue(value);
+            }
+            else if (Nullable.GetUnderlyingType(fieldType) != null)
+            {
+                // JSON numbers arrive as Int64 or double, and reflection won't widen them into a Nullable<T>.
+                Type underlyingType = Nullable.GetUnderlyingType(fieldType);
+                if (value == null)
+                {
+                    field.SetValue(null);
+                }
+                else if (underlyingType.IsEnum)
+                {
+                    field.SetValue(Enum.Parse(underlyingType, value.ToString(), true));
+                }
+                else
+                {
+                    field.SetValue(Convert.ChangeType(value, underlyingType));
+                }
+            }
+            else if (fieldType == typeof(Vector2) || fieldType == typeof(Vector3) || fieldType == typeof(Color))
+            {
+                object converted = ReadStructComponents(fieldType, field.GetValue(), value);
+                if (converted == null)
+                {
+                    BMLogger.Warning($"Can't set field '{key}' to {(value is JToken token ? token.ToString(Formatting.None) : value)}. It should be {DescribeStructForms(fieldType)}");
+                    return;
+                }
+                field.SetValue(converted);
             }
             else if (typeof(Projectile).IsAssignableFrom(fieldType))
             {
