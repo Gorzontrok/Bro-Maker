@@ -1361,7 +1361,7 @@ namespace BroMakerLib
 
                 if (Event.current.type == EventType.Repaint)
                 {
-                    // Centre on the height a one-line row would have, so a wrapped message keeps the dot beside its first line.
+                    // Center on the height a one-line row would have, so a wrapped message keeps the dot beside its first line.
                     float oneLineMessageHeight = _issueMessageStyle.CalcHeight(new GUIContent("A"), 10000f);
                     float firstLineHeight = Mathf.Max(dotSize, Mathf.Max(oneLineMessageHeight, copyRect.height));
                     Color prevColor = GUI.color;

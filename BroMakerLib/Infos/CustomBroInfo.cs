@@ -114,7 +114,7 @@ namespace BroMakerLib.Infos
             return bestMatch;
         }
 
-        // Levenshtein distance that counts swapping two neighbouring letters as one edit.
+        // Levenshtein distance that counts swapping two neighboring letters as one edit.
         private static int EditDistance(string a, string b)
         {
             int[,] d = new int[a.Length + 1, b.Length + 1];
