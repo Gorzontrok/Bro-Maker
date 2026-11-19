@@ -768,6 +768,19 @@ namespace BroMakerLib
         }
     }
 
+    // Other clients get only the index, so a prefab BroMaker copied spawns there as the vanilla prefab it was copied from
+    [HarmonyPatch(typeof(InstantiationController), "GetPrefabIndex")]
+    internal static class InstantiationController_GetPrefabIndex_Patch
+    {
+        public static void Postfix(Object Prefab, ref int __result)
+        {
+            if (__result < 0 && (object)Prefab != null && BroMakerUtilities.cloneSources.TryGetValue(Prefab.GetInstanceID(), out GameObject source))
+            {
+                __result = InstantiationController.PrefabList.IndexOf(source);
+            }
+        }
+    }
+
     // Fix grenades thrown by custom bros not having trails setup correctly
     [HarmonyPatch(typeof(ProjectileController), "SpawnGrenadeOverNetwork")]
     internal static class ProjectileController_SpawnGrenadeOverNetwork_Patch

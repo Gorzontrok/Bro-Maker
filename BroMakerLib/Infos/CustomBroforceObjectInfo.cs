@@ -99,9 +99,7 @@ namespace BroMakerLib.Infos
 
         private const string InjectedGrenadePlayerNumKey = "specialGrenade.playerNum";
 
-        private static readonly Dictionary<string, Component> lifecycleClones = new Dictionary<string, Component>();
-
-        private static readonly HashSet<int> lifecycleCloneIds = new HashSet<int>();
+        private static readonly Dictionary<string, Component> ownCopies = new Dictionary<string, Component>();
 
         private void ApplyLifecycleFields(object obj, Dictionary<string, object> map, string stage)
         {
@@ -110,19 +108,9 @@ namespace BroMakerLib.Infos
                 Dictionary<string, object> single = new Dictionary<string, object>(1);
                 foreach (KeyValuePair<string, object> kvp in map)
                 {
-                    int dot = kvp.Key.IndexOf('.');
-                    if (dot > 0 && kvp.Key != InjectedGrenadePlayerNumKey)
+                    if (kvp.Key.IndexOf('.') > 0 && kvp.Key != InjectedGrenadePlayerNumKey && !UseOwnCopiesAlongPath(obj, kvp.Key, path, name, stage))
                     {
-                        string fieldName = kvp.Key.Substring(0, dot);
-                        try
-                        {
-                            UsePrefabCloneForField(obj, fieldName);
-                        }
-                        catch (Exception e)
-                        {
-                            BMLogger.Error($"Failed to copy the '{fieldName}' prefab for {stage}", e);
-                            continue;
-                        }
+                        continue;
                     }
                     single.Clear();
                     single.Add(kvp.Key, kvp.Value);
@@ -146,30 +134,55 @@ namespace BroMakerLib.Infos
             }
         }
 
-        private void UsePrefabCloneForField(object obj, string fieldName)
+        private static bool UseOwnCopiesAlongPath(object target, string key, string path, string broName, string stage)
         {
-            Traverse field = Traverse.Create(obj).Field(fieldName);
-            Type fieldType = field.GetValueType();
-            if (fieldType == null || !(typeof(Projectile).IsAssignableFrom(fieldType) || typeof(Grenade).IsAssignableFrom(fieldType)))
+            string[] segments = key.Split('.');
+            object current = target;
+            // A struct hop is a boxed copy, so a field set inside it wouldn't reach the bro.
+            for (int i = 0; i < segments.Length - 1 && current != null && !current.GetType().IsValueType; i++)
             {
-                return;
-            }
+                Traverse field = Traverse.Create(current).Field(segments[i]);
+                if (field.GetValueType() == null)
+                {
+                    return true;
+                }
+                current = field.GetValue();
+                Component shared = current as Component;
+                if (shared == null || !IsSharedAsset(shared))
+                {
+                    continue;
+                }
 
-            Component current = field.GetValue() as Component;
-            if (current == null || current is ICustomProjectile || lifecycleCloneIds.Contains(current.GetInstanceID()))
-            {
-                return;
+                string hopPath = string.Join(".", segments, 0, i + 1);
+                string cacheKey = $"{path}|{broName}|{target.GetType().FullName}|{hopPath}|{shared.GetInstanceID()}";
+                Component copy;
+                try
+                {
+                    if (!ownCopies.TryGetValue(cacheKey, out copy) || copy == null)
+                    {
+                        copy = BroMakerUtilities.ClonePrefab(shared);
+                        ownCopies[cacheKey] = copy;
+                    }
+                    field.SetValue(copy);
+                }
+                catch (Exception e)
+                {
+                    BMLogger.Error($"Failed to copy the '{hopPath}' prefab for {stage}, so '{key}' was skipped", e);
+                    return false;
+                }
+                current = copy;
             }
+            return true;
+        }
 
-            string cacheKey = $"{path}|{name}|{fieldName}|{current.GetInstanceID()}";
-            Component clone;
-            if (!lifecycleClones.TryGetValue(cacheKey, out clone) || clone == null)
+        // A prefab asset belongs to no scene; anything instantiated, BroMaker's own copies under DontDestroyOnLoad included, belongs to one.
+        private static bool IsSharedAsset(Component component)
+        {
+            if (component is ICustomProjectile)
             {
-                clone = BroMakerUtilities.ClonePrefab(current);
-                lifecycleClones[cacheKey] = clone;
-                lifecycleCloneIds.Add(clone.GetInstanceID());
+                return false;
             }
-            field.SetValue(clone);
+            return !component.gameObject.scene.IsValid();
         }
 
         public virtual void Initialize()

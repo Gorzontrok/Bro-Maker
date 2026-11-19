@@ -270,6 +270,8 @@ namespace BroMakerLib
 
         private static GameObject prefabCloneHolder;
 
+        internal static readonly Dictionary<int, GameObject> cloneSources = new Dictionary<int, GameObject>();
+
         internal static T ClonePrefab<T>(T source) where T : Component
         {
             if (prefabCloneHolder == null)
@@ -295,6 +297,10 @@ namespace BroMakerLib
             }
             clone.transform.parent = prefabCloneHolder.transform;
             clone.gameObject.SetActive(true);
+            if (InstantiationController.PrefabList.Contains(source.gameObject))
+            {
+                cloneSources[clone.gameObject.GetInstanceID()] = source.gameObject;
+            }
             return clone;
         }
     }
