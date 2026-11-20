@@ -48,6 +48,12 @@ namespace BroMakerLib.Vanilla.Bros
                 this.StandardBeforeAwake();
                 base.Awake();
                 this.StandardAfterAwake();
+
+                BoondockBro vanillaPrefab = HeroController.GetHeroPrefab(HeroType.BoondockBros).As<BoondockBro>();
+                if (vanillaPrefab != null && CurrentFirstAvatar != null && avatar1 == vanillaPrefab.avatar1)
+                {
+                    avatar1 = CurrentFirstAvatar;
+                }
             }
             catch (Exception ex)
             {

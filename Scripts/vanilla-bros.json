@@ -40,6 +40,17 @@
                         "gameObject.name = gameObject.name.Insert(0, \"[LEAD] \");"
                     ]
                 }
+            ],
+            "postSpriteFixes": [
+                {
+                    "type": "replaceIfVanilla",
+                    "guard": "prefabField",
+                    "requires": "avatar",
+                    "value": "CurrentFirstAvatar",
+                    "fields": [
+                        "avatar1"
+                    ]
+                }
             ]
         },
         {
@@ -52,6 +63,16 @@
                     "type": "prefabCopy",
                     "fields": [
                         "doRollOnLand"
+                    ]
+                }
+            ],
+            "postSpriteFixes": [
+                {
+                    "type": "replaceIfVanilla",
+                    "guard": "prefabField",
+                    "value": "gunMaterial",
+                    "fields": [
+                        "gunMaterialDefault"
                     ]
                 }
             ]
@@ -169,6 +190,33 @@
                         "doRollOnLand"
                     ]
                 }
+            ],
+            "postSpriteFixes": [
+                {
+                    "type": "replaceIfVanilla",
+                    "guard": "prefabField",
+                    "value": "material",
+                    "fields": [
+                        "humanBrominator"
+                    ]
+                },
+                {
+                    "type": "replaceIfVanilla",
+                    "guard": "prefabField",
+                    "value": "gunMaterial",
+                    "fields": [
+                        "humanGunBrominator"
+                    ]
+                },
+                {
+                    "type": "replaceIfVanilla",
+                    "guard": "prefabField",
+                    "requires": "avatar",
+                    "value": "CurrentFirstAvatar",
+                    "fields": [
+                        "brominatorHumanAvatar"
+                    ]
+                }
             ]
         },
         {
@@ -216,7 +264,17 @@
             "presetName": "BroniversalSoldier",
             "className": "BroniversalSoldierM",
             "baseClass": "BroniversalSoldier",
-            "heroType": "BroniversalSoldier"
+            "heroType": "BroniversalSoldier",
+            "postSpriteFixes": [
+                {
+                    "type": "replaceIfVanilla",
+                    "guard": "notOverridden",
+                    "value": "gunMaterial",
+                    "fields": [
+                        "armedGunMaterial"
+                    ]
+                }
+            ]
         },
         {
             "presetName": "BronnarJensen",
@@ -271,6 +329,16 @@
                         "doRollOnLand"
                     ]
                 }
+            ],
+            "postSpriteFixes": [
+                {
+                    "type": "replaceIfVanilla",
+                    "guard": "notOverridden",
+                    "value": "gunMaterial",
+                    "fields": [
+                        "defaultGunMaterial"
+                    ]
+                }
             ]
         },
         {
@@ -289,7 +357,18 @@
             "presetName": "ChevBrolios",
             "className": "ChevBroliosM",
             "baseClass": "ChevBrolios",
-            "heroType": "ChevBrolios"
+            "heroType": "ChevBrolios",
+            "postSpriteFixes": [
+                {
+                    "type": "replaceIfVanilla",
+                    "guard": "prefabField",
+                    "requires": "avatar",
+                    "value": "CurrentFirstAvatar",
+                    "fields": [
+                        "avatarTired"
+                    ]
+                }
+            ]
         },
         {
             "presetName": "ColonelJamesBroddock",
@@ -319,7 +398,17 @@
             "presetName": "DoubleBroSeven",
             "className": "DoubleBroSevenM",
             "baseClass": "DoubleBroSeven",
-            "heroType": "DoubleBroSeven"
+            "heroType": "DoubleBroSeven",
+            "postSpriteFixes": [
+                {
+                    "type": "replaceIfVanilla",
+                    "guard": "notOverridden",
+                    "value": "material",
+                    "fields": [
+                        "normalMaterial"
+                    ]
+                }
+            ]
         },
         {
             "presetName": "EllenRipbro",
@@ -338,6 +427,21 @@
                     "fields": [
                         "useNewDuckingFrames"
                     ]
+                }
+            ],
+            "postSpriteFixes": [
+                {
+                    "type": "replaceIfVanilla",
+                    "guard": "notOverridden",
+                    "value": "material",
+                    "fields": [
+                        "materialNormal"
+                    ]
+                },
+                {
+                    "type": "setValue",
+                    "field": "currentMaterial",
+                    "value": "materialNormal"
                 }
             ]
         },
@@ -372,7 +476,25 @@
             "presetName": "Brodator",
             "className": "PredabroM",
             "baseClass": "Predabro",
-            "heroType": "Predabro"
+            "heroType": "Predabro",
+            "postSpriteFixes": [
+                {
+                    "type": "replaceIfVanilla",
+                    "guard": "notOverridden",
+                    "value": "material",
+                    "fields": [
+                        "normalMaterial"
+                    ]
+                },
+                {
+                    "type": "replaceIfVanilla",
+                    "guard": "notOverridden",
+                    "value": "gunMaterial",
+                    "fields": [
+                        "normalGunMaterial"
+                    ]
+                }
+            ]
         },
         {
             "presetName": "ScorpionBro",

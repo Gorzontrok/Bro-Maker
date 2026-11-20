@@ -46,6 +46,15 @@ namespace BroMakerLib.Vanilla.Bros
                 this.StandardBeforeAwake();
                 base.Awake();
                 this.StandardAfterAwake();
+
+                if (!Info.afterAwake.ContainsKey("normalMaterial"))
+                {
+                    normalMaterial = material;
+                }
+                if (!Info.afterAwake.ContainsKey("normalGunMaterial"))
+                {
+                    normalGunMaterial = gunMaterial;
+                }
             }
             catch (Exception ex)
             {

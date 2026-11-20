@@ -49,6 +49,9 @@ namespace BroMakerLib.Vanilla.Bros
                 // GENERATOR:AWAKE_END
                 base.Awake();
                 this.StandardAfterAwake();
+
+                // GENERATOR:POST_SPRITE_FIXES
+                // GENERATOR:POST_SPRITE_END
             }
             catch (Exception ex)
             {

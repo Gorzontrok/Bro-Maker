@@ -59,6 +59,12 @@ namespace BroMakerLib.Vanilla.Bros
 
                 base.Awake();
                 this.StandardAfterAwake();
+
+                if (!Info.afterAwake.ContainsKey("materialNormal"))
+                {
+                    materialNormal = material;
+                }
+                currentMaterial = materialNormal;
             }
             catch (Exception ex)
             {

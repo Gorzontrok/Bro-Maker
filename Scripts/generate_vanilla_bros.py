@@ -9,6 +9,14 @@ CONFIG_PATH = os.path.join(SCRIPT_DIR, "vanilla-bros.json")
 
 HEADER = "// Auto-generated from RambroM.cs, do not edit manually\n\n"
 
+REQUIREMENTS = {
+    "avatar": ("CurrentFirstAvatar", "CurrentFirstAvatar != null"),
+}
+
+
+def guarded(indent, condition, statement):
+    return [f"{indent}if ({condition})", f"{indent}{{", f"{indent}    {statement}", f"{indent}}}"]
+
 
 def generate_bro(template, bro):
     result = template
@@ -76,6 +84,65 @@ def generate_bro(template, bro):
         result = re.sub(
             r"                // GENERATOR:AWAKE_FIXES\n                // GENERATOR:AWAKE_END\n",
             "",
+            result,
+        )
+
+    post_sprite_fixes = bro.get("postSpriteFixes", [])
+    for fix in post_sprite_fixes:
+        fix_type = fix["type"]
+        if fix_type == "replaceIfVanilla":
+            value = fix["value"]
+            guard = fix["guard"]
+            if guard not in ("notOverridden", "prefabField"):
+                sys.exit(f"{bro['className']}: unknown 'guard' value '{guard}'")
+            if "requires" in fix:
+                requires = fix["requires"]
+                if guard != "prefabField":
+                    sys.exit(f"{bro['className']}: 'requires' needs guard 'prefabField', got '{guard}'")
+                if requires not in REQUIREMENTS:
+                    sys.exit(f"{bro['className']}: unknown 'requires' value '{requires}'")
+                expected_value = REQUIREMENTS[requires][0]
+                if value != expected_value:
+                    sys.exit(f"{bro['className']}: 'requires': '{requires}' needs value '{expected_value}', got '{value}'")
+        elif fix_type != "setValue":
+            sys.exit(f"{bro['className']}: 'postSpriteFixes' got unknown type '{fix_type}'")
+    post_sprite_lines = []
+    needs_prefab = False
+    for fix in post_sprite_fixes:
+        if fix["type"] == "setValue":
+            post_sprite_lines.append(f"                {fix['field']} = {fix['value']};")
+        else:
+            value = fix["value"]
+            condition = ""
+            if "requires" in fix:
+                condition = f"{REQUIREMENTS[fix['requires']][1]} && "
+            for field in fix["fields"]:
+                if fix["guard"] == "notOverridden":
+                    post_sprite_lines += guarded("                ", f'!Info.afterAwake.ContainsKey("{field}")', f"{field} = {value};")
+                else:
+                    needs_prefab = True
+                    post_sprite_lines += guarded(
+                        "                ",
+                        f"vanillaPrefab != null && {condition}{field} == vanillaPrefab.{field}",
+                        f"{field} = {value};",
+                    )
+    if needs_prefab:
+        post_sprite_lines.insert(
+            0,
+            f"                {bro['baseClass']} vanillaPrefab = HeroController.GetHeroPrefab(HeroType.{bro['heroType']}).As<{bro['baseClass']}>();",
+        )
+    if post_sprite_lines:
+        post_sprite_body = "\n".join(post_sprite_lines)
+        result = re.sub(
+            r"                // GENERATOR:POST_SPRITE_FIXES\n.*?                // GENERATOR:POST_SPRITE_END",
+            lambda _: post_sprite_body,
+            result,
+            flags=re.DOTALL,
+        )
+    else:
+        result = re.sub(
+            r"\n\n                // GENERATOR:POST_SPRITE_FIXES\n                // GENERATOR:POST_SPRITE_END\n",
+            "\n",
             result,
         )
 

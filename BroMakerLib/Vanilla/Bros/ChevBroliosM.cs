@@ -46,6 +46,12 @@ namespace BroMakerLib.Vanilla.Bros
                 this.StandardBeforeAwake();
                 base.Awake();
                 this.StandardAfterAwake();
+
+                ChevBrolios vanillaPrefab = HeroController.GetHeroPrefab(HeroType.ChevBrolios).As<ChevBrolios>();
+                if (vanillaPrefab != null && CurrentFirstAvatar != null && avatarTired == vanillaPrefab.avatarTired)
+                {
+                    avatarTired = CurrentFirstAvatar;
+                }
             }
             catch (Exception ex)
             {

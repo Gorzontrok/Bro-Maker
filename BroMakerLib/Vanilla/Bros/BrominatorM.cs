@@ -59,6 +59,20 @@ namespace BroMakerLib.Vanilla.Bros
 
                 base.Awake();
                 this.StandardAfterAwake();
+
+                Brominator vanillaPrefab = HeroController.GetHeroPrefab(HeroType.Brominator).As<Brominator>();
+                if (vanillaPrefab != null && humanBrominator == vanillaPrefab.humanBrominator)
+                {
+                    humanBrominator = material;
+                }
+                if (vanillaPrefab != null && humanGunBrominator == vanillaPrefab.humanGunBrominator)
+                {
+                    humanGunBrominator = gunMaterial;
+                }
+                if (vanillaPrefab != null && CurrentFirstAvatar != null && brominatorHumanAvatar == vanillaPrefab.brominatorHumanAvatar)
+                {
+                    brominatorHumanAvatar = CurrentFirstAvatar;
+                }
             }
             catch (Exception ex)
             {

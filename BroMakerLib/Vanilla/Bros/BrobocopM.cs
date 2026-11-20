@@ -59,6 +59,12 @@ namespace BroMakerLib.Vanilla.Bros
 
                 base.Awake();
                 this.StandardAfterAwake();
+
+                Brobocop vanillaPrefab = HeroController.GetHeroPrefab(HeroType.Brobocop).As<Brobocop>();
+                if (vanillaPrefab != null && gunMaterialDefault == vanillaPrefab.gunMaterialDefault)
+                {
+                    gunMaterialDefault = gunMaterial;
+                }
             }
             catch (Exception ex)
             {
