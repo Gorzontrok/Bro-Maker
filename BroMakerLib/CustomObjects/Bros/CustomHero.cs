@@ -479,7 +479,7 @@ namespace BroMakerLib.CustomObjects.Bros
         {
         }
 
-        internal void PrefabSetup()
+        void ICustomHero.PrefabSetup()
         {
             BeforePrefabSetup();
             HeroType baseHeroType = SoundHolderHeroType;
@@ -549,7 +549,7 @@ namespace BroMakerLib.CustomObjects.Bros
             Info = LoadHero.currentInfo;
 
             // Setup CustomHero from original bro component and destroy it
-            this.SetupCustomHero();
+            this.SetupCustomHero(false);
 
             AfterPrefabSetup();
         }

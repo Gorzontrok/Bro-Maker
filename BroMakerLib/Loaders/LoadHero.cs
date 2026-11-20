@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using BroMakerLib.CustomObjects;
-using BroMakerLib.CustomObjects.Bros;
 using BroMakerLib.Infos;
 using BroMakerLib.Loggers;
 using HarmonyLib;
@@ -465,7 +465,10 @@ namespace BroMakerLib.Loaders
             inst.SetActive(false);
 
             // Set up custom bros
-            inst.GetComponent<CustomHero>()?.PrefabSetup();
+            if (inst.GetComponent(type) is ICustomHero heroComponent)
+            {
+                heroComponent.PrefabSetup();
+            }
 
             AddObjectToPrefabList(inst);
             BMLogger.Debug("CreateOriginal: inst added to list");
@@ -487,6 +490,86 @@ namespace BroMakerLib.Loaders
             {
                 _prefabIndex.Add(currentInfo.name, InstantiationController.GetPrefabIndex(gameObject));
             }
+        }
+
+        private static readonly HashSet<Type> unityBuiltInTypes = new HashSet<Type>
+        {
+            typeof(Vector2), typeof(Vector3), typeof(Vector4), typeof(Vector2Int), typeof(Vector3Int),
+            typeof(Rect), typeof(RectInt), typeof(Bounds), typeof(BoundsInt), typeof(Quaternion), typeof(Matrix4x4),
+            typeof(Color), typeof(Color32), typeof(LayerMask), typeof(AnimationCurve), typeof(Gradient),
+            typeof(RectOffset), typeof(GUIStyle)
+        };
+
+        internal static void CopySerializedFields(MonoBehaviour source, MonoBehaviour target)
+        {
+            // Arrays, lists and serializable classes stay shared: Instantiate gives every spawn its own deserialized copies.
+            for (Type type = source.GetType(); type != null && type != typeof(MonoBehaviour); type = type.BaseType)
+            {
+                if (!type.IsInstanceOfType(target))
+                {
+                    continue;
+                }
+
+                foreach (FieldInfo field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
+                {
+                    if (IsSerializedField(field))
+                    {
+                        field.SetValue(target, field.GetValue(source));
+                    }
+                }
+            }
+        }
+
+        internal static bool IsSerializedField(FieldInfo field)
+        {
+            if (field.IsStatic || field.IsLiteral || field.IsInitOnly || field.IsNotSerialized)
+            {
+                return false;
+            }
+
+            if (!field.IsPublic && !field.IsDefined(typeof(SerializeField), false))
+            {
+                return false;
+            }
+
+            Type type = field.FieldType;
+            if (type.IsArray)
+            {
+                return type.GetArrayRank() == 1 && IsSerializableElement(type.GetElementType());
+            }
+
+            if (IsList(type))
+            {
+                return IsSerializableElement(type.GetGenericArguments()[0]);
+            }
+
+            return IsSerializableElement(type);
+        }
+
+        private static bool IsList(Type type)
+        {
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>);
+        }
+
+        private static bool IsSerializableElement(Type type)
+        {
+            if (type.IsArray || IsList(type) || type == typeof(IntPtr) || type == typeof(UIntPtr))
+            {
+                return false;
+            }
+
+            if (type.IsPrimitive || type.IsEnum || type == typeof(string) || typeof(Object).IsAssignableFrom(type) || unityBuiltInTypes.Contains(type))
+            {
+                return true;
+            }
+
+            if (type.IsAbstract || type.IsInterface || type.IsGenericType || !type.IsSerializable || typeof(Delegate).IsAssignableFrom(type))
+            {
+                return false;
+            }
+
+            string assembly = type.Assembly.GetName().Name;
+            return assembly != "mscorlib" && assembly != "System" && !assembly.StartsWith("System.") && !assembly.StartsWith("Mono.");
         }
     }
 }

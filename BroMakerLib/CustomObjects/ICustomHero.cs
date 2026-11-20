@@ -14,5 +14,8 @@ namespace BroMakerLib.CustomObjects
         Vector2 CurrentSpecialMaterialOffset { get; set; }
         float CurrentSpecialMaterialSpacing { get; set; }
         Material CurrentFirstAvatar { get; set; }
+
+        /// <summary>Called once when the bro's prefab is built, before any `Awake`.</summary>
+        void PrefabSetup();
     }
 }

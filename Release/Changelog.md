@@ -10,6 +10,7 @@
 - Added an Issues panel and in-game notifications for mod errors and warnings.
 - A misspelled key in a bro's JSON now shows as a warning.
 - Added custom backgrounds for bro intro cutscenes.
+- Fixed bros on some vanilla presets failing to spawn or throwing errors.
 
 ## v2.6.2
 - Add handling for exceptions thrown while preloading bro assets.

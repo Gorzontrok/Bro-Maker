@@ -123,14 +123,26 @@ namespace BroMakerLib.Extensions
         /// Before Awake
         /// </summary>
         /// <param name="hero"></param>
+        /// <param name="serializedValuesCopied">`true` when the vanilla prefab's serialized values have already been copied onto the bro, so null variables aren't assigned from the vanilla component.</param>
         /// <exception cref="NullReferenceException"></exception>
         [AllowedRPC]
-        public static void SetupCustomHero(this ICustomHero hero)
+        public static void SetupCustomHero(this ICustomHero hero, bool serializedValuesCopied)
         {
             BroBase otherBroComponent = hero.GetTheOtherBroBaseComponent();
             if (otherBroComponent != null)
             {
-                hero.AssignNullVariables(otherBroComponent);
+                if (serializedValuesCopied)
+                {
+                    if (hero.Character.specialGrenade == null)
+                    {
+                        hero.Character.specialGrenade = LoadBroforceObjects.GetGrenadeFromName(string.Empty);
+                    }
+                    hero.Character.SetOwner(otherBroComponent.Owner);
+                }
+                else
+                {
+                    hero.AssignNullVariables(otherBroComponent);
+                }
                 Type type = otherBroComponent.GetType();
                 UnityEngine.Object.DestroyImmediate(otherBroComponent);
                 BMLogger.Debug($"SetupCustomHero: Has destroy {type} component.");
@@ -367,13 +379,11 @@ namespace BroMakerLib.Extensions
         /// Called before base.Awake() for vanilla bros
         /// </summary>
         /// <param name="hero">The hero instance to setup</param>
-        /// <param name="fixNullVariableLocal">Optional action to fix null variables specific to the hero type</param>
-        public static void StandardBeforeAwake(this ICustomHero hero, Action fixNullVariableLocal = null)
+        public static void StandardBeforeAwake(this ICustomHero hero)
         {
             hero.Character = hero as BroBase;
             hero.Info = LoadHero.currentInfo;
-            fixNullVariableLocal?.Invoke();
-            hero.SetupCustomHero();
+            hero.SetupCustomHero(true);
             hero.Info.BeforeAwake(hero);
             // The game's Awake resets maxFallSpeed to this once the bro has its parachute.
             hero.Character.SetFieldValue("originalMaxFallSpeed", hero.Character.maxFallSpeed);
