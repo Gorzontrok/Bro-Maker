@@ -185,6 +185,35 @@ namespace BroMakerLib.Infos
             return !component.gameObject.scene.IsValid();
         }
 
+        private static bool SetCopyImage(SpriteSM sprite, Texture2D texture, string key, string fileName)
+        {
+            if (texture == null)
+            {
+                BMLogger.Warning($"Can't set the image of sprite field '{key}' because '{fileName}' loaded no image, so it keeps its own image");
+                return false;
+            }
+            // The clone never runs Awake, which is where SpriteSM assigns meshRender.
+            if (sprite.meshRender == null)
+            {
+                sprite.meshRender = sprite.GetComponent<MeshRenderer>();
+            }
+            Renderer renderer = sprite.meshRender;
+            if (renderer == null || renderer.sharedMaterial == null)
+            {
+                BMLogger.Warning($"Can't set the image of sprite field '{key}' because its sprite has no renderer or material, so it keeps its own image");
+                return false;
+            }
+            if (renderer.sharedMaterial.mainTexture == texture)
+            {
+                return true;
+            }
+            Material material = new Material(renderer.sharedMaterial);
+            material.mainTexture = texture;
+            // Instances spawned from the clone read their texture from this material in their own Awake.
+            renderer.sharedMaterial = material;
+            return true;
+        }
+
         public virtual void Initialize()
         {
             if (beforeAwake == null)
@@ -422,19 +451,17 @@ namespace BroMakerLib.Infos
                 SpriteSM existing = field.GetValue<SpriteSM>();
                 if (existing == null)
                 {
-                    BMLogger.Warning($"Can't set sprite field '{key}' because the bro has no sprite there");
+                    BMLogger.Warning($"Can't set sprite field '{key}' because it holds no sprite");
                     return;
                 }
 
-                Transform ownerTransform = owner is Component ownerComponent ? ownerComponent.transform : (owner as GameObject)?.transform;
-                if (ownerTransform == null)
+                if (BroMakerUtilities.IsPrefabClone(existing))
                 {
-                    BMLogger.Warning($"Sprite field '{key}' can only be set on a bro, so it was skipped");
+                    SetCopyImage(existing, ResourcesController.GetTexture(path, (string)value), key, (string)value);
                     return;
                 }
 
-                // Instantiate(existing) would duplicate the sprite's object and children, the whole bro for its own sprite.
-                if (existing.transform.IsChildOf(ownerTransform))
+                if (!IsSharedAsset(existing))
                 {
                     Renderer renderer = existing.meshRender != null ? existing.meshRender : existing.GetComponent<Renderer>();
                     Material oldMaterial = renderer != null ? renderer.sharedMaterial : null;
@@ -448,27 +475,21 @@ namespace BroMakerLib.Infos
                     return;
                 }
 
-                SpriteSM clone = UnityEngine.Object.Instantiate(existing);
-                clone.transform.SetParent(ownerTransform, false);
-                clone.transform.localPosition = existing.transform.localPosition;
-                clone.transform.localRotation = existing.transform.localRotation;
-                clone.transform.localScale = existing.transform.localScale;
-
-                if (clone.meshRender == null)
+                string cacheKey = $"{path}|{name}|SpriteSM|{key}|{value}|{existing.GetInstanceID()}";
+                Component copy;
+                if (!ownCopies.TryGetValue(cacheKey, out copy) || copy == null)
                 {
-                    BMLogger.Warning($"Can't set the image of sprite field '{key}' because its copy has no renderer");
-                    field.SetValue(clone);
-                    return;
+                    Texture2D texture = ResourcesController.GetTexture(path, (string)value);
+                    SpriteSM spriteCopy = BroMakerUtilities.ClonePrefab(existing);
+                    if (!SetCopyImage(spriteCopy, texture, key, (string)value))
+                    {
+                        UnityEngine.Object.Destroy(spriteCopy.gameObject);
+                        return;
+                    }
+                    copy = spriteCopy;
+                    ownCopies[cacheKey] = copy;
                 }
-
-                if (clone.meshRender.sharedMaterial != null)
-                {
-                    clone.meshRender.sharedMaterial = new Material(clone.meshRender.sharedMaterial);
-                }
-
-                clone.SetTexture(ResourcesController.GetTexture(path, (string)value));
-                clone.RefreshTexture();
-                field.SetValue(clone);
+                field.SetValue(copy);
             }
             else if (fieldType == typeof(Material))
             {

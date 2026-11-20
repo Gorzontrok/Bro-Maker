@@ -303,5 +303,10 @@ namespace BroMakerLib
             }
             return clone;
         }
+
+        internal static bool IsPrefabClone(Component component)
+        {
+            return prefabCloneHolder != null && component.transform.root == prefabCloneHolder.transform;
+        }
     }
 }
