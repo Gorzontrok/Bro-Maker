@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Bros
 {
-    [HeroPreset("McBrover", HeroType.McBrover)]
+    [HeroPreset("MacBrover", HeroType.McBrover)]
     public class McBroverM : McBrover, ICustomHero
     {
         [Syncronize] public CustomBroInfo Info { get; set; }

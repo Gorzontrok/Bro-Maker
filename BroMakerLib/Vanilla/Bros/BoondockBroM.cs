@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Bros
 {
-    [HeroPreset("BoondockBro", HeroType.BoondockBros)]
+    [HeroPreset("BoondockBros", HeroType.BoondockBros)]
     public class BoondockBroM : BoondockBro, ICustomHero
     {
         [Syncronize] public CustomBroInfo Info { get; set; }

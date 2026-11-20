@@ -29,7 +29,7 @@
             ]
         },
         {
-            "presetName": "BoondockBro",
+            "presetName": "BoondockBros",
             "className": "BoondockBroM",
             "baseClass": "BoondockBro",
             "heroType": "BoondockBros",
@@ -78,7 +78,7 @@
             "heroType": "Brochete"
         },
         {
-            "presetName": "BrocSnipes",
+            "presetName": "BroctorDeath",
             "className": "BrocSnipesM",
             "baseClass": "BrocSnipes",
             "heroType": "Broc",
@@ -126,7 +126,7 @@
             "heroType": "Broffy"
         },
         {
-            "presetName": "BroGummer",
+            "presetName": "BurtBrommer",
             "className": "BroGummerM",
             "baseClass": "BroGummer",
             "heroType": "BroGummer",
@@ -292,7 +292,7 @@
             "heroType": "ChevBrolios"
         },
         {
-            "presetName": "ColJamesBrodock",
+            "presetName": "ColonelJamesBroddock",
             "className": "ColJamesBrodockM",
             "baseClass": "ColJamesBrodock",
             "heroType": "ColJamesBroddock"
@@ -357,7 +357,7 @@
             ]
         },
         {
-            "presetName": "McBrover",
+            "presetName": "MacBrover",
             "className": "McBroverM",
             "baseClass": "McBrover",
             "heroType": "McBrover"

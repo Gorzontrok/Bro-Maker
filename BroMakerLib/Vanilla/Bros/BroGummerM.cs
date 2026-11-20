@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Bros
 {
-    [HeroPreset("BroGummer", HeroType.BroGummer)]
+    [HeroPreset("BurtBrommer", HeroType.BroGummer)]
     public class BroGummerM : BroGummer, ICustomHero
     {
         [Syncronize] public CustomBroInfo Info { get; set; }

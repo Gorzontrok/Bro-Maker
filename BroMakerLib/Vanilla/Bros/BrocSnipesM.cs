@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Bros
 {
-    [HeroPreset("BrocSnipes", HeroType.Broc)]
+    [HeroPreset("BroctorDeath", HeroType.Broc)]
     public class BrocSnipesM : BrocSnipes, ICustomHero
     {
         [Syncronize] public CustomBroInfo Info { get; set; }
