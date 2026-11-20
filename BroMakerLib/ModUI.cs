@@ -342,11 +342,11 @@ namespace BroMakerLib
                         GUILayout.Label(mod.Version, WindowScaling.ScaledWidth(200));
                         if (mod.ErrorMessage == string.Empty)
                         {
-                            GUILayout.Label(mod.BroMakerVersion, WindowScaling.ScaledWidth(200));
+                            GUILayout.Label(mod.BuiltFor, WindowScaling.ScaledWidth(200));
                         }
                         else
                         {
-                            GUILayout.Label(mod.BroMakerVersion, _warningStyle, WindowScaling.ScaledWidth(200));
+                            GUILayout.Label(mod.BuiltFor, _warningStyle, WindowScaling.ScaledWidth(200));
                         }
                         GUILayout.EndHorizontal();
 
@@ -426,7 +426,7 @@ namespace BroMakerLib
                     ++modCount;
                 }
 
-                // List mods that require a higher BroMaker version to make it clearer to the user what the issue is
+                // List refused mods to make it clearer to the user what the issue is
                 foreach (BroMakerMod mod in IncompatibleMods)
                 {
                     // show mod information
@@ -447,7 +447,7 @@ namespace BroMakerLib
 
                     GUILayout.Label(mod.Author, WindowScaling.ScaledWidth(200));
                     GUILayout.Label(mod.Version, WindowScaling.ScaledWidth(200));
-                    GUILayout.Label(mod.BroMakerVersion, _incompatibleStyle, WindowScaling.ScaledWidth(200));
+                    GUILayout.Label(mod.BuiltFor, _incompatibleStyle, WindowScaling.ScaledWidth(200));
                     GUILayout.EndHorizontal();
 
                     if (_selectedModIndex == modCount)
@@ -718,11 +718,11 @@ namespace BroMakerLib
             GUILayout.Label(mod.Version, WindowScaling.ScaledWidth(200));
             if (mod.ErrorMessage == string.Empty)
             {
-                GUILayout.Label(mod.BroMakerVersion, WindowScaling.ScaledWidth(200));
+                GUILayout.Label(mod.BuiltFor, WindowScaling.ScaledWidth(200));
             }
             else
             {
-                GUILayout.Label(mod.BroMakerVersion, _warningStyle, WindowScaling.ScaledWidth(200));
+                GUILayout.Label(mod.BuiltFor, _warningStyle, WindowScaling.ScaledWidth(200));
             }
 
             bool broEnabled = BroSpawnManager.IsBroEnabled(mod.StoredHeroes[0].name);

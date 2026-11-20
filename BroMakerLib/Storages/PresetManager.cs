@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using BroMakerLib.Attributes;
@@ -45,39 +44,88 @@ namespace BroMakerLib
                         mod.Harmony = new Harmony(mod.Name);
                     }
 
-                    foreach (string assemblyPath in mod.Assemblies ?? new string[0])
+                    List<KeyValuePair<string, Assembly>> assemblies = new List<KeyValuePair<string, Assembly>>();
+                    foreach (KeyValuePair<string, string> dll in BroMakerStorage.ListedDlls(mod, true))
                     {
-                        if (string.IsNullOrEmpty(assemblyPath))
-                        {
-                            BMLogger.Warning("The mod's Assemblies list has an empty entry, which was skipped");
-                            continue;
-                        }
-
                         Assembly assembly;
                         try
                         {
-                            string path = Path.Combine(mod.Path, assemblyPath);
-                            if (!File.Exists(path))
-                            {
-                                BMLogger.Warning($"Can't find '{assemblyPath}' at '{path}', so it wasn't loaded");
-                                continue;
-                            }
-
-                            assembly = Assembly.LoadFile(path);
+                            assembly = Assembly.LoadFile(dll.Value);
                             // Assembly.LoadFile doesn't resolve types, so GetTypes surfaces type-load failures here
                             assembly.GetTypes();
                         }
                         catch (Exception ex)
                         {
-                            if (BMLogger.IsIncompatibleAssembly(ex))
-                            {
-                                mod.ErrorMessage = BMLogger.FormatIncompatibleAssemblyMessage(mod.Name, ex);
-                                BroMakerStorage.MarkModIncompatible(mod);
-                            }
-                            BMLogger.Error($"Error loading assembly {assemblyPath}", ex);
-                            continue;
+                            string message = BMLogger.IsIncompatibleAssembly(ex) ? IncompatibleRefusal(mod, ex) : $"'{mod.Name}' wasn't loaded because its file '{dll.Key}' couldn't be loaded. Cause: {ex.Message}";
+                            BroMakerStorage.MarkModIncompatible(mod, message, ex);
+                            assemblies = null;
+                            break;
                         }
+                        assemblies.Add(new KeyValuePair<string, Assembly>(dll.Key, assembly));
+                    }
+                    if (assemblies == null)
+                    {
+                        continue;
+                    }
 
+                    List<string> libraries = new List<string>();
+                    List<string> targets = new List<string>();
+                    List<string> items = new List<string>();
+                    foreach (KeyValuePair<string, Assembly> entry in assemblies)
+                    {
+                        foreach (Type type in entry.Value.GetTypes())
+                        {
+                            try
+                            {
+                                Type libraryBase = null;
+                                for (Type current = type.BaseType; current != null; current = current.BaseType)
+                                {
+                                    string assemblyName = current.Assembly.GetName().Name;
+                                    if (assemblyName == BroMakerStorage.BroMakerLibName || assemblyName == BroMakerStorage.RocketLibName)
+                                    {
+                                        libraryBase = current;
+                                        break;
+                                    }
+                                }
+                                if (libraryBase == null)
+                                {
+                                    continue;
+                                }
+
+                                foreach (MethodInfo method in type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
+                                {
+                                    if (!method.IsVirtual || (method.Attributes & MethodAttributes.NewSlot) != 0)
+                                    {
+                                        continue;
+                                    }
+
+                                    MethodInfo definition = method.GetBaseDefinition();
+                                    if (definition.DeclaringType == method.DeclaringType && definition.MetadataToken == method.MetadataToken)
+                                    {
+                                        string target = type.FullName + "::" + method.Name + "(" + ParameterList(method, true) + ")";
+                                        string item = $"{ShortName(type)}.{method.Name}({ParameterList(method, false)}), which overrides a method {ShortName(libraryBase)} no longer has";
+                                        libraries.Add(libraryBase.Assembly.GetName().Name);
+                                        targets.Add(target);
+                                        items.Add(item);
+                                    }
+                                }
+                            }
+                            catch (Exception)
+                            {
+                            }
+                        }
+                    }
+                    if (items.Count > 0)
+                    {
+                        BroMakerStorage.Refuse(mod, BroMakerStorage.LibraryReason(mod, libraries, "it builds on ", ", so some of its code would never run"), "Never called", items);
+                        BMLogger.Log($"'{mod.Name}' never calls: {string.Join("; ", targets.ToArray())}");
+                        continue;
+                    }
+
+                    foreach (KeyValuePair<string, Assembly> entry in assemblies)
+                    {
+                        string assemblyPath = entry.Key;
+                        Assembly assembly = entry.Value;
                         BroMakerStorage.RegisterModAssembly(assembly, mod);
                         bool flag = CheckAssembly(assembly);
                         if (flag && mod.Harmony != null)
@@ -97,6 +145,28 @@ namespace BroMakerLib
             }
 
             BroMakerStorage.PopulateTypesDictionary();
+        }
+
+        private static string ParameterList(MethodInfo method, bool fullNames)
+        {
+            ParameterInfo[] parameters = method.GetParameters();
+            string[] names = new string[parameters.Length];
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                names[i] = fullNames ? parameters[i].ParameterType.ToString() : ShortName(parameters[i].ParameterType);
+            }
+            return string.Join(", ", names);
+        }
+
+        private static string ShortName(Type type)
+        {
+            int arity = type.Name.IndexOf('`');
+            return arity < 0 ? type.Name : type.Name.Substring(0, arity);
+        }
+
+        private static string IncompatibleRefusal(BroMakerMod mod, Exception ex)
+        {
+            return $"'{mod.Name}' wasn't loaded because it uses {BMLogger.MissingCodePhrase}. It was probably built for an older BroMaker and needs an update from its author, or one of its own dependencies is missing or out of date. Cause: {BMLogger.MissingMemberMessage(ex)}";
         }
 
         private static Type GetPreset(Dictionary<string, Type> collection, string name)
@@ -157,16 +227,15 @@ namespace BroMakerLib
             }
             catch (Exception ex)
             {
-                if (BMLogger.IsIncompatibleAssembly(ex))
+                BroMakerMod mod = BMLogger.IsIncompatibleAssembly(ex) ? BroMakerStorage.GetModByAssembly(assembly) : null;
+                if (mod != null)
                 {
-                    BroMakerMod mod = BroMakerStorage.GetModByAssembly(assembly);
-                    if (mod != null)
-                    {
-                        mod.ErrorMessage = BMLogger.FormatIncompatibleAssemblyMessage(mod.Name, ex);
-                        BroMakerStorage.MarkModIncompatible(mod);
-                    }
+                    BroMakerStorage.MarkModIncompatible(mod, IncompatibleRefusal(mod, ex), ex);
                 }
-                BMLogger.Error($"Failed to scan assembly '{assembly.GetName().Name}'", ex);
+                else
+                {
+                    BMLogger.Error($"Failed to scan assembly '{assembly.GetName().Name}'", ex);
+                }
                 return false;
             }
 

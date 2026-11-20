@@ -9,9 +9,6 @@ namespace BroMakerLib
 
         public const string VERSION = "2.7.0";
 
-        // Used for when BroMaker makes breaking changes that will require Bro mods to be updated
-        public const string MINIMUMVERSION = "2.7.0";
-
         public static System.Version ParsedVersion
         {
             get
@@ -25,19 +22,5 @@ namespace BroMakerLib
         }
 
         private static System.Version _parsedVersion;
-
-        public static System.Version ParsedMinimumVersion
-        {
-            get
-            {
-                if (_parsedMinimumVersion == null)
-                {
-                    _parsedMinimumVersion = UnityModManager.ParseVersion(MINIMUMVERSION);
-                }
-                return _parsedMinimumVersion;
-            }
-        }
-
-        private static System.Version _parsedMinimumVersion;
     }
 }

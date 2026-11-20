@@ -14,7 +14,6 @@ namespace BroMakerLib
     {
         public string Name = string.Empty;
         public string Version = "0.0.0";
-        public string BroMakerVersion = "0.0.0";
         public string Author = string.Empty;
         public string ErrorMessage = string.Empty;
         public bool HasHarmonyPatch = false;
@@ -29,6 +28,13 @@ namespace BroMakerLib
         [JsonIgnore] public string[] BrosNames { get; internal set; } = new string[0];
         [JsonIgnore] public StoredHero[] StoredHeroes { get; internal set; } = new StoredHero[0];
         [JsonIgnore] public Harmony Harmony = null;
+        [JsonIgnore] internal string BuiltFor = string.Empty;
+        [JsonIgnore] internal List<string> ScanLog = new List<string>();
+        [JsonIgnore] internal string UncheckedReason = null;
+        [JsonIgnore] internal Version BroMakerLibReference = null;
+        [JsonIgnore] internal Version RocketLibReference = null;
+        [JsonIgnore] internal List<KeyValuePair<string, string>> MissingItems = new List<KeyValuePair<string, string>>();
+        [JsonIgnore] internal List<string> MissingDetails = new List<string>();
 
         public static BroMakerMod TryLoad(string path)
         {
@@ -41,6 +47,10 @@ namespace BroMakerLib
                 if (mod.Name.IsNullOrEmpty())
                 {
                     mod.Name = new DirectoryInfo(mod.Path).Name;
+                }
+                if (mod.Assemblies == null)
+                {
+                    mod.Assemblies = new string[0];
                 }
             }
 

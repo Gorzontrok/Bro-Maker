@@ -54,6 +54,8 @@ namespace BroMakerLib.Loggers
         private const int IssueLimit = 200;
         private const string PendingLimitMessage = "Issue queue limit reached, so some issues were not recorded";
         private const string IssueLimitMessage = "Issue limit reached, so new issues are no longer recorded";
+
+        internal const string MissingCodePhrase = "a function or type that isn't there";
         private const int QueuedLineLimit = 200;
         private const int TracedSignatureLimit = 1000;
 
@@ -211,23 +213,26 @@ namespace BroMakerLib.Loggers
         /// <summary>Builds the "rebuild required" message for a mod that hit an incompatible-assembly exception.</summary>
         internal static string FormatIncompatibleAssemblyMessage(string modName, Exception ex)
         {
+            string label = string.IsNullOrEmpty(modName) ? "A mod" : "'" + modName + "'";
+            return label + " tried to use " + MissingCodePhrase + ". This usually means it was built against an older " +
+                   "version of BroMaker and needs to be rebuilt against BroMaker " + Info.VERSION + " or later, but it can also mean " +
+                   "one of the mod's own dependencies is missing or out of date. " +
+                   "(Missing: " + MissingMemberMessage(ex) + ")";
+        }
+
+        internal static string MissingMemberMessage(Exception ex)
+        {
             string innerMsg = ex.Message;
             for (Exception cur = ex; cur != null; cur = cur.InnerException)
             {
                 ReflectionTypeLoadException reflectionEx = cur as ReflectionTypeLoadException;
                 if (reflectionEx != null && !reflectionEx.LoaderExceptions.IsNullOrEmpty() && reflectionEx.LoaderExceptions[0] != null)
                 {
-                    innerMsg = reflectionEx.LoaderExceptions[0].Message;
-                    break;
+                    return reflectionEx.LoaderExceptions[0].Message;
                 }
                 innerMsg = cur.Message;
             }
-
-            string label = string.IsNullOrEmpty(modName) ? "A mod" : "'" + modName + "'";
-            return label + " tried to use a function or type that isn't there. This usually means it was built against an older " +
-                   "version of BroMaker and needs to be rebuilt against BroMaker " + Info.VERSION + " or later, but it can also mean " +
-                   "one of the mod's own dependencies is missing or out of date. " +
-                   "(Missing: " + innerMsg + ")";
+            return innerMsg;
         }
 
         internal static string FormatSource(string modName, string broName)
@@ -266,7 +271,7 @@ namespace BroMakerLib.Loggers
         private static string ComposeMessage(string message, Exception ex, string mod, bool incompatible)
         {
             string detail = incompatible ? FormatIncompatibleAssemblyMessage(mod, ex) : RootCause(ex).Message;
-            if (string.IsNullOrEmpty(detail) || message.IndexOf(detail, StringComparison.Ordinal) >= 0)
+            if (string.IsNullOrEmpty(detail) || message.IndexOf(incompatible ? MissingCodePhrase : detail, StringComparison.Ordinal) >= 0)
             {
                 return message;
             }

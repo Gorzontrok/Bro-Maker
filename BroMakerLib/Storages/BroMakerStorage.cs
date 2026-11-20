@@ -8,12 +8,19 @@ using BroMakerLib.Cutscenes;
 using BroMakerLib.Infos;
 using BroMakerLib.Loggers;
 using BroMakerLib.Unlocks;
+using RocketLib.Utils;
 using UnityModManagerNet;
 
 namespace BroMakerLib.Storages
 {
     public static class BroMakerStorage
     {
+        internal const string BroMakerLibName = "BroMakerLib";
+        internal const string RocketLibName = "RocketLib";
+        private const string AuthorClosing = "It needs an update from its author.";
+        private const int MaxListedItems = 3;
+        private const int MaxListedSites = 3;
+
         internal static ReadOnlyCollection<BroMakerMod> Mods { get; private set; } = new List<BroMakerMod>().AsReadOnly();
 
         internal static ReadOnlyCollection<StoredHero> Bros
@@ -36,6 +43,7 @@ namespace BroMakerLib.Storages
         private static List<string> _broNames = new List<string>();
         private static ReadOnlyCollection<string> _broNamesReadOnly = new List<string>().AsReadOnly();
         private static readonly Dictionary<Assembly, BroMakerMod> _modByAssembly = new Dictionary<Assembly, BroMakerMod>();
+        private static Version _installedRocketLib;
 
         internal static void Initialize()
         {
@@ -135,13 +143,17 @@ namespace BroMakerLib.Storages
             return _modByAssembly.TryGetValue(assembly, out mod) ? mod : null;
         }
 
-        internal static void MarkModIncompatible(BroMakerMod mod)
+        internal static void MarkModIncompatible(BroMakerMod mod, string message, Exception ex = null)
         {
-            if (mod != null && !_incompatibleMods.Contains(mod))
+            if (mod == null || _incompatibleMods.Contains(mod))
             {
-                _incompatibleMods.Add(mod);
-                UnregisterMod(mod);
+                return;
             }
+
+            mod.ErrorMessage = message;
+            _incompatibleMods.Add(mod);
+            UnregisterMod(mod);
+            BMLogger.Error(message, ex, mod.Name);
         }
 
         internal static void UnregisterMod(BroMakerMod mod)
@@ -202,58 +214,263 @@ namespace BroMakerLib.Storages
             BMLogger.Debug("Loading Mods");
             string[] jsonFiles = Directory.GetFiles(DirectoriesManager.StorageDirectory, "*.mod.json", SearchOption.AllDirectories);
 
+            List<BroMakerMod> manifests = new List<BroMakerMod>();
             foreach (string jsonFile in jsonFiles)
             {
-                BroMakerMod mod = null;
                 try
                 {
-                    mod = BroMakerMod.TryLoad(jsonFile);
+                    BroMakerMod mod = BroMakerMod.TryLoad(jsonFile);
                     if (mod != null)
                     {
-                        Version modVersion = UnityModManager.ParseVersion(mod.BroMakerVersion);
-                        // Mod requires a newer version of BroMaker
-                        if (Info.ParsedVersion < modVersion)
-                        {
-                            _incompatibleMods.Add(mod);
-                            BMLogger.Error($"{mod.Name} requires a version of BroMaker >={mod.BroMakerVersion}. Current BroMaker version is {Info.VERSION}", mod: mod.Name);
-                            mod.ErrorMessage = mod.Name + " requires a newer version of BroMaker: " + mod.BroMakerVersion + ". Current BroMaker version is: " + Info.VERSION + ". You must update BroMaker.";
-                        }
-                        // Mod is too old for this version of BroMaker
-                        else if (Info.ParsedMinimumVersion > modVersion)
-                        {
-                            _incompatibleMods.Add(mod);
-                            BMLogger.Error($"{mod.Name} will not work with this version of BroMaker. You must update {mod.Name}.", mod: mod.Name);
-                            mod.ErrorMessage = mod.Name + " was created using an outdated version of BroMaker (" + mod.BroMakerVersion + ") you must update " + mod.Name + " to a version that supports BroMaker " + Info.ParsedMinimumVersion + ".";
-                        }
-                        // Versions are compatible
-                        else if (GetModByName(mod.Name) is BroMakerMod loaded)
-                        {
-                            BroMakerMod kept = loaded;
-                            BroMakerMod skipped = mod;
-                            if (UnityModManager.ParseVersion(mod.Version) > UnityModManager.ParseVersion(loaded.Version))
-                            {
-                                mod.Initialize();
-                                _mods[_mods.IndexOf(loaded)] = mod;
-                                kept = mod;
-                                skipped = loaded;
-                            }
-                            BMLogger.Warning($"Two copies of the mod '{mod.Name}' are installed: the one at '{kept.Path}' was loaded and the one at '{skipped.Path}' was not.", mod: mod.Name);
-                        }
-                        else
-                        {
-                            mod.Initialize();
-                            _mods.Add(mod);
-                        }
+                        manifests.Add(mod);
                     }
                 }
                 catch (Exception ex)
                 {
-                    string modName = mod != null ? mod.Name : new DirectoryInfo(Path.GetDirectoryName(jsonFile)).Name;
-                    BMLogger.Error($"Unable to load BroMaker Mod at {jsonFile}", ex, modName);
+                    BMLogger.Error($"Unable to load BroMaker Mod at {jsonFile}", ex, new DirectoryInfo(Path.GetDirectoryName(jsonFile)).Name);
+                }
+            }
+
+            _installedRocketLib = ModCompatibility.InstalledVersion(RocketLibName);
+            using (ReferenceScanner scanner = ModCompatibility.CreateScanner())
+            {
+                foreach (BroMakerMod mod in manifests)
+                {
+                    List<KeyValuePair<string, string>> mergedOrder = new List<KeyValuePair<string, string>>();
+                    Dictionary<string, List<string>> mergedSites = new Dictionary<string, List<string>>();
+                    foreach (KeyValuePair<string, string> dll in ListedDlls(mod, false))
+                    {
+                        ReferenceScanResult result = scanner.Scan(dll.Value);
+                        string name = Path.GetFileName(dll.Value);
+                        if (!result.Checked)
+                        {
+                            mod.UncheckedReason = result.Unreadable ? $"its file '{name}' couldn't be read. Cause: {result.UncheckedReason}" : $"BroMaker couldn't check '{name}' for compatibility. Cause: {result.UncheckedReason}";
+                            break;
+                        }
+
+                        if (result.Unresolved.Count > 0)
+                        {
+                            mod.ScanLog.Add($"'{mod.Name}' ({name}) has references BroMaker couldn't follow: {string.Join("; ", new List<string>(result.Unresolved).ToArray())}");
+                        }
+
+                        List<string> libraries = new List<string>();
+                        List<string> targets = new List<string>();
+                        foreach (MissingReference missing in result.Missing)
+                        {
+                            libraries.Add(missing.Library);
+                            targets.Add(missing.UsedIn.Count == 0 ? missing.Target : missing.Target + " [in " + string.Join("; ", new List<string>(missing.UsedIn).ToArray()) + "]");
+
+                            string key = missing.Library + ":" + missing.Display;
+                            List<string> sites;
+                            if (!mergedSites.TryGetValue(key, out sites))
+                            {
+                                mergedSites[key] = new List<string>(missing.UsedIn);
+                                mergedOrder.Add(new KeyValuePair<string, string>(missing.Library, missing.Display));
+                                continue;
+                            }
+                            foreach (string site in missing.UsedIn)
+                            {
+                                if (sites.Count < MaxListedSites && !sites.Contains(site))
+                                {
+                                    sites.Add(site);
+                                }
+                            }
+                        }
+
+                        Version broMakerLib = result.ReferencedVersion(BroMakerLibName);
+                        Version rocketLib = result.ReferencedVersion(RocketLibName);
+                        if (targets.Count > 0)
+                        {
+                            List<string> builtAgainst = new List<string>();
+                            if (libraries.Contains(BroMakerLibName))
+                            {
+                                builtAgainst.Add(BroMakerLibName + " " + broMakerLib);
+                            }
+                            if (libraries.Contains(RocketLibName))
+                            {
+                                builtAgainst.Add(RocketLibName + " " + rocketLib);
+                            }
+                            mod.MissingDetails.Add($"'{mod.Name}' ({name}, built against {string.Join(" and ", builtAgainst.ToArray())}) references: {string.Join("; ", targets.ToArray())}");
+                        }
+
+                        mod.BroMakerLibReference = Highest(mod.BroMakerLibReference, broMakerLib);
+                        mod.RocketLibReference = Highest(mod.RocketLibReference, rocketLib);
+                    }
+
+                    foreach (KeyValuePair<string, string> item in mergedOrder)
+                    {
+                        List<string> sites = mergedSites[item.Key + ":" + item.Value];
+                        mod.MissingItems.Add(new KeyValuePair<string, string>(item.Key, sites.Count == 0 ? item.Value : item.Value + " in " + string.Join(", ", sites.ToArray())));
+                    }
+                }
+            }
+
+            foreach (BroMakerMod mod in manifests)
+            {
+                try
+                {
+                    foreach (string line in mod.ScanLog)
+                    {
+                        BMLogger.Log(line);
+                    }
+
+                    mod.BuiltFor = mod.BroMakerLibReference != null ? mod.BroMakerLibReference.ToString() : mod.UncheckedReason != null ? string.Empty : Info.VERSION;
+
+                    if (mod.UncheckedReason != null)
+                    {
+                        Refuse(mod, mod.UncheckedReason);
+                    }
+                    else if (mod.MissingItems.Count > 0)
+                    {
+                        List<string> items = mod.MissingItems.ConvertAll(item => item.Value);
+                        Refuse(mod, LibraryReason(mod, mod.MissingItems.ConvertAll(item => item.Key), "it uses ", string.Empty), "Missing", items);
+                    }
+                    else if (GetModByName(mod.Name) is BroMakerMod loaded)
+                    {
+                        BroMakerMod kept = loaded;
+                        BroMakerMod skipped = mod;
+                        if (UnityModManager.ParseVersion(mod.Version) > UnityModManager.ParseVersion(loaded.Version))
+                        {
+                            mod.Initialize();
+                            _mods[_mods.IndexOf(loaded)] = mod;
+                            kept = mod;
+                            skipped = loaded;
+                        }
+                        BMLogger.Warning($"Two copies of the mod '{mod.Name}' are installed: the one at '{kept.Path}' was loaded and the one at '{skipped.Path}' was not.", mod: mod.Name);
+                    }
+                    else
+                    {
+                        mod.Initialize();
+                        _mods.Add(mod);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    BMLogger.Error($"Unable to load BroMaker Mod at {mod.Path}", ex, mod.Name);
                 }
             }
 
             BMLogger.Debug("Finish Loading Mods");
+        }
+
+        private static Version Highest(Version first, Version second)
+        {
+            if (first == null)
+            {
+                return second;
+            }
+            return second != null && second > first ? second : first;
+        }
+
+        internal static List<KeyValuePair<string, string>> ListedDlls(BroMakerMod mod, bool report)
+        {
+            List<KeyValuePair<string, string>> dlls = new List<KeyValuePair<string, string>>();
+            foreach (string entry in mod.Assemblies)
+            {
+                if (string.IsNullOrEmpty(entry))
+                {
+                    if (report)
+                    {
+                        BMLogger.Warning("The mod's Assemblies list has an empty entry, which was skipped");
+                    }
+                    continue;
+                }
+
+                string path;
+                try
+                {
+                    path = Path.Combine(mod.Path, entry);
+                }
+                catch (ArgumentException ex)
+                {
+                    if (report)
+                    {
+                        BMLogger.Error($"Error loading assembly {entry}", ex);
+                    }
+                    continue;
+                }
+
+                if (!File.Exists(path))
+                {
+                    if (report)
+                    {
+                        BMLogger.Warning($"Can't find '{entry}' at '{path}', so it wasn't loaded");
+                    }
+                    continue;
+                }
+                dlls.Add(new KeyValuePair<string, string>(entry, path));
+            }
+            return dlls;
+        }
+
+        internal static void Refuse(BroMakerMod mod, string reason, string label = null, List<string> items = null)
+        {
+            string text = $"'{mod.Name}' wasn't loaded because {reason}";
+            MarkModIncompatible(mod, text + ListTail(label, items, false));
+            mod.ErrorMessage = text + ListTail(label, items, true);
+
+            foreach (string line in mod.MissingDetails)
+            {
+                BMLogger.Log(line);
+            }
+        }
+
+        private static string ListTail(string label, List<string> items, bool fullList)
+        {
+            if (items == null)
+            {
+                return string.Empty;
+            }
+
+            string list;
+            if (fullList || items.Count <= MaxListedItems)
+            {
+                list = string.Join("; ", items.ToArray());
+            }
+            else
+            {
+                list = string.Join("; ", items.GetRange(0, MaxListedItems).ToArray()) + "; and " + (items.Count - MaxListedItems) + " more";
+            }
+            return $" {label}: {list}.";
+        }
+
+        internal static string LibraryReason(BroMakerMod mod, List<string> libraries, string lead, string tail)
+        {
+            List<string> parts = new List<string>();
+            List<string> names = new List<string>();
+            bool allNewer = true;
+            foreach (string library in new[] { BroMakerLibName, RocketLibName })
+            {
+                if (!libraries.Contains(library))
+                {
+                    continue;
+                }
+
+                bool isRocketLib = library == RocketLibName;
+                string name = isRocketLib ? RocketLibName : "BroMaker";
+                Version builtFor = isRocketLib ? mod.RocketLibReference : mod.BroMakerLibReference;
+                Version installed = isRocketLib ? _installedRocketLib : Info.ParsedVersion;
+                string current = installed != null ? installed.ToString() : "the installed version";
+                bool comparable = builtFor != null && installed != null;
+                bool newer = comparable && builtFor > installed;
+                allNewer &= newer;
+                names.Add(name);
+                if (newer)
+                {
+                    parts.Add($"parts of {name} {builtFor} that {current} doesn't have yet");
+                }
+                else if (comparable && builtFor < installed)
+                {
+                    parts.Add($"parts of {name} {builtFor} that {current} no longer has");
+                }
+                else
+                {
+                    parts.Add($"parts of {name} that {current} doesn't have");
+                }
+            }
+
+            string closing = allNewer ? $"Update {string.Join(" and ", names.ToArray())} to use it." : AuthorClosing;
+            return lead + string.Join(" and ", parts.ToArray()) + tail + ". " + closing;
         }
 
         internal static void PopulateTypesDictionary()
