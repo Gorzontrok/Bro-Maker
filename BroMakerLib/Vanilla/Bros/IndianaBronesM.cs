@@ -44,6 +44,19 @@ namespace BroMakerLib.Vanilla.Bros
             try
             {
                 this.StandardBeforeAwake();
+
+                if (Info.BetterAnimationDefaulted)
+                {
+                    IndianaBrones awakePrefab = HeroController.GetHeroPrefab(HeroType.IndianaBrones).As<IndianaBrones>();
+                    if (awakePrefab != null)
+                    {
+                        if (!Info.beforeAwake.ContainsKey("useNewDuckingFrames"))
+                        {
+                            useNewDuckingFrames = awakePrefab.useNewDuckingFrames;
+                        }
+                    }
+                }
+
                 base.Awake();
                 this.StandardAfterAwake();
             }

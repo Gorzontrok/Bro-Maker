@@ -45,6 +45,8 @@ namespace BroMakerLib.Vanilla.Bros
             try
             {
                 this.StandardBeforeAwake();
+                // GENERATOR:AWAKE_FIXES
+                // GENERATOR:AWAKE_END
                 base.Awake();
                 this.StandardAfterAwake();
             }

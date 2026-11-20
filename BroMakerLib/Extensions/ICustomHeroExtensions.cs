@@ -146,6 +146,11 @@ namespace BroMakerLib.Extensions
                 Type type = otherBroComponent.GetType();
                 UnityEngine.Object.DestroyImmediate(otherBroComponent);
                 BMLogger.Debug($"SetupCustomHero: Has destroy {type} component.");
+                if (!hero.Info.parameters.ContainsKey("BetterAnimation"))
+                {
+                    hero.Info.parameters["BetterAnimation"] = true;
+                    hero.Info.BetterAnimationDefaulted = true;
+                }
                 hero.Info.ReadParameters(hero.Character);
                 BMLogger.Debug("SetupCustomHero: Has read parameters");
             }

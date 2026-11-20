@@ -44,6 +44,27 @@ namespace BroMakerLib.Vanilla.Bros
             try
             {
                 this.StandardBeforeAwake();
+
+                if (Info.BetterAnimationDefaulted)
+                {
+                    BrocSnipes awakePrefab = HeroController.GetHeroPrefab(HeroType.Broc).As<BrocSnipes>();
+                    if (awakePrefab != null)
+                    {
+                        if (!Info.beforeAwake.ContainsKey("doRollOnLand"))
+                        {
+                            doRollOnLand = awakePrefab.doRollOnLand;
+                        }
+                        if (!Info.beforeAwake.ContainsKey("useNewHighFivingFrames"))
+                        {
+                            useNewHighFivingFrames = awakePrefab.useNewHighFivingFrames;
+                        }
+                        if (!Info.beforeAwake.ContainsKey("hasNewAirFlexFrames"))
+                        {
+                            hasNewAirFlexFrames = awakePrefab.hasNewAirFlexFrames;
+                        }
+                    }
+                }
+
                 base.Awake();
                 this.StandardAfterAwake();
             }

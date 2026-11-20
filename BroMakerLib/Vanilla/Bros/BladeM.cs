@@ -44,6 +44,19 @@ namespace BroMakerLib.Vanilla.Bros
             try
             {
                 this.StandardBeforeAwake();
+
+                if (Info.BetterAnimationDefaulted)
+                {
+                    Blade awakePrefab = HeroController.GetHeroPrefab(HeroType.Blade).As<Blade>();
+                    if (awakePrefab != null)
+                    {
+                        if (!Info.beforeAwake.ContainsKey("doRollOnLand"))
+                        {
+                            doRollOnLand = awakePrefab.doRollOnLand;
+                        }
+                    }
+                }
+
                 base.Awake();
                 this.StandardAfterAwake();
             }

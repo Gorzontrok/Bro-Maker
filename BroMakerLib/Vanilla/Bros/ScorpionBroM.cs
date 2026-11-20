@@ -44,6 +44,19 @@ namespace BroMakerLib.Vanilla.Bros
             try
             {
                 this.StandardBeforeAwake();
+
+                if (Info.BetterAnimationDefaulted)
+                {
+                    ScorpionBro awakePrefab = HeroController.GetHeroPrefab(HeroType.ScorpionBro).As<ScorpionBro>();
+                    if (awakePrefab != null)
+                    {
+                        if (!Info.beforeAwake.ContainsKey("hasNewAirFlexFrames"))
+                        {
+                            hasNewAirFlexFrames = awakePrefab.hasNewAirFlexFrames;
+                        }
+                    }
+                }
+
                 base.Awake();
                 this.StandardAfterAwake();
             }

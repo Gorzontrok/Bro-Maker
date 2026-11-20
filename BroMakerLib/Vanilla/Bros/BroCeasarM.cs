@@ -44,6 +44,23 @@ namespace BroMakerLib.Vanilla.Bros
             try
             {
                 this.StandardBeforeAwake();
+
+                if (Info.BetterAnimationDefaulted)
+                {
+                    BroCeasar awakePrefab = HeroController.GetHeroPrefab(HeroType.HaleTheBro).As<BroCeasar>();
+                    if (awakePrefab != null)
+                    {
+                        if (!Info.beforeAwake.ContainsKey("useNewHighFivingFrames"))
+                        {
+                            useNewHighFivingFrames = awakePrefab.useNewHighFivingFrames;
+                        }
+                        if (!Info.beforeAwake.ContainsKey("hasNewAirFlexFrames"))
+                        {
+                            hasNewAirFlexFrames = awakePrefab.hasNewAirFlexFrames;
+                        }
+                    }
+                }
+
                 base.Awake();
                 this.StandardAfterAwake();
             }

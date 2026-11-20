@@ -44,6 +44,41 @@ def generate_bro(template, bro):
             result,
         )
 
+    awake_fixes = bro.get("awakeFixes", [])
+    for fix in awake_fixes:
+        if fix["type"] != "prefabCopy":
+            sys.exit(f"{bro['className']}: 'awakeFixes' handles only 'prefabCopy' fixes, got '{fix['type']}'")
+    if awake_fixes:
+        lines = []
+        lines.append(f"                if (Info.BetterAnimationDefaulted)")
+        lines.append(f"                {{")
+        lines.append(
+            f"                    {bro['baseClass']} awakePrefab = HeroController.GetHeroPrefab(HeroType.{bro['heroType']}).As<{bro['baseClass']}>();"
+        )
+        lines.append(f"                    if (awakePrefab != null)")
+        lines.append(f"                    {{")
+        for fix in awake_fixes:
+            for field in fix["fields"]:
+                lines.append(f'                        if (!Info.beforeAwake.ContainsKey("{field}"))')
+                lines.append(f"                        {{")
+                lines.append(f"                            {field} = awakePrefab.{field};")
+                lines.append(f"                        }}")
+        lines.append(f"                    }}")
+        lines.append(f"                }}")
+        awake_body = "\n".join(lines)
+        result = re.sub(
+            r"                // GENERATOR:AWAKE_FIXES\n.*?                // GENERATOR:AWAKE_END",
+            lambda _: "\n" + awake_body + "\n",
+            result,
+            flags=re.DOTALL,
+        )
+    else:
+        result = re.sub(
+            r"                // GENERATOR:AWAKE_FIXES\n                // GENERATOR:AWAKE_END\n",
+            "",
+            result,
+        )
+
     return HEADER + result
 
 

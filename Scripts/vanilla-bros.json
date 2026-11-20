@@ -18,7 +18,15 @@
             "presetName": "Brade",
             "className": "BladeM",
             "baseClass": "Blade",
-            "heroType": "Blade"
+            "heroType": "Blade",
+            "awakeFixes": [
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "doRollOnLand"
+                    ]
+                }
+            ]
         },
         {
             "presetName": "BoondockBro",
@@ -38,13 +46,30 @@
             "presetName": "Brobocop",
             "className": "BrobocopM",
             "baseClass": "Brobocop",
-            "heroType": "Brobocop"
+            "heroType": "Brobocop",
+            "awakeFixes": [
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "doRollOnLand"
+                    ]
+                }
+            ]
         },
         {
             "presetName": "BroCeasar",
             "className": "BroCeasarM",
             "baseClass": "BroCeasar",
-            "heroType": "HaleTheBro"
+            "heroType": "HaleTheBro",
+            "awakeFixes": [
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "useNewHighFivingFrames",
+                        "hasNewAirFlexFrames"
+                    ]
+                }
+            ]
         },
         {
             "presetName": "Brochete",
@@ -56,7 +81,17 @@
             "presetName": "BrocSnipes",
             "className": "BrocSnipesM",
             "baseClass": "BrocSnipes",
-            "heroType": "Broc"
+            "heroType": "Broc",
+            "awakeFixes": [
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "doRollOnLand",
+                        "useNewHighFivingFrames",
+                        "hasNewAirFlexFrames"
+                    ]
+                }
+            ]
         },
         {
             "presetName": "BrodellWalker",
@@ -68,7 +103,15 @@
             "presetName": "Broden",
             "className": "BrodenM",
             "baseClass": "Broden",
-            "heroType": "Broden"
+            "heroType": "Broden",
+            "awakeFixes": [
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "doRollOnLand"
+                    ]
+                }
+            ]
         },
         {
             "presetName": "BroDredd",
@@ -86,7 +129,15 @@
             "presetName": "BroGummer",
             "className": "BroGummerM",
             "baseClass": "BroGummer",
-            "heroType": "BroGummer"
+            "heroType": "BroGummer",
+            "awakeFixes": [
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "doRollOnLand"
+                    ]
+                }
+            ]
         },
         {
             "presetName": "BroHard",
@@ -110,7 +161,15 @@
             "presetName": "Brominator",
             "className": "BrominatorM",
             "baseClass": "Brominator",
-            "heroType": "Brominator"
+            "heroType": "Brominator",
+            "awakeFixes": [
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "doRollOnLand"
+                    ]
+                }
+            ]
         },
         {
             "presetName": "Brommando",
@@ -122,7 +181,15 @@
             "presetName": "Bronan",
             "className": "BronanTheBrobarianM",
             "baseClass": "BronanTheBrobarian",
-            "heroType": "BronanTheBrobarian"
+            "heroType": "BronanTheBrobarian",
+            "awakeFixes": [
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "doRollOnLand"
+                    ]
+                }
+            ]
         },
         {
             "presetName": "SethBrondle",
@@ -134,7 +201,16 @@
             "presetName": "BroneyRoss",
             "className": "BroneyRossM",
             "baseClass": "BroneyRoss",
-            "heroType": "BroneyRoss"
+            "heroType": "BroneyRoss",
+            "awakeFixes": [
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "useNewHighFivingFrames",
+                        "hasNewAirFlexFrames"
+                    ]
+                }
+            ]
         },
         {
             "presetName": "BroniversalSoldier",
@@ -146,7 +222,16 @@
             "presetName": "BronnarJensen",
             "className": "BronnarJensenM",
             "baseClass": "BronnarJensen",
-            "heroType": "BronnarJensen"
+            "heroType": "BronnarJensen",
+            "awakeFixes": [
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "useNewHighFivingFrames",
+                        "hasNewAirFlexFrames"
+                    ]
+                }
+            ]
         },
         {
             "presetName": "BroInBlack",
@@ -178,7 +263,15 @@
             "presetName": "BroHeart",
             "className": "BroveHeartM",
             "baseClass": "BroveHeart",
-            "heroType": "BroveHeart"
+            "heroType": "BroveHeart",
+            "awakeFixes": [
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "doRollOnLand"
+                    ]
+                }
+            ]
         },
         {
             "presetName": "CaseyBroback",
@@ -238,13 +331,30 @@
             "presetName": "IndianaBrones",
             "className": "IndianaBronesM",
             "baseClass": "IndianaBrones",
-            "heroType": "IndianaBrones"
+            "heroType": "IndianaBrones",
+            "awakeFixes": [
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "useNewDuckingFrames"
+                    ]
+                }
+            ]
         },
         {
             "presetName": "LeeBroxmas",
             "className": "LeeBroxmasM",
             "baseClass": "LeeBroxmas",
-            "heroType": "LeeBroxmas"
+            "heroType": "LeeBroxmas",
+            "awakeFixes": [
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "useNewHighFivingFrames",
+                        "hasNewAirFlexFrames"
+                    ]
+                }
+            ]
         },
         {
             "presetName": "McBrover",
@@ -268,7 +378,15 @@
             "presetName": "ScorpionBro",
             "className": "ScorpionBroM",
             "baseClass": "ScorpionBro",
-            "heroType": "ScorpionBro"
+            "heroType": "ScorpionBro",
+            "awakeFixes": [
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "hasNewAirFlexFrames"
+                    ]
+                }
+            ]
         },
         {
             "presetName": "SnakeBroskin",
@@ -292,7 +410,15 @@
             "presetName": "TheBrode",
             "className": "TheBrodeM",
             "baseClass": "TheBrode",
-            "heroType": "TheBrode"
+            "heroType": "TheBrode",
+            "awakeFixes": [
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "doRollOnLand"
+                    ]
+                }
+            ]
         },
         {
             "presetName": "TheBrofessional",
@@ -304,7 +430,15 @@
             "presetName": "TheBrolander",
             "className": "TheBrolanderM",
             "baseClass": "TheBrolander",
-            "heroType": "TheBrolander"
+            "heroType": "TheBrolander",
+            "awakeFixes": [
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "doRollOnLand"
+                    ]
+                }
+            ]
         },
         {
             "presetName": "TimeBro",
@@ -316,13 +450,31 @@
             "presetName": "TollBroad",
             "className": "TollBroadM",
             "baseClass": "TollBroad",
-            "heroType": "TollBroad"
+            "heroType": "TollBroad",
+            "awakeFixes": [
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "useNewHighFivingFrames",
+                        "hasNewAirFlexFrames"
+                    ]
+                }
+            ]
         },
         {
             "presetName": "TrentBroser",
             "className": "TrentBroserM",
             "baseClass": "TrentBroser",
-            "heroType": "TrentBroser"
+            "heroType": "TrentBroser",
+            "awakeFixes": [
+                {
+                    "type": "prefabCopy",
+                    "fields": [
+                        "useNewHighFivingFrames",
+                        "hasNewAirFlexFrames"
+                    ]
+                }
+            ]
         },
         {
             "presetName": "VanDammeBro",

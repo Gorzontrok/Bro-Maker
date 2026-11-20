@@ -39,6 +39,7 @@ namespace BroMakerLib.Infos
         [JsonIgnore] public List<float> SpecialMaterialSpacing = new List<float> { 0f };
         [JsonIgnore] public List<Material> FirstAvatar = new List<Material> { null };
         [JsonIgnore] public int VariantCount = 1;
+        [JsonIgnore] internal bool BetterAnimationDefaulted;
 
         [JsonExtensionData(WriteData = false)] private Dictionary<string, JToken> _unknownKeys = new Dictionary<string, JToken>();
 
