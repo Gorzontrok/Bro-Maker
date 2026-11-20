@@ -37,6 +37,9 @@ namespace BroMakerLib
         public List<List<string>> _unloadedNotUnlockedBros;
         public List<List<string>> _unloadedAvailableBros;
 
+        // Mod name to the refusal tokens the player accepted in the Custom Bros tab
+        public Dictionary<string, List<string>> loadAnywayMods = new Dictionary<string, List<string>>();
+
         // Settings menu
         public bool showGeneralSettings = true;
         public bool showSpawnSettings = true;

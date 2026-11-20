@@ -29,12 +29,15 @@ namespace BroMakerLib
         [JsonIgnore] public StoredHero[] StoredHeroes { get; internal set; } = new StoredHero[0];
         [JsonIgnore] public Harmony Harmony = null;
         [JsonIgnore] internal string BuiltFor = string.Empty;
+        [JsonIgnore] internal List<string> RefusalTokens = new List<string>();
         [JsonIgnore] internal List<string> ScanLog = new List<string>();
         [JsonIgnore] internal string UncheckedReason = null;
         [JsonIgnore] internal Version BroMakerLibReference = null;
         [JsonIgnore] internal Version RocketLibReference = null;
         [JsonIgnore] internal List<KeyValuePair<string, string>> MissingItems = new List<KeyValuePair<string, string>>();
         [JsonIgnore] internal List<string> MissingDetails = new List<string>();
+        [JsonIgnore] internal bool CanLoadAnyway = false;
+        [JsonIgnore] internal string LoadedAnywayWarning = null;
 
         public static BroMakerMod TryLoad(string path)
         {

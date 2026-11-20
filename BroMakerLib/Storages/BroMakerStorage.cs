@@ -18,6 +18,7 @@ namespace BroMakerLib.Storages
         internal const string BroMakerLibName = "BroMakerLib";
         internal const string RocketLibName = "RocketLib";
         private const string AuthorClosing = "It needs an update from its author.";
+        private const string MissingLabel = "Missing";
         private const int MaxListedItems = 3;
         private const int MaxListedSites = 3;
 
@@ -151,6 +152,7 @@ namespace BroMakerLib.Storages
             }
 
             mod.ErrorMessage = message;
+            mod.LoadedAnywayWarning = null;
             _incompatibleMods.Add(mod);
             UnregisterMod(mod);
             if (mod.Harmony != null)
@@ -267,6 +269,7 @@ namespace BroMakerLib.Storages
                         List<string> targets = new List<string>();
                         foreach (MissingReference missing in result.Missing)
                         {
+                            AddToken(mod, "missing:" + missing.Library + ":" + missing.Target);
                             libraries.Add(missing.Library);
                             targets.Add(missing.UsedIn.Count == 0 ? missing.Target : missing.Target + " [in " + string.Join("; ", new List<string>(missing.UsedIn).ToArray()) + "]");
 
@@ -328,14 +331,23 @@ namespace BroMakerLib.Storages
 
                     if (mod.UncheckedReason != null)
                     {
-                        Refuse(mod, mod.UncheckedReason);
+                        MarkModIncompatible(mod, $"'{mod.Name}' wasn't loaded because {mod.UncheckedReason}");
+                        LogMissing(mod);
+                        continue;
                     }
-                    else if (mod.MissingItems.Count > 0)
+
+                    if (mod.MissingItems.Count > 0)
                     {
                         List<string> items = mod.MissingItems.ConvertAll(item => item.Value);
-                        Refuse(mod, LibraryReason(mod, mod.MissingItems.ConvertAll(item => item.Key), "it uses ", string.Empty), "Missing", items);
+                        string closing;
+                        string reason = LibraryReason(mod, mod.MissingItems.ConvertAll(item => item.Key), "it uses ", string.Empty, out closing);
+                        if (!LoadAnywayOrRefuse(mod, reason, closing, MissingLabel, items))
+                        {
+                            continue;
+                        }
                     }
-                    else if (GetModByName(mod.Name) is BroMakerMod loaded)
+
+                    if (GetModByName(mod.Name) is BroMakerMod loaded)
                     {
                         BroMakerMod kept = loaded;
                         BroMakerMod skipped = mod;
@@ -413,12 +425,57 @@ namespace BroMakerLib.Storages
             return dlls;
         }
 
-        internal static void Refuse(BroMakerMod mod, string reason, string label = null, List<string> items = null)
+        internal static void AddToken(BroMakerMod mod, string token)
         {
-            string text = $"'{mod.Name}' wasn't loaded because {reason}";
-            MarkModIncompatible(mod, text + ListTail(label, items, false));
-            mod.ErrorMessage = text + ListTail(label, items, true);
+            int index = mod.RefusalTokens.BinarySearch(token, StringComparer.Ordinal);
+            if (index < 0)
+            {
+                mod.RefusalTokens.Insert(~index, token);
+            }
+        }
 
+        internal static bool TokensAccepted(BroMakerMod mod)
+        {
+            List<string> accepted;
+            if (!Settings.instance.loadAnywayMods.TryGetValue(mod.Name, out accepted) || accepted == null)
+            {
+                return false;
+            }
+
+            foreach (string token in mod.RefusalTokens)
+            {
+                if (!accepted.Contains(token))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        internal static bool LoadAnywayOrRefuse(BroMakerMod mod, string reason, string closing, string label, List<string> items)
+        {
+            if (TokensAccepted(mod))
+            {
+                if (mod.LoadedAnywayWarning == null)
+                {
+                    string text = $"'{mod.Name}' is loaded anyway, though {reason}. It may throw errors or break parts of the game.";
+                    bool listed = label == MissingLabel;
+                    mod.LoadedAnywayWarning = listed ? text + ListTail(label, items, false) : text;
+                    mod.ErrorMessage = listed ? text + ListTail(label, items, true) : text;
+                }
+                return true;
+            }
+
+            mod.CanLoadAnyway = true;
+            string refusal = $"'{mod.Name}' wasn't loaded because {reason}. {closing}";
+            MarkModIncompatible(mod, refusal + ListTail(label, items, false));
+            mod.ErrorMessage = refusal + ListTail(label, items, true);
+            LogMissing(mod);
+            return false;
+        }
+
+        internal static void LogMissing(BroMakerMod mod)
+        {
             foreach (string line in mod.MissingDetails)
             {
                 BMLogger.Log(line);
@@ -444,7 +501,7 @@ namespace BroMakerLib.Storages
             return $" {label}: {list}.";
         }
 
-        internal static string LibraryReason(BroMakerMod mod, List<string> libraries, string lead, string tail)
+        internal static string LibraryReason(BroMakerMod mod, List<string> libraries, string lead, string tail, out string closing)
         {
             List<string> parts = new List<string>();
             List<string> names = new List<string>();
@@ -479,8 +536,8 @@ namespace BroMakerLib.Storages
                 }
             }
 
-            string closing = allNewer ? $"Update {string.Join(" and ", names.ToArray())} to use it." : AuthorClosing;
-            return lead + string.Join(" and ", parts.ToArray()) + tail + ". " + closing;
+            closing = allNewer ? $"Update {string.Join(" and ", names.ToArray())} to use it." : AuthorClosing;
+            return lead + string.Join(" and ", parts.ToArray()) + tail;
         }
 
         internal static void PopulateTypesDictionary()

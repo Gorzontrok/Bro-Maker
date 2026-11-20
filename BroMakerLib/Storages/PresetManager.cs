@@ -117,9 +117,18 @@ namespace BroMakerLib
                     }
                     if (items.Count > 0)
                     {
-                        BroMakerStorage.Refuse(mod, BroMakerStorage.LibraryReason(mod, libraries, "it builds on ", ", so some of its code would never run"), "Never called", items);
+                        foreach (string target in targets)
+                        {
+                            BroMakerStorage.AddToken(mod, "orphan:" + target);
+                        }
+                        string closing;
+                        string reason = BroMakerStorage.LibraryReason(mod, libraries, "it builds on ", ", so some of its code would never run", out closing);
+                        bool loaded = BroMakerStorage.LoadAnywayOrRefuse(mod, reason, closing, "Never called", items);
                         BMLogger.Log($"'{mod.Name}' never calls: {string.Join("; ", targets.ToArray())}");
-                        continue;
+                        if (!loaded)
+                        {
+                            continue;
+                        }
                     }
 
                     foreach (KeyValuePair<string, Assembly> entry in assemblies)
@@ -180,6 +189,15 @@ namespace BroMakerLib
                         message = $"'{mod.Name}' wasn't loaded because none of its bros has a characterPreset that exists in BroMaker {Info.VERSION}: {string.Join(", ", dropped.ToArray())}. If a preset comes from another mod, that mod isn't installed or wasn't loaded.";
                     }
                     BroMakerStorage.MarkModIncompatible(mod, message, report: false);
+                }
+            }
+
+            foreach (BroMakerMod mod in BroMakerStorage.Mods)
+            {
+                if (mod.LoadedAnywayWarning != null)
+                {
+                    BMLogger.Warning(mod.LoadedAnywayWarning, mod: mod.Name);
+                    BroMakerStorage.LogMissing(mod);
                 }
             }
 

@@ -456,6 +456,7 @@ namespace BroMakerLib
                         GUILayout.BeginVertical("box");
 
                         GUILayout.Label(mod.ErrorMessage, _incompatibleStyle);
+                        LoadAnywayControls(mod, _incompatibleStyle);
 
                         GUILayout.EndVertical();
                     }
@@ -546,6 +547,28 @@ namespace BroMakerLib
         }
 
 
+        private static void LoadAnywayControls(BroMakerMod mod, GUIStyle noteStyle)
+        {
+            bool offered = (mod.CanLoadAnyway || mod.LoadedAnywayWarning != null) && !BroMakerStorage.TokensAccepted(mod);
+            bool stored = BSett.instance.loadAnywayMods.ContainsKey(mod.Name);
+            bool showLoadAnyway = offered && BSett.instance.developerMode;
+
+            if (showLoadAnyway && GUILayout.Button("Load anyway", WindowScaling.ScaledWidth(200)))
+            {
+                BSett.instance.loadAnywayMods[mod.Name] = new List<string>(mod.RefusalTokens);
+                BSett.instance.Save(Main.mod);
+            }
+            if (stored && GUILayout.Button("Stop loading anyway", WindowScaling.ScaledWidth(200)))
+            {
+                BSett.instance.loadAnywayMods.Remove(mod.Name);
+                BSett.instance.Save(Main.mod);
+            }
+            if (showLoadAnyway || stored)
+            {
+                GUILayout.Label("This takes effect the next time the game starts.", noteStyle);
+            }
+        }
+
         private static void SelectedBroUI(StoredHero bro, BroMakerMod mod)
         {
             if (bro.Equals(null))
@@ -558,6 +581,7 @@ namespace BroMakerLib
             if (mod.ErrorMessage != string.Empty)
             {
                 GUILayout.Label(mod.ErrorMessage, _warningStyle);
+                LoadAnywayControls(mod, _warningStyle);
             }
 
             bool broEnabled = BroSpawnManager.IsBroEnabled(bro.name);
