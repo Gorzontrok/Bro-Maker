@@ -89,6 +89,12 @@ namespace BroMakerLib
             }
         }
 
+        private static bool IsFromRefusedMod(Type preset)
+        {
+            BroMakerMod mod = BroMakerStorage.GetModByAssembly(preset.Assembly);
+            return mod != null && BroMakerStorage.IncompatibleMods.Contains(mod);
+        }
+
         public static void ApplyBroPatches(Harmony harmony)
         {
             GameObject heroHolder = new GameObject();
@@ -96,7 +102,7 @@ namespace BroMakerLib
 
             foreach (KeyValuePair<string, Type> kvp in PresetManager.GetAllHeroPresets())
             {
-                if (typeof(CustomHero).IsAssignableFrom(kvp.Value))
+                if (typeof(CustomHero).IsAssignableFrom(kvp.Value) && !IsFromRefusedMod(kvp.Value))
                 {
                     BroMakerStorage.GetStoredHeroByCustomHeroType(kvp.Value, out StoredHero stored);
                     using (BMLogger.Scope(stored?.mod?.Name, stored?.name))
@@ -140,7 +146,7 @@ namespace BroMakerLib
             heroHolder.SetActive(false);
             foreach (KeyValuePair<string, Type> kvp in PresetManager.GetAllHeroPresets())
             {
-                if (typeof(CustomHero).IsAssignableFrom(kvp.Value))
+                if (typeof(CustomHero).IsAssignableFrom(kvp.Value) && !IsFromRefusedMod(kvp.Value))
                 {
                     BroMakerStorage.GetStoredHeroByCustomHeroType(kvp.Value, out StoredHero storedHero);
                     using (BMLogger.Scope(storedHero?.mod?.Name, storedHero?.name))

@@ -143,7 +143,7 @@ namespace BroMakerLib.Storages
             return _modByAssembly.TryGetValue(assembly, out mod) ? mod : null;
         }
 
-        internal static void MarkModIncompatible(BroMakerMod mod, string message, Exception ex = null)
+        internal static void MarkModIncompatible(BroMakerMod mod, string message, Exception ex = null, bool report = true)
         {
             if (mod == null || _incompatibleMods.Contains(mod))
             {
@@ -153,7 +153,15 @@ namespace BroMakerLib.Storages
             mod.ErrorMessage = message;
             _incompatibleMods.Add(mod);
             UnregisterMod(mod);
-            BMLogger.Error(message, ex, mod.Name);
+            if (mod.Harmony != null)
+            {
+                // A null id would remove every mod's patches.
+                mod.Harmony.UnpatchAll(mod.Harmony.Id);
+            }
+            if (report)
+            {
+                BMLogger.Error(message, ex, mod.Name);
+            }
         }
 
         internal static void UnregisterMod(BroMakerMod mod)
@@ -165,27 +173,33 @@ namespace BroMakerLib.Storages
 
             foreach (StoredHero hero in mod.StoredHeroes)
             {
-                if (hero == null)
+                if (hero != null)
                 {
-                    continue;
+                    RemoveBro(hero);
                 }
+            }
+            mod.StoredHeroes = new StoredHero[0];
 
-                _bros.Remove(hero);
-                _broNames.Remove(hero.name);
-                BroSpawnManager.RemoveBro(hero);
-                BroUnlockManager.RemoveBro(hero);
+            BroSpawnManager.BroStatusChanged();
+        }
 
-                StoredHero registered;
-                if (_brosByName.TryGetValue(hero.name, out registered) && ReferenceEquals(registered, hero))
-                {
-                    _brosByName.Remove(hero.name);
-                }
+        internal static void RemoveBro(StoredHero hero)
+        {
+            _bros.Remove(hero);
+            _broNames.Remove(hero.name);
+            BroSpawnManager.RemoveBro(hero);
+            BroUnlockManager.RemoveBro(hero);
+
+            StoredHero registered;
+            if (_brosByName.TryGetValue(hero.name, out registered) && ReferenceEquals(registered, hero))
+            {
+                _brosByName.Remove(hero.name);
             }
 
             List<Type> removedTypes = new List<Type>();
             foreach (KeyValuePair<Type, StoredHero> kvp in _brosByType)
             {
-                if (Array.IndexOf(mod.StoredHeroes, kvp.Value) >= 0)
+                if (ReferenceEquals(kvp.Value, hero))
                 {
                     removedTypes.Add(kvp.Key);
                 }
@@ -194,10 +208,6 @@ namespace BroMakerLib.Storages
             {
                 _brosByType.Remove(type);
             }
-
-            mod.StoredHeroes = new StoredHero[0];
-
-            BroSpawnManager.BroStatusChanged();
         }
 
         internal static void RegisterModAssembly(Assembly assembly, BroMakerMod mod)

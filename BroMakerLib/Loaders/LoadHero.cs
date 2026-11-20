@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using BroMakerLib.CustomObjects;
 using BroMakerLib.Infos;
@@ -83,7 +82,7 @@ namespace BroMakerLib.Loaders
                 {
                     if (type == null)
                     {
-                        throw new ArgumentException($"No hero preset found for '{customBroInfo?.CharacterPreset}'. Valid presets: {string.Join(", ", PresetManager.GetAllHeroPresets().Select(p => p.Key).ToArray())}");
+                        throw new ArgumentException($"No hero preset found for '{customBroInfo?.CharacterPreset}'.");
                     }
 
                     if (!typeof(ICustomHero).IsAssignableFrom(type))

@@ -128,6 +128,11 @@ namespace BroMakerLib
                         Assembly assembly = entry.Value;
                         BroMakerStorage.RegisterModAssembly(assembly, mod);
                         bool flag = CheckAssembly(assembly);
+                        if (BroMakerStorage.IncompatibleMods.Contains(mod))
+                        {
+                            break;
+                        }
+
                         if (flag && mod.Harmony != null)
                         {
                             try
@@ -141,6 +146,40 @@ namespace BroMakerLib
                             }
                         }
                     }
+                }
+            }
+
+            foreach (BroMakerMod mod in BroMakerStorage.Mods)
+            {
+                if (mod.StoredHeroes.Length == 0 || BroMakerStorage.IncompatibleMods.Contains(mod))
+                {
+                    continue;
+                }
+
+                List<string> dropped = new List<string>();
+                string message = null;
+                foreach (StoredHero hero in mod.StoredHeroes)
+                {
+                    if (hero == null || hero.info == null || GetHeroPreset(hero.info.CharacterPreset) != null)
+                    {
+                        continue;
+                    }
+
+                    message = $"'{hero.name}' wasn't loaded because its characterPreset '{hero.info.CharacterPreset}' doesn't exist in BroMaker {Info.VERSION}. If it comes from another mod, that mod isn't installed or wasn't loaded.";
+                    BroMakerStorage.RemoveBro(hero);
+                    hero.mod.StoredHeroes = Array.FindAll(hero.mod.StoredHeroes, stored => !ReferenceEquals(stored, hero));
+                    BroSpawnManager.BroStatusChanged();
+                    BMLogger.Error(message, mod: mod.Name, bro: hero.name);
+                    dropped.Add($"{hero.name} ('{hero.info.CharacterPreset}')");
+                }
+
+                if (dropped.Count > 0 && mod.StoredHeroes.Length == 0)
+                {
+                    if (dropped.Count > 1)
+                    {
+                        message = $"'{mod.Name}' wasn't loaded because none of its bros has a characterPreset that exists in BroMaker {Info.VERSION}: {string.Join(", ", dropped.ToArray())}. If a preset comes from another mod, that mod isn't installed or wasn't loaded.";
+                    }
+                    BroMakerStorage.MarkModIncompatible(mod, message, report: false);
                 }
             }
 
