@@ -67,8 +67,19 @@ namespace BroMakerLib.Vanilla.Bros
             try
             {
                 this.StandardBeforeStart();
+                defaultSpeed = speed;
+                defaultFireRate = fireRate;
                 base.Start();
                 this.StandardAfterStart();
+                defaultSpeed = speed;
+                defaultFireRate = fireRate;
+                if (trailingBro != null)
+                {
+                    trailingBro.speed = speed;
+                    trailingBro.fireRate = fireRate;
+                    trailingBro.SetFieldValue("defaultSpeed", speed);
+                    trailingBro.SetFieldValue("defaultFireRate", fireRate);
+                }
             }
             catch (Exception ex)
             {

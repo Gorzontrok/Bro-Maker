@@ -88,6 +88,7 @@ namespace BroMakerLib.Vanilla.Bros
                 this.StandardBeforeStart();
                 base.Start();
                 this.StandardAfterStart();
+                originalSpeed = speed;
             }
             catch (Exception ex)
             {

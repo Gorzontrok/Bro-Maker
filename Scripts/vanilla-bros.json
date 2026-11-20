@@ -6,7 +6,16 @@
             "presetName": "AshBrolliams",
             "className": "AshBrolliamsM",
             "baseClass": "AshBrolliams",
-            "heroType": "AshBrolliams"
+            "heroType": "AshBrolliams",
+            "cacheResyncs": [
+                {
+                    "type": "raw",
+                    "stage": "afterStart",
+                    "code": [
+                        "normalSpeed = speed;"
+                    ]
+                }
+            ]
         },
         {
             "presetName": "BaBroracus",
@@ -49,6 +58,31 @@
                     "value": "CurrentFirstAvatar",
                     "fields": [
                         "avatar1"
+                    ]
+                }
+            ],
+            "cacheResyncs": [
+                {
+                    "type": "raw",
+                    "stage": "beforeStart",
+                    "code": [
+                        "defaultSpeed = speed;",
+                        "defaultFireRate = fireRate;"
+                    ]
+                },
+                {
+                    "type": "raw",
+                    "stage": "afterStart",
+                    "code": [
+                        "defaultSpeed = speed;",
+                        "defaultFireRate = fireRate;",
+                        "if (trailingBro != null)",
+                        "{",
+                        "    trailingBro.speed = speed;",
+                        "    trailingBro.fireRate = fireRate;",
+                        "    trailingBro.SetFieldValue(\"defaultSpeed\", speed);",
+                        "    trailingBro.SetFieldValue(\"defaultFireRate\", fireRate);",
+                        "}"
                     ]
                 }
             ]
@@ -217,6 +251,15 @@
                         "brominatorHumanAvatar"
                     ]
                 }
+            ],
+            "cacheResyncs": [
+                {
+                    "type": "raw",
+                    "stage": "afterStart",
+                    "code": [
+                        "originalSpeed = speed;"
+                    ]
+                }
             ]
         },
         {
@@ -272,6 +315,15 @@
                     "value": "gunMaterial",
                     "fields": [
                         "armedGunMaterial"
+                    ]
+                }
+            ],
+            "cacheResyncs": [
+                {
+                    "type": "raw",
+                    "stage": "afterStart",
+                    "code": [
+                        "originalSpeed = speed;"
                     ]
                 }
             ]
@@ -386,7 +438,16 @@
             "presetName": "Desperabro",
             "className": "DesperabroM",
             "baseClass": "Desperabro",
-            "heroType": "Desperabro"
+            "heroType": "Desperabro",
+            "cacheResyncs": [
+                {
+                    "type": "raw",
+                    "stage": "afterStart",
+                    "code": [
+                        "this.SetFieldValue(\"defaultSpeed\", speed);"
+                    ]
+                }
+            ]
         },
         {
             "presetName": "DirtyBrory",
@@ -406,6 +467,15 @@
                     "value": "material",
                     "fields": [
                         "normalMaterial"
+                    ]
+                }
+            ],
+            "cacheResyncs": [
+                {
+                    "type": "raw",
+                    "stage": "afterStart",
+                    "code": [
+                        "originalSpeed = speed;"
                     ]
                 }
             ]
@@ -560,6 +630,19 @@
                         "doRollOnLand"
                     ]
                 }
+            ],
+            "cacheResyncs": [
+                {
+                    "type": "raw",
+                    "stage": "afterStart",
+                    "code": [
+                        "if (Info.afterStart.ContainsKey(\"speed\"))",
+                        "{",
+                        "    originalSpeed = speed;",
+                        "    this.CallMethod(\"CalculateImmortalValues\");",
+                        "}"
+                    ]
+                }
             ]
         },
         {
@@ -608,7 +691,16 @@
             "presetName": "Xebro",
             "className": "XebroM",
             "baseClass": "Xebro",
-            "heroType": "Xebro"
+            "heroType": "Xebro",
+            "cacheResyncs": [
+                {
+                    "type": "raw",
+                    "stage": "afterStart",
+                    "code": [
+                        "normalSpeed = speed;"
+                    ]
+                }
+            ]
         }
     ]
 }

@@ -65,8 +65,12 @@ namespace BroMakerLib.Vanilla.Bros
             try
             {
                 this.StandardBeforeStart();
+                // GENERATOR:BEFORE_START_RESYNCS
+                // GENERATOR:BEFORE_START_RESYNCS_END
                 base.Start();
                 this.StandardAfterStart();
+                // GENERATOR:AFTER_START_RESYNCS
+                // GENERATOR:AFTER_START_RESYNCS_END
             }
             catch (Exception ex)
             {

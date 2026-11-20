@@ -74,6 +74,11 @@ namespace BroMakerLib.Vanilla.Bros
                 this.StandardBeforeStart();
                 base.Start();
                 this.StandardAfterStart();
+                if (Info.afterStart.ContainsKey("speed"))
+                {
+                    originalSpeed = speed;
+                    this.CallMethod("CalculateImmortalValues");
+                }
             }
             catch (Exception ex)
             {

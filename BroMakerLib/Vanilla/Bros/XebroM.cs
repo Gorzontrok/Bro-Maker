@@ -61,6 +61,7 @@ namespace BroMakerLib.Vanilla.Bros
                 this.StandardBeforeStart();
                 base.Start();
                 this.StandardAfterStart();
+                normalSpeed = speed;
             }
             catch (Exception ex)
             {

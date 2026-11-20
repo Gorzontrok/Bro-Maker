@@ -13,6 +13,8 @@ REQUIREMENTS = {
     "avatar": ("CurrentFirstAvatar", "CurrentFirstAvatar != null"),
 }
 
+RESYNC_STAGES = ("beforeStart", "afterStart")
+
 
 def guarded(indent, condition, statement):
     return [f"{indent}if ({condition})", f"{indent}{{", f"{indent}    {statement}", f"{indent}}}"]
@@ -145,6 +147,24 @@ def generate_bro(template, bro):
             "\n",
             result,
         )
+
+    resyncs = bro.get("cacheResyncs", [])
+    for fix in resyncs:
+        if fix["type"] != "raw":
+            sys.exit(f"{bro['className']}: 'cacheResyncs' handles only 'raw' fixes, got '{fix['type']}'")
+        if fix.get("stage") not in RESYNC_STAGES:
+            sys.exit(f"{bro['className']}: 'cacheResyncs' needs 'stage' 'beforeStart' or 'afterStart', got '{fix.get('stage')}'")
+    for stage, marker in (("beforeStart", "BEFORE_START_RESYNCS"), ("afterStart", "AFTER_START_RESYNCS")):
+        body = "\n".join("                " + line for fix in resyncs if fix["stage"] == stage for line in fix["code"])
+        if body:
+            result = re.sub(
+                rf"                // GENERATOR:{marker}\n.*?                // GENERATOR:{marker}_END",
+                lambda _: body,
+                result,
+                flags=re.DOTALL,
+            )
+        else:
+            result = re.sub(rf"                // GENERATOR:{marker}\n                // GENERATOR:{marker}_END\n", "", result)
 
     return HEADER + result
 
