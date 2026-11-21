@@ -127,7 +127,7 @@ namespace BroMakerLib
                 List<Material> specialIcons = specialMaterials;
                 if (specialIcons.Count() > 1)
                 {
-                    for (int i = 0; i < specialIcons.Count(); ++i)
+                    for (int i = 0; i < specialIcons.Count() && i < hud.grenadeIcons.Length; ++i)
                     {
                         hud.grenadeIcons[i].GetComponent<Renderer>().material = specialIcons[i];
                     }
