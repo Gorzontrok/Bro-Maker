@@ -36,7 +36,7 @@ namespace BroMakerLib.Infos
             {
                 BroHalo halo = HeroController.GetHeroPrefab(HeroType.Broffy).halo;
                 character.halo = Object.Instantiate(halo, halo.transform.localPosition, Quaternion.identity);
-                character.halo.transform.parent = character.transform;
+                character.halo.transform.SetParent(character.transform, false);
             }
         }
 
@@ -111,7 +111,7 @@ namespace BroMakerLib.Infos
             {
                 SpriteSM jetPackSprite = HeroController.GetHeroPrefab(HeroType.Rambro).As<BroBase>().jetPackSprite;
                 broBase.jetPackSprite = Object.Instantiate(jetPackSprite, jetPackSprite.transform.localPosition, Quaternion.identity);
-                broBase.jetPackSprite.transform.parent = broBase.transform;
+                broBase.jetPackSprite.transform.SetParent(broBase.transform, false);
             }
         }
 
