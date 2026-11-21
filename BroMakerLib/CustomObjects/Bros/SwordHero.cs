@@ -101,19 +101,19 @@ namespace BroMakerLib.CustomObjects.Bros
                         gunFrame = 0;
                     }
                     SetGunSprite(gunFrame, 0);
-                    /*  if (!this.hasPlayedAttackHitSound)
-                      {
-                          if (this.hasHitWithSlice)
-                          {
-                              this.PlaySliceSound();
-                              this.hasPlayedAttackHitSound = true;
-                          }
-                          else if (this.hasHitWithWall)
-                          {
-                              this.PlayWallSound();
-                              this.hasPlayedAttackHitSound = true;
-                          }
-                      }*/
+                    if (!hasPlayedAttackHitSound)
+                    {
+                        if (hasHitWithSlice)
+                        {
+                            PlaySliceSound();
+                            hasPlayedAttackHitSound = true;
+                        }
+                        else if (hasHitWithWall)
+                        {
+                            PlayWallSound();
+                            hasPlayedAttackHitSound = true;
+                        }
+                    }
                     if (gunFrame >= 3)
                     {
                         SwingSword(hasHitWithWall);
@@ -135,14 +135,6 @@ namespace BroMakerLib.CustomObjects.Bros
                     SortOfFollow.Shake(0.15f);
                 }
                 hasHitWithSlice = true;
-                if (ground)
-                {
-                    PlayWallSound();
-                }
-                else
-                {
-                    PlaySliceSound();
-                }
             }
             else
             {
