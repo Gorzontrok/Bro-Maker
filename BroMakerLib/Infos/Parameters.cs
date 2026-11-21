@@ -107,7 +107,7 @@ namespace BroMakerLib.Infos
                 return;
             }
 
-            if (value)
+            if (value && (broBase.jetPackSprite == null || !broBase.jetPackSprite.transform.IsChildOf(broBase.transform)))
             {
                 SpriteSM jetPackSprite = HeroController.GetHeroPrefab(HeroType.Rambro).As<BroBase>().jetPackSprite;
                 broBase.jetPackSprite = Object.Instantiate(jetPackSprite, jetPackSprite.transform.localPosition, Quaternion.identity);
