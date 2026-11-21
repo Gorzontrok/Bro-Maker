@@ -289,11 +289,11 @@ namespace BroMakerLib.Menus
                 string avatarPath = string.Empty;
                 object value = broInfo.parameters["Avatar"];
 
-                if (value is JArray array)
+                if (value is JArray array && array.Count > 0)
                 {
                     avatarPath = array[0].ToObject<string>();
                 }
-                else if (value is string[] stringArray)
+                else if (value is string[] stringArray && stringArray.Length > 0)
                 {
                     avatarPath = stringArray[0];
                 }
