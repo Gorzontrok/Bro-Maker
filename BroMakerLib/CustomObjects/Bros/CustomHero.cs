@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using BroMakerLib.Abilities;
 using BroMakerLib.Extensions;
 using BroMakerLib.Infos;
 using BroMakerLib.Loaders;
@@ -547,6 +548,26 @@ namespace BroMakerLib.CustomObjects.Bros
 
             Character = this;
             Info = LoadHero.currentInfo;
+
+            List<string> unusedConfigs = new List<string>();
+            if (AbilityFactory.HasAbilityConfig(Info.special))
+            {
+                unusedConfigs.Add("'special'");
+            }
+            if (AbilityFactory.HasAbilityConfig(Info.melee))
+            {
+                unusedConfigs.Add("'melee'");
+            }
+            if (AbilityFactory.HasAbilityConfig(Info.passives))
+            {
+                unusedConfigs.Add("'passives'");
+            }
+            if (unusedConfigs.Count > 0)
+            {
+                BMLogger.Warning(
+                    $"The {string.Join(", ", unusedConfigs.ToArray())} ability config of '{Info.name}' is ignored because its characterPreset '{Info.CharacterPreset}' doesn't support abilities. " +
+                    $"Use a vanilla preset as its characterPreset to use it");
+            }
 
             // Setup CustomHero from original bro component and destroy it
             this.SetupCustomHero(false);

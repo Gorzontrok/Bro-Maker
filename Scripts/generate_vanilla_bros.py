@@ -20,12 +20,36 @@ def guarded(indent, condition, statement):
     return [f"{indent}if ({condition})", f"{indent}{{", f"{indent}    {statement}", f"{indent}}}"]
 
 
+def raw_body(fixes, indent):
+    # Cleanup strips trailing whitespace, so an empty line stays unindented.
+    return "\n".join(indent + line if line else line for fix in fixes for line in fix["code"])
+
+
+def raw_fixes(bro, key):
+    fixes = bro.get(key, [])
+    for fix in fixes:
+        if fix["type"] != "raw":
+            sys.exit(f"{bro['className']}: '{key}' handles only 'raw' fixes, got '{fix['type']}'")
+    return fixes
+
+
+def replace_marker_block(result, marker, body, indent):
+    if body:
+        return re.sub(
+            rf"{indent}// GENERATOR:{marker}\n.*?{indent}// GENERATOR:{marker}_END",
+            lambda _: body,
+            result,
+            flags=re.DOTALL,
+        )
+    return re.sub(rf"{indent}// GENERATOR:{marker}\n{indent}// GENERATOR:{marker}_END\n", "", result)
+
+
 def generate_bro(template, bro):
     result = template
 
     result = re.sub(
-        r"public class RambroM : Rambro, ICustomHero",
-        f"public class {bro['className']} : {bro['baseClass']}, ICustomHero",
+        r"public class RambroM : Rambro, ICustomHero, IAbilityOwner",
+        f"public class {bro['className']} : {bro['baseClass']}, ICustomHero, IAbilityOwner",
         result,
     )
 
@@ -35,12 +59,9 @@ def generate_bro(template, bro):
         result,
     )
 
-    fixes = bro.get("nullFixes", [])
-    for fix in fixes:
-        if fix["type"] != "raw":
-            sys.exit(f"{bro['className']}: 'nullFixes' handles only 'raw' fixes, got '{fix['type']}'")
+    fixes = raw_fixes(bro, "nullFixes")
     if fixes:
-        fix_body = "\n".join("            " + line for fix in fixes for line in fix["code"])
+        fix_body = raw_body(fixes, "            ")
         result = re.sub(
             r"            // GENERATOR:FIXES\n.*?            // GENERATOR:END",
             lambda _: fix_body,
@@ -148,23 +169,20 @@ def generate_bro(template, bro):
             result,
         )
 
-    resyncs = bro.get("cacheResyncs", [])
+    for key, marker, indent in (
+        ("meleeStartGuards", "MELEE_START_GUARDS", "                    "),
+        ("members", "MEMBERS", "        "),
+        ("afterCheckInput", "AFTER_CHECK_INPUT", "            "),
+    ):
+        result = replace_marker_block(result, marker, raw_body(raw_fixes(bro, key), indent), indent)
+
+    resyncs = raw_fixes(bro, "cacheResyncs")
     for fix in resyncs:
-        if fix["type"] != "raw":
-            sys.exit(f"{bro['className']}: 'cacheResyncs' handles only 'raw' fixes, got '{fix['type']}'")
         if fix.get("stage") not in RESYNC_STAGES:
             sys.exit(f"{bro['className']}: 'cacheResyncs' needs 'stage' 'beforeStart' or 'afterStart', got '{fix.get('stage')}'")
     for stage, marker in (("beforeStart", "BEFORE_START_RESYNCS"), ("afterStart", "AFTER_START_RESYNCS")):
-        body = "\n".join("                " + line for fix in resyncs if fix["stage"] == stage for line in fix["code"])
-        if body:
-            result = re.sub(
-                rf"                // GENERATOR:{marker}\n.*?                // GENERATOR:{marker}_END",
-                lambda _: body,
-                result,
-                flags=re.DOTALL,
-            )
-        else:
-            result = re.sub(rf"                // GENERATOR:{marker}\n                // GENERATOR:{marker}_END\n", "", result)
+        body = raw_body([fix for fix in resyncs if fix["stage"] == stage], "                ")
+        result = replace_marker_block(result, marker, body, "                ")
 
     return HEADER + result
 

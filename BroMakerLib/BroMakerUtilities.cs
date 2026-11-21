@@ -308,5 +308,11 @@ namespace BroMakerLib
         {
             return prefabCloneHolder != null && component.transform.root == prefabCloneHolder.transform;
         }
+
+        /// <summary>Returns a shallow copy of the array, or null when the source is null.</summary>
+        public static AudioClip[] CloneArray(this AudioClip[] source)
+        {
+            return source?.Clone() as AudioClip[];
+        }
     }
 }

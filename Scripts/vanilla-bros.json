@@ -439,6 +439,18 @@
             "className": "DesperabroM",
             "baseClass": "Desperabro",
             "heroType": "Desperabro",
+            "meleeStartGuards": [
+                {
+                    "type": "raw",
+                    "code": [
+                        "if (this.GetFieldValue<bool>(\"isSerenading\"))",
+                        "{",
+                        "    base.StartMelee();",
+                        "    return;",
+                        "}"
+                    ]
+                }
+            ],
             "cacheResyncs": [
                 {
                     "type": "raw",
@@ -513,6 +525,32 @@
                     "field": "currentMaterial",
                     "value": "materialNormal"
                 }
+            ],
+            "members": [
+                {
+                    "type": "raw",
+                    "code": [
+                        "private bool inputDown;",
+                        "",
+                        "protected override void RunForcedInput()",
+                        "{",
+                        "    base.RunForcedInput();",
+                        "    inputDown = down;",
+                        "}"
+                    ]
+                }
+            ],
+            "afterCheckInput": [
+                {
+                    "type": "raw",
+                    "code": [
+                        "// IndianaBrones.CheckInput clears down during any melee; an ability's melee reads the player's input.",
+                        "if (abilityMeleeOwned && doingMelee)",
+                        "{",
+                        "    down = inputDown;",
+                        "}"
+                    ]
+                }
             ]
         },
         {
@@ -576,6 +614,17 @@
                     "type": "prefabCopy",
                     "fields": [
                         "hasNewAirFlexFrames"
+                    ]
+                }
+            ],
+            "meleeStartGuards": [
+                {
+                    "type": "raw",
+                    "code": [
+                        "if (this.GetFieldValue<bool>(\"isInScorpionMode\") && (IsHanging() || WallDrag))",
+                        "{",
+                        "    return;",
+                        "}"
                     ]
                 }
             ]
@@ -692,6 +741,17 @@
             "className": "XebroM",
             "baseClass": "Xebro",
             "heroType": "Xebro",
+            "meleeStartGuards": [
+                {
+                    "type": "raw",
+                    "code": [
+                        "if (doingMelee && !abilityMeleeOwned)",
+                        "{",
+                        "    meleeType = MeleeType.Punch;",
+                        "}"
+                    ]
+                }
+            ],
             "cacheResyncs": [
                 {
                     "type": "raw",

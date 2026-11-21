@@ -106,6 +106,17 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="Abilities\SpecialAbility.cs"/>
+        <Compile Include="Abilities\SpecialStatePatches.cs"/>
+        <Compile Include="Abilities\MeleeAbility.cs"/>
+        <Compile Include="Abilities\AbilityBase.cs"/>
+        <Compile Include="Abilities\AbilityFactory.cs"/>
+        <Compile Include="Abilities\PassiveAbility.cs"/>
+        <Compile Include="Abilities\OwnerSpeedState.cs"/>
+        <Compile Include="Attributes\SpecialPresetAttribute.cs"/>
+        <Compile Include="Attributes\MeleePresetAttribute.cs"/>
+        <Compile Include="Attributes\PassivePresetAttribute.cs"/>
+        <Compile Include="Attributes\ConflictsWithPresetAttribute.cs"/>
         <Compile Include="Attributes\HeroPresetAttribute.cs"/>
         <Compile Include="Attributes\ParameterAttribute.cs"/>
         <Compile Include="BroMaker.cs"/>
@@ -139,6 +150,7 @@
         <Compile Include="Storages\BroMakerStorage.cs"/>
         <Compile Include="Storages\BroSpawnManager.cs"/>
         <Compile Include="Storages\DirectoriesManager.cs"/>
+        <Compile Include="CustomObjects\IAbilityOwner.cs"/>
         <Compile Include="CustomObjects\ICustomHero.cs"/>
         <Compile Include="Infos\CustomBroInfo.cs"/>
         <Compile Include="Loaders\LoadHero.cs"/>

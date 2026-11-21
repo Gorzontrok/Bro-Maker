@@ -16,6 +16,9 @@ namespace BroMakerLib
 
         private static Dictionary<string, Type> _heroesPreset = new Dictionary<string, Type>();
         private static Dictionary<string, Type> _customObjectsPreset = new Dictionary<string, Type>();
+        private static Dictionary<string, Type> _specialPresets = new Dictionary<string, Type>();
+        private static Dictionary<string, Type> _meleePresets = new Dictionary<string, Type>();
+        private static Dictionary<string, Type> _passivePresets = new Dictionary<string, Type>();
 
         /// <summary>The live registry of `[Parameter]` methods, keyed by parameter name.</summary>
         public static Dictionary<string, MethodInfo> parameters => _parameters;
@@ -30,6 +33,9 @@ namespace BroMakerLib
         {
             _heroesPreset = new Dictionary<string, Type>();
             _customObjectsPreset = new Dictionary<string, Type>();
+            _specialPresets = new Dictionary<string, Type>();
+            _meleePresets = new Dictionary<string, Type>();
+            _passivePresets = new Dictionary<string, Type>();
             _parameters = new Dictionary<string, MethodInfo>();
 
             CheckAssembly(Assembly.GetExecutingAssembly());
@@ -249,10 +255,46 @@ namespace BroMakerLib
             return GetPreset(_customObjectsPreset, name);
         }
 
+        /// <summary>Returns the special ability type registered under a name, or null if no such preset exists.</summary>
+        public static Type GetSpecialPreset(string name)
+        {
+            return GetPreset(_specialPresets, name);
+        }
+
+        /// <summary>Returns the melee ability type registered under a name, or null if no such preset exists.</summary>
+        public static Type GetMeleePreset(string name)
+        {
+            return GetPreset(_meleePresets, name);
+        }
+
+        /// <summary>Returns the passive ability type registered under a name, or null if no such preset exists.</summary>
+        public static Type GetPassivePreset(string name)
+        {
+            return GetPreset(_passivePresets, name);
+        }
+
         /// <summary>Returns every registered hero preset as name/type pairs.</summary>
         internal static ReadOnlyCollection<KeyValuePair<string, Type>> GetAllHeroPresets()
         {
             return GetAllPresets(_heroesPreset);
+        }
+
+        /// <summary>Returns every registered special ability preset as name/type pairs.</summary>
+        public static ReadOnlyCollection<KeyValuePair<string, Type>> GetAllSpecialPresets()
+        {
+            return GetAllPresets(_specialPresets);
+        }
+
+        /// <summary>Returns every registered melee ability preset as name/type pairs.</summary>
+        public static ReadOnlyCollection<KeyValuePair<string, Type>> GetAllMeleePresets()
+        {
+            return GetAllPresets(_meleePresets);
+        }
+
+        /// <summary>Returns every registered passive ability preset as name/type pairs.</summary>
+        public static ReadOnlyCollection<KeyValuePair<string, Type>> GetAllPassivePresets()
+        {
+            return GetAllPresets(_passivePresets);
         }
 
         public static MethodInfo GetParameterMethod(string name)
@@ -386,6 +428,21 @@ namespace BroMakerLib
                 return _heroesPreset;
             }
 
+            if (attribute is SpecialPresetAttribute)
+            {
+                return _specialPresets;
+            }
+
+            if (attribute is MeleePresetAttribute)
+            {
+                return _meleePresets;
+            }
+
+            if (attribute is PassivePresetAttribute)
+            {
+                return _passivePresets;
+            }
+
             return _customObjectsPreset;
         }
 
@@ -422,6 +479,21 @@ namespace BroMakerLib
             if (attribute is HeroPresetAttribute)
             {
                 return "Hero";
+            }
+
+            if (attribute is SpecialPresetAttribute)
+            {
+                return "Special";
+            }
+
+            if (attribute is MeleePresetAttribute)
+            {
+                return "Melee";
+            }
+
+            if (attribute is PassivePresetAttribute)
+            {
+                return "Passive";
             }
 
             return string.Empty;

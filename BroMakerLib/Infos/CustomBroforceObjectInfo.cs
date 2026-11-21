@@ -105,20 +105,26 @@ namespace BroMakerLib.Infos
         {
             using (BMLogger.Scope(Mod?.Name, name))
             {
-                Dictionary<string, object> single = new Dictionary<string, object>(1);
-                foreach (KeyValuePair<string, object> kvp in map.OrderBy(pair => pair.Key.Count(c => c == '.')))
+                ApplyFieldValues(obj, map, path, name, stage, $"{name} {stage}",
+                    (key, message, problem) => ReportLifecycleProblem(stage, key, map[key], message, problem));
+            }
+        }
+
+        internal static void ApplyFieldValues(object target, Dictionary<string, object> map, string path, string broName, string stage, string context, Action<string, string, Exception> onProblem)
+        {
+            Dictionary<string, object> single = new Dictionary<string, object>(1);
+            foreach (KeyValuePair<string, object> kvp in map.OrderBy(pair => pair.Key.Count(c => c == '.')))
+            {
+                if (kvp.Key.IndexOf('.') > 0 && kvp.Key != InjectedGrenadePlayerNumKey && !UseOwnCopiesAlongPath(target, kvp.Key, path, broName, stage))
                 {
-                    if (kvp.Key.IndexOf('.') > 0 && kvp.Key != InjectedGrenadePlayerNumKey && !UseOwnCopiesAlongPath(obj, kvp.Key, path, name, stage))
-                    {
-                        continue;
-                    }
-                    single.Clear();
-                    single.Add(kvp.Key, kvp.Value);
-                    obj.DynamicFieldsValueSetter(single, null,
-                        (field, key, value) => SetFieldData(field, key, value, obj),
-                        context: $"{name} {stage}",
-                        onProblem: (key, message, problem) => ReportLifecycleProblem(stage, key, kvp.Value, message, problem));
+                    continue;
                 }
+                single.Clear();
+                single.Add(kvp.Key, kvp.Value);
+                target.DynamicFieldsValueSetter(single, null,
+                    (field, key, value) => SetFieldData(field, key, value, path, broName, target),
+                    context: context,
+                    onProblem: onProblem);
             }
         }
 
@@ -438,7 +444,7 @@ namespace BroMakerLib.Infos
             return new Color(components[0], components[1], components[2], components[3]);
         }
 
-        protected void SetFieldData(Traverse field, string key, object value, object owner)
+        internal static void SetFieldData(Traverse field, string key, object value, string path, string broName, object owner)
         {
             Type fieldType = field.GetValueType();
             if (fieldType == typeof(SpriteSM))
@@ -475,7 +481,7 @@ namespace BroMakerLib.Infos
                     return;
                 }
 
-                string cacheKey = $"{path}|{name}|SpriteSM|{key}|{value}|{existing.GetInstanceID()}";
+                string cacheKey = $"{path}|{broName}|SpriteSM|{key}|{value}|{existing.GetInstanceID()}";
                 Component copy;
                 if (!ownCopies.TryGetValue(cacheKey, out copy) || copy == null)
                 {

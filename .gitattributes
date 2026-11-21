@@ -1,2 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Written by Scripts/generate_vanilla_bros.py from RambroM.cs
+BroMakerLib/Vanilla/Bros/*M.cs linguist-generated
+BroMakerLib/Vanilla/Bros/RambroM.cs -linguist-generated

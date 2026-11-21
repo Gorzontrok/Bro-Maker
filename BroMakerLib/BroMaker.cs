@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using BroMakerLib.Abilities;
 using BroMakerLib.CustomObjects.Bros;
 using BroMakerLib.Cutscenes;
 using BroMakerLib.Infos;
@@ -36,6 +37,7 @@ namespace BroMakerLib
 
                 harmony = new Harmony("BroMakerLib");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
+                SpecialStatePatches.Apply(harmony);
 
                 Settings.Load();
                 DirectoriesManager.Initialize();
