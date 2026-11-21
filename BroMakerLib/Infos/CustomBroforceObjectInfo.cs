@@ -106,7 +106,7 @@ namespace BroMakerLib.Infos
             using (BMLogger.Scope(Mod?.Name, name))
             {
                 Dictionary<string, object> single = new Dictionary<string, object>(1);
-                foreach (KeyValuePair<string, object> kvp in map)
+                foreach (KeyValuePair<string, object> kvp in map.OrderBy(pair => pair.Key.Count(c => c == '.')))
                 {
                     if (kvp.Key.IndexOf('.') > 0 && kvp.Key != InjectedGrenadePlayerNumKey && !UseOwnCopiesAlongPath(obj, kvp.Key, path, name, stage))
                     {
@@ -243,7 +243,7 @@ namespace BroMakerLib.Infos
         {
             using (BMLogger.Scope(Mod?.Name, name))
             {
-                foreach (KeyValuePair<string, object> pair in parameters)
+                foreach (KeyValuePair<string, object> pair in parameters.OrderBy(entry => entry.Key == "HaloPreset"))
                 {
                     try
                     {
