@@ -231,7 +231,9 @@ namespace BroMakerLib.Loaders
                 BMLogger.Debug($"AfterInstantiation: Register Object cause it didn't.");
             }
 
-            Net.RPC<int, HeroType, bool>(PID.TargetAll, hero.SetUpHero, playerNum, heroTypeEnum, true, false);
+            Net.RPC<int, HeroType, bool>(PID.TargetOthers, hero.SetUpHero, playerNum, heroTypeEnum, true, false);
+            // The game's RPC swallows an exception from the local call
+            hero.SetUpHero(playerNum, heroTypeEnum, true);
             BMLogger.Debug("AfterInstantiation: SetUpHero");
 
             FixSpawnPosition(hero, position);
