@@ -2,6 +2,8 @@
 
  This mod allows you to make custom Bros for Broforce.
 
+ If you're new to Broforce modding, start with the [getting started guide](https://github.com/alexneargarder/Broforce-Templates/blob/master/ONBOARDING.md).
+
  Thanks to alexneargarder who laid the groundwork for custom bros.
 
  If you find an issue, please inform me.
