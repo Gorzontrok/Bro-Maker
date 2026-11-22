@@ -39,7 +39,7 @@ namespace BroMakerLib
         /// Loads Material from cache if created previously.
         /// A failure is shown in BroMaker's Issues panel and then thrown: `FileNotFoundException` when the file doesn't exist, `IOException` when it or the named game asset can't be loaded or decoded.
         /// </summary>
-        /// <param name="path">Path to an image or asset</param>
+        /// <param name="path">Path to the directory of an image, or empty for an asset</param>
         /// <param name="fileName">Name of an image or asset file</param>
         /// <returns></returns>
         public static Material GetMaterial(string path, string fileName)
@@ -156,7 +156,7 @@ namespace BroMakerLib
         /// Loads Texture2D from cache if created previously.
         /// A failure is shown in BroMaker's Issues panel and then thrown: `FileNotFoundException` when the file doesn't exist, `IOException` when it or the named game asset can't be loaded or decoded.
         /// </summary>
-        /// <param name="path">Path to an image or asset</param>
+        /// <param name="path">Path to the directory of an image, or empty for an asset</param>
         /// <param name="fileName">Name of an image or asset file</param>
         /// <returns></returns>
         public static Texture2D GetTexture(string path, string fileName)
@@ -410,7 +410,7 @@ namespace BroMakerLib
         /// IMPORTANT: MP3 files will not load.
         /// A failure is shown in BroMaker's Issues panel and then thrown: `FileNotFoundException` when the file doesn't exist, `IOException` when it can't be loaded or decoded.
         /// </summary>
-        /// <param name="path">Path to an audio file</param>
+        /// <param name="path">Path to the directory of an audio file</param>
         /// <param name="fileName">Name of an audio file</param>
         /// <returns></returns>
         public static AudioClip CreateAudioClip(string path, string fileName)
@@ -472,9 +472,9 @@ namespace BroMakerLib
         }
 
         /// <summary>
-        /// Creates a byte array from a file.
+        /// Creates a byte array from a resource embedded in BroMakerLib.dll.
         /// </summary>
-        /// <param name="filename">Name of a file</param>
+        /// <param name="filename">Name of a resource embedded in BroMakerLib.dll</param>
         /// <returns></returns>
         public static byte[] ExtractResource(string filename)
         {

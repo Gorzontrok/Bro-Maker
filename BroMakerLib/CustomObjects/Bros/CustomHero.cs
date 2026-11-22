@@ -60,17 +60,17 @@ namespace BroMakerLib.CustomObjects.Bros
         public SoundHolderVoiceTypes SoundHolderVoiceType = SoundHolderVoiceTypes.None;
 
         /// <summary>
-        /// Contains the path to the directory that contains your custom bro's dll
+        /// Contains the path to the directory that contains your custom bro's JSON file
         /// </summary>
         public string DirectoryPath => _directoryPath;
 
         /// <summary>
-        /// Contains the path to your bro's sound folder (assumes the folder is named "sounds" by default)
+        /// Contains the path to your bro's sound folder (assumes the folder is named "sounds")
         /// </summary>
         public string SoundPath => _soundPath;
 
         /// <summary>
-        /// Contains the path to your bro's projectile folder (assumes the folder is named "projectiles" by default)
+        /// Contains the path to your bro's projectile folder (assumes the folder is named "projectiles")
         /// </summary>
         public string ProjectilePath => _projectilePath;
 
@@ -577,10 +577,8 @@ namespace BroMakerLib.CustomObjects.Bros
 
         /// <summary>
         /// Sets up the DirectoryPath, SoundPath, and ProjectilePath variables.
-        /// You can override this to adjust the paths if your sounds / projectiles folders
-        /// are named something other than "sounds" and "projectiles"
         /// </summary>
-        /// <param name="directoryPath">Path to the directory that contains your custom bro's .dll</param>
+        /// <param name="directoryPath">Path to the directory that contains your custom bro's JSON file</param>
         public virtual void AssignDirectoryPaths(string directoryPath)
         {
             _directoryPath = directoryPath;
