@@ -1,0 +1,5 @@
+# BroMakerLib
+
+- `BroMaker.Initialize()` runs, in order: `BroMakerStorage.Initialize()`, `PresetManager.Initialize()`, `ApplyBroPatches`, custom-trigger registration, `BroUnlockManager.Initialize()`, `PreloadBroAssets`, `BroSpawnManager.CheckForDeletedBros()`. Every mod refusal, and every drop of a bro whose `CharacterPreset` doesn't resolve, happens before `BroUnlockManager.Initialize()`, so those bros are treated as uninstalled: their saved unlock state and IronBro entries are held aside until they load again, and their spawn setting is kept.
+- `ResourcesController`'s public `Get*` / `Create*` loaders report their exception through `BMLogger`, then throw. `CustomHero.PreloadSprites` / `PreloadSounds` use the non-reporting internal loaders, so a failed preload is only logged and the load at use reports it.
+- Textures `ResourcesController` decodes from an image file or bytes, material textures included, keep their pixels only on the GPU, so `GetPixels` on one doesn't return the image. Load with `CreateTexture(<path or bytes>, true)` to read pixels back.

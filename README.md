@@ -13,7 +13,7 @@
 * The installation guide can be found [here](https://steamcommunity.com/sharedfiles/filedetails/?id=2434812447).  
 * The latest Release is in the `/Release/` folder.
 
-* To install custom bros, unzip the archive in `Broforce/BroMaker_Storage/`
+* To install custom bros, use r2modman, or unzip the archive in the `UMM/BroMaker_Storage/` folder of your [r2modman profile](https://github.com/alexneargarder/BroforceMods/wiki/Finding-the-Mods-Folder).
 
 ## Known Issues
 
