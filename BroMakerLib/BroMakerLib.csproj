@@ -108,10 +108,24 @@
     <ItemGroup>
         <Compile Include="Abilities\SpecialAbility.cs"/>
         <Compile Include="Abilities\SpecialStatePatches.cs"/>
+        <Compile Include="Vanilla\Specials\GrenadeThrowSpecial.cs"/>
+        <Compile Include="Vanilla\Specials\RambroSpecial.cs"/>
+        <Compile Include="Vanilla\Specials\BroHardSpecial.cs"/>
+        <Compile Include="Vanilla\Specials\BrodellWalkerSpecial.cs"/>
+        <Compile Include="Vanilla\Specials\TrentBroserSpecial.cs"/>
+        <Compile Include="Vanilla\Specials\TollBroadSpecial.cs"/>
+        <Compile Include="Vanilla\Specials\DemolitionBroSpecial.cs"/>
+        <Compile Include="Vanilla\Specials\BroffySpecial.cs"/>
+        <Compile Include="Vanilla\Specials\BaBroracusSpecial.cs"/>
+        <Compile Include="Vanilla\Specials\DirtyHarrySpecial.cs"/>
+        <Compile Include="Vanilla\Specials\TankBroSpecial.cs"/>
+        <Compile Include="Vanilla\Specials\BroneyRossSpecial.cs"/>
+        <Compile Include="Vanilla\Specials\ColJamesBrodockSpecial.cs"/>
         <Compile Include="Abilities\MeleeAbility.cs"/>
         <Compile Include="Abilities\AbilityBase.cs"/>
         <Compile Include="Abilities\AbilityFactory.cs"/>
         <Compile Include="Abilities\PassiveAbility.cs"/>
+        <Compile Include="Abilities\GrenadeConfig.cs"/>
         <Compile Include="Abilities\OwnerSpeedState.cs"/>
         <Compile Include="Attributes\SpecialPresetAttribute.cs"/>
         <Compile Include="Attributes\MeleePresetAttribute.cs"/>

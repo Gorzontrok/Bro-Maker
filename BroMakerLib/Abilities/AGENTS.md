@@ -17,7 +17,7 @@
 ## AbilityFactory
 
 - Order: construct, apply the JSON overrides, then `Initialize(owner)`.
-- Overrides resolve by field name through Traverse, so `[JsonIgnore]` doesn't stop JSON setting a field. A nested object on a struct field stays whole; any other nested object flattens to `parent.child` paths.
+- Overrides resolve by field name through Traverse, so `[JsonIgnore]` doesn't stop JSON setting a field. A nested object on a struct field stays whole; any other nested object flattens to `parent.child` paths. A prefab-name string for a whole `GrenadeConfig` field fails.
 - Passives, in order: dropped if `IsRedundant` after `Initialize`; dropped if a second of the same concrete type; dropped if it conflicts either way with a preset the owner has natively (that preset's `IsOwnerRedundant(owner)` on a fresh, uninitialized instance); then checked both ways against those already accepted, the earlier-listed winning. `allowConflict: true` bypasses both conflict checks. A passive these checks drop gets `Cleanup`; one whose construction, overrides or `Initialize` throws is left out with an Error and no `Cleanup`.
 
 ## Melee abilities

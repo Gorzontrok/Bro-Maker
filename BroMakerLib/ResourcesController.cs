@@ -176,6 +176,11 @@ namespace BroMakerLib
             return Reporting(filePath, () => LoadTexture(filePath));
         }
 
+        internal static Texture2D LoadTexture(string path, string fileName)
+        {
+            return LoadTexture(Path.Combine(path, fileName));
+        }
+
         private static Texture2D LoadTexture(string filePath)
         {
             Texture2D texture;

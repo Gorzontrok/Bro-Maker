@@ -304,6 +304,34 @@ namespace BroMakerLib
             return clone;
         }
 
+        // Instances spawned from the clone read their texture from this material in their own Awake.
+        internal static bool SetCloneTexture(Component clone, Texture texture)
+        {
+            Renderer renderer;
+            SpriteSM sprite = clone.GetComponent<SpriteSM>();
+            if (sprite != null)
+            {
+                // The clone never runs Awake, which is where SpriteSM assigns meshRender.
+                if (sprite.meshRender == null)
+                {
+                    sprite.meshRender = clone.GetComponent<MeshRenderer>();
+                }
+                renderer = sprite.meshRender;
+            }
+            else
+            {
+                renderer = clone.GetComponent<Renderer>();
+            }
+            if (renderer == null || renderer.sharedMaterial == null)
+            {
+                return false;
+            }
+            Material material = new Material(renderer.sharedMaterial);
+            material.mainTexture = texture;
+            renderer.sharedMaterial = material;
+            return true;
+        }
+
         internal static bool IsPrefabClone(Component component)
         {
             return prefabCloneHolder != null && component.transform.root == prefabCloneHolder.transform;

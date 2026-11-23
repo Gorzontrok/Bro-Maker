@@ -12,7 +12,7 @@ namespace BroMakerLib.Abilities
         /// <summary>Vanilla bro to source special sounds from.</summary>
         protected virtual HeroType SourceBroType => HeroType.Rambro;
 
-        /// <summary>Which animation frame calls `UseSpecial`.</summary>
+        /// <summary>Animation frame on which `UseSpecial` is called, a frame past the animation's last one never calling it. On presets whose press doesn't redraw the bro, which is most, frame 0 isn't animated, so 0 fires only when something else redraws the bro first.</summary>
         public int triggerFrame = 4;
 
         protected SpecialAbility()
@@ -32,12 +32,17 @@ namespace BroMakerLib.Abilities
         /// <summary>If true, `DeactivateGun` is called during the animation.</summary>
         public bool deactivateGun = true;
 
-        /// <summary>Generic attack sounds (hit feedback, impact cues).</summary>
+        /// <summary>Throw sounds, taken from the `SourceBroType` prefab when JSON leaves them unset. Only presets that play this array use them, and most of those play a voiced owner's throw grunt instead unless JSON sets them.</summary>
+        public AudioClip[] throwSounds;
+
+        /// <summary>Attack sounds, taken from the `SourceBroType` prefab when JSON leaves them unset.</summary>
         public AudioClip[] attackSounds;
 
-        /// <summary>Sounds played for the special's main attack effect.</summary>
+        /// <summary>Special attack sounds, taken from the `SourceBroType` prefab when JSON leaves them unset.</summary>
         public AudioClip[] specialAttackSounds;
 
+        [JsonIgnore] private bool soundsCached;
+        [JsonIgnore] private bool throwSoundsOverridden;
         [JsonIgnore] private int stepEndFrame = -1;
         [JsonIgnore] private int replayedThroughFrame = -1;
 
@@ -51,12 +56,22 @@ namespace BroMakerLib.Abilities
         /// <summary>Loads special sound clips from the `SourceBroType` prefab's soundHolder, null-guarding each array so JSON overrides aren't stomped; call `base.CacheSoundsFromPrefab()` first.</summary>
         protected virtual void CacheSoundsFromPrefab()
         {
+            if (!soundsCached)
+            {
+                throwSoundsOverridden = throwSounds != null;
+                soundsCached = true;
+            }
+
             TestVanDammeAnim sourceBro = HeroController.GetHeroPrefab(SourceBroType);
             if (sourceBro == null)
             {
                 return;
             }
 
+            if (throwSounds == null)
+            {
+                throwSounds = sourceBro.soundHolder.throwSounds.CloneArray();
+            }
             if (attackSounds == null)
             {
                 attackSounds = sourceBro.soundHolder.attackSounds.CloneArray();
@@ -64,6 +79,23 @@ namespace BroMakerLib.Abilities
             if (specialAttackSounds == null)
             {
                 specialAttackSounds = sourceBro.soundHolder.specialAttackSounds.CloneArray();
+            }
+        }
+
+        /// <summary>Reproduces `BroBase.PlayThrowLightSound` with the owner's voice grunt, playing `throwSounds` instead when JSON supplies them or the owner has no voice.</summary>
+        protected void PlayThrowLightSound(float volume)
+        {
+            if (throwSoundsOverridden)
+            {
+                Sound.GetInstance().PlaySoundEffectAt(throwSounds, volume, owner.transform.position, 1f + owner.pitchShiftAmount, true, false, false, 0f);
+            }
+            else if (hero.SoundHolderVoice != null && !owner.BypassNewVoices)
+            {
+                Sound.GetInstance().PlaySoundEffectAt(hero.SoundHolderVoice.throwLightGrunt, volume * hero.SoundHolderVoice.voiceGruntVolumeM, owner.transform.position, 1f, true, false, false, 0f);
+            }
+            else
+            {
+                Sound.GetInstance().PlaySoundEffectAt(throwSounds, volume, owner.transform.position, 1f + owner.pitchShiftAmount, true, false, false, 0f);
             }
         }
 
