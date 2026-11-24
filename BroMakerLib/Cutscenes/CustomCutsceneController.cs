@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using BroMakerLib.Extensions;
 using BroMakerLib.Loggers;
 using UnityEngine;
@@ -33,6 +34,24 @@ namespace BroMakerLib.Cutscenes
             {
                 return;
             }
+            if (PauseController.Paused)
+            {
+                PauseController.SetPause(PauseStatus.UnPaused);
+            }
+            CutsceneController.Instance.StartCoroutine(LoadHeroCutsceneRoutine(cutscene, delay, setFinishCampaignAfterCutscene));
+        }
+
+        private static IEnumerator LoadHeroCutsceneRoutine(CustomIntroCutscene cutscene, float delay, bool setFinishCampaignAfterCutscene)
+        {
+            if (delay > 0f)
+            {
+                yield return new WaitForSeconds(delay);
+            }
+            bool canEndPause = PauseController.pauseStatus == PauseStatus.MenuPause && (PauseMenu.instance == null || PauseMenu.instance.MenuActive);
+            if (CutsceneController.InCutscene || (BroMakerUtilities.IsLevelFrozenByPause() && !canEndPause))
+            {
+                yield break;
+            }
             cutsceneToLoad = cutscene;
             willLoadCustomCutscene = true;
             // In the level editor the game defers the finish until the scene unloads, so leaving play mode would end the campaign.
@@ -40,7 +59,15 @@ namespace BroMakerLib.Cutscenes
             {
                 finishCampaignAfterCutscene = true;
             }
-            CutsceneController.LoadCutScene(CutsceneName.Rambro, delay);
+            try
+            {
+                CutsceneController.LoadCutScene(CutsceneName.Rambro, 0f);
+            }
+            finally
+            {
+                willLoadCustomCutscene = false;
+                finishCampaignAfterCutscene = false;
+            }
         }
 
         internal static void ApplyBackground(CutsceneIntroRoot root, Texture2D texture)
