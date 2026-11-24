@@ -10,7 +10,7 @@
 - `postSpriteFixes` emit at the end of `Awake()`'s `try`, after `StandardAfterAwake()`: the only point in `Awake()` where the custom sheet is on the renderer. They emit in config order, so a fix that depends on another is listed after it.
 - `cacheResyncs` emit into `Start()`, each entry by its required `stage`: `beforeStart` after `StandardBeforeStart()` and before `base.Start()`, `afterStart` after `StandardAfterStart()`. Use them to re-copy a value the bro's own `Awake` or `Start` cached before a `beforeStart` / `afterStart` override landed.
 - `meleeStartGuards` emit into `StartMelee()`, before the melee ability starts a melee-button melee it takes.
-- `members` emit into the class body, for fields and overrides the other lists need.
+- `members` emit into the class body: fields and overrides, for the other lists or for a per-bro fix of their own.
 - `afterCheckInput` emit into `CheckInput()`, after `base.CheckInput()` and before the abilities' `HandleAfterCheckInput`.
 
 ## Fix types

@@ -40,6 +40,37 @@ namespace BroMakerLib.Vanilla.Bros
         private bool fireHeldAtLastFireLoop;
 
         private bool abilityUsingSpecial;
+        private int teleportStabDepth;
+
+        protected override void AnimateCustomMelee()
+        {
+            if (!teleporting || !teleported || teleportFrame != 5 || teleportTargetEnemy == null)
+            {
+                base.AnimateCustomMelee();
+                return;
+            }
+            // The game's teleport-out stab calls back into this method once by design, and without end once doingMelee was cleared during the teleport or a cancel re-enters it.
+            if (teleportStabDepth > 1)
+            {
+                if (throwingHeldObject)
+                {
+                    frame = useNewThrowingFrames ? 4 : 2;
+                    AnimateThrowingHeldObject();
+                    throwingHeldObject = false;
+                }
+                return;
+            }
+            teleportStabDepth++;
+            try
+            {
+                nearbyMook = null;
+                base.AnimateCustomMelee();
+            }
+            finally
+            {
+                teleportStabDepth--;
+            }
+        }
 
         private void RebuildAbilitiesArray()
         {
