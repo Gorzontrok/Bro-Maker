@@ -10,7 +10,9 @@ namespace BroMakerLib.CustomObjects
         SpecialAbility SpecialAbility { get; }
         MeleeAbility MeleeAbility { get; }
 
-        /// <summary>All passive abilities attached to this bro, in JSON-declared order. Mutate it only through this interface's `AddPassive`, `RemovePassive` and `ClearPassives`.</summary>
+        /// <summary>
+        /// All passive abilities attached to this bro, in JSON-declared order. Mutate it only through this interface's `AddPassive`, `RemovePassive` and `ClearPassives`.
+        /// </summary>
         List<PassiveAbility> Passives { get; }
 
         /// <summary>Returns the first attached passive of type `T`, or null if none.</summary>
@@ -19,10 +21,16 @@ namespace BroMakerLib.CustomObjects
         /// <summary>Replaces the attached special ability, detaching the old one and initializing the new one, or removes it when `ability` is null.</summary>
         void SetSpecialAbility(SpecialAbility ability);
 
-        /// <summary>Replaces the attached melee ability, ending a melee the old one is running, detaching it, initializing the new one and setting the bro's melee type to the new one's, or removes it when `ability` is null, leaving the bro's melee type as it is.</summary>
+        /// <summary>
+        /// Replaces the attached melee ability, ending a melee the old one is running, detaching it, initializing the new one and setting the bro's melee type to the new one's, or
+        /// removes it when `ability` is null, leaving the bro's melee type as it is.
+        /// </summary>
         void SetMeleeAbility(MeleeAbility ability);
 
-        /// <summary>Initializes `ability` and attaches it after the attached passives, skipping one the bro already has natively, with none of the duplicate and conflict checks a JSON `passives` list gets.</summary>
+        /// <summary>
+        /// Initializes `ability` and attaches it after the attached passives, skipping one the bro already has natively, with none of the duplicate and conflict checks a JSON
+        /// `passives` list gets.
+        /// </summary>
         void AddPassive(PassiveAbility ability);
 
         /// <summary>Detaches every attached passive of type `T`. A hook or `Update` call in progress can still reach a detached passive, after its `Cleanup`.</summary>
@@ -68,10 +76,17 @@ namespace BroMakerLib.CustomObjects
         Mook NearbyMook { get; set; }
         bool HasPlayedMissSound { get; set; }
 
-        /// <summary>True while the attached special ability's special runs. The game's shared animation, movement, input and state code treats it as the bro's special, and ends it wherever that code ends the bro's special. The bro's own code neither sees nor changes it, with one exception: Seth Brondle can't hang from a ceiling during it. When BroMaker couldn't adjust the game's special handling, it is the bro's own `usingSpecial`.</summary>
+        /// <summary>
+        /// True while the attached special ability's special runs. The game's shared animation, movement, input and state code treats it as the bro's special, and ends it wherever
+        /// that code ends the bro's special. The bro's own code neither sees nor changes it, with one exception: Seth Brondle can't hang from a ceiling during it. When BroMaker
+        /// couldn't adjust the game's special handling, it is the bro's own `usingSpecial`.
+        /// </summary>
         bool UsingSpecial { get; set; }
 
-        /// <summary>True while the bro's own special, started by its own code, runs. When BroMaker couldn't adjust the game's special handling, it is the bro's own `usingSpecial`, which the attached special ability also sets.</summary>
+        /// <summary>
+        /// True while the bro's own special, started by its own code, runs. When BroMaker couldn't adjust the game's special handling, it is the bro's own `usingSpecial`, which
+        /// the attached special ability also sets.
+        /// </summary>
         bool HostUsingSpecial { get; }
 
         bool UsingPockettedSpecial { get; set; }
@@ -160,7 +175,9 @@ namespace BroMakerLib.CustomObjects
         void StartMeleeCommon();
         void ThrowBackMook(Mook mook);
 
-        /// <summary>Marks a melee the melee ability starts itself as the ability's, so the owner animates and moves it through the ability; call it before starting the melee.</summary>
+        /// <summary>
+        /// Marks a melee the melee ability starts itself as the ability's, so the owner animates and moves it through the ability; call it before starting the melee.
+        /// </summary>
         void ClaimMelee();
         #endregion
     }

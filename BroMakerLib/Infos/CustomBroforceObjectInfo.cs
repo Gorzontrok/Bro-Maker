@@ -18,9 +18,7 @@ namespace BroMakerLib.Infos
     [Serializable]
     public class CustomBroforceObjectInfo
     {
-        /// <summary>
-        /// Name of the Custom Object
-        /// </summary>
+        /// <summary>Name of the Custom Object</summary>
         [JsonProperty(Required = Required.Always, Order = -9)]
         public string name;
 
@@ -105,12 +103,12 @@ namespace BroMakerLib.Infos
         {
             using (BMLogger.Scope(Mod?.Name, name))
             {
-                ApplyFieldValues(obj, map, path, name, stage, $"{name} {stage}",
-                    (key, message, problem) => ReportLifecycleProblem(stage, key, map[key], message, problem));
+                ApplyFieldValues(obj, map, path, name, stage, $"{name} {stage}", (key, message, problem) => ReportLifecycleProblem(stage, key, map[key], message, problem));
             }
         }
 
-        internal static void ApplyFieldValues(object target, Dictionary<string, object> map, string path, string broName, string stage, string context, Action<string, string, Exception> onProblem)
+        internal static void ApplyFieldValues(object target, Dictionary<string, object> map, string path, string broName, string stage, string context,
+            Action<string, string, Exception> onProblem)
         {
             Dictionary<string, object> single = new Dictionary<string, object>(1);
             foreach (KeyValuePair<string, object> kvp in map.OrderBy(pair => pair.Key.Count(c => c == '.')))
@@ -121,9 +119,7 @@ namespace BroMakerLib.Infos
                 }
                 single.Clear();
                 single.Add(kvp.Key, kvp.Value);
-                target.DynamicFieldsValueSetter(single, null,
-                    (field, key, value) => SetFieldData(field, key, value, path, broName, target),
-                    context: context,
+                target.DynamicFieldsValueSetter(single, null, (field, key, value) => SetFieldData(field, key, value, path, broName, target), context: context,
                     onProblem: onProblem);
             }
         }
@@ -325,10 +321,7 @@ namespace BroMakerLib.Infos
 
         protected virtual string GetUnknowName()
         {
-            return new StringBuilder(_defaultName)
-                .Append('_')
-                .Append(Mathf.FloorToInt(UnityEngine.Random.value * 10).ToString())
-                .ToString();
+            return new StringBuilder(_defaultName).Append('_').Append(Mathf.FloorToInt(UnityEngine.Random.value * 10).ToString()).ToString();
         }
 
 
@@ -598,7 +591,8 @@ namespace BroMakerLib.Infos
                 object converted = ReadStructComponents(fieldType, field.GetValue(), value);
                 if (converted == null)
                 {
-                    BMLogger.Warning($"Can't set field '{key}' to {(value is JToken token ? token.ToString(Formatting.None) : value)}. It should be {DescribeStructForms(fieldType)}");
+                    BMLogger.Warning(
+                        $"Can't set field '{key}' to {(value is JToken token ? token.ToString(Formatting.None) : value)}. It should be {DescribeStructForms(fieldType)}");
                     return;
                 }
                 field.SetValue(converted);

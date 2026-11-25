@@ -7,10 +7,9 @@ namespace BroMakerLib.Abilities
         public bool IsRedundant { get; private set; }
 
         /// <summary>
-        /// Returns true when the owner's own class already hosts this passive's behavior.
-        /// Typically implemented as `owner is SomeBroClass`.
-        /// Also called on a constructed but uninitialized instance to find conflicts with the owner's native abilities, so it must depend only on `owner`.
-        /// That probe runs the constructor and field initializers on every spawn of a bro listing a related passive, so they must have no side effects.
+        /// Returns true when the owner's own class already hosts this passive's behavior. Typically implemented as `owner is SomeBroClass`. Also called on a constructed but
+        /// uninitialized instance to find conflicts with the owner's native abilities, so it must depend only on `owner`. That probe runs the constructor and field initializers on
+        /// every spawn of a bro listing a related passive, so they must have no side effects.
         /// </summary>
         protected virtual bool IsOwnerRedundant(BroBase owner) => false;
 

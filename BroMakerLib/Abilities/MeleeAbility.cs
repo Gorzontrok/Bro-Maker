@@ -116,7 +116,10 @@ namespace BroMakerLib.Abilities
             CacheSoundsFromPrefab();
         }
 
-        /// <summary>Loads melee sound clips from the `SourceBroType` prefab's soundHolder, null-guarding each array so JSON overrides aren't stomped; call `base.CacheSoundsFromPrefab()` first.</summary>
+        /// <summary>
+        /// Loads melee sound clips from the `SourceBroType` prefab's soundHolder, null-guarding each array so JSON overrides aren't stomped; call `base.CacheSoundsFromPrefab()`
+        /// first.
+        /// </summary>
         protected virtual void CacheSoundsFromPrefab()
         {
             TestVanDammeAnim sourceBro = HeroController.GetHeroPrefab(SourceBroType);
@@ -143,13 +146,18 @@ namespace BroMakerLib.Abilities
             }
         }
 
-        /// <summary>Whether this ability runs a melee of the given type, started by the melee button or by the owner's own code. Return false to leave that melee to the owner. By default it takes every melee-button melee except a knife swing the owner falls back to when this ability is not a knife melee.</summary>
+        /// <summary>
+        /// Whether this ability runs a melee of the given type, started by the melee button or by the owner's own code. Return false to leave that melee to the owner. By default
+        /// it takes every melee-button melee except a knife swing the owner falls back to when this ability is not a knife melee.
+        /// </summary>
         public virtual bool HandlesMeleeType(BroBase.MeleeType currentMeleeType, bool fromMeleeButton)
         {
             return fromMeleeButton && (currentMeleeType != BroBase.MeleeType.Knife || meleeType == BroBase.MeleeType.Knife);
         }
 
-        /// <summary>Runs the base game's search for the mook a melee press can throw back, so the melee finds one on every owner; return true to leave the search to the owner.</summary>
+        /// <summary>
+        /// Runs the base game's search for the mook a melee press can throw back, so the melee finds one on every owner; return true to leave the search to the owner.
+        /// </summary>
         public override bool HandleFindNearbyMook()
         {
             FindNearbyMook();
@@ -395,7 +403,8 @@ namespace BroMakerLib.Abilities
             bool flag;
             Map.DamageDoodads(3, DamageType.Knifed, X + (float)(Direction * 4), Y, 0f, 0f, 6f, PlayerNum, out flag, null);
             hero.KickDoors(24f);
-            if (Map.HitClosestUnit(owner, PlayerNum, damage, parsedDamageType, hitRangeX, hitRangeY, X + (owner.transform.localScale.x * hitOffsetX), Y + hitOffsetY, owner.transform.localScale.x * knockbackX, knockbackY, true, false, owner.IsMine, false, true))
+            if (Map.HitClosestUnit(owner, PlayerNum, damage, parsedDamageType, hitRangeX, hitRangeY, X + (owner.transform.localScale.x * hitOffsetX), Y + hitOffsetY,
+                    owner.transform.localScale.x * knockbackX, knockbackY, true, false, owner.IsMine, false, true))
             {
                 sound.PlaySoundEffectAt(meleeHitSounds, 1f, owner.transform.position, 1f, true, false, false, 0f);
                 hero.MeleeHasHit = true;
@@ -413,19 +422,15 @@ namespace BroMakerLib.Abilities
         }
 
         /// <summary>
-        /// Called after every base `CancelMelee`: when a melee ends normally or is interrupted, when another melee takes over, and when the game cancels with no melee running, as it does on death.
-        /// It must be safe to run more than once and with none of this ability's melee active.
-        /// Don't call `hero.CancelMelee()` from it, since that calls this method again.
-        /// A melee the game ends without `CancelMelee`, as a stun, freeze, blind, acid cover or grenade throw-back does, never reaches it.
+        /// Called after every base `CancelMelee`: when a melee ends normally or is interrupted, when another melee takes over, and when the game cancels with no melee running, as
+        /// it does on death. It must be safe to run more than once and with none of this ability's melee active. Don't call `hero.CancelMelee()` from it, since that calls this
+        /// method again. A melee the game ends without `CancelMelee`, as a stun, freeze, blind, acid cover or grenade throw-back does, never reaches it.
         /// </summary>
         public virtual void CancelMelee()
         {
         }
 
-        /// <summary>
-        /// Performs terrain damage and plays the ability's cached sounds instead of the owner's soundHolder.
-        /// Returns true if terrain was hit.
-        /// </summary>
+        /// <summary>Performs terrain damage and plays the ability's cached sounds instead of the owner's soundHolder. Returns true if terrain was hit.</summary>
         public virtual bool TryMeleeTerrain(int offset, int meleeDamage)
         {
             RaycastHit raycastHit;

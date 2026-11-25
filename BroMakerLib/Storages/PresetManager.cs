@@ -62,7 +62,9 @@ namespace BroMakerLib
                         }
                         catch (Exception ex)
                         {
-                            string message = BMLogger.IsIncompatibleAssembly(ex) ? IncompatibleRefusal(mod, ex) : $"'{mod.Name}' wasn't loaded because its file '{dll.Key}' couldn't be loaded. Cause: {ex.Message}";
+                            string message = BMLogger.IsIncompatibleAssembly(ex)
+                                ? IncompatibleRefusal(mod, ex)
+                                : $"'{mod.Name}' wasn't loaded because its file '{dll.Key}' couldn't be loaded. Cause: {ex.Message}";
                             BroMakerStorage.MarkModIncompatible(mod, message, ex);
                             assemblies = null;
                             break;
@@ -109,7 +111,8 @@ namespace BroMakerLib
                                     if (definition.DeclaringType == method.DeclaringType && definition.MetadataToken == method.MetadataToken)
                                     {
                                         string target = type.FullName + "::" + method.Name + "(" + ParameterList(method, true) + ")";
-                                        string item = $"{ShortName(type)}.{method.Name}({ParameterList(method, false)}), which overrides a method {ShortName(libraryBase)} no longer has";
+                                        string item =
+                                            $"{ShortName(type)}.{method.Name}({ParameterList(method, false)}), which overrides a method {ShortName(libraryBase)} no longer has";
                                         libraries.Add(libraryBase.Assembly.GetName().Name);
                                         targets.Add(target);
                                         items.Add(item);
@@ -180,7 +183,8 @@ namespace BroMakerLib
                         continue;
                     }
 
-                    message = $"'{hero.name}' wasn't loaded because its characterPreset '{hero.info.CharacterPreset}' doesn't exist in BroMaker {Info.VERSION}. If it comes from another mod, that mod isn't installed or wasn't loaded.";
+                    message =
+                        $"'{hero.name}' wasn't loaded because its characterPreset '{hero.info.CharacterPreset}' doesn't exist in BroMaker {Info.VERSION}. If it comes from another mod, that mod isn't installed or wasn't loaded.";
                     BroMakerStorage.RemoveBro(hero);
                     hero.mod.StoredHeroes = Array.FindAll(hero.mod.StoredHeroes, stored => !ReferenceEquals(stored, hero));
                     BroSpawnManager.BroStatusChanged();
@@ -192,7 +196,8 @@ namespace BroMakerLib
                 {
                     if (dropped.Count > 1)
                     {
-                        message = $"'{mod.Name}' wasn't loaded because none of its bros has a characterPreset that exists in BroMaker {Info.VERSION}: {string.Join(", ", dropped.ToArray())}. If a preset comes from another mod, that mod isn't installed or wasn't loaded.";
+                        message =
+                            $"'{mod.Name}' wasn't loaded because none of its bros has a characterPreset that exists in BroMaker {Info.VERSION}: {string.Join(", ", dropped.ToArray())}. If a preset comes from another mod, that mod isn't installed or wasn't loaded.";
                     }
                     BroMakerStorage.MarkModIncompatible(mod, message, report: false);
                 }
@@ -229,7 +234,8 @@ namespace BroMakerLib
 
         private static string IncompatibleRefusal(BroMakerMod mod, Exception ex)
         {
-            return $"'{mod.Name}' wasn't loaded because it uses {BMLogger.MissingCodePhrase}. It was probably built for an older BroMaker and needs an update from its author, or one of its own dependencies is missing or out of date. Cause: {BMLogger.MissingMemberMessage(ex)}";
+            return
+                $"'{mod.Name}' wasn't loaded because it uses {BMLogger.MissingCodePhrase}. It was probably built for an older BroMaker and needs an update from its author, or one of its own dependencies is missing or out of date. Cause: {BMLogger.MissingMemberMessage(ex)}";
         }
 
         private static Type GetPreset(Dictionary<string, Type> collection, string name)
@@ -363,7 +369,8 @@ namespace BroMakerLib
 
                     if (_parameters.ContainsKey(method.Name))
                     {
-                        BMLogger.Warning($"A parameter named '{method.Name}' already exists, so the one in {paramerterType.Assembly.GetName().Name} is ignored", mod: BroMakerStorage.GetModByAssembly(paramerterType.Assembly)?.Name);
+                        BMLogger.Warning($"A parameter named '{method.Name}' already exists, so the one in {paramerterType.Assembly.GetName().Name} is ignored",
+                            mod: BroMakerStorage.GetModByAssembly(paramerterType.Assembly)?.Name);
                     }
                     else
                     {
@@ -466,7 +473,9 @@ namespace BroMakerLib
             if (collection.ContainsKey(name))
             {
                 Type winningType = collection[name];
-                BMLogger.Warning($"{(collectionName.IsNullOrEmpty() ? "Preset" : collectionName + " preset")} '{name}' from {preset} in {preset.Assembly.GetName().Name} was ignored because {winningType} in {winningType.Assembly.GetName().Name} already uses that name", mod: BroMakerStorage.GetModByAssembly(preset.Assembly)?.Name);
+                BMLogger.Warning(
+                    $"{(collectionName.IsNullOrEmpty() ? "Preset" : collectionName + " preset")} '{name}' from {preset} in {preset.Assembly.GetName().Name} was ignored because {winningType} in {winningType.Assembly.GetName().Name} already uses that name",
+                    mod: BroMakerStorage.GetModByAssembly(preset.Assembly)?.Name);
             }
             else
             {

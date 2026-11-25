@@ -3,7 +3,10 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
-    /// <summary>Shared base for grenade-throw specials. Extended by: RambroSpecial, BaBroracusSpecial, BrodellWalkerSpecial, BroffySpecial, BroHardSpecial, DemolitionBroSpecial, DirtyHarrySpecial, TankBroSpecial, TollBroadSpecial, TrentBroserSpecial.</summary>
+    /// <summary>
+    /// Shared base for grenade-throw specials. Extended by: RambroSpecial, BaBroracusSpecial, BrodellWalkerSpecial, BroffySpecial, BroHardSpecial, DemolitionBroSpecial,
+    /// DirtyHarrySpecial, TankBroSpecial, TollBroadSpecial, TrentBroserSpecial.
+    /// </summary>
     public abstract class GrenadeThrowSpecial : SpecialAbility
     {
         /// <summary>Grenade thrown by the special.</summary>
@@ -74,12 +77,7 @@ namespace BroMakerLib.Vanilla.Specials
             for (int i = 0; i < grenade.count; i++)
             {
                 Vector2 force = grenade.GetThrowVector(Direction * forceX, forceY, i);
-                ProjectileController.SpawnGrenadeOverNetwork(
-                    grenade.basePrefab, owner,
-                    X + (Direction * offsetX), Y + offsetY,
-                    0.001f, 0.011f,
-                    force.x, force.y,
-                    PlayerNum, 1f);
+                ProjectileController.SpawnGrenadeOverNetwork(grenade.basePrefab, owner, X + (Direction * offsetX), Y + offsetY, 0.001f, 0.011f, force.x, force.y, PlayerNum, 1f);
             }
         }
     }

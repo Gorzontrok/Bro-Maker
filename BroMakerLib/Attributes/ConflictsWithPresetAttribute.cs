@@ -15,9 +15,12 @@ namespace BroMakerLib.Attributes
         NativeOnly
     }
 
-    /// <summary>Declares this passive incompatible with each named preset: a bro listing both keeps the first and drops the later one with a warning, and either one is dropped when the base bro natively has the other, unless the dropped passive's JSON sets `"allowConflict": true`; `Scope` limits which checks apply.</summary>
+    /// <summary>
+    /// Declares this passive incompatible with each named preset: a bro listing both keeps the first and drops the later one with a warning, and either one is dropped when the
+    /// base bro natively has the other, unless the dropped passive's JSON sets `"allowConflict": true`; `Scope` limits which checks apply.
+    /// </summary>
     /// <example>
-    ///     <code>
+    /// <code>
     /// [PassivePreset("SnakeBroskin")]
     /// [ConflictsWithPreset("SethBrondle", Scope = ConflictScope.ListedOnly)]
     /// public class SnakeBroskinPassive : PassiveAbility { }

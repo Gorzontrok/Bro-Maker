@@ -178,9 +178,7 @@ namespace BroMakerLib.Storages
 
             if (GameModeController.IsHardcoreMode)
             {
-                return HardcoreAvailableBros.Contains(broName)
-                    ? BroState.Available
-                    : BroState.Disabled;
+                return HardcoreAvailableBros.Contains(broName) ? BroState.Available : BroState.Disabled;
             }
 
             bool isEnabled = SavedEnabledBrosNames.Contains(broName);

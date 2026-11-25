@@ -9,7 +9,10 @@ using UnityEngine;
 
 namespace BroMakerLib.Abilities
 {
-    /// <summary>Grenade throw settings for an ability, whose prefab clones made for a `damage` or `sprite` override are shared by every bro using the same settings for the rest of the session.</summary>
+    /// <summary>
+    /// Grenade throw settings for an ability, whose prefab clones made for a `damage` or `sprite` override are shared by every bro using the same settings for the rest of the
+    /// session.
+    /// </summary>
     public class GrenadeConfig
     {
         /// <summary>Name of the vanilla grenade prefab to throw.</summary>
@@ -57,7 +60,9 @@ namespace BroMakerLib.Abilities
         [JsonIgnore]
         public Grenade Prefab { get { return basePrefab; } }
 
-        /// <summary>Returns the throw vector for one grenade of a multi-grenade throw, fanned so `count` grenades cover `spread` degrees centered on the base vector.</summary>
+        /// <summary>
+        /// Returns the throw vector for one grenade of a multi-grenade throw, fanned so `count` grenades cover `spread` degrees centered on the base vector.
+        /// </summary>
         /// <param name="forceX">Base horizontal throw speed, already signed by the thrower's facing direction.</param>
         /// <param name="forceY">Base vertical throw speed.</param>
         /// <param name="index">Zero-based index of this grenade within the throw.</param>

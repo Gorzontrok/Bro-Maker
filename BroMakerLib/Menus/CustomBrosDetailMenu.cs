@@ -37,11 +37,7 @@ namespace BroMakerLib.Menus
 
         public static CustomBrosDetailMenu Show(StoredHero hero, CustomBrosGridMenu gridMenu)
         {
-            CustomBrosDetailMenu detailMenu = Show<CustomBrosDetailMenu>(
-                gridMenu,
-                null,
-                hero.name
-            );
+            CustomBrosDetailMenu detailMenu = Show<CustomBrosDetailMenu>(gridMenu, null, hero.name);
 
             detailMenu.currentHero = hero;
             detailMenu.parentGridMenu = gridMenu;
@@ -403,10 +399,8 @@ namespace BroMakerLib.Menus
                 if (unlockState != null)
                 {
                     // Show unlock level if the bro has an unlock level, regardless of lock status
-                    bool hasUnlockLevel = (unlockState.ConfiguredMethod == UnlockMethod.UnlockLevel ||
-                                           unlockState.ConfiguredMethod == UnlockMethod.RescueOrLevel) &&
-                                          (!string.IsNullOrEmpty(unlockState.UnlockLevelName) ||
-                                           !string.IsNullOrEmpty(unlockState.UnlockLevelPath));
+                    bool hasUnlockLevel = (unlockState.ConfiguredMethod == UnlockMethod.UnlockLevel || unlockState.ConfiguredMethod == UnlockMethod.RescueOrLevel) &&
+                                          (!string.IsNullOrEmpty(unlockState.UnlockLevelName) || !string.IsNullOrEmpty(unlockState.UnlockLevelPath));
 
                     if (hasUnlockLevel)
                     {
@@ -419,9 +413,7 @@ namespace BroMakerLib.Menus
                     }
 
                     // Only show requirements if bro is locked and has rescue requirements
-                    if (isLocked &&
-                        (unlockState.ConfiguredMethod == UnlockMethod.RescueCount ||
-                         unlockState.ConfiguredMethod == UnlockMethod.RescueOrLevel))
+                    if (isLocked && (unlockState.ConfiguredMethod == UnlockMethod.RescueCount || unlockState.ConfiguredMethod == UnlockMethod.RescueOrLevel))
                     {
                         int remaining = BroUnlockManager.GetRemainingRescues(storedHero.name);
                         if (remaining > 1)

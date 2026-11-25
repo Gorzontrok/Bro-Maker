@@ -16,9 +16,7 @@ namespace BroMakerLib.Extensions
         private static readonly AccessTools.FieldRef<SpriteBase, Texture> spriteTexture = AccessTools.FieldRefAccess<SpriteBase, Texture>("texture");
         private static readonly AccessTools.FieldRef<SpriteBase, Mesh> spriteMesh = AccessTools.FieldRefAccess<SpriteBase, Mesh>("mesh");
 
-        /// <summary>
-        /// Before base.Awake()
-        /// </summary>
+        /// <summary>Before base.Awake()</summary>
         /// <param name="hero"></param>
         /// <param name="character"></param>
         [AllowedRPC]
@@ -66,9 +64,7 @@ namespace BroMakerLib.Extensions
             BMLogger.Debug($"AssignNullVariables: {heroCharacter.GetType()}: Has finish assigning null variables.");
         }
 
-        /// <summary>
-        /// Before Awake
-        /// </summary>
+        /// <summary>Before Awake</summary>
         [AllowedRPC]
         public static void FixOtherComponentValues(this ICustomHero hero)
         {
@@ -93,9 +89,7 @@ namespace BroMakerLib.Extensions
             BMLogger.Debug("FixOtherComponentValues: Removed 'PathAgent' component.");
         }
 
-        /// <summary>
-        /// Before Awake
-        /// </summary>
+        /// <summary>Before Awake</summary>
         public static BroBase GetTheOtherBroBaseComponent(this ICustomHero hero)
         {
             BroBase character = hero.Character;
@@ -119,11 +113,11 @@ namespace BroMakerLib.Extensions
             return result;
         }
 
-        /// <summary>
-        /// Before Awake
-        /// </summary>
+        /// <summary>Before Awake</summary>
         /// <param name="hero"></param>
-        /// <param name="serializedValuesCopied">`true` when the vanilla prefab's serialized values have already been copied onto the bro, so null variables aren't assigned from the vanilla component.</param>
+        /// <param name="serializedValuesCopied">
+        /// `true` when the vanilla prefab's serialized values have already been copied onto the bro, so null variables aren't assigned from the vanilla component.
+        /// </param>
         /// <exception cref="NullReferenceException"></exception>
         [AllowedRPC]
         public static void SetupCustomHero(this ICustomHero hero, bool serializedValuesCopied)
@@ -291,15 +285,12 @@ namespace BroMakerLib.Extensions
         {
             if (list != null && list.Count > 1 && list.Count != expectedCount)
             {
-                throw new InvalidOperationException(
-                    $"{jsonKey} lists {list.Count} variants but another setting lists {expectedCount}. " +
-                    $"Every setting with variants needs either 1 entry, shared by every variant, or exactly {expectedCount}, one per variant.");
+                throw new InvalidOperationException($"{jsonKey} lists {list.Count} variants but another setting lists {expectedCount}. " +
+                                                    $"Every setting with variants needs either 1 entry, shared by every variant, or exactly {expectedCount}, one per variant.");
             }
         }
 
-        /// <summary>
-        /// Loads and sets the sprite and gunsprite material for the given bro.
-        /// </summary>
+        /// <summary>Loads and sets the sprite and gunsprite material for the given bro.</summary>
         /// <param name="bro">Bro to load sprites for</param>
         public static void SetSprites(this ICustomHero bro)
         {
@@ -332,8 +323,8 @@ namespace BroMakerLib.Extensions
         }
 
         /// <summary>
-        /// Assigns a material to the sprite's renderer and refreshes the texture size it maps pixel coordinates against.
-        /// Not for HUD special icons, whose fixed 16x16 rect it would crop.
+        /// Assigns a material to the sprite's renderer and refreshes the texture size it maps pixel coordinates against. Not for HUD special icons, whose fixed 16x16 rect it would
+        /// crop.
         /// </summary>
         public static void SetMaterialAndRefresh(this SpriteSM sprite, Material material)
         {
@@ -352,8 +343,8 @@ namespace BroMakerLib.Extensions
         }
 
         /// <summary>
-        /// Re-reads the sprite's texture size from its current material and re-pushes its UVs, skipping the UV recompute when the size is unchanged.
-        /// Call after changing the texture of a material the sprite already uses.
+        /// Re-reads the sprite's texture size from its current material and re-pushes its UVs, skipping the UV recompute when the size is unchanged. Call after changing the
+        /// texture of a material the sprite already uses.
         /// </summary>
         public static void RefreshTexture(this SpriteSM sprite)
         {
@@ -380,9 +371,7 @@ namespace BroMakerLib.Extensions
             sprite.SetBleedCompensation();
         }
 
-        /// <summary>
-        /// Called before base.Awake() for vanilla bros
-        /// </summary>
+        /// <summary>Called before base.Awake() for vanilla bros</summary>
         /// <param name="hero">The hero instance to setup</param>
         public static void StandardBeforeAwake(this ICustomHero hero)
         {
@@ -394,9 +383,7 @@ namespace BroMakerLib.Extensions
             hero.Character.SetFieldValue("originalMaxFallSpeed", hero.Character.maxFallSpeed);
         }
 
-        /// <summary>
-        /// Called after base.Awake() for vanilla bros
-        /// </summary>
+        /// <summary>Called after base.Awake() for vanilla bros</summary>
         /// <param name="hero">The hero instance to cleanup</param>
         public static void StandardAfterAwake(this ICustomHero hero)
         {
@@ -404,18 +391,14 @@ namespace BroMakerLib.Extensions
             hero.Info.AfterAwake(hero);
         }
 
-        /// <summary>
-        /// Called before base.Start() for vanilla bros
-        /// </summary>
+        /// <summary>Called before base.Start() for vanilla bros</summary>
         /// <param name="hero">The hero instance to setup</param>
         public static void StandardBeforeStart(this ICustomHero hero)
         {
             hero.Info.BeforeStart(hero);
         }
 
-        /// <summary>
-        /// Called after base.Start() for vanilla bros
-        /// </summary>
+        /// <summary>Called after base.Start() for vanilla bros</summary>
         /// <param name="hero">The hero instance to cleanup</param>
         public static void StandardAfterStart(this ICustomHero hero)
         {

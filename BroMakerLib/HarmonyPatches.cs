@@ -78,7 +78,8 @@ namespace BroMakerLib
                                 // We add 1 because the chosen bro will have already been added to the available bros
                                 LoadHero.willReplaceBro[__instance.playerNum] = Random.value <= BroSpawnManager.HardcoreBrosNotYetUnlocked.Count() /
                                     (BroSpawnManager.HardcoreBrosNotYetUnlocked.Count() + PlayerProgress.Instance.unlockedHeroes.Count() -
-                                        GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count() - GameState.Instance.currentWorldmapSave.hardcoreModeDeadBros.Count() + 1.0f);
+                                        GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count() -
+                                        GameState.Instance.currentWorldmapSave.hardcoreModeDeadBros.Count() + 1.0f);
 
                                 // If replacing hero, remove previously unlocked one from available bros
                                 if (LoadHero.willReplaceBro[__instance.playerNum])
@@ -368,7 +369,8 @@ namespace BroMakerLib
             }
 
             // If there are no available vanilla bros but still more custom bros, make sure the herotype is set to rambro so the game still tries to spawn the player in
-            if (GameModeController.IsHardcoreMode && GameState.Instance.currentWorldmapSave != null && GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count() == 0 && BroSpawnManager.HardcoreAvailableBros.Count() > 0)
+            if (GameModeController.IsHardcoreMode && GameState.Instance.currentWorldmapSave != null &&
+                GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count() == 0 && BroSpawnManager.HardcoreAvailableBros.Count() > 0)
             {
                 __result = HeroType.Rambro;
                 return false;
@@ -421,8 +423,8 @@ namespace BroMakerLib
                     return false;
                 }
 
-                if (BroSpawnManager.HardcoreBrosNotYetUnlocked.Count() +
-                    GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count() + PlayerProgress.Instance.yetToBePlayedUnlockedHeroes.Count() == 0)
+                if (BroSpawnManager.HardcoreBrosNotYetUnlocked.Count() + GameState.Instance.currentWorldmapSave.hardcoreModeAvailableBros.Count() +
+                    PlayerProgress.Instance.yetToBePlayedUnlockedHeroes.Count() == 0)
                 {
                     return false;
                 }
@@ -594,8 +596,9 @@ namespace BroMakerLib
                             float f2 = pickupable.Y + pickupable.yOffset - y;
                             if (Mathf.Abs(f2) - range < pickupable.collectionRadius && pickupable.pickupDelay <= 0f && !pickupable.collected)
                             {
-                                if (pickupable.pickupType == PickupType.FlexAirJump || pickupable.pickupType == PickupType.FlexGoldenLight || pickupable.pickupType == PickupType.FlexInvulnerability ||
-                                    pickupable.pickupType == PickupType.FlexTeleport || pickupable.pickupType == PickupType.FlexAlluring)
+                                if (pickupable.pickupType == PickupType.FlexAirJump || pickupable.pickupType == PickupType.FlexGoldenLight ||
+                                    pickupable.pickupType == PickupType.FlexInvulnerability || pickupable.pickupType == PickupType.FlexTeleport ||
+                                    pickupable.pickupType == PickupType.FlexAlluring)
                                 {
                                     pickupable.AddFlexPowerRPC(self, pickupable.pickupType);
                                 }
@@ -785,7 +788,8 @@ namespace BroMakerLib
     [HarmonyPatch(typeof(ProjectileController), "SpawnGrenadeOverNetwork")]
     internal static class ProjectileController_SpawnGrenadeOverNetwork_Patch
     {
-        public static bool Prefix(ref Grenade grenadePrefab, ref MonoBehaviour firedBy, ref float x, ref float y, ref float radius, ref float force, ref float xI, ref float yI, ref int playerNum, ref float lifeM, ref Grenade __result)
+        public static bool Prefix(ref Grenade grenadePrefab, ref MonoBehaviour firedBy, ref float x, ref float y, ref float radius, ref float force, ref float xI, ref float yI,
+            ref int playerNum, ref float lifeM, ref Grenade __result)
         {
             if (!Main.enabled || !(firedBy is ICustomHero))
             {
@@ -805,7 +809,8 @@ namespace BroMakerLib
     [HarmonyPatch(typeof(ProjectileController), "SpawnProjectileOverNetwork")]
     internal static class ProjectileController_SpawnProjectileOverNetwork_Patch
     {
-        public static bool Prefix(ref Projectile prefab, ref MonoBehaviour FiredBy, ref float x, ref float y, ref float xI, ref float yI, ref bool synced, ref int playerNum, ref bool AddTemporaryPlayerTarget, ref bool executeImmediately, ref float _zOffset, ref Projectile __result)
+        public static bool Prefix(ref Projectile prefab, ref MonoBehaviour FiredBy, ref float x, ref float y, ref float xI, ref float yI, ref bool synced, ref int playerNum,
+            ref bool AddTemporaryPlayerTarget, ref bool executeImmediately, ref float _zOffset, ref Projectile __result)
         {
             if (!Main.enabled || !(FiredBy is ICustomHero))
             {
@@ -826,7 +831,8 @@ namespace BroMakerLib
     [HarmonyPatch(typeof(ProjectileController), "SpawnGrenadeLocally")]
     internal static class ProjectileController_SpawnGrenadeLocally_Patch
     {
-        public static bool Prefix(ref Grenade grenadePrefab, ref MonoBehaviour firedBy, ref float x, ref float y, ref float radius, ref float force, ref float xI, ref float yI, ref int playerNum, ref int seed, ref Grenade __result)
+        public static bool Prefix(ref Grenade grenadePrefab, ref MonoBehaviour firedBy, ref float x, ref float y, ref float radius, ref float force, ref float xI, ref float yI,
+            ref int playerNum, ref int seed, ref Grenade __result)
         {
             if (!Main.enabled || !(grenadePrefab is ICustomProjectile))
             {
@@ -844,10 +850,12 @@ namespace BroMakerLib
     }
 
     // Ensures custom projectiles are activated after instantiation.
-    [HarmonyPatch(typeof(ProjectileController), "SpawnProjectileLocally", new Type[] { typeof(Projectile), typeof(MonoBehaviour), typeof(float), typeof(float), typeof(float), typeof(float), typeof(int) })]
+    [HarmonyPatch(typeof(ProjectileController), "SpawnProjectileLocally",
+        new Type[] { typeof(Projectile), typeof(MonoBehaviour), typeof(float), typeof(float), typeof(float), typeof(float), typeof(int) })]
     internal static class ProjectileController_SpawnProjectileLocally_Patch
     {
-        public static bool Prefix(ref Projectile projectilePrefab, ref MonoBehaviour FiredBy, ref float x, ref float y, ref float xI, ref float yI, ref int playerNum, ref Projectile __result)
+        public static bool Prefix(ref Projectile projectilePrefab, ref MonoBehaviour FiredBy, ref float x, ref float y, ref float xI, ref float yI, ref int playerNum,
+            ref Projectile __result)
         {
             if (!Main.enabled || !(projectilePrefab is ICustomProjectile))
             {
@@ -862,10 +870,12 @@ namespace BroMakerLib
     }
 
     // Ensures custom projectiles are activated after instantiation.
-    [HarmonyPatch(typeof(ProjectileController), "SpawnProjectileLocally", new Type[] { typeof(Projectile), typeof(MonoBehaviour), typeof(float), typeof(float), typeof(float), typeof(float), typeof(int), typeof(bool), typeof(float) })]
+    [HarmonyPatch(typeof(ProjectileController), "SpawnProjectileLocally",
+        new Type[] { typeof(Projectile), typeof(MonoBehaviour), typeof(float), typeof(float), typeof(float), typeof(float), typeof(int), typeof(bool), typeof(float) })]
     internal static class ProjectileController_SpawnProjectileLocally2_Patch
     {
-        public static bool Prefix(ref Projectile prefab, ref MonoBehaviour FiredBy, ref float x, ref float y, ref float xI, ref float yI, ref int playerNum, ref bool AddTemporaryPlayerTarget, ref float _zOffset, ref Projectile __result)
+        public static bool Prefix(ref Projectile prefab, ref MonoBehaviour FiredBy, ref float x, ref float y, ref float xI, ref float yI, ref int playerNum,
+            ref bool AddTemporaryPlayerTarget, ref float _zOffset, ref Projectile __result)
         {
             if (!Main.enabled || !(prefab is ICustomProjectile))
             {
@@ -880,10 +890,15 @@ namespace BroMakerLib
     }
 
     // Ensures custom projectiles are activated after instantiation.
-    [HarmonyPatch(typeof(ProjectileController), "SpawnProjectileLocally", new Type[] { typeof(Projectile), typeof(MonoBehaviour), typeof(float), typeof(float), typeof(float), typeof(float), typeof(bool), typeof(int), typeof(bool), typeof(bool), typeof(float) })]
+    [HarmonyPatch(typeof(ProjectileController), "SpawnProjectileLocally", new Type[]
+    {
+        typeof(Projectile), typeof(MonoBehaviour), typeof(float), typeof(float), typeof(float), typeof(float), typeof(bool), typeof(int), typeof(bool), typeof(bool),
+        typeof(float)
+    })]
     internal static class ProjectileController_SpawnProjectileLocally3_Patch
     {
-        public static bool Prefix(ref Projectile prefab, ref MonoBehaviour FiredBy, ref float x, ref float y, ref float xI, ref float yI, ref bool synced, ref int playerNum, ref bool AddTemporaryPlayerTarget, ref bool executeImmediately, ref float _zOffset, ref Projectile __result)
+        public static bool Prefix(ref Projectile prefab, ref MonoBehaviour FiredBy, ref float x, ref float y, ref float xI, ref float yI, ref bool synced, ref int playerNum,
+            ref bool AddTemporaryPlayerTarget, ref bool executeImmediately, ref float _zOffset, ref Projectile __result)
         {
             if (!Main.enabled || !(prefab is ICustomProjectile))
             {
@@ -908,7 +923,8 @@ namespace BroMakerLib
                 return true;
             }
 
-            if (__instance.pockettedSpecialAmmo.Count > 0 && __instance.pockettedSpecialAmmo[__instance.pockettedSpecialAmmo.Count - 1] == PockettedSpecialAmmoType.None && CustomPockettedSpecial.GetPockettedSpecials(__instance.playerNum).Count > 0)
+            if (__instance.pockettedSpecialAmmo.Count > 0 && __instance.pockettedSpecialAmmo[__instance.pockettedSpecialAmmo.Count - 1] == PockettedSpecialAmmoType.None &&
+                CustomPockettedSpecial.GetPockettedSpecials(__instance.playerNum).Count > 0)
             {
                 CustomPockettedSpecial.GetPockettedSpecials(__instance.playerNum).Last().SetSpecialMaterials(__instance);
                 __instance.player.hud.SetGrenades(1);
@@ -929,7 +945,8 @@ namespace BroMakerLib
                 return;
             }
 
-            if (__instance.pockettedSpecialAmmo.Count > 0 && __instance.pockettedSpecialAmmo[__instance.pockettedSpecialAmmo.Count - 1] == PockettedSpecialAmmoType.None && CustomPockettedSpecial.GetPockettedSpecials(__instance.playerNum).Count > 0)
+            if (__instance.pockettedSpecialAmmo.Count > 0 && __instance.pockettedSpecialAmmo[__instance.pockettedSpecialAmmo.Count - 1] == PockettedSpecialAmmoType.None &&
+                CustomPockettedSpecial.GetPockettedSpecials(__instance.playerNum).Count > 0)
             {
                 // If the pocketted special uses the throwing animation then we need to set the usingPockettedSpecialType to something other than None, which defaults to the flex animation
                 if (CustomPockettedSpecial.GetPockettedSpecials(__instance.playerNum).Last().UseThrowingAnimation())
@@ -950,7 +967,8 @@ namespace BroMakerLib
                 return true;
             }
 
-            if (__instance.pockettedSpecialAmmo.Count > 0 && __instance.pockettedSpecialAmmo[__instance.pockettedSpecialAmmo.Count - 1] == PockettedSpecialAmmoType.None && CustomPockettedSpecial.GetPockettedSpecials(__instance.playerNum).Count > 0)
+            if (__instance.pockettedSpecialAmmo.Count > 0 && __instance.pockettedSpecialAmmo[__instance.pockettedSpecialAmmo.Count - 1] == PockettedSpecialAmmoType.None &&
+                CustomPockettedSpecial.GetPockettedSpecials(__instance.playerNum).Count > 0)
             {
                 ___pressSpecialFacingDirection = 0;
                 CustomPockettedSpecial special = CustomPockettedSpecial.GetPockettedSpecials(__instance.playerNum).Last();

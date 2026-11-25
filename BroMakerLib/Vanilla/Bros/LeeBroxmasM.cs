@@ -468,7 +468,8 @@ namespace BroMakerLib.Vanilla.Bros
             }
         }
 
-        protected override void CopyInput(TestVanDammeAnim zombie, ref float zombieDelay, ref bool up, ref bool down, ref bool left, ref bool right, ref bool fire, ref bool buttonJump, ref bool special, ref bool highFive)
+        protected override void CopyInput(TestVanDammeAnim zombie, ref float zombieDelay, ref bool up, ref bool down, ref bool left, ref bool right, ref bool fire,
+            ref bool buttonJump, ref bool special, ref bool highFive)
         {
             base.CopyInput(zombie, ref zombieDelay, ref up, ref down, ref left, ref right, ref fire, ref buttonJump, ref special, ref highFive);
             foreach (AbilityBase a in abilities)
@@ -1275,7 +1276,10 @@ namespace BroMakerLib.Vanilla.Bros
             if (meleeAbility != null && meleeButtonPressed)
             {
                 RaycastHit hitInfo;
-                bool onAnimal = (Physics.Raycast(new Vector3(X, Y + 5f, 0f), Vector3.down, out hitInfo, 16f, platformLayer) || Physics.Raycast(new Vector3(X + 4f, Y + 5f, 0f), Vector3.down, out hitInfo, 16f, platformLayer) || Physics.Raycast(new Vector3(X - 4f, Y + 5f, 0f), Vector3.down, out hitInfo, 16f, platformLayer)) && hitInfo.collider.GetComponentInParent<Animal>() != null;
+                bool onAnimal = (Physics.Raycast(new Vector3(X, Y + 5f, 0f), Vector3.down, out hitInfo, 16f, platformLayer) ||
+                                 Physics.Raycast(new Vector3(X + 4f, Y + 5f, 0f), Vector3.down, out hitInfo, 16f, platformLayer) ||
+                                 Physics.Raycast(new Vector3(X - 4f, Y + 5f, 0f), Vector3.down, out hitInfo, 16f, platformLayer)) &&
+                                hitInfo.collider.GetComponentInParent<Animal>() != null;
                 if (meleeAbility.HandlesMeleeType(onAnimal ? MeleeType.Knife : meleeType, true))
                 {
                     // The owner's own StartMelee is skipped for a melee the ability takes, so BroBase.StartMelee's work is done here.
@@ -1826,7 +1830,9 @@ namespace BroMakerLib.Vanilla.Bros
                 CoverInAcid();
             }
 
-            if (impaledByTransform == null && IsHero && ((yI > 50f && (canTouchRightWalls || canTouchLeftWalls || WallClimbing) && (Time.time - lastJumpTime > 0.2f || Y > groundHeight + 17f)) || yI < -120f) && IsSurroundedByBarbedWire())
+            if (impaledByTransform == null && IsHero &&
+                ((yI > 50f && (canTouchRightWalls || canTouchLeftWalls || WallClimbing) && (Time.time - lastJumpTime > 0.2f || Y > groundHeight + 17f)) || yI < -120f) &&
+                IsSurroundedByBarbedWire())
             {
                 EffectsController.CreateBloodParticles(bloodColor, X, Y + 10f, -5f, 1, 4f, 4f, 50f, xI * 0.8f, 70f);
                 if (yI < 0f)
@@ -1858,14 +1864,16 @@ namespace BroMakerLib.Vanilla.Bros
                         if (component.spikes.EvaluateImpalent(this))
                         {
                             float num2 = playerNum >= 0 ? component.spikes.spikeTrapHarmlessHeight : component.spikes.spikeTrapHarmlessHeight * 0.5f;
-                            if (yI < -150f && raycastHit.point.y > groundHeight - 1f && raycastHit.distance >= num2 && raycastHit.distance < component.spikes.spikeTrapHeight && Y > component.Y + component.spikes.spikeTrapHeight)
+                            if (yI < -150f && raycastHit.point.y > groundHeight - 1f && raycastHit.distance >= num2 && raycastHit.distance < component.spikes.spikeTrapHeight &&
+                                Y > component.Y + component.spikes.spikeTrapHeight)
                             {
                                 Y = Mathf.Clamp(Y, groundHeight + 2f, groundHeight + 3f);
                                 yIT = 0f;
                                 component.spikes.ImpaleUnit(this);
                             }
                         }
-                        else if (component.spikes.IsBarbedWire(this) && component.spikes.collumn == component.collumn && Y < raycastHit.point.y + 12f && Mathf.Abs(yI) < 50f && Mathf.Abs(xI + xIBlast) > GetSpeed - 2f && (int)Mathf.Sign(xI + xIBlast) == (!left ? 0 : -1) + (!right ? 0 : 1))
+                        else if (component.spikes.IsBarbedWire(this) && component.spikes.collumn == component.collumn && Y < raycastHit.point.y + 12f && Mathf.Abs(yI) < 50f &&
+                                 Mathf.Abs(xI + xIBlast) > GetSpeed - 2f && (int)Mathf.Sign(xI + xIBlast) == (!left ? 0 : -1) + (!right ? 0 : 1))
                         {
                             EffectsController.CreateBloodParticles(bloodColor, X, Y + 10f, -5f, 1, 4f, 4f, 50f, xI * 0.8f, 70f);
                             xIBlast -= xI * 0.4f;
@@ -1893,14 +1901,16 @@ namespace BroMakerLib.Vanilla.Bros
                         if (component2.spikes.EvaluateImpalent(this))
                         {
                             float num3 = playerNum >= 0 ? component2.spikes.spikeTrapHarmlessHeight : component2.spikes.spikeTrapHarmlessHeight * 0.5f;
-                            if (yI < -150f && raycastHit2.point.y > groundHeight - 1f && raycastHit2.distance >= num3 && raycastHit2.distance < component2.spikes.spikeTrapHeight && Y > component2.Y + component2.spikes.spikeTrapHeight)
+                            if (yI < -150f && raycastHit2.point.y > groundHeight - 1f && raycastHit2.distance >= num3 && raycastHit2.distance < component2.spikes.spikeTrapHeight &&
+                                Y > component2.Y + component2.spikes.spikeTrapHeight)
                             {
                                 Y = Mathf.Clamp(Y, groundHeight + 2f, groundHeight + 3f);
                                 yIT = 0f;
                                 component2.spikes.ImpaleUnit(this);
                             }
                         }
-                        else if (component2.spikes.IsBarbedWire(this) && component2.spikes.collumn == component2.collumn && Y < raycastHit2.point.y + 12f && Mathf.Abs(yI) < 50f && Mathf.Abs(xI + xIBlast) > GetSpeed - 2f && (int)Mathf.Sign(xI + xIBlast) == (!left ? 0 : -1) + (!right ? 0 : 1))
+                        else if (component2.spikes.IsBarbedWire(this) && component2.spikes.collumn == component2.collumn && Y < raycastHit2.point.y + 12f && Mathf.Abs(yI) < 50f &&
+                                 Mathf.Abs(xI + xIBlast) > GetSpeed - 2f && (int)Mathf.Sign(xI + xIBlast) == (!left ? 0 : -1) + (!right ? 0 : 1))
                         {
                             EffectsController.CreateBloodParticles(bloodColor, X, Y + 10f, -5f, 1, 4f, 4f, 50f, xI * 0.8f, 70f);
                             xIBlast -= xI * 0.4f;
@@ -1928,14 +1938,16 @@ namespace BroMakerLib.Vanilla.Bros
                         if (component3.spikes.EvaluateImpalent(this))
                         {
                             float num4 = playerNum >= 0 ? component3.spikes.spikeTrapHarmlessHeight : component3.spikes.spikeTrapHarmlessHeight * 0.5f;
-                            if (yI < -150f && raycastHit3.point.y > groundHeight - 1f && raycastHit3.distance >= num4 && raycastHit3.distance < component3.spikes.spikeTrapHeight && Y > component3.Y + component3.spikes.spikeTrapHeight)
+                            if (yI < -150f && raycastHit3.point.y > groundHeight - 1f && raycastHit3.distance >= num4 && raycastHit3.distance < component3.spikes.spikeTrapHeight &&
+                                Y > component3.Y + component3.spikes.spikeTrapHeight)
                             {
                                 Y = Mathf.Clamp(Y, groundHeight + 2f, groundHeight + 3f);
                                 yIT = 0f;
                                 component3.spikes.ImpaleUnit(this);
                             }
                         }
-                        else if (component3.spikes.IsBarbedWire(this) && component3.spikes.collumn == component3.collumn && Y < raycastHit3.point.y + 12f && Mathf.Abs(yI) < 50f && Mathf.Abs(xI + xIBlast) > GetSpeed - 2f && (int)Mathf.Sign(xI + xIBlast) == (!left ? 0 : -1) + (!right ? 0 : 1))
+                        else if (component3.spikes.IsBarbedWire(this) && component3.spikes.collumn == component3.collumn && Y < raycastHit3.point.y + 12f && Mathf.Abs(yI) < 50f &&
+                                 Mathf.Abs(xI + xIBlast) > GetSpeed - 2f && (int)Mathf.Sign(xI + xIBlast) == (!left ? 0 : -1) + (!right ? 0 : 1))
                         {
                             EffectsController.CreateBloodParticles(bloodColor, X, Y + 10f, -5f, 1, 4f, 4f, 50f, xI * 0.8f, 70f);
                             xIBlast -= xI * 0.4f;

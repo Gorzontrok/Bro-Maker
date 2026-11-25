@@ -40,7 +40,10 @@ namespace BroMakerLib.Loaders
         public static bool broBeingRescued = false;
         public static bool playCutscene = false;
         public static bool tryReplaceAvatar = false;
-        public static Player.SpawnType[] previousSpawnInfo = new Player.SpawnType[] { Player.SpawnType.Unknown, Player.SpawnType.Unknown, Player.SpawnType.Unknown, Player.SpawnType.Unknown };
+
+        public static Player.SpawnType[] previousSpawnInfo = new Player.SpawnType[]
+            { Player.SpawnType.Unknown, Player.SpawnType.Unknown, Player.SpawnType.Unknown, Player.SpawnType.Unknown };
+
         public static bool[] wasFirstDeployment = new bool[] { false, false, false, false };
 
         private static readonly Dictionary<DeathObject, CustomBroDeath> _customBroDeaths = new Dictionary<DeathObject, CustomBroDeath>();
@@ -443,7 +446,8 @@ namespace BroMakerLib.Loaders
             {
                 return attributes[0].As<HeroPresetAttribute>().baseType;
             }
-            throw new NotImplementedException($"Type {type.FullName} is not registered as a bro preset, it must include the [HeroPreset] attribute to be used as a CharacterPreset.");
+            throw new NotImplementedException(
+                $"Type {type.FullName} is not registered as a bro preset, it must include the [HeroPreset] attribute to be used as a CharacterPreset.");
         }
 
         private static GameObject CreateOriginal(HeroType heroType, Type type)

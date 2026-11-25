@@ -126,8 +126,7 @@ namespace BroMakerLib.Infos
 
             // Prevent multiple calls from overwriting data
             // Check if we have more than the default empty list, or if the default list has content
-            if (hero.Info.SpecialMaterials.Count > 1 ||
-                (hero.Info.SpecialMaterials.Count == 1 && hero.Info.SpecialMaterials[0].Count > 0))
+            if (hero.Info.SpecialMaterials.Count > 1 || (hero.Info.SpecialMaterials.Count == 1 && hero.Info.SpecialMaterials[0].Count > 0))
             {
                 return;
             }
@@ -194,7 +193,9 @@ namespace BroMakerLib.Infos
             }
             else
             {
-                BMLogger.Warning($"SpecialIcons can't be {BroMakerUtilities.DescribeJsonValue(value.GetType()) ?? "that kind of value"}. It must be a file name, a list of file names, or a list of lists of file names", bro: hero.Info?.name);
+                BMLogger.Warning(
+                    $"SpecialIcons can't be {BroMakerUtilities.DescribeJsonValue(value.GetType()) ?? "that kind of value"}. It must be a file name, a list of file names, or a list of lists of file names",
+                    bro: hero.Info?.name);
             }
         }
 
@@ -213,8 +214,7 @@ namespace BroMakerLib.Infos
                 if (value is JArray array)
                 {
                     // Prevent multiple calls from overwriting data
-                    if (hero.Info.SpecialMaterialOffset.Count > 1 ||
-                        (hero.Info.SpecialMaterialOffset.Count == 1 && hero.Info.SpecialMaterialOffset[0] != Vector2.zero))
+                    if (hero.Info.SpecialMaterialOffset.Count > 1 || (hero.Info.SpecialMaterialOffset.Count == 1 && hero.Info.SpecialMaterialOffset[0] != Vector2.zero))
                     {
                         return;
                     }
@@ -278,8 +278,7 @@ namespace BroMakerLib.Infos
                 if (value is JArray array)
                 {
                     // Prevent multiple calls from overwriting data
-                    if (hero.Info.SpecialMaterialSpacing.Count > 1 ||
-                        (hero.Info.SpecialMaterialSpacing.Count == 1 && hero.Info.SpecialMaterialSpacing[0] != 0f))
+                    if (hero.Info.SpecialMaterialSpacing.Count > 1 || (hero.Info.SpecialMaterialSpacing.Count == 1 && hero.Info.SpecialMaterialSpacing[0] != 0f))
                     {
                         return;
                     }
@@ -326,8 +325,7 @@ namespace BroMakerLib.Infos
             if (value is JArray array)
             {
                 // Prevent multiple calls from overwriting data
-                if (hero.Info.FirstAvatar.Count > 1 ||
-                    (hero.Info.FirstAvatar.Count == 1 && hero.Info.FirstAvatar[0] != null))
+                if (hero.Info.FirstAvatar.Count > 1 || (hero.Info.FirstAvatar.Count == 1 && hero.Info.FirstAvatar[0] != null))
                 {
                     return;
                 }
@@ -342,8 +340,7 @@ namespace BroMakerLib.Infos
             else if (value is string[] stringArray)
             {
                 // Prevent multiple calls from overwriting data
-                if (hero.Info.FirstAvatar.Count > 1 ||
-                    (hero.Info.FirstAvatar.Count == 1 && hero.Info.FirstAvatar[0] != null))
+                if (hero.Info.FirstAvatar.Count > 1 || (hero.Info.FirstAvatar.Count == 1 && hero.Info.FirstAvatar[0] != null))
                 {
                     return;
                 }
@@ -387,8 +384,7 @@ namespace BroMakerLib.Infos
                 if (value is JArray array)
                 {
                     // Prevent multiple calls from overwriting data
-                    if (hero.Info.GunSpriteOffset.Count > 1 ||
-                        (hero.Info.GunSpriteOffset.Count == 1 && hero.Info.GunSpriteOffset[0] != Vector2.zero))
+                    if (hero.Info.GunSpriteOffset.Count > 1 || (hero.Info.GunSpriteOffset.Count == 1 && hero.Info.GunSpriteOffset[0] != Vector2.zero))
                     {
                         return;
                     }

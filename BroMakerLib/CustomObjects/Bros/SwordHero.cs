@@ -73,7 +73,8 @@ namespace BroMakerLib.CustomObjects.Bros
 
         protected virtual void MakeEffects(float x, float y)
         {
-            EffectsController.CreateShrapnel(shrapnelSpark, raycastHit.point.x + (raycastHit.normal.x * 3f), raycastHit.point.y + (raycastHit.normal.y * 3f), 4f, 30f, 3f, raycastHit.normal.x * 60f, raycastHit.normal.y * 30f);
+            EffectsController.CreateShrapnel(shrapnelSpark, raycastHit.point.x + (raycastHit.normal.x * 3f), raycastHit.point.y + (raycastHit.normal.y * 3f), 4f, 30f, 3f,
+                raycastHit.normal.x * 60f, raycastHit.normal.y * 30f);
             EffectsController.CreateEffect(hitPuff, raycastHit.point.x + (raycastHit.normal.x * 3f), raycastHit.point.y + (raycastHit.normal.y * 3f));
         }
 
@@ -128,7 +129,8 @@ namespace BroMakerLib.CustomObjects.Bros
 
         protected virtual void SwingSword(bool ground)
         {
-            if (Map.HitUnits(this, playerNum, enemySwordDamage, DamageType.Blade, ground ? 5f : 15f, X, Y, transform.localScale.x * 420f, 360f, true, true, true, alreadyHit, false, false))
+            if (Map.HitUnits(this, playerNum, enemySwordDamage, DamageType.Blade, ground ? 5f : 15f, X, Y, transform.localScale.x * 420f, 360f, true, true, true, alreadyHit, false,
+                    false))
             {
                 if (!hasHitWithSlice)
                 {
@@ -144,7 +146,8 @@ namespace BroMakerLib.CustomObjects.Bros
 
         protected virtual bool TryHitWalls(float x, float y, float xSpeed, float ySpeed, bool alsoHitUnits = true)
         {
-            if (Physics.Raycast(GetSwingAtGroundPosition(x, y), new Vector3(transform.localScale.x, 0f, 0f), out raycastHit, 19f, groundLayer) || Physics.Raycast(new Vector3(x - (Mathf.Sign(transform.localScale.x) * 12f), y + 10.5f, 0f), new Vector3(transform.localScale.x, 0f, 0f), out raycastHit, 19f, groundLayer))
+            if (Physics.Raycast(GetSwingAtGroundPosition(x, y), new Vector3(transform.localScale.x, 0f, 0f), out raycastHit, 19f, groundLayer) || Physics.Raycast(
+                    new Vector3(x - (Mathf.Sign(transform.localScale.x) * 12f), y + 10.5f, 0f), new Vector3(transform.localScale.x, 0f, 0f), out raycastHit, 19f, groundLayer))
             {
                 DealDamageToGround(x, y, raycastHit.point, raycastHit.collider);
                 if (alsoHitUnits)

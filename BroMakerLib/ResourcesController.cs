@@ -13,19 +13,13 @@ namespace BroMakerLib
 {
     public static class ResourcesController
     {
-        /// <summary>
-        /// Particles/Alpha Blended
-        /// </summary>
+        /// <summary>Particles/Alpha Blended</summary>
         public static Shader Particle_AlphaBlend => Shader.Find("Particles/Alpha Blended");
 
-        /// <summary>
-        /// Unlit/Depth Cutout With ColouredImage
-        /// </summary>
+        /// <summary>Unlit/Depth Cutout With ColouredImage</summary>
         public static Shader Unlit_DepthCutoutColouredImage => Shader.Find("Unlit/Depth Cutout With ColouredImage");
 
-        /// <summary>
-        /// Particle/Additive
-        /// </summary>
+        /// <summary>Particle/Additive</summary>
         public static Shader Particle => Shader.Find("Particle/Additive");
 
         public static string resourceFolder = "BroMaker.Assets.";
@@ -35,9 +29,8 @@ namespace BroMakerLib
         private static readonly Dictionary<string, AudioClip> _audioClips = new Dictionary<string, AudioClip>();
 
         /// <summary>
-        /// Creates a Material using the shader Unlit_DepthCutoutColouredImage.
-        /// Loads Material from cache if created previously.
-        /// A failure is shown in BroMaker's Issues panel and then thrown: `FileNotFoundException` when the file doesn't exist, `IOException` when it or the named game asset can't be loaded or decoded.
+        /// Creates a Material using the shader Unlit_DepthCutoutColouredImage. Loads Material from cache if created previously. A failure is shown in BroMaker's Issues panel and
+        /// then thrown: `FileNotFoundException` when the file doesn't exist, `IOException` when it or the named game asset can't be loaded or decoded.
         /// </summary>
         /// <param name="path">Path to the directory of an image, or empty for an asset</param>
         /// <param name="fileName">Name of an image or asset file</param>
@@ -53,9 +46,8 @@ namespace BroMakerLib
         }
 
         /// <summary>
-        /// Creates a Material using the shader Unlit_DepthCutoutColouredImage.
-        /// Loads Material from cache if created previously.
-        /// A failure is shown in BroMaker's Issues panel and then thrown: `FileNotFoundException` when the file doesn't exist, `IOException` when it or the named game asset can't be loaded or decoded.
+        /// Creates a Material using the shader Unlit_DepthCutoutColouredImage. Loads Material from cache if created previously. A failure is shown in BroMaker's Issues panel and
+        /// then thrown: `FileNotFoundException` when the file doesn't exist, `IOException` when it or the named game asset can't be loaded or decoded.
         /// </summary>
         /// <param name="filePath">Path to an image or asset file</param>
         /// <returns></returns>
@@ -100,9 +92,8 @@ namespace BroMakerLib
         }
 
         /// <summary>
-        /// Creates a Material from an array of bytes using the shader Unlit_DepthCutoutColouredImage.
-        /// The Material is not cached, use GetMaterial if caching is desired.
-        /// A failure is shown in BroMaker's Issues panel and then thrown: `ArgumentException` when the data is empty, `InvalidDataException` when it can't be decoded as an image.
+        /// Creates a Material from an array of bytes using the shader Unlit_DepthCutoutColouredImage. The Material is not cached, use GetMaterial if caching is desired. A failure
+        /// is shown in BroMaker's Issues panel and then thrown: `ArgumentException` when the data is empty, `InvalidDataException` when it can't be decoded as an image.
         /// </summary>
         /// <param name="imageBytes">Byte array to load image from</param>
         /// <returns></returns>
@@ -118,9 +109,8 @@ namespace BroMakerLib
         }
 
         /// <summary>
-        /// Creates a Material using the specified image and shader.
-        /// The Material is not cached, use GetMaterial if caching is desired.
-        /// A failure is shown in BroMaker's Issues panel and then thrown: `FileNotFoundException` when the file doesn't exist, `IOException` when it can't be read or decoded.
+        /// Creates a Material using the specified image and shader. The Material is not cached, use GetMaterial if caching is desired. A failure is shown in BroMaker's Issues
+        /// panel and then thrown: `FileNotFoundException` when the file doesn't exist, `IOException` when it can't be read or decoded.
         /// </summary>
         /// <param name="filePath">Path to an image file</param>
         /// <param name="shader">Shader to use</param>
@@ -131,9 +121,8 @@ namespace BroMakerLib
         }
 
         /// <summary>
-        /// Creates a Material using the specified image and Material as a source.
-        /// The Material is not cached, use GetMaterial if caching is desired.
-        /// A failure is shown in BroMaker's Issues panel and then thrown: `FileNotFoundException` when the file doesn't exist, `IOException` when it can't be read or decoded.
+        /// Creates a Material using the specified image and Material as a source. The Material is not cached, use GetMaterial if caching is desired. A failure is shown in
+        /// BroMaker's Issues panel and then thrown: `FileNotFoundException` when the file doesn't exist, `IOException` when it can't be read or decoded.
         /// </summary>
         /// <param name="filePath">Path to an image file</param>
         /// <param name="source">Source Material to copy</param>
@@ -152,9 +141,8 @@ namespace BroMakerLib
         }
 
         /// <summary>
-        /// Creates a Texture2D from an image or asset file.
-        /// Loads Texture2D from cache if created previously.
-        /// A failure is shown in BroMaker's Issues panel and then thrown: `FileNotFoundException` when the file doesn't exist, `IOException` when it or the named game asset can't be loaded or decoded.
+        /// Creates a Texture2D from an image or asset file. Loads Texture2D from cache if created previously. A failure is shown in BroMaker's Issues panel and then thrown:
+        /// `FileNotFoundException` when the file doesn't exist, `IOException` when it or the named game asset can't be loaded or decoded.
         /// </summary>
         /// <param name="path">Path to the directory of an image, or empty for an asset</param>
         /// <param name="fileName">Name of an image or asset file</param>
@@ -165,9 +153,8 @@ namespace BroMakerLib
         }
 
         /// <summary>
-        /// Creates a Texture2D from an image or asset file.
-        /// Loads Texture2D from cache if created previously.
-        /// A failure is shown in BroMaker's Issues panel and then thrown: `FileNotFoundException` when the file doesn't exist, `IOException` when it or the named game asset can't be loaded or decoded.
+        /// Creates a Texture2D from an image or asset file. Loads Texture2D from cache if created previously. A failure is shown in BroMaker's Issues panel and then thrown:
+        /// `FileNotFoundException` when the file doesn't exist, `IOException` when it or the named game asset can't be loaded or decoded.
         /// </summary>
         /// <param name="filePath">Path to an image or asset file</param>
         /// <returns></returns>
@@ -217,9 +204,8 @@ namespace BroMakerLib
         }
 
         /// <summary>
-        /// Creates a Texture2D from an image file.
-        /// The Texture2D is not cached, use GetTexture if caching is desired.
-        /// A failure is shown in BroMaker's Issues panel and then thrown: `FileNotFoundException` when the file doesn't exist, `IOException` when it can't be read or decoded.
+        /// Creates a Texture2D from an image file. The Texture2D is not cached, use GetTexture if caching is desired. A failure is shown in BroMaker's Issues panel and then
+        /// thrown: `FileNotFoundException` when the file doesn't exist, `IOException` when it can't be read or decoded.
         /// </summary>
         /// <param name="filePath">Path to an image file</param>
         /// <returns></returns>
@@ -229,9 +215,8 @@ namespace BroMakerLib
         }
 
         /// <summary>
-        /// Creates a Texture2D from an image file.
-        /// The Texture2D is not cached, use GetTexture if caching is desired.
-        /// A failure is shown in BroMaker's Issues panel and then thrown: `FileNotFoundException` when the file doesn't exist, `IOException` when it can't be read or decoded.
+        /// Creates a Texture2D from an image file. The Texture2D is not cached, use GetTexture if caching is desired. A failure is shown in BroMaker's Issues panel and then
+        /// thrown: `FileNotFoundException` when the file doesn't exist, `IOException` when it can't be read or decoded.
         /// </summary>
         /// <param name="filePath">Path to an image file</param>
         /// <param name="readable">Whether the texture's pixels can be read back with GetPixels, which makes loading slower</param>
@@ -258,9 +243,8 @@ namespace BroMakerLib
         }
 
         /// <summary>
-        /// Creates a Texture2D from a byte array.
-        /// The Texture2D is not cached, use GetTexture if caching is desired.
-        /// A failure is shown in BroMaker's Issues panel and then thrown: `ArgumentException` when the data is empty, `InvalidDataException` when it can't be decoded as an image.
+        /// Creates a Texture2D from a byte array. The Texture2D is not cached, use GetTexture if caching is desired. A failure is shown in BroMaker's Issues panel and then thrown:
+        /// `ArgumentException` when the data is empty, `InvalidDataException` when it can't be decoded as an image.
         /// </summary>
         /// <param name="imageBytes">Byte array to load image from</param>
         /// <returns></returns>
@@ -270,9 +254,8 @@ namespace BroMakerLib
         }
 
         /// <summary>
-        /// Creates a Texture2D from a byte array.
-        /// The Texture2D is not cached, use GetTexture if caching is desired.
-        /// A failure is shown in BroMaker's Issues panel and then thrown: `ArgumentException` when the data is empty, `InvalidDataException` when it can't be decoded as an image.
+        /// Creates a Texture2D from a byte array. The Texture2D is not cached, use GetTexture if caching is desired. A failure is shown in BroMaker's Issues panel and then thrown:
+        /// `ArgumentException` when the data is empty, `InvalidDataException` when it can't be decoded as an image.
         /// </summary>
         /// <param name="imageBytes">Byte array to load image from</param>
         /// <param name="readable">Whether the texture's pixels can be read back with GetPixels, which makes loading slower</param>
@@ -320,10 +303,8 @@ namespace BroMakerLib
         }
 
         /// <summary>
-        /// Creates an AudioClip from an audio file.
-        /// Loads AudioClip from cache if created previously.
-        /// IMPORTANT: MP3 files will not load.
-        /// A failure is shown in BroMaker's Issues panel and then thrown: `FileNotFoundException` when the file doesn't exist, `IOException` when it or the named game asset can't be loaded or decoded.
+        /// Creates an AudioClip from an audio file. Loads AudioClip from cache if created previously. IMPORTANT: MP3 files will not load. A failure is shown in BroMaker's Issues
+        /// panel and then thrown: `FileNotFoundException` when the file doesn't exist, `IOException` when it or the named game asset can't be loaded or decoded.
         /// </summary>
         /// <param name="path">Path to the directory that contains the audio file</param>
         /// <param name="fileName">Filename of an audio file, including the extension</param>
@@ -340,10 +321,8 @@ namespace BroMakerLib
         }
 
         /// <summary>
-        /// Creates an AudioClip from an audio file.
-        /// Loads AudioClip from cache if created previously.
-        /// IMPORTANT: MP3 files will not load.
-        /// A failure is shown in BroMaker's Issues panel and then thrown: `FileNotFoundException` when the file doesn't exist, `IOException` when it or the named game asset can't be loaded or decoded.
+        /// Creates an AudioClip from an audio file. Loads AudioClip from cache if created previously. IMPORTANT: MP3 files will not load. A failure is shown in BroMaker's Issues
+        /// panel and then thrown: `FileNotFoundException` when the file doesn't exist, `IOException` when it or the named game asset can't be loaded or decoded.
         /// </summary>
         /// <param name="filePath">Path to an audio file</param>
         /// <returns></returns>
@@ -388,9 +367,8 @@ namespace BroMakerLib
         }
 
         /// <summary>
-        /// Loads an array of audio clips that follow a standard numbering pattern,
-        /// such as "file0.wav", "file1.wav", "file2.wav"
-        /// The first clip that fails to load is shown in BroMaker's Issues panel and its exception thrown, as GetAudioClip does.
+        /// Loads an array of audio clips that follow a standard numbering pattern, such as "file0.wav", "file1.wav", "file2.wav". The first clip that fails to load is shown in
+        /// BroMaker's Issues panel and its exception thrown, as GetAudioClip does.
         /// </summary>
         /// <param name="path">Path to the directory that contains the audio files</param>
         /// <param name="fileNameWithouExtension">Filename of the audio files without the extension</param>
@@ -410,10 +388,8 @@ namespace BroMakerLib
         }
 
         /// <summary>
-        /// Creates an AudioClip from an audio file.
-        /// The AudioClip is not cached, use GetAudioClip is caching is desired.
-        /// IMPORTANT: MP3 files will not load.
-        /// A failure is shown in BroMaker's Issues panel and then thrown: `FileNotFoundException` when the file doesn't exist, `IOException` when it can't be loaded or decoded.
+        /// Creates an AudioClip from an audio file. The AudioClip is not cached, use GetAudioClip is caching is desired. IMPORTANT: MP3 files will not load. A failure is shown in
+        /// BroMaker's Issues panel and then thrown: `FileNotFoundException` when the file doesn't exist, `IOException` when it can't be loaded or decoded.
         /// </summary>
         /// <param name="path">Path to the directory of an audio file</param>
         /// <param name="fileName">Name of an audio file</param>
@@ -425,10 +401,8 @@ namespace BroMakerLib
         }
 
         /// <summary>
-        /// Creates an AudioClip from an audio file.
-        /// The AudioClip is not cached, use GetAudioClip is caching is desired.
-        /// IMPORTANT: MP3 files will not load.
-        /// A failure is shown in BroMaker's Issues panel and then thrown: `FileNotFoundException` when the file doesn't exist, `IOException` when it can't be loaded or decoded.
+        /// Creates an AudioClip from an audio file. The AudioClip is not cached, use GetAudioClip is caching is desired. IMPORTANT: MP3 files will not load. A failure is shown in
+        /// BroMaker's Issues panel and then thrown: `FileNotFoundException` when the file doesn't exist, `IOException` when it can't be loaded or decoded.
         /// </summary>
         /// <param name="filePath">Path to an audio file</param>
         /// <returns></returns>
@@ -476,9 +450,7 @@ namespace BroMakerLib
             }
         }
 
-        /// <summary>
-        /// Creates a byte array from a resource embedded in BroMakerLib.dll.
-        /// </summary>
+        /// <summary>Creates a byte array from a resource embedded in BroMakerLib.dll.</summary>
         /// <param name="filename">Name of a resource embedded in BroMakerLib.dll</param>
         /// <returns></returns>
         public static byte[] ExtractResource(string filename)
@@ -505,9 +477,7 @@ namespace BroMakerLib
             }
         }
 
-        /// <summary>
-        /// Loads an object from an asset file.
-        /// </summary>
+        /// <summary>Loads an object from an asset file.</summary>
         /// <typeparam name="T">Type of the object</typeparam>
         /// <param name="name">Name of the asset file</param>
         /// <returns></returns>

@@ -12,7 +12,10 @@ namespace BroMakerLib.Abilities
         /// <summary>Vanilla bro to source special sounds from.</summary>
         protected virtual HeroType SourceBroType => HeroType.Rambro;
 
-        /// <summary>Animation frame on which `UseSpecial` is called, a frame past the animation's last one never calling it. On presets whose press doesn't redraw the bro, which is most, frame 0 isn't animated, so 0 fires only when something else redraws the bro first.</summary>
+        /// <summary>
+        /// Animation frame on which `UseSpecial` is called, a frame past the animation's last one never calling it. On presets whose press doesn't redraw the bro, which is most,
+        /// frame 0 isn't animated, so 0 fires only when something else redraws the bro first.
+        /// </summary>
         public int triggerFrame = 4;
 
         protected SpecialAbility()
@@ -32,7 +35,10 @@ namespace BroMakerLib.Abilities
         /// <summary>If true, `DeactivateGun` is called during the animation.</summary>
         public bool deactivateGun = true;
 
-        /// <summary>Throw sounds, taken from the `SourceBroType` prefab when JSON leaves them unset. Only presets that play this array use them, and most of those play a voiced owner's throw grunt instead unless JSON sets them.</summary>
+        /// <summary>
+        /// Throw sounds, taken from the `SourceBroType` prefab when JSON leaves them unset. Only presets that play this array use them, and most of those play a voiced owner's
+        /// throw grunt instead unless JSON sets them.
+        /// </summary>
         public AudioClip[] throwSounds;
 
         /// <summary>Attack sounds, taken from the `SourceBroType` prefab when JSON leaves them unset.</summary>
@@ -53,7 +59,10 @@ namespace BroMakerLib.Abilities
             CacheSoundsFromPrefab();
         }
 
-        /// <summary>Loads special sound clips from the `SourceBroType` prefab's soundHolder, null-guarding each array so JSON overrides aren't stomped; call `base.CacheSoundsFromPrefab()` first.</summary>
+        /// <summary>
+        /// Loads special sound clips from the `SourceBroType` prefab's soundHolder, null-guarding each array so JSON overrides aren't stomped; call `base.CacheSoundsFromPrefab()`
+        /// first.
+        /// </summary>
         protected virtual void CacheSoundsFromPrefab()
         {
             if (!soundsCached)
@@ -82,7 +91,9 @@ namespace BroMakerLib.Abilities
             }
         }
 
-        /// <summary>Reproduces `BroBase.PlayThrowLightSound` with the owner's voice grunt, playing `throwSounds` instead when JSON supplies them or the owner has no voice.</summary>
+        /// <summary>
+        /// Reproduces `BroBase.PlayThrowLightSound` with the owner's voice grunt, playing `throwSounds` instead when JSON supplies them or the owner has no voice.
+        /// </summary>
         protected void PlayThrowLightSound(float volume)
         {
             if (throwSoundsOverridden)
@@ -91,7 +102,8 @@ namespace BroMakerLib.Abilities
             }
             else if (hero.SoundHolderVoice != null && !owner.BypassNewVoices)
             {
-                Sound.GetInstance().PlaySoundEffectAt(hero.SoundHolderVoice.throwLightGrunt, volume * hero.SoundHolderVoice.voiceGruntVolumeM, owner.transform.position, 1f, true, false, false, 0f);
+                Sound.GetInstance().PlaySoundEffectAt(hero.SoundHolderVoice.throwLightGrunt, volume * hero.SoundHolderVoice.voiceGruntVolumeM, owner.transform.position, 1f, true,
+                    false, false, 0f);
             }
             else
             {
@@ -99,7 +111,9 @@ namespace BroMakerLib.Abilities
             }
         }
 
-        /// <summary>Called when the player presses the special button. Starts the animation or, if `instantUse` is true, calls `UseSpecial` directly while the owner's health is above zero.</summary>
+        /// <summary>
+        /// Called when the player presses the special button. Starts the animation or, if `instantUse` is true, calls `UseSpecial` directly while the owner's health is above zero.
+        /// </summary>
         public virtual void PressSpecial()
         {
             if (owner.hasBeenCoverInAcid || hero.DoingMelee)
@@ -153,7 +167,10 @@ namespace BroMakerLib.Abilities
             }
         }
 
-        /// <summary>Runs one step of `AnimateSpecial`, noting when code outside the special rewound the owner's `frame` since the previous step or stepped the animation again without advancing it.</summary>
+        /// <summary>
+        /// Runs one step of `AnimateSpecial`, noting when code outside the special rewound the owner's `frame` since the previous step or stepped the animation again without
+        /// advancing it.
+        /// </summary>
         internal void RunAnimateSpecial()
         {
             int startFrame = owner.frame;
@@ -170,16 +187,23 @@ namespace BroMakerLib.Abilities
             stepEndFrame = owner.frame;
         }
 
-        /// <summary>True while `AnimateSpecial` runs a step that starts on the frame the previous step ended on, as when the game steps the animation again without advancing `frame`.</summary>
+        /// <summary>
+        /// True while `AnimateSpecial` runs a step that starts on the frame the previous step ended on, as when the game steps the animation again without advancing `frame`.
+        /// </summary>
         protected bool IsRepeatedStep { get; private set; }
 
-        /// <summary>True when the owner's `frame` is `frame` on a step that isn't a repeated step and isn't replaying frames after the bro's own code rewound it, so each trigger frame fires once per pass; a rewind made inside `AnimateSpecial` itself replays normally.</summary>
+        /// <summary>
+        /// True when the owner's `frame` is `frame` on a step that isn't a repeated step and isn't replaying frames after the bro's own code rewound it, so each trigger frame
+        /// fires once per pass; a rewind made inside `AnimateSpecial` itself replays normally.
+        /// </summary>
         protected bool IsTriggerFrame(int frame)
         {
             return owner.frame == frame && owner.frame > replayedThroughFrame && !IsRepeatedStep;
         }
 
-        /// <summary>Starts a new run for `IsTriggerFrame`; call it where an override of `PressSpecial` restarts an animation that is already running without calling the base method.</summary>
+        /// <summary>
+        /// Starts a new run for `IsTriggerFrame`; call it where an override of `PressSpecial` restarts an animation that is already running without calling the base method.
+        /// </summary>
         protected internal void ResetTriggerFrames()
         {
             stepEndFrame = -1;
@@ -222,7 +246,10 @@ namespace BroMakerLib.Abilities
             return true;
         }
 
-        /// <summary>True once the special state patches are in place, and false again once a later patch pass leaves one out; while false, an attached special ability keeps its state in the bro's own `usingSpecial`.</summary>
+        /// <summary>
+        /// True once the special state patches are in place, and false again once a later patch pass leaves one out; while false, an attached special ability keeps its state in
+        /// the bro's own `usingSpecial`.
+        /// </summary>
         internal static bool SpecialStateActive { get; set; }
 
         internal static readonly Dictionary<string, int[]> specialStateExpectedCounts = new Dictionary<string, int[]>();

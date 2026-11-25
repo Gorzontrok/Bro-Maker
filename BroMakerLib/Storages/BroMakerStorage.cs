@@ -256,7 +256,9 @@ namespace BroMakerLib.Storages
                         string name = Path.GetFileName(dll.Value);
                         if (!result.Checked)
                         {
-                            mod.UncheckedReason = result.Unreadable ? $"its file '{name}' couldn't be read. Cause: {result.UncheckedReason}" : $"BroMaker couldn't check '{name}' for compatibility. Cause: {result.UncheckedReason}";
+                            mod.UncheckedReason = result.Unreadable
+                                ? $"its file '{name}' couldn't be read. Cause: {result.UncheckedReason}"
+                                : $"BroMaker couldn't check '{name}' for compatibility. Cause: {result.UncheckedReason}";
                             break;
                         }
 
@@ -271,7 +273,9 @@ namespace BroMakerLib.Storages
                         {
                             AddToken(mod, "missing:" + missing.Library + ":" + missing.Target);
                             libraries.Add(missing.Library);
-                            targets.Add(missing.UsedIn.Count == 0 ? missing.Target : missing.Target + " [in " + string.Join("; ", new List<string>(missing.UsedIn).ToArray()) + "]");
+                            targets.Add(missing.UsedIn.Count == 0
+                                ? missing.Target
+                                : missing.Target + " [in " + string.Join("; ", new List<string>(missing.UsedIn).ToArray()) + "]");
 
                             string key = missing.Library + ":" + missing.Display;
                             List<string> sites;
@@ -303,7 +307,8 @@ namespace BroMakerLib.Storages
                             {
                                 builtAgainst.Add(RocketLibName + " " + rocketLib);
                             }
-                            mod.MissingDetails.Add($"'{mod.Name}' ({name}, built against {string.Join(" and ", builtAgainst.ToArray())}) references: {string.Join("; ", targets.ToArray())}");
+                            mod.MissingDetails.Add(
+                                $"'{mod.Name}' ({name}, built against {string.Join(" and ", builtAgainst.ToArray())}) references: {string.Join("; ", targets.ToArray())}");
                         }
 
                         mod.BroMakerLibReference = Highest(mod.BroMakerLibReference, broMakerLib);
@@ -358,7 +363,8 @@ namespace BroMakerLib.Storages
                             kept = mod;
                             skipped = loaded;
                         }
-                        BMLogger.Warning($"Two copies of the mod '{mod.Name}' are installed: the one at '{kept.Path}' was loaded and the one at '{skipped.Path}' was not.", mod: mod.Name);
+                        BMLogger.Warning($"Two copies of the mod '{mod.Name}' are installed: the one at '{kept.Path}' was loaded and the one at '{skipped.Path}' was not.",
+                            mod: mod.Name);
                     }
                     else
                     {
@@ -650,7 +656,8 @@ namespace BroMakerLib.Storages
             StoredHero existing;
             if (_brosByName.TryGetValue(hero.name, out existing))
             {
-                BMLogger.Warning($"Two bros named '{hero.name}' are installed: the one at '{existing.path}' was loaded and the one at '{hero.path}' was not.", mod: hero.mod?.Name, bro: hero.name);
+                BMLogger.Warning($"Two bros named '{hero.name}' are installed: the one at '{existing.path}' was loaded and the one at '{hero.path}' was not.", mod: hero.mod?.Name,
+                    bro: hero.name);
                 return false;
             }
 

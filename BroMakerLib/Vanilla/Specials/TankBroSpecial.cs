@@ -3,7 +3,9 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
-    /// <summary>Tank Bro's tank-summon throw special. The whistle played on the throw takes the frame's one effect sound, so `throwSounds` and `throwSoundVolume` have no effect.</summary>
+    /// <summary>
+    /// Tank Bro's tank-summon throw special. The whistle played on the throw takes the frame's one effect sound, so `throwSounds` and `throwSoundVolume` have no effect.
+    /// </summary>
     [SpecialPreset("TankBro")]
     public class TankBroSpecial : GrenadeThrowSpecial
     {

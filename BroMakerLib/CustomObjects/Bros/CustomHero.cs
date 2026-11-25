@@ -21,9 +21,7 @@ namespace BroMakerLib.CustomObjects.Bros
     [HeroPreset("CustomHero", HeroType.Rambro)]
     public class CustomHero : BroBase, ICustomHero
     {
-        /// <summary>
-        /// Different types of SoundHolderVoice that are available in the base game
-        /// </summary>
+        /// <summary>Different types of SoundHolderVoice that are available in the base game</summary>
         public enum SoundHolderVoiceTypes
         {
             None,
@@ -46,32 +44,22 @@ namespace BroMakerLib.CustomObjects.Bros
         [JsonIgnore] public float CurrentSpecialMaterialSpacing { get; set; }
         [JsonIgnore] public Material CurrentFirstAvatar { get; set; }
 
-        /// <summary>
-        /// Set this to control which hero is used for the default soundHolder.
-        /// If set to none, the base HeroType of your bro will be used.
-        /// </summary>
+        /// <summary>Set this to control which hero is used for the default soundHolder. If set to none, the base HeroType of your bro will be used.</summary>
         public HeroType SoundHolderHeroType = HeroType.None;
 
         /// <summary>
-        /// Set this to control which hero is used for the default SoundHolderVoice.
-        /// If set to none, the SoundHolderHeroType will be used, unless that is set to None,
-        /// in which case the base HeroType of your bro will be used.
+        /// Set this to control which hero is used for the default SoundHolderVoice. If set to none, the SoundHolderHeroType will be used, unless that is set to None, in which case
+        /// the base HeroType of your bro will be used.
         /// </summary>
         public SoundHolderVoiceTypes SoundHolderVoiceType = SoundHolderVoiceTypes.None;
 
-        /// <summary>
-        /// Contains the path to the directory that contains your custom bro's JSON file
-        /// </summary>
+        /// <summary>Contains the path to the directory that contains your custom bro's JSON file</summary>
         public string DirectoryPath => _directoryPath;
 
-        /// <summary>
-        /// Contains the path to your bro's sound folder (assumes the folder is named "sounds")
-        /// </summary>
+        /// <summary>Contains the path to your bro's sound folder (assumes the folder is named "sounds")</summary>
         public string SoundPath => _soundPath;
 
-        /// <summary>
-        /// Contains the path to your bro's projectile folder (assumes the folder is named "projectiles")
-        /// </summary>
+        /// <summary>Contains the path to your bro's projectile folder (assumes the folder is named "projectiles")</summary>
         public string ProjectilePath => _projectilePath;
 
         [SerializeField] private string _directoryPath;
@@ -79,41 +67,38 @@ namespace BroMakerLib.CustomObjects.Bros
         [SerializeField] private string _projectilePath;
 
         /// <summary>
-        /// When enabled, CustomHero tracks death and revival state via <see cref="acceptedDeath" /> and calls
-        /// <see cref="OnDeath" /> and <see cref="OnRevived" /> at the appropriate times.
-        /// Bros should check <c>if (acceptedDeath) return;</c> after <c>base.Update()</c> to skip their own logic when dead.
+        /// When enabled, CustomHero tracks death and revival state via <see cref="acceptedDeath" /> and calls <see cref="OnDeath" /> and <see cref="OnRevived" /> at the
+        /// appropriate times. Bros should check <c>if (acceptedDeath) return;</c> after <c>base.Update()</c> to skip their own logic when dead.
         /// </summary>
         protected bool trackDeathRevival = true;
 
         /// <summary>
-        /// When enabled, CustomHero automatically resets _TintColor to Color.gray on the main renderer,
-        /// gun sprite, and all materials registered via <see cref="RegisterTintMaterial" /> when invulnerability ends.
+        /// When enabled, CustomHero automatically resets _TintColor to Color.gray on the main renderer, gun sprite, and all materials registered via
+        /// <see cref="RegisterTintMaterial" /> when invulnerability ends.
         /// </summary>
         protected bool trackInvulnerabilityTint = true;
 
         /// <summary>
-        /// When enabled, CustomHero sets meleeType and currentMeleeType to MeleeType.Custom in Start(),
-        /// which causes the base game to call StartCustomMelee() instead of the default melee.
+        /// When enabled, CustomHero sets meleeType and currentMeleeType to MeleeType.Custom in Start(), which causes the base game to call StartCustomMelee() instead of the
+        /// default melee.
         /// </summary>
         protected bool useCustomMelee = false;
 
         /// <summary>
-        /// When enabled, CustomHero's SetGestureAnimation override blocks gesture animations while doingMelee is true,
-        /// preventing flex and other gestures from interrupting melee attacks.
+        /// When enabled, CustomHero's SetGestureAnimation override blocks gesture animations while doingMelee is true, preventing flex and other gestures from interrupting melee
+        /// attacks.
         /// </summary>
         protected bool blockGesturesDuringMelee = true;
 
         /// <summary>
-        /// When enabled, the variant system ensures each active instance of the same bro type gets a different variant
-        /// in multiplayer. Registration and unregistration are handled automatically through the lifecycle.
-        /// Override <see cref="GetVariant" /> and call <see cref="GetUniqueVariant" /> directly to pass a filtered variant list.
+        /// When enabled, the variant system ensures each active instance of the same bro type gets a different variant in multiplayer. Registration and unregistration are handled
+        /// automatically through the lifecycle. Override <see cref="GetVariant" /> and call <see cref="GetUniqueVariant" /> directly to pass a filtered variant list.
         /// </summary>
         protected bool deduplicateVariants = false;
 
         /// <summary>
-        /// Set to true when the bro has died and is not immediately reviving. Managed automatically when
-        /// <see cref="trackDeathRevival" /> is enabled.
-        /// Bros should check <c>if (acceptedDeath) return;</c> after <c>base.Update()</c> to skip their own Update logic when dead.
+        /// Set to true when the bro has died and is not immediately reviving. Managed automatically when <see cref="trackDeathRevival" /> is enabled. Bros should check
+        /// <c>if (acceptedDeath) return;</c> after <c>base.Update()</c> to skip their own Update logic when dead.
         /// </summary>
         protected bool acceptedDeath = false;
 
@@ -262,7 +247,9 @@ namespace BroMakerLib.CustomObjects.Bros
                 CoverInAcid();
             }
 
-            if (impaledByTransform == null && IsHero && ((yI > 50f && (canTouchRightWalls || canTouchLeftWalls || WallClimbing) && (Time.time - lastJumpTime > 0.2f || Y > groundHeight + 17f)) || yI < -120f) && IsSurroundedByBarbedWire())
+            if (impaledByTransform == null && IsHero &&
+                ((yI > 50f && (canTouchRightWalls || canTouchLeftWalls || WallClimbing) && (Time.time - lastJumpTime > 0.2f || Y > groundHeight + 17f)) || yI < -120f) &&
+                IsSurroundedByBarbedWire())
             {
                 EffectsController.CreateBloodParticles(bloodColor, X, Y + 10f, -5f, 1, 4f, 4f, 50f, xI * 0.8f, 70f);
                 if (yI < 0f)
@@ -294,7 +281,8 @@ namespace BroMakerLib.CustomObjects.Bros
                         if (component.spikes.EvaluateImpalent(this))
                         {
                             float num2 = playerNum >= 0 ? component.spikes.spikeTrapHarmlessHeight : component.spikes.spikeTrapHarmlessHeight * 0.5f;
-                            if (yI < -150f && raycastHit.point.y > groundHeight - 1f && raycastHit.distance >= num2 && raycastHit.distance < component.spikes.spikeTrapHeight && Y > component.Y + component.spikes.spikeTrapHeight)
+                            if (yI < -150f && raycastHit.point.y > groundHeight - 1f && raycastHit.distance >= num2 && raycastHit.distance < component.spikes.spikeTrapHeight &&
+                                Y > component.Y + component.spikes.spikeTrapHeight)
                             {
                                 Y = Mathf.Clamp(Y, groundHeight + 2f, groundHeight + 3f);
                                 yIT = 0f;
@@ -302,7 +290,8 @@ namespace BroMakerLib.CustomObjects.Bros
                                 component.spikes.ImpaleUnit(this);
                             }
                         }
-                        else if (component.spikes.IsBarbedWire(this) && component.spikes.collumn == component.collumn && Y < raycastHit.point.y + 12f && Mathf.Abs(yI) < 50f && Mathf.Abs(xI + xIBlast) > GetSpeed - 2f && (int)Mathf.Sign(xI + xIBlast) == (!left ? 0 : -1) + (!right ? 0 : 1))
+                        else if (component.spikes.IsBarbedWire(this) && component.spikes.collumn == component.collumn && Y < raycastHit.point.y + 12f && Mathf.Abs(yI) < 50f &&
+                                 Mathf.Abs(xI + xIBlast) > GetSpeed - 2f && (int)Mathf.Sign(xI + xIBlast) == (!left ? 0 : -1) + (!right ? 0 : 1))
                         {
                             EffectsController.CreateBloodParticles(bloodColor, X, Y + 10f, -5f, 1, 4f, 4f, 50f, xI * 0.8f, 70f);
                             xIBlast -= xI * 0.4f;
@@ -330,7 +319,8 @@ namespace BroMakerLib.CustomObjects.Bros
                         if (component2.spikes.EvaluateImpalent(this))
                         {
                             float num3 = playerNum >= 0 ? component2.spikes.spikeTrapHarmlessHeight : component2.spikes.spikeTrapHarmlessHeight * 0.5f;
-                            if (yI < -150f && raycastHit2.point.y > groundHeight - 1f && raycastHit2.distance >= num3 && raycastHit2.distance < component2.spikes.spikeTrapHeight && Y > component2.Y + component2.spikes.spikeTrapHeight)
+                            if (yI < -150f && raycastHit2.point.y > groundHeight - 1f && raycastHit2.distance >= num3 && raycastHit2.distance < component2.spikes.spikeTrapHeight &&
+                                Y > component2.Y + component2.spikes.spikeTrapHeight)
                             {
                                 Y = Mathf.Clamp(Y, groundHeight + 2f, groundHeight + 3f);
                                 yIT = 0f;
@@ -338,7 +328,8 @@ namespace BroMakerLib.CustomObjects.Bros
                                 component2.spikes.ImpaleUnit(this);
                             }
                         }
-                        else if (component2.spikes.IsBarbedWire(this) && component2.spikes.collumn == component2.collumn && Y < raycastHit2.point.y + 12f && Mathf.Abs(yI) < 50f && Mathf.Abs(xI + xIBlast) > GetSpeed - 2f && (int)Mathf.Sign(xI + xIBlast) == (!left ? 0 : -1) + (!right ? 0 : 1))
+                        else if (component2.spikes.IsBarbedWire(this) && component2.spikes.collumn == component2.collumn && Y < raycastHit2.point.y + 12f && Mathf.Abs(yI) < 50f &&
+                                 Mathf.Abs(xI + xIBlast) > GetSpeed - 2f && (int)Mathf.Sign(xI + xIBlast) == (!left ? 0 : -1) + (!right ? 0 : 1))
                         {
                             EffectsController.CreateBloodParticles(bloodColor, X, Y + 10f, -5f, 1, 4f, 4f, 50f, xI * 0.8f, 70f);
                             xIBlast -= xI * 0.4f;
@@ -366,7 +357,8 @@ namespace BroMakerLib.CustomObjects.Bros
                         if (component3.spikes.EvaluateImpalent(this))
                         {
                             float num4 = playerNum >= 0 ? component3.spikes.spikeTrapHarmlessHeight : component3.spikes.spikeTrapHarmlessHeight * 0.5f;
-                            if (yI < -150f && raycastHit3.point.y > groundHeight - 1f && raycastHit3.distance >= num4 && raycastHit3.distance < component3.spikes.spikeTrapHeight && Y > component3.Y + component3.spikes.spikeTrapHeight)
+                            if (yI < -150f && raycastHit3.point.y > groundHeight - 1f && raycastHit3.distance >= num4 && raycastHit3.distance < component3.spikes.spikeTrapHeight &&
+                                Y > component3.Y + component3.spikes.spikeTrapHeight)
                             {
                                 Y = Mathf.Clamp(Y, groundHeight + 2f, groundHeight + 3f);
                                 yIT = 0f;
@@ -374,7 +366,8 @@ namespace BroMakerLib.CustomObjects.Bros
                                 component3.spikes.ImpaleUnit(this);
                             }
                         }
-                        else if (component3.spikes.IsBarbedWire(this) && component3.spikes.collumn == component3.collumn && Y < raycastHit3.point.y + 12f && Mathf.Abs(yI) < 50f && Mathf.Abs(xI + xIBlast) > GetSpeed - 2f && (int)Mathf.Sign(xI + xIBlast) == (!left ? 0 : -1) + (!right ? 0 : 1))
+                        else if (component3.spikes.IsBarbedWire(this) && component3.spikes.collumn == component3.collumn && Y < raycastHit3.point.y + 12f && Mathf.Abs(yI) < 50f &&
+                                 Mathf.Abs(xI + xIBlast) > GetSpeed - 2f && (int)Mathf.Sign(xI + xIBlast) == (!left ? 0 : -1) + (!right ? 0 : 1))
                         {
                             EffectsController.CreateBloodParticles(bloodColor, X, Y + 10f, -5f, 1, 4f, 4f, 50f, xI * 0.8f, 70f);
                             xIBlast -= xI * 0.4f;
@@ -394,38 +387,28 @@ namespace BroMakerLib.CustomObjects.Bros
         #endregion
 
         #region Custom Methods
-        /// <summary>
-        /// Override this method to have UI options displayed for your custom hero underneath their name in the Custom Bros tab
-        /// </summary>
+        /// <summary>Override this method to have UI options displayed for your custom hero underneath their name in the Custom Bros tab</summary>
         public virtual void UIOptions()
         {
         }
 
-        /// <summary>
-        /// Override this method to add custom harmony patches to your custom hero
-        /// </summary>
+        /// <summary>Override this method to add custom harmony patches to your custom hero</summary>
         /// <param name="harmony"></param>
         public virtual void HarmonyPatches(Harmony harmony)
         {
         }
 
-        /// <summary>
-        /// Override this method to add any custom trigger actions via RocketLib's Custom Trigger system
-        /// </summary>
+        /// <summary>Override this method to add any custom trigger actions via RocketLib's Custom Trigger system</summary>
         public virtual void RegisterCustomTriggers()
         {
         }
 
-        /// <summary>
-        /// Override this method to add your own assets to be preloaded when the game starts, to avoid lag when spawning as custom characters.
-        /// </summary>
+        /// <summary>Override this method to add your own assets to be preloaded when the game starts, to avoid lag when spawning as custom characters.</summary>
         public virtual void PreloadAssets()
         {
         }
 
-        /// <summary>
-        /// Preloads each sprite in the spritePaths list.
-        /// </summary>
+        /// <summary>Preloads each sprite in the spritePaths list.</summary>
         /// <param name="directoryPath">Path to the directory containing the sprites</param>
         /// <param name="spritePaths">Sprites to load</param>
         public static void PreloadSprites(string directoryPath, List<string> spritePaths)
@@ -443,9 +426,7 @@ namespace BroMakerLib.CustomObjects.Bros
             }
         }
 
-        /// <summary>
-        /// Preloads each sound in the soundPaths list.
-        /// </summary>
+        /// <summary>Preloads each sound in the soundPaths list.</summary>
         /// <param name="directoryPath">Path to the directory containing the sound files</param>
         /// <param name="soundPaths">Sounds to load</param>
         public static void PreloadSounds(string directoryPath, List<string> soundPaths)
@@ -464,17 +445,17 @@ namespace BroMakerLib.CustomObjects.Bros
         }
 
         /// <summary>
-        /// This method is called once after the prefab is created and before PrefabSetup has run. You can override this to set SoundHolderHeroType or SoundHolderVoiceType
-        /// to control which heros your default soundHolder components are initialized from.
+        /// This method is called once after the prefab is created and before PrefabSetup has run. You can override this to set SoundHolderHeroType or SoundHolderVoiceType to
+        /// control which heros your default soundHolder components are initialized from.
         /// </summary>
         public virtual void BeforePrefabSetup()
         {
         }
 
         /// <summary>
-        /// This method is called once after the prefab is created and after PrefabSetup has run. You can override this to add additional variables to be set up in your prefab.
-        /// The soundHolder, SoundHolderVoice, and soundHolderFootSteps will have been set up at this point, as well as directoryPath, so you can load sounds and assign them to
-        /// these soundHolders to set up your bro's sounds.
+        /// This method is called once after the prefab is created and after PrefabSetup has run. You can override this to add additional variables to be set up in your prefab. The
+        /// soundHolder, SoundHolderVoice, and soundHolderFootSteps will have been set up at this point, as well as directoryPath, so you can load sounds and assign them to these
+        /// soundHolders to set up your bro's sounds.
         /// </summary>
         public virtual void AfterPrefabSetup()
         {
@@ -575,9 +556,7 @@ namespace BroMakerLib.CustomObjects.Bros
             AfterPrefabSetup();
         }
 
-        /// <summary>
-        /// Sets up the DirectoryPath, SoundPath, and ProjectilePath variables.
-        /// </summary>
+        /// <summary>Sets up the DirectoryPath, SoundPath, and ProjectilePath variables.</summary>
         /// <param name="directoryPath">Path to the directory that contains your custom bro's JSON file</param>
         public virtual void AssignDirectoryPaths(string directoryPath)
         {
@@ -586,9 +565,7 @@ namespace BroMakerLib.CustomObjects.Bros
             _projectilePath = Path.Combine(directoryPath, "projectiles");
         }
 
-        /// <summary>
-        /// Override this to customize variant selection logic
-        /// </summary>
+        /// <summary>Override this to customize variant selection logic</summary>
         /// <returns>Variant to spawn bro as</returns>
         public virtual int GetVariant()
         {
@@ -605,16 +582,12 @@ namespace BroMakerLib.CustomObjects.Bros
             return Random.Range(0, Info.VariantCount);
         }
 
-        /// <summary>
-        /// Override this if you have additional sprites that need to be set up and showing immediately
-        /// </summary>
+        /// <summary>Override this if you have additional sprites that need to be set up and showing immediately</summary>
         public virtual void SetupAdditionalSprites()
         {
         }
 
-        /// <summary>
-        /// This method switches the current variant and changes all assigned parameters to the new variant's values
-        /// </summary>
+        /// <summary>This method switches the current variant and changes all assigned parameters to the new variant's values</summary>
         /// <param name="variant">Variant to switch to</param>
         public virtual void SwitchVariant(int variant)
         {
@@ -631,8 +604,7 @@ namespace BroMakerLib.CustomObjects.Bros
         }
 
         /// <summary>
-        /// Called when the bro dies. Override to perform bro-specific cleanup (stop audio, drop items, reset state).
-        /// Requires <see cref="trackDeathRevival" /> to be enabled.
+        /// Called when the bro dies. Override to perform bro-specific cleanup (stop audio, drop items, reset state). Requires <see cref="trackDeathRevival" /> to be enabled.
         /// Always call base.OnDeath() when overriding to preserve variant deduplication.
         /// </summary>
         protected virtual void OnDeath()
@@ -644,10 +616,8 @@ namespace BroMakerLib.CustomObjects.Bros
         }
 
         /// <summary>
-        /// Called when the bro is revived after death. Override to perform bro-specific revival setup (restore ammo, reset
-        /// materials).
-        /// Requires <see cref="trackDeathRevival" /> to be enabled.
-        /// Always call base.OnRevived() when overriding to preserve variant deduplication.
+        /// Called when the bro is revived after death. Override to perform bro-specific revival setup (restore ammo, reset materials). Requires <see cref="trackDeathRevival" /> to
+        /// be enabled. Always call base.OnRevived() when overriding to preserve variant deduplication.
         /// </summary>
         protected virtual void OnRevived()
         {
@@ -658,9 +628,8 @@ namespace BroMakerLib.CustomObjects.Bros
         }
 
         /// <summary>
-        /// Registers a material to be included in automatic tint color resets when invulnerability ends.
-        /// Call this for any additional materials beyond the main renderer and gun sprite (which are handled automatically).
-        /// Must be called after the material is created, typically in Start() or AfterPrefabSetup().
+        /// Registers a material to be included in automatic tint color resets when invulnerability ends. Call this for any additional materials beyond the main renderer and gun
+        /// sprite (which are handled automatically). Must be called after the material is created, typically in Start() or AfterPrefabSetup().
         /// </summary>
         /// <param name="mat">The material to register for tint tracking</param>
         protected void RegisterTintMaterial(Material mat)
@@ -672,9 +641,8 @@ namespace BroMakerLib.CustomObjects.Bros
         }
 
         /// <summary>
-        /// Resets the _TintColor on the main renderer, gun sprite, and all registered tint materials to Color.gray.
-        /// Called automatically when invulnerability ends if <see cref="trackInvulnerabilityTint" /> is enabled.
-        /// Can also be called directly when the tint needs resetting by hand, such as after ending invulnerability early.
+        /// Resets the _TintColor on the main renderer, gun sprite, and all registered tint materials to Color.gray. Called automatically when invulnerability ends if
+        /// <see cref="trackInvulnerabilityTint" /> is enabled. Can also be called directly when the tint needs resetting by hand, such as after ending invulnerability early.
         /// </summary>
         public void ResetTintColors()
         {
@@ -687,15 +655,11 @@ namespace BroMakerLib.CustomObjects.Bros
         }
 
         /// <summary>
-        /// Returns a variant index not currently in use by other active instances of the same bro type.
-        /// Falls back to random selection if all variants are taken.
-        /// Used automatically by <see cref="GetVariant" /> when <see cref="deduplicateVariants" /> is enabled.
-        /// Can be called directly from a <see cref="GetVariant" /> override to pass a filtered list of allowed variants.
+        /// Returns a variant index not currently in use by other active instances of the same bro type. Falls back to random selection if all variants are taken. Used
+        /// automatically by <see cref="GetVariant" /> when <see cref="deduplicateVariants" /> is enabled. Can be called directly from a <see cref="GetVariant" /> override to pass
+        /// a filtered list of allowed variants.
         /// </summary>
-        /// <param name="allowedVariants">
-        /// Optional list of variant indices to choose from. If null, all variants (0 to
-        /// VariantCount-1) are considered.
-        /// </param>
+        /// <param name="allowedVariants">Optional list of variant indices to choose from. If null, all variants (0 to VariantCount-1) are considered.</param>
         /// <returns>A variant index not in use by other active instances, or a random one if all are taken</returns>
         protected int GetUniqueVariant(List<int> allowedVariants = null)
         {
@@ -763,21 +727,15 @@ namespace BroMakerLib.CustomObjects.Bros
 
         #region Save / Load Settings
         /// <summary>
-        /// Marks a static field or property to be saved/loaded as a persistent setting.
-        /// Only static members marked with this attribute will be included in settings serialization.
+        /// Marks a static field or property to be saved/loaded as a persistent setting. Only static members marked with this attribute will be included in settings serialization.
         /// </summary>
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
         public class SaveableSettingAttribute : Attribute
         {
-            /// <summary>
-            /// Gets or sets the custom name to use as the JSON key for this setting.
-            /// If not specified, the member name will be used.
-            /// </summary>
+            /// <summary>Gets or sets the custom name to use as the JSON key for this setting. If not specified, the member name will be used.</summary>
             public string Name { get; set; }
 
-            /// <summary>
-            /// Initializes a new instance of the SaveableSettingAttribute class.
-            /// </summary>
+            /// <summary>Initializes a new instance of the SaveableSettingAttribute class.</summary>
             /// <param name="name">Optional custom name to use as the JSON key. If null, the member name will be used.</param>
             public SaveableSettingAttribute(string name = null)
             {
@@ -789,9 +747,7 @@ namespace BroMakerLib.CustomObjects.Bros
         private static readonly Dictionary<Type, List<MemberInfo>> _saveableMembersCache = new Dictionary<Type, List<MemberInfo>>();
         private static readonly Dictionary<Type, string> _typeDirectoryCache = new Dictionary<Type, string>();
 
-        /// <summary>
-        /// Gets the config directory path for a custom bro type.
-        /// </summary>
+        /// <summary>Gets the config directory path for a custom bro type.</summary>
         /// <param name="broType">The custom bro type</param>
         /// <returns>Path to the bro's config directory under UnityModManager's config path.</returns>
         public static string GetBroConfigPath(Type broType)
@@ -800,14 +756,24 @@ namespace BroMakerLib.CustomObjects.Bros
         }
 
         /// <summary>
-        /// Saves all static fields and properties marked with [SaveableSetting] to a JSON file.
-        /// The file will be saved to Config/BroMaker/Bros/{BroName}/ with the name format: {BroName}_settings.json
+        /// Saves all static fields and properties marked with [SaveableSetting] to a JSON file. The file will be saved to Config/BroMaker/Bros/{BroName}/ with the name format:
+        /// {BroName}_settings.json
         /// </summary>
         /// <remarks>
-        /// - Only saves non-null values
-        /// - Automatically caches the custom bro information for better performance on subsequent calls
-        /// - Caches the directory path for use with SaveAll()
-        /// - If no saveable fields exist, no file will be created
+        /// <list type="bullet">
+        /// <item>
+        /// <description>Only saves non-null values</description>
+        /// </item>
+        /// <item>
+        /// <description>Automatically caches the custom bro information for better performance on subsequent calls</description>
+        /// </item>
+        /// <item>
+        /// <description>Caches the directory path for use with SaveAll()</description>
+        /// </item>
+        /// <item>
+        /// <description>If no saveable fields exist, no file will be created</description>
+        /// </item>
+        /// </list>
         /// </remarks>
         public virtual void SaveSettings()
         {
@@ -860,15 +826,27 @@ namespace BroMakerLib.CustomObjects.Bros
         }
 
         /// <summary>
-        /// Loads all static fields and properties marked with [SaveableSetting] from a JSON file.
-        /// The file is expected to be in Config/BroMaker/Bros/{BroName}/ with the name format: {BroName}_settings.json
+        /// Loads all static fields and properties marked with [SaveableSetting] from a JSON file. The file is expected to be in Config/BroMaker/Bros/{BroName}/ with the name
+        /// format: {BroName}_settings.json
         /// </summary>
         /// <remarks>
-        /// - Silently returns if the settings file doesn't exist
-        /// - Automatically handles type conversion including enums and complex types
-        /// - Logs errors for individual fields that fail to load but continues with other fields
-        /// - Caches the directory path for use with SaveAll()
-        /// - Uses cached custom bro information for better performance on subsequent calls
+        /// <list type="bullet">
+        /// <item>
+        /// <description>Silently returns if the settings file doesn't exist</description>
+        /// </item>
+        /// <item>
+        /// <description>Automatically handles type conversion including enums and complex types</description>
+        /// </item>
+        /// <item>
+        /// <description>Logs errors for individual fields that fail to load but continues with other fields</description>
+        /// </item>
+        /// <item>
+        /// <description>Caches the directory path for use with SaveAll()</description>
+        /// </item>
+        /// <item>
+        /// <description>Uses cached custom bro information for better performance on subsequent calls</description>
+        /// </item>
+        /// </list>
         /// </remarks>
         public virtual void LoadSettings()
         {
@@ -960,14 +938,20 @@ namespace BroMakerLib.CustomObjects.Bros
             }
         }
 
-        /// <summary>
-        /// Saves settings for a specific custom bro type without requiring an instance.
-        /// </summary>
+        /// <summary>Saves settings for a specific custom bro type without requiring an instance.</summary>
         /// <typeparam name="T">The custom bro type whose settings should be saved</typeparam>
         /// <remarks>
-        /// - If the directory path is not cached, retrieves it from BroMakerStorage
-        /// - Only saves non-null values
-        /// - Creates or overwrites the settings file in the appropriate directory
+        /// <list type="bullet">
+        /// <item>
+        /// <description>If the directory path is not cached, retrieves it from BroMakerStorage</description>
+        /// </item>
+        /// <item>
+        /// <description>Only saves non-null values</description>
+        /// </item>
+        /// <item>
+        /// <description>Creates or overwrites the settings file in the appropriate directory</description>
+        /// </item>
+        /// </list>
         /// </remarks>
         public static void SaveSettings<T>() where T : CustomHero
         {
@@ -1037,15 +1021,23 @@ namespace BroMakerLib.CustomObjects.Bros
             }
         }
 
-        /// <summary>
-        /// Loads settings for a specific custom bro type without requiring an instance.
-        /// </summary>
+        /// <summary>Loads settings for a specific custom bro type without requiring an instance.</summary>
         /// <typeparam name="T">The custom bro type whose settings should be loaded</typeparam>
         /// <remarks>
-        /// - If the directory path is not cached, retrieves it from BroMakerStorage
-        /// - Silently returns if the settings file doesn't exist
-        /// - Automatically handles type conversion including enums and complex types
-        /// - Logs errors for individual fields that fail to load but continues with other fields
+        /// <list type="bullet">
+        /// <item>
+        /// <description>If the directory path is not cached, retrieves it from BroMakerStorage</description>
+        /// </item>
+        /// <item>
+        /// <description>Silently returns if the settings file doesn't exist</description>
+        /// </item>
+        /// <item>
+        /// <description>Automatically handles type conversion including enums and complex types</description>
+        /// </item>
+        /// <item>
+        /// <description>Logs errors for individual fields that fail to load but continues with other fields</description>
+        /// </item>
+        /// </list>
         /// </remarks>
         public static void LoadSettings<T>() where T : CustomHero
         {
@@ -1150,17 +1142,27 @@ namespace BroMakerLib.CustomObjects.Bros
         }
 
         /// <summary>
-        /// Saves settings for all custom bros that have been previously loaded or saved.
-        /// This static method uses cached custom bro and directory information to save all settings without requiring
-        /// instances.
+        /// Saves settings for all custom bros that have been previously loaded or saved. This static method uses cached custom bro and directory information to save all settings
+        /// without requiring instances.
         /// </summary>
         /// <remarks>
-        /// - Only saves settings for custom bros that have been cached (i.e., SaveSettings or LoadSettings was called at least
-        /// once)
-        /// - Skips custom bros that don't have a cached directory path
-        /// - Logs warnings for custom bros without cached directory paths
-        /// - Logs success/error messages for each custom bro
-        /// - Useful for application shutdown or periodic auto-saves
+        /// <list type="bullet">
+        /// <item>
+        /// <description>Only saves settings for custom bros that have been cached (i.e., SaveSettings or LoadSettings was called at least once)</description>
+        /// </item>
+        /// <item>
+        /// <description>Skips custom bros that don't have a cached directory path</description>
+        /// </item>
+        /// <item>
+        /// <description>Logs warnings for custom bros without cached directory paths</description>
+        /// </item>
+        /// <item>
+        /// <description>Logs success/error messages for each custom bro</description>
+        /// </item>
+        /// <item>
+        /// <description>Useful for application shutdown or periodic auto-saves</description>
+        /// </item>
+        /// </list>
         /// </remarks>
         public static void SaveAll()
         {
@@ -1254,16 +1256,14 @@ namespace BroMakerLib.CustomObjects.Bros
             List<MemberInfo> members = new List<MemberInfo>();
             BindingFlags flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 
-            IEnumerable<FieldInfo> fields = type.GetFields(flags)
-                .Where(f => f.GetCustomAttributes(typeof(SaveableSettingAttribute), false).Length > 0);
+            IEnumerable<FieldInfo> fields = type.GetFields(flags).Where(f => f.GetCustomAttributes(typeof(SaveableSettingAttribute), false).Length > 0);
 
             foreach (FieldInfo field in fields)
             {
                 members.Add(field);
             }
 
-            IEnumerable<PropertyInfo> properties = type.GetProperties(flags)
-                .Where(p => p.GetCustomAttributes(typeof(SaveableSettingAttribute), false).Length > 0);
+            IEnumerable<PropertyInfo> properties = type.GetProperties(flags).Where(p => p.GetCustomAttributes(typeof(SaveableSettingAttribute), false).Length > 0);
 
             foreach (PropertyInfo property in properties)
             {

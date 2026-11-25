@@ -89,7 +89,10 @@ namespace BroMakerLib.Abilities
             }
         }
 
-        /// <summary>Instantiates the passives in a bro's `"passives"` JSON list, dropping redundant and duplicate ones, and any that clash under a `ConflictsWithPreset` declaration unless their JSON sets `"allowConflict": true`.</summary>
+        /// <summary>
+        /// Instantiates the passives in a bro's `"passives"` JSON list, dropping redundant and duplicate ones, and any that clash under a `ConflictsWithPreset` declaration unless
+        /// their JSON sets `"allowConflict": true`.
+        /// </summary>
         public static List<PassiveAbility> CreatePassives(JToken configs, BroBase owner)
         {
             List<PassiveAbility> result = new List<PassiveAbility>();
@@ -100,7 +103,8 @@ namespace BroMakerLib.Abilities
             JArray entries = configs as JArray;
             if (entries == null)
             {
-                BMLogger.Warning($"The 'passives' ability config is {Describe(configs)}, which should be a list of objects like [{{\"preset\": \"{GetExampleName(configs)}\"}}], so it was skipped");
+                BMLogger.Warning(
+                    $"The 'passives' ability config is {Describe(configs)}, which should be a list of objects like [{{\"preset\": \"{GetExampleName(configs)}\"}}], so it was skipped");
                 return result;
             }
 
@@ -116,7 +120,8 @@ namespace BroMakerLib.Abilities
                 JObject config = entry as JObject;
                 if (config == null)
                 {
-                    BMLogger.Warning($"An entry in the 'passives' list is {Describe(entry)}, which should be an object like {{\"preset\": \"{GetExampleName(entry)}\"}}, so it was skipped");
+                    BMLogger.Warning(
+                        $"An entry in the 'passives' list is {Describe(entry)}, which should be an object like {{\"preset\": \"{GetExampleName(entry)}\"}}, so it was skipped");
                     continue;
                 }
                 string presetName;
@@ -130,7 +135,8 @@ namespace BroMakerLib.Abilities
                 {
                     if (allowConflictToken.Type != JTokenType.Boolean)
                     {
-                        BMLogger.Warning($"Passive preset '{presetName}' has 'allowConflict' set to {Describe(allowConflictToken)}, which should be true or false without quotes, so the passive was skipped");
+                        BMLogger.Warning(
+                            $"Passive preset '{presetName}' has 'allowConflict' set to {Describe(allowConflictToken)}, which should be true or false without quotes, so the passive was skipped");
                         continue;
                     }
                     allowConflict = (bool)allowConflictToken;
@@ -201,9 +207,8 @@ namespace BroMakerLib.Abilities
                     }
                     if (nativeConflict != null)
                     {
-                        BMLogger.Warning(
-                            $"Passive preset '{presetName}' conflicts with '{nativeConflict}', which is built into the bro's characterPreset, so it was skipped. " +
-                            $"To use it anyway, add \"allowConflict\": true to the '{presetName}' entry in 'passives'");
+                        BMLogger.Warning($"Passive preset '{presetName}' conflicts with '{nativeConflict}', which is built into the bro's characterPreset, so it was skipped. " +
+                                         $"To use it anyway, add \"allowConflict\": true to the '{presetName}' entry in 'passives'");
                         ability.Detach();
                         continue;
                     }
@@ -220,9 +225,8 @@ namespace BroMakerLib.Abilities
                     }
                     if (listedConflict != null)
                     {
-                        BMLogger.Warning(
-                            $"Passive preset '{presetName}' conflicts with '{listedConflict}' earlier in the list, so it was skipped. " +
-                            $"To use it anyway, add \"allowConflict\": true to the '{presetName}' entry in 'passives'");
+                        BMLogger.Warning($"Passive preset '{presetName}' conflicts with '{listedConflict}' earlier in the list, so it was skipped. " +
+                                         $"To use it anyway, add \"allowConflict\": true to the '{presetName}' entry in 'passives'");
                         ability.Detach();
                         continue;
                     }
@@ -254,7 +258,8 @@ namespace BroMakerLib.Abilities
             JObject configObject = config as JObject;
             if (configObject == null)
             {
-                BMLogger.Warning($"The '{key}' ability config is {Describe(config)}, which should be an object like {{\"preset\": \"{GetExampleName(config)}\"}}, so it was skipped");
+                BMLogger.Warning(
+                    $"The '{key}' ability config is {Describe(config)}, which should be an object like {{\"preset\": \"{GetExampleName(config)}\"}}, so it was skipped");
             }
             return configObject;
         }

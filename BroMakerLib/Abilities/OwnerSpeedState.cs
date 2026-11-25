@@ -16,7 +16,10 @@ namespace BroMakerLib.Abilities
             this.owner = owner;
         }
 
-        /// <summary>Takes a `speed` written by anything but the ability speed helpers as the bro's new unchanged speed, keeping the held multipliers on top; the bro calls it once per frame.</summary>
+        /// <summary>
+        /// Takes a `speed` written by anything but the ability speed helpers as the bro's new unchanged speed, keeping the held multipliers on top; the bro calls it once per
+        /// frame.
+        /// </summary>
         public void Sync()
         {
             if (holders.Count > 0 && owner.speed != lastWrittenSpeed)

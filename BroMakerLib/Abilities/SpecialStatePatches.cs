@@ -88,7 +88,8 @@ namespace BroMakerLib.Abilities
                 }
             }
             BMLogger.Log("Special state patches not applied: " + string.Join("; ", failures.ToArray()));
-            BMLogger.Error("BroMaker couldn't adjust how the game handles specials, because this version of the game differs from the one BroMaker expects or another mod changes the same part of the game. A custom bro's special can still switch on effects of the bro it is built on, and that bro's own moves can cut it short.");
+            BMLogger.Error(
+                "BroMaker couldn't adjust how the game handles specials, because this version of the game differs from the one BroMaker expects or another mod changes the same part of the game. A custom bro's special can still switch on effects of the bro it is built on, and that bro's own moves can cut it short.");
         }
 
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase original)
@@ -130,7 +131,8 @@ namespace BroMakerLib.Abilities
                 {
                     SpecialAbility.SpecialStateActive = false;
                     BMLogger.Log("Special state patch left out on a later patch pass: " + mismatch);
-                    BMLogger.Error("Another mod changed how the game handles specials in a way BroMaker couldn't follow, so a custom bro's special can now switch on effects of the bro it is built on, and that bro's own moves can cut it short.");
+                    BMLogger.Error(
+                        "Another mod changed how the game handles specials in a way BroMaker couldn't follow, so a custom bro's special can now switch on effects of the bro it is built on, and that bro's own moves can cut it short.");
                 }
                 return codes;
             }

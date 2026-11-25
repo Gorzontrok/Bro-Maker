@@ -11,7 +11,10 @@ namespace BroMakerLib.Vanilla.Specials
     {
         protected override HeroType SourceBroType => HeroType.BroneyRoss;
 
-        /// <summary>Grenade thrown during the special at three escalating hardcoded speeds, any throw past the third reusing the fastest, so only `name`, `damage`, `sprite` and `offsetX`/`offsetY` apply and `grenadeCount` sets how many are thrown.</summary>
+        /// <summary>
+        /// Grenade thrown during the special at three escalating hardcoded speeds, any throw past the third reusing the fastest, so only `name`, `damage`, `sprite` and
+        /// `offsetX`/`offsetY` apply and `grenadeCount` sets how many are thrown.
+        /// </summary>
         public GrenadeConfig grenade = new GrenadeConfig
         {
             name = "Sticky",

@@ -51,8 +51,10 @@ namespace BroMakerLib
                     ApplyBroPatches(harmony);
                 }
 
-                RocketLib.CustomTriggers.CustomTriggerManager.RegisterCustomTrigger(typeof(ForceBroAction), typeof(ForceBroActionInfo), "BroMaker - Force Custom Bro", "Custom Bros", 10);
-                RocketLib.CustomTriggers.CustomTriggerManager.RegisterCustomTrigger(typeof(HeroUnlockCutsceneAction), typeof(HeroUnlockCutsceneActionInfo), "BroMaker - Play Custom Bro Cutscene", "Custom Bros", 9);
+                RocketLib.CustomTriggers.CustomTriggerManager.RegisterCustomTrigger(typeof(ForceBroAction), typeof(ForceBroActionInfo), "BroMaker - Force Custom Bro",
+                    "Custom Bros", 10);
+                RocketLib.CustomTriggers.CustomTriggerManager.RegisterCustomTrigger(typeof(HeroUnlockCutsceneAction), typeof(HeroUnlockCutsceneActionInfo),
+                    "BroMaker - Play Custom Bro Cutscene", "Custom Bros", 9);
 
                 _hasInit = true;
 
@@ -74,13 +76,8 @@ namespace BroMakerLib
                 // Register Custom Bros menu with MainMenu
                 try
                 {
-                    RocketLib.Menus.Core.MenuRegistry.RegisterAction(
-                        displayText: "CUSTOM BROS",
-                        onSelect: (menu) => Menus.CustomBrosGridMenu.Show(menu),
-                        targetMenu: RocketLib.Menus.Core.TargetMenu.MainMenu,
-                        position: RocketLib.Menus.Core.PositionMode.After,
-                        positionReference: "START"
-                    );
+                    RocketLib.Menus.Core.MenuRegistry.RegisterAction(displayText: "CUSTOM BROS", onSelect: (menu) => Menus.CustomBrosGridMenu.Show(menu),
+                        targetMenu: RocketLib.Menus.Core.TargetMenu.MainMenu, position: RocketLib.Menus.Core.PositionMode.After, positionReference: "START");
                 }
                 catch (Exception ex)
                 {

@@ -89,7 +89,10 @@ namespace BroMakerLib.Loggers
 
         [ThreadStatic] private static List<ScopeFrame> _scopes;
 
-        /// <summary>Raised on the main thread in BroMaker's next update after a new issue is reported; repeats of an issue only update its entry. Once 200 issues are collected it is raised only for one entry marking the limit, and after the Issues panel is cleared it is raised again for any issue.</summary>
+        /// <summary>
+        /// Raised on the main thread in BroMaker's next update after a new issue is reported; repeats of an issue only update its entry. Once 200 issues are collected it is raised
+        /// only for one entry marking the limit, and after the Issues panel is cleared it is raised again for any issue.
+        /// </summary>
         public static event Action<IssueEntry> OnNewIssue;
 
         public static void Log(string message)
@@ -119,7 +122,10 @@ namespace BroMakerLib.Loggers
             }
         }
 
-        /// <summary>Records an Error for the Issues panel and a notification, appending the exception's message and resolving `mod` when omitted; an exception already reported and still queued replaces that report.</summary>
+        /// <summary>
+        /// Records an Error for the Issues panel and a notification, appending the exception's message and resolving `mod` when omitted; an exception already reported and still
+        /// queued replaces that report.
+        /// </summary>
         public static void Error(string message, Exception ex = null, string mod = null, string bro = null)
         {
             ReportIssue(IssueSeverity.Error, message, ex, mod, bro);
@@ -131,7 +137,9 @@ namespace BroMakerLib.Loggers
             ReportIssue(IssueSeverity.Warning, message, ex, mod, bro);
         }
 
-        /// <summary>Live read-only view of the collected issues in the order first reported. Read it on the main thread. Emptied when the user clears the Issues panel.</summary>
+        /// <summary>
+        /// Live read-only view of the collected issues in the order first reported. Read it on the main thread. Emptied when the user clears the Issues panel.
+        /// </summary>
         public static ReadOnlyCollection<IssueEntry> GetIssues()
         {
             return _issuesReadOnly;
@@ -216,8 +224,7 @@ namespace BroMakerLib.Loggers
             string label = string.IsNullOrEmpty(modName) ? "A mod" : "'" + modName + "'";
             return label + " tried to use " + MissingCodePhrase + ". This usually means it was built against an older " +
                    "version of BroMaker and needs to be rebuilt against BroMaker " + Info.VERSION + " or later, but it can also mean " +
-                   "one of the mod's own dependencies is missing or out of date. " +
-                   "(Missing: " + MissingMemberMessage(ex) + ")";
+                   "one of the mod's own dependencies is missing or out of date. " + "(Missing: " + MissingMemberMessage(ex) + ")";
         }
 
         internal static string MissingMemberMessage(Exception ex)
@@ -580,8 +587,8 @@ namespace BroMakerLib.Loggers
         private static bool IsFrameworkAssembly(Assembly asm)
         {
             string name = asm.GetName().Name;
-            return name == "mscorlib" || name == "System" || name.StartsWith("System.", StringComparison.Ordinal) ||
-                   name.StartsWith("UnityEngine", StringComparison.Ordinal) || name == "0Harmony" || name == "UnityModManager";
+            return name == "mscorlib" || name == "System" || name.StartsWith("System.", StringComparison.Ordinal) || name.StartsWith("UnityEngine", StringComparison.Ordinal) ||
+                   name == "0Harmony" || name == "UnityModManager";
         }
 
         private static LogType ToLogType(IssueSeverity severity)

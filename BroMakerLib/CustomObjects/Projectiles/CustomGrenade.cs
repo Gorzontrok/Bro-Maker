@@ -9,102 +9,59 @@ using UnityEngine;
 
 namespace BroMakerLib.CustomObjects.Projectiles
 {
-    /// <summary>
-    /// CustomGrenade has all the default functionality of the Grenade class, with extra methods to make creating custom grenades easier
-    /// </summary>
+    /// <summary>CustomGrenade has all the default functionality of the Grenade class, with extra methods to make creating custom grenades easier</summary>
     public class CustomGrenade : Grenade, ICustomProjectile
     {
-        /// <summary>
-        /// Override Awake() and set this value to false to prevent the sprite from being loaded automatically
-        /// </summary>
+        /// <summary>Override Awake() and set this value to false to prevent the sprite from being loaded automatically</summary>
         public bool SpriteAutoLoad = true;
 
-        /// <summary>
-        /// Stores the sprite that was loaded if automatic loading is enabled
-        /// </summary>
+        /// <summary>Stores the sprite that was loaded if automatic loading is enabled</summary>
         public SpriteSM StoredSprite = null;
 
-        /// <summary>
-        /// Stores all custom projectile prefabs that have been created to avoid having to recreate them.
-        /// </summary>
+        /// <summary>Stores all custom projectile prefabs that have been created to avoid having to recreate them.</summary>
         public static Dictionary<Type, CustomGrenade> CustomGrenadePrefabs = new Dictionary<Type, CustomGrenade>();
 
-        /// <summary>
-        /// Tracks whether the prefab setup has been run or not.
-        /// </summary>
+        /// <summary>Tracks whether the prefab setup has been run or not.</summary>
         public bool RanSetup = false;
 
-        /// <summary>
-        /// Folder that contains your sprite image file.
-        /// Defaults to "projectiles".
-        /// Set this to "" if your grenades are in the same folder as your .dll
-        /// </summary>
+        /// <summary>Folder that contains your sprite image file. Defaults to "projectiles". Set this to "" if your grenades are in the same folder as your .dll</summary>
         public string SpriteFolder = "projectiles";
 
-        /// <summary>
-        /// Name of your image file that will be automatically loaded.
-        /// Defaults to "nameofyourclass.png".
-        /// </summary>
+        /// <summary>Name of your image file that will be automatically loaded. Defaults to "nameofyourclass.png".</summary>
         public string SpriteFileName = string.Empty;
 
-        /// <summary>
-        /// Automatically gets set to the path to the folder your sprite is in.
-        /// Don't set this manually.
-        /// </summary>
+        /// <summary>Automatically gets set to the path to the folder your sprite is in. Don't set this manually.</summary>
         public string SpriteDirectoryPath = string.Empty;
 
-        /// <summary>
-        /// Automatically gets set to the path to the folder your grenade's assembly is in.
-        /// Don't set this manually.
-        /// </summary>
+        /// <summary>Automatically gets set to the path to the folder your grenade's assembly is in. Don't set this manually.</summary>
         public string AssemblyPath = string.Empty;
 
-        /// <summary>
-        /// Folder that contains your grenade's sounds.
-        /// Defaults to "sounds".
-        /// Set this to "" if your sounds are in the same folder as your .dll
-        /// </summary>
+        /// <summary>Folder that contains your grenade's sounds. Defaults to "sounds". Set this to "" if your sounds are in the same folder as your .dll</summary>
         public string SoundFolder = "sounds";
 
-        /// <summary>
-        /// Automatically gets set to the path to the folder your grenade's sounds are in.
-        /// Assumes they're in a folder called sounds
-        /// </summary>
+        /// <summary>Automatically gets set to the path to the folder your grenade's sounds are in. Assumes they're in a folder called sounds</summary>
         public string SoundPath = string.Empty;
 
         /// <summary>
-        /// Size of one frame of your grenade.
-        /// By default this will be the whole image, but if your grenade has multiple frames, you will want to change this.
+        /// Size of one frame of your grenade. By default this will be the whole image, but if your grenade has multiple frames, you will want to change this.
         /// </summary>
         public Vector2 SpritePixelDimensions = Vector2.zero;
 
-        /// <summary>
-        /// Sets the lower left corner of your sprite.
-        /// Defaults to (0, heightofyourimage), which will include the whole image.
-        /// </summary>
+        /// <summary>Sets the lower left corner of your sprite. Defaults to (0, heightofyourimage), which will include the whole image.</summary>
         public Vector2 SpriteLowerLeftPixel = Vector2.zero;
 
-        /// <summary>
-        /// Sets the offset of your sprite from the game object.
-        /// Defaults to (0, 0, 0).
-        /// </summary>
+        /// <summary>Sets the offset of your sprite from the game object. Defaults to (0, 0, 0).</summary>
         public Vector3 SpriteOffset = Vector3.zero;
 
-        /// <summary>
-        /// Sets the sprite color.
-        /// Defaults to white.
-        /// </summary>
+        /// <summary>Sets the sprite color. Defaults to white.</summary>
         public Color SpriteColor = Color.white;
 
-        /// <summary>
-        /// Sets the SoundHolder of the grenade.
-        /// Defaults to Rambro's Grenade's SoundHolder.
-        /// </summary>
+        /// <summary>Sets the SoundHolder of the grenade. Defaults to Rambro's Grenade's SoundHolder.</summary>
         public SoundHolder DefaultSoundHolder = null;
 
         /// <summary>
-        /// You must override this function for automatic sprite loading to work.
-        /// If you don't put any code in your Awake() function besides base.Awake(), the sprite loading will attempt to use the defaults to load your sprite.
+        /// You must override this function for automatic sprite loading to work. If you don't put any code in your Awake() function besides base.Awake(), the sprite loading will
+        /// attempt to use the defaults to load your sprite.
         /// </summary>
         protected override void Awake()
         {
@@ -174,16 +131,13 @@ namespace BroMakerLib.CustomObjects.Projectiles
         }
 
         /// <summary>
-        /// Runs one time after Awake() is called when the prefab is being created.
-        /// Allows you to setup and store variables in the prefab to be reused by copies of this projectile.
+        /// Runs one time after Awake() is called when the prefab is being created. Allows you to setup and store variables in the prefab to be reused by copies of this projectile.
         /// </summary>
         public virtual void PrefabSetup()
         {
         }
 
-        /// <summary>
-        /// Creates a prefab with the default required components for a Grenade.
-        /// </summary>
+        /// <summary>Creates a prefab with the default required components for a Grenade.</summary>
         /// <typeparam name="T">Type of your custom grenade class.</typeparam>
         /// <returns>The prefab of your custom grenade.</returns>
         public static T CreatePrefab<T>() where T : CustomGrenade
@@ -205,9 +159,7 @@ namespace BroMakerLib.CustomObjects.Projectiles
             }
         }
 
-        /// <summary>
-        /// Creates a prefab with the default required components for a Grenade along with the additional specified components.
-        /// </summary>
+        /// <summary>Creates a prefab with the default required components for a Grenade along with the additional specified components.</summary>
         /// <param name="additionalComponents">Additional components to add to the prefab.</param>
         /// <typeparam name="T">Type of your custom grenade class.</typeparam>
         /// <returns>The prefab of your custom grenade.</returns>
@@ -231,9 +183,7 @@ namespace BroMakerLib.CustomObjects.Projectiles
             }
         }
 
-        /// <summary>
-        /// Spawns a grenade locally and enables it after spawning.
-        /// </summary>
+        /// <summary>Spawns a grenade locally and enables it after spawning.</summary>
         /// <param name="firedBy">The MonoBehaviour that threw this grenade.</param>
         /// <param name="x">The X position to spawn the grenade.</param>
         /// <param name="y">The Y position to spawn the grenade.</param>

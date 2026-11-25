@@ -32,7 +32,10 @@ namespace BroMakerLib.Infos
         /// <summary>Melee ability config: a `"preset"` key plus optional field overrides on the ability.</summary>
         public JToken melee { get; set; }
 
-        /// <summary>Passive ability configs, each a `"preset"` key plus optional field overrides, where `"allowConflict": true` keeps a passive that would otherwise be dropped for a conflict.</summary>
+        /// <summary>
+        /// Passive ability configs, each a `"preset"` key plus optional field overrides, where `"allowConflict": true` keeps a passive that would otherwise be dropped for a
+        /// conflict.
+        /// </summary>
         public JToken passives { get; set; }
 
         [JsonConverter(typeof(CutsceneConverter))]

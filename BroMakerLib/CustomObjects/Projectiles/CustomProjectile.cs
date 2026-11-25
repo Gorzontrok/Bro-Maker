@@ -9,114 +9,69 @@ using UnityEngine;
 
 namespace BroMakerLib.CustomObjects.Projectiles
 {
-    /// <summary>
-    /// CustomProjectile has all the default functionality of the Projectile class, with extra methods to make creating custom projectiles easier
-    /// </summary>
+    /// <summary>CustomProjectile has all the default functionality of the Projectile class, with extra methods to make creating custom projectiles easier</summary>
     public class CustomProjectile : Projectile, ICustomProjectile
     {
-        /// <summary>
-        /// Override Awake() and set this value to false to prevent the sprite from being loaded automatically
-        /// </summary>
+        /// <summary>Override Awake() and set this value to false to prevent the sprite from being loaded automatically</summary>
         public bool SpriteAutoLoad = true;
 
-        /// <summary>
-        /// Stores the sprite that was loaded if automatic loading is enabled
-        /// </summary>
+        /// <summary>Stores the sprite that was loaded if automatic loading is enabled</summary>
         public SpriteSM Sprite = null;
 
-        /// <summary>
-        /// Stores all custom projectile prefabs that have been created to avoid having to recreate them.
-        /// </summary>
+        /// <summary>Stores all custom projectile prefabs that have been created to avoid having to recreate them.</summary>
         public static Dictionary<Type, CustomProjectile> CustomProjectilePrefabs = new Dictionary<Type, CustomProjectile>();
 
-        /// <summary>
-        /// Tracks whether the prefab setup has been run or not.
-        /// </summary>
+        /// <summary>Tracks whether the prefab setup has been run or not.</summary>
         public bool RanSetup = false;
 
-        /// <summary>
-        /// Folder that contains your sprite image file.
-        /// Defaults to "projectiles".
-        /// Set this to "" if your sprite is in the same folder as your .dll
-        /// </summary>
+        /// <summary>Folder that contains your sprite image file. Defaults to "projectiles". Set this to "" if your sprite is in the same folder as your .dll</summary>
         public string SpriteFolder = "projectiles";
 
-        /// <summary>
-        /// Name of your image file that will be automatically loaded.
-        /// Defaults to "nameofyourclass.png".
-        /// </summary>
+        /// <summary>Name of your image file that will be automatically loaded. Defaults to "nameofyourclass.png".</summary>
         public string SpriteFileName = string.Empty;
 
-        /// <summary>
-        /// Automatically gets set to the path to the folder your sprite is in.
-        /// Don't set this manually.
-        /// </summary>
+        /// <summary>Automatically gets set to the path to the folder your sprite is in. Don't set this manually.</summary>
         public string SpriteDirectoryPath = string.Empty;
 
-        /// <summary>
-        /// Automatically gets set to the path to the folder your projectile's assembly is in.
-        /// Don't set this manually.
-        /// </summary>
+        /// <summary>Automatically gets set to the path to the folder your projectile's assembly is in. Don't set this manually.</summary>
         public string AssemblyPath = string.Empty;
 
-        /// <summary>
-        /// Folder that contains your projectile's sounds.
-        /// Defaults to "sounds".
-        /// Set this to "" if your sounds are in the same folder as your .dll
-        /// </summary>
+        /// <summary>Folder that contains your projectile's sounds. Defaults to "sounds". Set this to "" if your sounds are in the same folder as your .dll</summary>
         public string SoundFolder = "sounds";
 
-        /// <summary>
-        /// Automatically gets set to the path to the folder your projectile's sounds are in.
-        /// Assumes they're in a folder called sounds
-        /// </summary>
+        /// <summary>Automatically gets set to the path to the folder your projectile's sounds are in. Assumes they're in a folder called sounds</summary>
         public string SoundPath = string.Empty;
 
         /// <summary>
-        /// Size of one frame of your projectile.
-        /// By default this will be the whole image, but if your projectile has multiple frames, you will want to change this.
+        /// Size of one frame of your projectile. By default this will be the whole image, but if your projectile has multiple frames, you will want to change this.
         /// </summary>
         public Vector2 SpritePixelDimensions = Vector2.zero;
 
-        /// <summary>
-        /// Sets the lower left corner of your sprite.
-        /// Defaults to (0, heightofyourimage), which will include the whole image.
-        /// </summary>
+        /// <summary>Sets the lower left corner of your sprite. Defaults to (0, heightofyourimage), which will include the whole image.</summary>
         public Vector2 SpriteLowerLeftPixel = Vector2.zero;
 
         /// <summary>
-        /// Controls how wide your sprite appears in-game. This can be set to anything, regardless of the actual image size.
-        /// Defaults to the same width as your image file.
+        /// Controls how wide your sprite appears in-game. This can be set to anything, regardless of the actual image size. Defaults to the same width as your image file.
         /// </summary>
         public float SpriteWidth = -1f;
 
         /// <summary>
-        /// Controls how tall your sprite appears in-game. This can be set to anything, regardless of the actual image size.
-        /// Defaults to the same height as your image file.
+        /// Controls how tall your sprite appears in-game. This can be set to anything, regardless of the actual image size. Defaults to the same height as your image file.
         /// </summary>
         public float SpriteHeight = -1f;
 
-        /// <summary>
-        /// Sets the offset of your sprite from the game object.
-        /// Defaults to (0, 0, 0).
-        /// </summary>
+        /// <summary>Sets the offset of your sprite from the game object. Defaults to (0, 0, 0).</summary>
         public Vector3 SpriteOffset = Vector3.zero;
 
-        /// <summary>
-        /// Sets the sprite color.
-        /// Defaults to white.
-        /// </summary>
+        /// <summary>Sets the sprite color. Defaults to white.</summary>
         public Color SpriteColor = Color.white;
 
-        /// <summary>
-        /// Sets the SoundHolder of the projectile.
-        /// Defaults to Rambro's Bullet's SoundHolder.
-        /// </summary>
+        /// <summary>Sets the SoundHolder of the projectile. Defaults to Rambro's Bullet's SoundHolder.</summary>
         public SoundHolder DefaultSoundHolder = null;
 
         /// <summary>
-        /// You must override this function for automatic sprite loading to work.
-        /// If you don't put any code in your Awake() function besides base.Awake(), the sprite loading will attempt to use the defaults to load your sprite.
+        /// You must override this function for automatic sprite loading to work. If you don't put any code in your Awake() function besides base.Awake(), the sprite loading will
+        /// attempt to use the defaults to load your sprite.
         /// </summary>
         protected override void Awake()
         {
@@ -186,16 +141,13 @@ namespace BroMakerLib.CustomObjects.Projectiles
         }
 
         /// <summary>
-        /// Runs one time after Awake() is called when the prefab is being created.
-        /// Allows you to setup and store variables in the prefab to be reused by copies of this projectile.
+        /// Runs one time after Awake() is called when the prefab is being created. Allows you to setup and store variables in the prefab to be reused by copies of this projectile.
         /// </summary>
         public virtual void PrefabSetup()
         {
         }
 
-        /// <summary>
-        /// Creates a prefab with the default required components for a Projectile.
-        /// </summary>
+        /// <summary>Creates a prefab with the default required components for a Projectile.</summary>
         /// <typeparam name="T">Type of your custom projectile class.</typeparam>
         /// <returns>The prefab of your custom projectile.</returns>
         public static T CreatePrefab<T>() where T : CustomProjectile
@@ -217,9 +169,7 @@ namespace BroMakerLib.CustomObjects.Projectiles
             }
         }
 
-        /// <summary>
-        /// Creates a prefab with the default required components for a Projectile along with the additional specified components.
-        /// </summary>
+        /// <summary>Creates a prefab with the default required components for a Projectile along with the additional specified components.</summary>
         /// <param name="additionalComponents">Additional components to add to the prefab.</param>
         /// <typeparam name="T">Type of your custom projectile class.</typeparam>
         /// <returns>The prefab of your custom projectile.</returns>
@@ -243,9 +193,7 @@ namespace BroMakerLib.CustomObjects.Projectiles
             }
         }
 
-        /// <summary>
-        /// Spawns a projectile locally and enables it after spawning.
-        /// </summary>
+        /// <summary>Spawns a projectile locally and enables it after spawning.</summary>
         /// <param name="FiredBy">The MonoBehaviour that fired this projectile.</param>
         /// <param name="x">The X position to spawn the projectile.</param>
         /// <param name="y">The Y position to spawn the projectile.</param>

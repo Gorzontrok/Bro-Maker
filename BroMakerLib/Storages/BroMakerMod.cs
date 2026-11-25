@@ -86,8 +86,7 @@ namespace BroMakerLib
             return json;
         }
 
-        private object[] CheckFiles<T>(object[] objects)
-            where T : CustomBroforceObjectInfo
+        private object[] CheckFiles<T>(object[] objects) where T : CustomBroforceObjectInfo
         {
             if (objects.IsNullOrEmpty())
             {

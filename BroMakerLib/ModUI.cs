@@ -367,7 +367,8 @@ namespace BroMakerLib
                                     isHorizontalOpen = true;
                                 }
 
-                                if (_selectedCustomBrosIndex == broIndex != GUILayout.Toggle(_selectedCustomBrosIndex == broIndex, mod.StoredHeroes[modIndex].name, _buttonStyle, WindowScaling.ScaledWidth(150)))
+                                if (_selectedCustomBrosIndex == broIndex != GUILayout.Toggle(_selectedCustomBrosIndex == broIndex, mod.StoredHeroes[modIndex].name, _buttonStyle,
+                                        WindowScaling.ScaledWidth(150)))
                                 {
                                     if (_selectedCustomBrosIndex == broIndex)
                                     {
@@ -593,7 +594,8 @@ namespace BroMakerLib
                 GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false), WindowScaling.ScaledWidth(500));
                 for (int i = 0; i < 4; ++i)
                 {
-                    if (selectedPlayerNum == i != GUILayout.Toggle(selectedPlayerNum == i, new GUIContent("Player " + (i + 1), "Select which player to switch to this custom bro when you press switch to bro"), _buttonStyle))
+                    if (selectedPlayerNum == i != GUILayout.Toggle(selectedPlayerNum == i,
+                            new GUIContent("Player " + (i + 1), "Select which player to switch to this custom bro when you press switch to bro"), _buttonStyle))
                     {
                         selectedPlayerNum = i;
                     }
@@ -608,7 +610,8 @@ namespace BroMakerLib
             {
                 if (HeroController.players[selectedPlayerNum] == null)
                 {
-                    GUILayout.Button(new GUIContent("Switch to Bro", "Join a level as Player " + (selectedPlayerNum + 1) + " to switch to this custom bro"), _disabledStyleButton, WindowScaling.ScaledWidth(300));
+                    GUILayout.Button(new GUIContent("Switch to Bro", "Join a level as Player " + (selectedPlayerNum + 1) + " to switch to this custom bro"), _disabledStyleButton,
+                        WindowScaling.ScaledWidth(300));
                 }
                 else if (GUILayout.Button(new GUIContent("Switch to Bro", "Switch selected player to this custom bro"), WindowScaling.ScaledWidth(300)))
                 {
@@ -620,7 +623,8 @@ namespace BroMakerLib
                 List<CustomIntroCutscene> cutscenes = bro.GetInfo().Cutscene;
                 if (cutscenes.Count > 0 && !CutsceneController.HasInstance())
                 {
-                    GUILayout.Button(new GUIContent("Play Unlock Cutscene", "Start a level to play this bro's unlock cutscene"), _disabledStyleButton, WindowScaling.ScaledWidth(300));
+                    GUILayout.Button(new GUIContent("Play Unlock Cutscene", "Start a level to play this bro's unlock cutscene"), _disabledStyleButton,
+                        WindowScaling.ScaledWidth(300));
                 }
                 else if (cutscenes.Count > 0 && GUILayout.Button(new GUIContent("Play Unlock Cutscene", "Play this bro's unlock cutscene"), WindowScaling.ScaledWidth(300)))
                 {
@@ -646,13 +650,17 @@ namespace BroMakerLib
                     // Show disabled in settings for enable / disable toggle
                     if (!BSett.instance.automaticSpawn)
                     {
-                        GUILayout.Button(new GUIContent("Disabled in Settings", "Automatic spawning of bros is disabled in Spawn Options in the Settings tab"), _disabledStyleButton, WindowScaling.ScaledWidth(130));
+                        GUILayout.Button(new GUIContent("Disabled in Settings", "Automatic spawning of bros is disabled in Spawn Options in the Settings tab"),
+                            _disabledStyleButton, WindowScaling.ScaledWidth(130));
                         WindowScaling.ScaledSpace(70);
                     }
                     // Show locked for enable / disable toggle
                     else if (!broUnlocked)
                     {
-                        GUILayout.Button(new GUIContent("Locked", "Bro is locked, rescue more lives or play their unlock level to unlock them. The unlock level can be accessed from the Custom Bros menu on the main menu."), _disabledStyleButton, WindowScaling.ScaledWidth(110));
+                        GUILayout.Button(
+                            new GUIContent("Locked",
+                                "Bro is locked, rescue more lives or play their unlock level to unlock them. The unlock level can be accessed from the Custom Bros menu on the main menu."),
+                            _disabledStyleButton, WindowScaling.ScaledWidth(110));
                         WindowScaling.ScaledSpace(90);
                     }
                     // Show Enabled for enable / disable toggle
@@ -680,12 +688,18 @@ namespace BroMakerLib
                     }
                     else
                     {
-                        GUILayout.Label(new GUIContent("Locked", "Bro is locked, rescue more lives or play their unlock level to unlock them. The unlock level can be accessed from the Custom Bros menu on the main menu."), _disabledStyle, WindowScaling.ScaledWidth(100));
+                        GUILayout.Label(
+                            new GUIContent("Locked",
+                                "Bro is locked, rescue more lives or play their unlock level to unlock them. The unlock level can be accessed from the Custom Bros menu on the main menu."),
+                            _disabledStyle, WindowScaling.ScaledWidth(100));
                     }
                 }
                 else
                 {
-                    GUILayout.Button(new GUIContent("Locked", "Bro is locked, rescue more lives or play their unlock level to unlock them. The unlock level can be accessed from the Custom Bros menu on the main menu."), _disabledStyleButton, WindowScaling.ScaledWidth(110));
+                    GUILayout.Button(
+                        new GUIContent("Locked",
+                            "Bro is locked, rescue more lives or play their unlock level to unlock them. The unlock level can be accessed from the Custom Bros menu on the main menu."),
+                        _disabledStyleButton, WindowScaling.ScaledWidth(110));
                 }
             }
 
@@ -723,7 +737,8 @@ namespace BroMakerLib
         {
             // show mod information
             GUILayout.BeginHorizontal("box");
-            if (_selectedCustomBrosIndex == broIndex != GUILayout.Toggle(_selectedCustomBrosIndex == broIndex, mod.StoredHeroes[0].name, _buttonStyle, WindowScaling.ScaledWidth(150)))
+            if (_selectedCustomBrosIndex == broIndex !=
+                GUILayout.Toggle(_selectedCustomBrosIndex == broIndex, mod.StoredHeroes[0].name, _buttonStyle, WindowScaling.ScaledWidth(150)))
             {
                 if (_selectedCustomBrosIndex == broIndex)
                 {
@@ -755,13 +770,17 @@ namespace BroMakerLib
             // Show disabled in settings for enable / disable toggle
             if (!BSett.instance.automaticSpawn)
             {
-                GUILayout.Button(new GUIContent("Disabled in Settings", "Automatic spawning of bros is disabled in Spawn Options in the Settings tab"), _disabledStyleButton, WindowScaling.ScaledWidth(130));
+                GUILayout.Button(new GUIContent("Disabled in Settings", "Automatic spawning of bros is disabled in Spawn Options in the Settings tab"), _disabledStyleButton,
+                    WindowScaling.ScaledWidth(130));
                 WindowScaling.ScaledSpace(70);
             }
             // Show locked for enable / disable toggle
             else if (!broUnlocked)
             {
-                GUILayout.Button(new GUIContent("Locked", "Bro is locked, rescue more lives or play their unlock level to unlock them. The unlock level can be accessed from the Custom Bros menu on the main menu."), _disabledStyleButton, WindowScaling.ScaledWidth(110));
+                GUILayout.Button(
+                    new GUIContent("Locked",
+                        "Bro is locked, rescue more lives or play their unlock level to unlock them. The unlock level can be accessed from the Custom Bros menu on the main menu."),
+                    _disabledStyleButton, WindowScaling.ScaledWidth(110));
                 WindowScaling.ScaledSpace(90);
             }
             // Show Enabled for enable / disable toggle
@@ -790,7 +809,10 @@ namespace BroMakerLib
             }
             else
             {
-                GUILayout.Label(new GUIContent("Locked", "Bro is locked, rescue more lives or play their unlock level to unlock them. The unlock level can be accessed from the Custom Bros menu on the main menu."), _disabledStyle, WindowScaling.ScaledWidth(100));
+                GUILayout.Label(
+                    new GUIContent("Locked",
+                        "Bro is locked, rescue more lives or play their unlock level to unlock them. The unlock level can be accessed from the Custom Bros menu on the main menu."),
+                    _disabledStyle, WindowScaling.ScaledWidth(100));
             }
 
             GUILayout.EndHorizontal();
@@ -830,21 +852,24 @@ namespace BroMakerLib
 
         private static void SettingsContent()
         {
-            BSett.instance.showGeneralSettings = GUILayout.Toggle(BSett.instance.showGeneralSettings, new GUIContent("General Options", "Click to " + (BSett.instance.showGeneralSettings ? "collapse" : "expand") + " section"), _headerStyle);
+            BSett.instance.showGeneralSettings = GUILayout.Toggle(BSett.instance.showGeneralSettings,
+                new GUIContent("General Options", "Click to " + (BSett.instance.showGeneralSettings ? "collapse" : "expand") + " section"), _headerStyle);
 
             if (BSett.instance.showGeneralSettings)
             {
                 ShowGeneralSettings();
             }
 
-            BSett.instance.showSpawnSettings = GUILayout.Toggle(BSett.instance.showSpawnSettings, new GUIContent("Spawn Options", "Click to " + (BSett.instance.showSpawnSettings ? "collapse" : "expand") + " section"), _headerStyle);
+            BSett.instance.showSpawnSettings = GUILayout.Toggle(BSett.instance.showSpawnSettings,
+                new GUIContent("Spawn Options", "Click to " + (BSett.instance.showSpawnSettings ? "collapse" : "expand") + " section"), _headerStyle);
 
             if (BSett.instance.showSpawnSettings)
             {
                 ShowSpawnSettings();
             }
 
-            BSett.instance.showDeveloperSettings = GUILayout.Toggle(BSett.instance.showDeveloperSettings, new GUIContent("Developer Options", "Click to " + (BSett.instance.showDeveloperSettings ? "collapse" : "expand") + " section"), _headerStyle);
+            BSett.instance.showDeveloperSettings = GUILayout.Toggle(BSett.instance.showDeveloperSettings,
+                new GUIContent("Developer Options", "Click to " + (BSett.instance.showDeveloperSettings ? "collapse" : "expand") + " section"), _headerStyle);
 
             if (BSett.instance.showDeveloperSettings)
             {
@@ -856,9 +881,12 @@ namespace BroMakerLib
         private static void ShowGeneralSettings()
         {
             GUILayout.Space(15);
-            BSett.instance.scaleUIWithWindowWidth = GUILayout.Toggle(BSett.instance.scaleUIWithWindowWidth, new GUIContent("Scale UI width based on window width", "Scales BroMaker settings UI elements based on the width of the UnityModManager window"));
+            BSett.instance.scaleUIWithWindowWidth = GUILayout.Toggle(BSett.instance.scaleUIWithWindowWidth,
+                new GUIContent("Scale UI width based on window width", "Scales BroMaker settings UI elements based on the width of the UnityModManager window"));
             GUILayout.Space(5);
-            BSett.instance.scaleUIHeight = GUILayout.Toggle(BSett.instance.scaleUIHeight, new GUIContent("Scale UI height based on bro count", "Increases the height of the BroMaker settings window when more than 8 bros are installed rather than switching to using a scrollbar."));
+            BSett.instance.scaleUIHeight = GUILayout.Toggle(BSett.instance.scaleUIHeight,
+                new GUIContent("Scale UI height based on bro count",
+                    "Increases the height of the BroMaker settings window when more than 8 bros are installed rather than switching to using a scrollbar."));
             GUILayout.Space(5);
             BSett.instance.disableTooltips = GUILayout.Toggle(BSett.instance.disableTooltips, new GUIContent("Disable Tooltips", "Disables tooltips in the BroMaker settings"));
             GUILayout.Space(15);
@@ -869,7 +897,9 @@ namespace BroMakerLib
             GUILayout.Space(15);
             GUILayout.BeginHorizontal();
             BSett.instance.automaticSpawn = GUILayout.Toggle(BSett.instance.automaticSpawn, new GUIContent("Automatic Spawn", "Enable automatic spawning of custom bros"));
-            if (BSett.instance.equalSpawnProbability != (BSett.instance.equalSpawnProbability = GUILayout.Toggle(BSett.instance.equalSpawnProbability, new GUIContent("Custom bros have an equal chance of spawning as vanilla bros", "Automatically adjusts spawn probability so that custom bros have the same probability of spawning as vanilla bros"))))
+            if (BSett.instance.equalSpawnProbability != (BSett.instance.equalSpawnProbability = GUILayout.Toggle(BSett.instance.equalSpawnProbability,
+                    new GUIContent("Custom bros have an equal chance of spawning as vanilla bros",
+                        "Automatically adjusts spawn probability so that custom bros have the same probability of spawning as vanilla bros"))))
             {
             }
             GUILayout.EndHorizontal();
@@ -878,7 +908,9 @@ namespace BroMakerLib
             if (BSett.instance.equalSpawnProbability)
             {
                 float current = BroSpawnManager.CalculateSpawnProbability();
-                float now = RGUI.HorizontalSlider("Spawn Probability: ", "Probability of a custom bro spawning. The probability of any given custom bro spawning is equal to this divided by however many bros you have installed and enabled, which is " + PerBroSpawnProbability() + "%", BroSpawnManager.CalculateSpawnProbability(), 0f, 100f);
+                float now = RGUI.HorizontalSlider("Spawn Probability: ",
+                    "Probability of a custom bro spawning. The probability of any given custom bro spawning is equal to this divided by however many bros you have installed and enabled, which is " +
+                    PerBroSpawnProbability() + "%", BroSpawnManager.CalculateSpawnProbability(), 0f, 100f);
                 if (current != now)
                 {
                     BSett.instance.automaticSpawnProbabilty = now;
@@ -887,15 +919,22 @@ namespace BroMakerLib
             }
             else
             {
-                BSett.instance.automaticSpawnProbabilty = RGUI.HorizontalSlider("Spawn Probability: ", "Probability of a custom bro spawning. The probability of any given custom bro spawning is equal to this divided by however many bros you have installed and enabled, which is " + PerBroSpawnProbability() + "%", BroSpawnManager.CalculateSpawnProbability(), 0f, 100f);
+                BSett.instance.automaticSpawnProbabilty = RGUI.HorizontalSlider("Spawn Probability: ",
+                    "Probability of a custom bro spawning. The probability of any given custom bro spawning is equal to this divided by however many bros you have installed and enabled, which is " +
+                    PerBroSpawnProbability() + "%", BroSpawnManager.CalculateSpawnProbability(), 0f, 100f);
             }
 
             GUILayout.Space(15);
-            BSett.instance.onlyCustomInHardcore = GUILayout.Toggle(BSett.instance.onlyCustomInHardcore, new GUIContent("Only custom characters will spawn in IronBro mode", "Only custom bros will be unlockable in IronBro, once you have unlocked them all you will be unable to gain more lives"));
+            BSett.instance.onlyCustomInHardcore = GUILayout.Toggle(BSett.instance.onlyCustomInHardcore,
+                new GUIContent("Only custom characters will spawn in IronBro mode",
+                    "Only custom bros will be unlockable in IronBro, once you have unlocked them all you will be unable to gain more lives"));
             GUILayout.Space(15);
-            BSett.instance.maxHealthAtOne = GUILayout.Toggle(BSett.instance.maxHealthAtOne, new GUIContent("Max health always at 1", "This makes sure that bros default to 1 health even if it's not explicitly set in the json file"));
+            BSett.instance.maxHealthAtOne = GUILayout.Toggle(BSett.instance.maxHealthAtOne,
+                new GUIContent("Max health always at 1", "This makes sure that bros default to 1 health even if it's not explicitly set in the json file"));
             GUILayout.Space(15);
-            BSett.instance.disableCustomAvatarFlash = GUILayout.Toggle(BSett.instance.disableCustomAvatarFlash, new GUIContent("Disable avatar flashing for custom bros", "Prevents avatar flash effect on custom bros that plays when invulnerable or idle. This is disabled on vanilla bros by default."));
+            BSett.instance.disableCustomAvatarFlash = GUILayout.Toggle(BSett.instance.disableCustomAvatarFlash,
+                new GUIContent("Disable avatar flashing for custom bros",
+                    "Prevents avatar flash effect on custom bros that plays when invulnerable or idle. This is disabled on vanilla bros by default."));
         }
 
         private static float PerBroSpawnProbability()
@@ -921,8 +960,10 @@ namespace BroMakerLib
             }
             GUILayout.EndHorizontal();
             GUILayout.Space(15);
-            BSett.instance.debugLogs = GUILayout.Toggle(BSett.instance.debugLogs, new GUIContent("Debug Logs", "Enables debug logging which can be viewed in the UnityModManager log"));
-            BSett.instance.developerMode = GUILayout.Toggle(BSett.instance.developerMode, new GUIContent("Developer Mode", "Enables more options in the BroMakerSettings window for bro developers"));
+            BSett.instance.debugLogs = GUILayout.Toggle(BSett.instance.debugLogs,
+                new GUIContent("Debug Logs", "Enables debug logging which can be viewed in the UnityModManager log"));
+            BSett.instance.developerMode = GUILayout.Toggle(BSett.instance.developerMode,
+                new GUIContent("Developer Mode", "Enables more options in the BroMakerSettings window for bro developers"));
             GUILayout.Space(10);
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Unlock All Bros"))
@@ -1452,7 +1493,11 @@ namespace BroMakerLib
 
             if (_issueModHeaderStyle == null)
             {
-                _issueModHeaderStyle = new GUIStyle(GUI.skin.button) { fontStyle = FontStyle.Bold, fontSize = UnityModManager.UI.Scale(19), alignment = TextAnchor.MiddleLeft, padding = new RectOffset(4, 4, 4, 4), border = new RectOffset(0, 0, 0, 0), margin = new RectOffset(0, 0, 0, 0), richText = true };
+                _issueModHeaderStyle = new GUIStyle(GUI.skin.button)
+                {
+                    fontStyle = FontStyle.Bold, fontSize = UnityModManager.UI.Scale(19), alignment = TextAnchor.MiddleLeft, padding = new RectOffset(4, 4, 4, 4),
+                    border = new RectOffset(0, 0, 0, 0), margin = new RectOffset(0, 0, 0, 0), richText = true
+                };
                 _issueModHeaderStyle.normal.background = null;
                 _issueModHeaderStyle.hover.background = null;
                 _issueModHeaderStyle.active.background = null;
@@ -1461,7 +1506,11 @@ namespace BroMakerLib
             }
             if (_issueBroHeaderStyle == null)
             {
-                _issueBroHeaderStyle = new GUIStyle(GUI.skin.button) { fontStyle = FontStyle.Bold, fontSize = UnityModManager.UI.Scale(16), alignment = TextAnchor.MiddleLeft, padding = new RectOffset(4, 4, 4, 4), border = new RectOffset(0, 0, 0, 0), margin = new RectOffset(0, 0, 0, 0), richText = true };
+                _issueBroHeaderStyle = new GUIStyle(GUI.skin.button)
+                {
+                    fontStyle = FontStyle.Bold, fontSize = UnityModManager.UI.Scale(16), alignment = TextAnchor.MiddleLeft, padding = new RectOffset(4, 4, 4, 4),
+                    border = new RectOffset(0, 0, 0, 0), margin = new RectOffset(0, 0, 0, 0), richText = true
+                };
                 _issueBroHeaderStyle.normal.background = null;
                 _issueBroHeaderStyle.hover.background = null;
                 _issueBroHeaderStyle.active.background = null;
@@ -1470,16 +1519,22 @@ namespace BroMakerLib
             }
             if (_issueCountStyle == null)
             {
-                _issueCountStyle = new GUIStyle(GUI.skin.label) { fontSize = UnityModManager.UI.Scale(14), alignment = TextAnchor.MiddleRight, padding = new RectOffset(0, 0, 8, 8) };
+                _issueCountStyle = new GUIStyle(GUI.skin.label)
+                    { fontSize = UnityModManager.UI.Scale(14), alignment = TextAnchor.MiddleRight, padding = new RectOffset(0, 0, 8, 8) };
                 _issueCountStyle.normal.textColor = new Color(0.6f, 0.65f, 0.7f);
             }
             if (_issueMessageStyle == null)
             {
-                _issueMessageStyle = new GUIStyle(GUI.skin.label) { fontSize = UnityModManager.UI.Scale(14), alignment = TextAnchor.MiddleLeft, wordWrap = true, clipping = TextClipping.Clip, padding = new RectOffset(0, 0, 2, 2), richText = true };
+                _issueMessageStyle = new GUIStyle(GUI.skin.label)
+                {
+                    fontSize = UnityModManager.UI.Scale(14), alignment = TextAnchor.MiddleLeft, wordWrap = true, clipping = TextClipping.Clip, padding = new RectOffset(0, 0, 2, 2),
+                    richText = true
+                };
             }
             if (_issueExceptionStyle == null)
             {
-                _issueExceptionStyle = new GUIStyle(GUI.skin.label) { wordWrap = true, fontSize = UnityModManager.UI.Scale(12), padding = new RectOffset(0, 0, 0, 2), margin = new RectOffset(0, 0, 0, 0) };
+                _issueExceptionStyle = new GUIStyle(GUI.skin.label)
+                    { wordWrap = true, fontSize = UnityModManager.UI.Scale(12), padding = new RectOffset(0, 0, 0, 2), margin = new RectOffset(0, 0, 0, 0) };
                 _issueExceptionStyle.normal.textColor = new Color(0.7f, 0.7f, 0.72f);
             }
             if (_issueCopyButtonStyle == null)

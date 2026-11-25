@@ -20,7 +20,8 @@ namespace BroMakerLib
             {
                 return "true or false";
             }
-            if (type == typeof(long) || type == typeof(int) || type == typeof(short) || type == typeof(byte) || type == typeof(double) || type == typeof(float) || type == typeof(decimal))
+            if (type == typeof(long) || type == typeof(int) || type == typeof(short) || type == typeof(byte) || type == typeof(double) || type == typeof(float) ||
+                type == typeof(decimal))
             {
                 return "a number";
             }
@@ -36,8 +37,8 @@ namespace BroMakerLib
         }
 
         /// <summary>
-        /// Gets the appropriate value from a variant list based on the variant index.
-        /// Returns the value at variantIndex if available, otherwise returns the first item, or default(T) if list is empty.
+        /// Gets the appropriate value from a variant list based on the variant index. Returns the value at variantIndex if available, otherwise returns the first item, or
+        /// default(T) if list is empty.
         /// </summary>
         /// <typeparam name="T">Type of the list elements</typeparam>
         /// <param name="list">The variant list</param>
@@ -60,9 +61,7 @@ namespace BroMakerLib
             return list[0]; // Fallback to first if index out of range
         }
 
-        /// <summary>
-        /// Determines if the specified unit is a boss
-        /// </summary>
+        /// <summary>Determines if the specified unit is a boss</summary>
         /// <param name="unit">Unit to check</param>
         /// <returns>True if unit is a boss</returns>
         public static bool IsBoss(Unit unit)
@@ -71,9 +70,7 @@ namespace BroMakerLib
                    unit is TankBig || unit is Mookopter || unit is GoliathMech || unit is MechWeapon;
         }
 
-        /// <summary>
-        /// Determines if the specified GameObject is a boss
-        /// </summary>
+        /// <summary>Determines if the specified GameObject is a boss</summary>
         /// <param name="obj">Object with the boss component</param>
         /// <returns>True if GameObject has a boss component attached</returns>
         public static bool IsBoss(GameObject obj)
@@ -99,9 +96,7 @@ namespace BroMakerLib
             return false;
         }
 
-        /// <summary>
-        /// Changes the specified players special materials
-        /// </summary>
+        /// <summary>Changes the specified players special materials</summary>
         /// <param name="playerNum"></param>
         /// <param name="specialMaterials">List of materials to set special to, if only one is specified, all icons will be set to it</param>
         /// <param name="offset">Offset to move all special icons horizontally or vertically</param>
@@ -142,9 +137,7 @@ namespace BroMakerLib
             }
         }
 
-        /// <summary>
-        /// Changes the specified players special materials
-        /// </summary>
+        /// <summary>Changes the specified players special materials</summary>
         /// <param name="playerNum"></param>
         /// <param name="specialMaterial">Material to set special to, all icons will be set to it</param>
         /// <param name="offset">Offset to move all special icons horizontally or vertically</param>
@@ -174,9 +167,7 @@ namespace BroMakerLib
             }
         }
 
-        /// <summary>
-        /// Creates a Gib prefab. Be sure the Gib Holder is set to inactive or else your gibs will be destroyed.
-        /// </summary>
+        /// <summary>Creates a Gib prefab. Be sure the Gib Holder is set to inactive or else your gibs will be destroyed.</summary>
         /// <param name="name">Name of GameObject</param>
         /// <param name="lowerLeftPixel">Lower left pixel of gib</param>
         /// <param name="pixelDimensions">Width and Height of gib</param>
@@ -209,12 +200,11 @@ namespace BroMakerLib
         /// <param name="fallHitSound"></param>
         /// <param name="isOnFire"></param>
         /// <returns></returns>
-        public static Gib CreateGibPrefab(string name, Vector2 lowerLeftPixel, Vector2 pixelDimensions, float spriteWidth, float spriteHeight, Vector3 spriteOffset, Vector3 localPositionOffset, bool doesRotate, DoodadGibsType gibType,
-            float size = 3f, bool hasBloodTrail = true, BloodColor color = BloodColor.None, float bloodyM = 1f,
-            bool shrink = false, int rotateFrames = 8, bool rotateAtRightAngles = false, bool hasSmokeTrail = false, int smokeTrailBounces = 3, float forceMultiplier = 1f,
-            float startLife = 1f, float lifeM = 1f, float randomLifeM = 1f, float r = 0f, float rotationSpeedMultiplier = 1f, float bounceM = 0.4f,
-            float frictionM = 0.5f, float drag = 0,
-            bool randomiseGravityM = false, float gravityMrandomRange = 0.1f, AudioClip[] fallHitSound = null, bool isOnFire = false)
+        public static Gib CreateGibPrefab(string name, Vector2 lowerLeftPixel, Vector2 pixelDimensions, float spriteWidth, float spriteHeight, Vector3 spriteOffset,
+            Vector3 localPositionOffset, bool doesRotate, DoodadGibsType gibType, float size = 3f, bool hasBloodTrail = true, BloodColor color = BloodColor.None,
+            float bloodyM = 1f, bool shrink = false, int rotateFrames = 8, bool rotateAtRightAngles = false, bool hasSmokeTrail = false, int smokeTrailBounces = 3,
+            float forceMultiplier = 1f, float startLife = 1f, float lifeM = 1f, float randomLifeM = 1f, float r = 0f, float rotationSpeedMultiplier = 1f, float bounceM = 0.4f,
+            float frictionM = 0.5f, float drag = 0, bool randomiseGravityM = false, float gravityMrandomRange = 0.1f, AudioClip[] fallHitSound = null, bool isOnFire = false)
         {
             Gib gib = new GameObject(name, new Type[] { typeof(MeshFilter), typeof(MeshRenderer), typeof(SpriteSM), typeof(Gib) }).GetComponent<Gib>();
 

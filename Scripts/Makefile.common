@@ -1,7 +1,7 @@
 # Makefile.common - Shared build infrastructure for Broforce mods
 # Source: Broforce-Templates/Scripts/Makefile.common
 # Synced to repos via sync.py
-# Revision: 6
+# Revision: 7
 
 # Required variables (must be set before including this file):
 #   PROJECT_NAME  - Display name for help text
@@ -386,8 +386,8 @@ skip > 0 { c = substr($$0, 1, 1); if (c == "+" || c == "-") skip--; next }
 endef
 export _CHANGED_LINES_AWK
 
-# Splits jb's hunks into runs of corresponding lines by a token diff and keeps the runs on a changed line (an inserted or blank run also beside one or a deletion),
-# then those they need: using-only runs, less the usings jb added that OMIT names, and the runs holding the partners of a kept run's changed brackets. Lines are joined, not terminated.
+# Splits jb's hunks into runs of corresponding lines by a token diff and keeps the runs on a changed line (an inserted or blank run also beside one or a deletion), then those they need: using-only runs,
+# less the usings jb added that OMIT names, the partners of a kept run's changed brackets, and every run of a /// block a kept run, changed line or inner deletion touches, as jb reflows it whole. Lines are joined, not terminated.
 define _KEEP_HUNKS_AWK
 function take(l) { if (!(l in kept) && !(l in noop)) { kept[l] = 1; q[++nq] = l } }
 function skipchr(s, i, n, c) { while (i <= n) { c = substr(s, i++, 1); if (c == "\134") i++; else if (c == "'") break } return i }
@@ -499,6 +499,18 @@ function refine(h, a, b, c, d, nt, nu, cmd, s, ok, i, j, n, r, op, A, B, C, D, k
   leaf(bw + 1, b, bc + 1, d)
   ht[h] = nl
 }
+function blocks(L, n, S, E, j, s) { for (j = 1; j <= n; j++) if (L[j] ~ DOC) { if (!((j - 1) in S)) s = j; S[j] = s; E[s] = j } }
+function tb(s, j, a, b, h, l, x) {
+  if (!(s ? (j in cdb) : (j in wdb))) return
+  a = s ? cdb[j] : wdb[j]
+  if ((s, a) in tbd) return
+  tbd[s, a] = 1; b = s ? cde[a] : wde[a]
+  for (h = 1; h <= H; h++) if (s ? (cs[h] <= b && ce[h] >= a) : (ws[h] <= b && we[h] >= a)) {
+    refine(h)
+    for (l = hf[h]; l <= ht[h]; l++) if (s ? (lcs[l] <= b && lce[l] >= a) : (ls[l] <= b && le[l] >= a)) take(l)
+  }
+  for (x = a; x <= b; x++) if (s ? (x in cm) : (x in wm)) tb(1 - s, s ? cm[x] : wm[x])
+}
 function near(h, j) {
   for (j = ws[h] - 1; j <= we[h] + 1; j++) if (j in chg) return 1
   for (j = ws[h] - 1; j <= we[h]; j++) if (j in gap) return 1
@@ -522,7 +534,7 @@ function emit(L, a, b, c, j) {
     if (c && (j in omit)) { if (L[j] ~ /^\357\273\277/) bom = "\357\273\277" }
     else { printf "%s%s%s", sep, bom, L[j] > out; sep = "\n"; bom = ""; if (c && (j in au)) wu = wu " " au[j] }
 }
-BEGIN { CR = "\015"; TOK = "[A-Za-z0-9_]+|[^ \t\015]"; BL = "^[ \t\015]*$$"; TW = ENVIRON["_JB_TOKENS"] "/tokw"; TC = ENVIRON["_JB_TOKENS"] "/tokc" }
+BEGIN { CR = "\015"; TOK = "[A-Za-z0-9_]+|[^ \t\015]"; BL = "^[ \t\015]*$$"; DOC = "^(\357\273\277)?[ \t]*///"; TW = ENVIRON["_JB_TOKENS"] "/tokw"; TC = ENVIRON["_JB_TOKENS"] "/tokc" }
 FILENAME == ARGV[1] { if ($$1 ~ /^g/) gap[substr($$1, 2) + 0] = 1; else if ($$1 != "none") changed[$$1 + 0] = 1; next }
 FILENAME == ARGV[2] {
   if ($$0 !~ /^[0-9]/) next
@@ -543,6 +555,10 @@ END {
   for (j in changed) chg[j] = 1
   for (j in changed) { m = split(wp[j], x, " "); for (i = 1; i <= m; i++) if (x[i] - j > 1 && (x[i] in changed)) for (k = j + 1; k < x[i] + 0; k++) chg[k] = 1 }
   for (h = 1; h <= H; h++) if (near(h)) { refine(h); for (l = hf[h]; l <= ht[h]; l++) if (seeds(l)) take(l) }
+  blocks(w, nw, wdb, wde); blocks(cc, nc, cdb, cde)
+  p = 1; o = 0
+  for (h = 1; h <= H + 1; h++) { for (j = p; j < (h > H ? nw + 1 : ws[h]); j++) { wm[j] = j + o; cm[j + o] = j } if (h <= H) { p = we[h] + 1; o = ce[h] - we[h] } }
+  for (j = 1; j <= nw; j++) { if (j in chg) tb(0, j); k = j + 1; if ((j in gap) && (j in wdb) && (k in wdb) && wdb[j] == wdb[k]) tb(0, j) }
   if (nq) for (h = 1; h <= H; h++) {
     if (!(h in refd)) {
       if (usings(w, ws[h], we[h]) && usings(cc, cs[h], ce[h])) { refd[h] = 1; take(h); continue }
@@ -554,6 +570,8 @@ END {
   if (nq) pairs(cc, nc, cb, cp)
   for (k = 1; k <= nq; k++) {
     l = q[k]
+    for (j = ls[l]; j <= le[l]; j++) tb(0, j)
+    for (j = lcs[l]; j <= lce[l]; j++) tb(1, j)
     if (seq(cb, lcs[l], lce[l]) != seq(wb, ls[l], le[l])) { mates(cp, 1, lcs[l], lce[l]); mates(wp, 0, ls[l], le[l]) }
   }
   for (j = 1; j <= nw; j++) if ((n = nsname(w[j])) != "") inw[n] = 1

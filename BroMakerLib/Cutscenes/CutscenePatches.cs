@@ -10,7 +10,8 @@ namespace BroMakerLib.Cutscenes
     [HarmonyPatch(typeof(CutsceneIntroRoot), "OnLoadComplete", typeof(string), typeof(object))]
     internal static class CutsceneIntroRoot_StartCutscene_Patch
     {
-        public static bool Prefix(CutsceneIntroRoot __instance, string resourceName, object asset, ref CutsceneIntroData ____curIntroData, ref Texture2D ____oldTex, ref string ____curIntroResourceName)
+        public static bool Prefix(CutsceneIntroRoot __instance, string resourceName, object asset, ref CutsceneIntroData ____curIntroData, ref Texture2D ____oldTex,
+            ref string ____curIntroResourceName)
         {
             if (!Main.enabled || !CustomCutsceneController.willLoadCustomCutscene)
             {
@@ -44,16 +45,12 @@ namespace BroMakerLib.Cutscenes
 
                     // Heading
                     UpdateText3D(__instance.headingMesh, _curIntroData.heading, _curIntroData.headingScale,
-                        hasExtraData ? dataExtra.headingColor : CustomIntroCutscene.HeadingDefaultColor
-                    );
+                        hasExtraData ? dataExtra.headingColor : CustomIntroCutscene.HeadingDefaultColor);
 
                     // Subtitle 1
                     string subtitle1Text = _curIntroData.subtitle1.IsNullOrEmpty() ? CustomIntroCutscene.Subtitle1DefaultText : _curIntroData.subtitle1;
-                    UpdateText3D(__instance.subtitle1Mesh,
-                        subtitle1Text,
-                        _curIntroData.subtitleScale,
-                        hasExtraData ? dataExtra.subtitle1Color : CustomIntroCutscene.SubtitleDefaultColor
-                    );
+                    UpdateText3D(__instance.subtitle1Mesh, subtitle1Text, _curIntroData.subtitleScale,
+                        hasExtraData ? dataExtra.subtitle1Color : CustomIntroCutscene.SubtitleDefaultColor);
 
 
                     // Create Subtitle 2
@@ -92,11 +89,8 @@ namespace BroMakerLib.Cutscenes
                     else
                     {
                         __instance.subtitle2Mesh.gameObject.SetActive(true);
-                        UpdateText3D(__instance.subtitle2Mesh,
-                            _curIntroData.subtitle2,
-                            hasExtraData ? dataExtra.subtitle2Scale : _curIntroData.subtitleScale,
-                            hasExtraData ? dataExtra.subtitle2Color : CustomIntroCutscene.SubtitleDefaultColor
-                        );
+                        UpdateText3D(__instance.subtitle2Mesh, _curIntroData.subtitle2, hasExtraData ? dataExtra.subtitle2Scale : _curIntroData.subtitleScale,
+                            hasExtraData ? dataExtra.subtitle2Color : CustomIntroCutscene.SubtitleDefaultColor);
                     }
 
                     // Sprite

@@ -4,7 +4,10 @@ using UnityEngine;
 
 namespace BroMakerLib.Vanilla.Specials
 {
-    /// <summary>Colonel James Broddock's cluster-grenade launch special. The throw animates the gun sprite, so `animationRow`, `animationColumn` and `deactivateGun` have no effect, and `instantUse` has none either.</summary>
+    /// <summary>
+    /// Colonel James Broddock's cluster-grenade launch special. The throw animates the gun sprite, so `animationRow`, `animationColumn` and `deactivateGun` have no effect, and
+    /// `instantUse` has none either.
+    /// </summary>
     [SpecialPreset("ColonelJamesBroddock")]
     public class ColJamesBrodockSpecial : SpecialAbility
     {
@@ -105,11 +108,8 @@ namespace BroMakerLib.Vanilla.Specials
                     for (int i = 0; i < grenade.count; i++)
                     {
                         Vector2 force = grenade.GetThrowVector(Direction * forceX, forceY, i);
-                        ProjectileController.SpawnGrenadeOverNetwork(grenade.basePrefab, owner,
-                            X + (Direction * offsetX), Y + offsetY,
-                            0.001f, 0.011f,
-                            force.x + xMomentum, force.y + yMomentum,
-                            PlayerNum, 1f);
+                        ProjectileController.SpawnGrenadeOverNetwork(grenade.basePrefab, owner, X + (Direction * offsetX), Y + offsetY, 0.001f, 0.011f, force.x + xMomentum,
+                            force.y + yMomentum, PlayerNum, 1f);
                     }
                 }
             }

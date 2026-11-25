@@ -55,7 +55,9 @@ namespace BroMakerLib.Abilities
         {
         }
 
-        /// <summary>Called when this ability is detached from the bro: replaced, removed, or rejected after `Initialize`, including one whose `Initialize` returned early.</summary>
+        /// <summary>
+        /// Called when this ability is detached from the bro: replaced, removed, or rejected after `Initialize`, including one whose `Initialize` returned early.
+        /// </summary>
         public virtual void Cleanup()
         {
         }
@@ -64,19 +66,27 @@ namespace BroMakerLib.Abilities
 
         private OwnerSpeedState SpeedState => hero != null ? hero.SpeedState : ownSpeedState ?? (ownSpeedState = new OwnerSpeedState(owner));
 
-        /// <summary>Starts this ability's hold on the owner's `speed` with a multiplier of 1, unless it already holds one, so `RestoreOwnerSpeed` later returns the owner to its unchanged speed times the other holds.</summary>
+        /// <summary>
+        /// Starts this ability's hold on the owner's `speed` with a multiplier of 1, unless it already holds one, so `RestoreOwnerSpeed` later returns the owner to its unchanged
+        /// speed times the other holds.
+        /// </summary>
         protected void SaveOwnerSpeed()
         {
             SpeedState.Save(this);
         }
 
-        /// <summary>Sets this ability's speed multiplier, starting its hold if it has none, and sets the owner's `speed` to its unchanged speed times the multipliers of every holding ability.</summary>
+        /// <summary>
+        /// Sets this ability's speed multiplier, starting its hold if it has none, and sets the owner's `speed` to its unchanged speed times the multipliers of every holding
+        /// ability.
+        /// </summary>
         protected void ChangeOwnerSpeed(float multiplier)
         {
             SpeedState.Change(this, multiplier);
         }
 
-        /// <summary>Ends this ability's hold and sets the owner's `speed` to its unchanged speed times the multipliers of the remaining holds; does nothing when this ability holds none.</summary>
+        /// <summary>
+        /// Ends this ability's hold and sets the owner's `speed` to its unchanged speed times the multipliers of the remaining holds; does nothing when this ability holds none.
+        /// </summary>
         protected void RestoreOwnerSpeed()
         {
             SpeedState.Restore(this);
@@ -116,7 +126,10 @@ namespace BroMakerLib.Abilities
         /// <returns>True to run original, false to skip.</returns>
         public virtual bool HandleSetHighFiveBoostDeltaTime() => true;
 
-        /// <summary>Called when the bro's GameObject is being destroyed, before the base teardown; returning false skips that teardown, including the bro's removal from the game's bro list.</summary>
+        /// <summary>
+        /// Called when the bro's GameObject is being destroyed, before the base teardown; returning false skips that teardown, including the bro's removal from the game's bro
+        /// list.
+        /// </summary>
         /// <returns>True to run original, false to skip.</returns>
         public virtual bool HandleOnDestroy() => true;
 
@@ -129,11 +142,14 @@ namespace BroMakerLib.Abilities
         public virtual void HandleAfterCheckInput() { }
 
         /// <summary>Called after this bro's input is copied to a zombie it revived, which the zombie does each frame.</summary>
-        public virtual void HandleAfterCopyInput(TestVanDammeAnim zombie, ref float zombieDelay, ref bool up, ref bool down, ref bool left, ref bool right, ref bool fire, ref bool buttonJump) { }
+        public virtual void HandleAfterCopyInput(TestVanDammeAnim zombie, ref float zombieDelay, ref bool up, ref bool down, ref bool left, ref bool right, ref bool fire,
+            ref bool buttonJump)
+        {
+        }
 
         /// <summary>
-        /// Called when the melee button is pressed, or held long enough to raise a high-five, to check whether the bro ignores it.
-        /// Write into `result` and return false to override the wrapper's return value.
+        /// Called when the melee button is pressed, or held long enough to raise a high-five, to check whether the bro ignores it. Write into `result` and return false to override
+        /// the wrapper's return value.
         /// </summary>
         public virtual bool HandleMustIgnoreHighFiveMeleePress(ref bool result) => true;
 
@@ -145,7 +161,10 @@ namespace BroMakerLib.Abilities
         /// <returns>True to run original, false to skip.</returns>
         public virtual bool HandleReleaseSpecial() => true;
 
-        /// <summary>Called when the player presses the melee/high-five button, or holds it long enough to raise a high-five with `forceHighFive` true. Write to `forceHighFive` to change what the base method receives.</summary>
+        /// <summary>
+        /// Called when the player presses the melee/high-five button, or holds it long enough to raise a high-five with `forceHighFive` true. Write to `forceHighFive` to change
+        /// what the base method receives.
+        /// </summary>
         /// <returns>True to run original, false to skip.</returns>
         public virtual bool HandlePressHighFiveMelee(ref bool forceHighFive) => true;
 
@@ -377,7 +396,10 @@ namespace BroMakerLib.Abilities
         /// <summary>Called after the gun sprite's firing animation advances. Pair with `HandleRunGun`.</summary>
         public virtual void HandleAfterRunGun() { }
 
-        /// <summary>Called each frame before the bro's own fire loop. Pair with `HandleAfterRunFiring`. When the loop runs again after a skip, it sees a press or release if `fire` changed since it last ran.</summary>
+        /// <summary>
+        /// Called each frame before the bro's own fire loop. Pair with `HandleAfterRunFiring`. When the loop runs again after a skip, it sees a press or release if `fire` changed
+        /// since it last ran.
+        /// </summary>
         /// <returns>True to run original, false to skip.</returns>
         public virtual bool HandleRunFiring() => true;
 
@@ -397,11 +419,16 @@ namespace BroMakerLib.Abilities
         public virtual bool HandleSetGunPosition(ref float xOffset, ref float yOffset) => true;
 
 
-        /// <summary>Called when a melee is about to start, from the melee button or from the bro's own code as Xebro's attack does, and `hero.MeleeFromButton` tells which.</summary>
+        /// <summary>
+        /// Called when a melee is about to start, from the melee button or from the bro's own code as Xebro's attack does, and `hero.MeleeFromButton` tells which.
+        /// </summary>
         /// <returns>True to run original, false to skip.</returns>
         public virtual bool HandleStartMelee() => true;
 
-        /// <summary>Called after the melee type is resolved, when the bro's own melee attack is about to start. Not called for the knife swing vanilla reroutes to while standing on an animal.</summary>
+        /// <summary>
+        /// Called after the melee type is resolved, when the bro's own melee attack is about to start. Not called for the knife swing vanilla reroutes to while standing on an
+        /// animal.
+        /// </summary>
         /// <returns>True to run original, false to skip.</returns>
         public virtual bool HandleStartMeleeAttack() => true;
 
@@ -421,7 +448,10 @@ namespace BroMakerLib.Abilities
         public virtual void HandleAfterResetMeleeValues() { }
 
 
-        /// <summary>Called on each animation tick, and whenever the game refreshes the bro's sprite between ticks, to set the sprite for the current frame. Pair with `HandleAfterChangeFrame`.</summary>
+        /// <summary>
+        /// Called on each animation tick, and whenever the game refreshes the bro's sprite between ticks, to set the sprite for the current frame. Pair with
+        /// `HandleAfterChangeFrame`.
+        /// </summary>
         /// <returns>True to run original, false to skip.</returns>
         public virtual bool HandleChangeFrame() => true;
 
@@ -443,11 +473,17 @@ namespace BroMakerLib.Abilities
         /// <returns>True to run original, false to skip.</returns>
         public virtual bool HandleAnimateActualJumpingDuckingFrames() => true;
 
-        /// <summary>Called on each animation frame of a bro in the idle state, before the game picks the standing melee, special, high-five, throw, roll, gesture or dance animation or the idle frames, so skipping it skips whichever was due. `HandleAnimateActualIdleFrames` replaces only the idle frames.</summary>
+        /// <summary>
+        /// Called on each animation frame of a bro in the idle state, before the game picks the standing melee, special, high-five, throw, roll, gesture or dance animation or the
+        /// idle frames, so skipping it skips whichever was due. `HandleAnimateActualIdleFrames` replaces only the idle frames.
+        /// </summary>
         /// <returns>True to run original, false to skip.</returns>
         public virtual bool HandleAnimateIdle() => true;
 
-        /// <summary>Called to set the sprite for standing idle frames, which the idle animation reaches when the bro isn't ducking and no melee, special, gesture, roll or dance animation is active, and which a bro holding still on a ladder can also show.</summary>
+        /// <summary>
+        /// Called to set the sprite for standing idle frames, which the idle animation reaches when the bro isn't ducking and no melee, special, gesture, roll or dance animation
+        /// is active, and which a bro holding still on a ladder can also show.
+        /// </summary>
         /// <returns>True to run original, false to skip.</returns>
         public virtual bool HandleAnimateActualIdleFrames() => true;
 
@@ -458,7 +494,9 @@ namespace BroMakerLib.Abilities
         /// <returns>True to run original, false to skip.</returns>
         public virtual bool HandleAnimateWallAnticipation() => true;
 
-        /// <summary>Called to set the sprite for wall-climb animation. The base method also gives the climb its upward kicks, so skipping it slows the climb to a crawl.</summary>
+        /// <summary>
+        /// Called to set the sprite for wall-climb animation. The base method also gives the climb its upward kicks, so skipping it slows the climb to a crawl.
+        /// </summary>
         /// <returns>True to run original, false to skip.</returns>
         public virtual bool HandleAnimateWallClimb() => true;
 
@@ -486,7 +524,10 @@ namespace BroMakerLib.Abilities
         /// <returns>True to run original, false to force the provided `result`.</returns>
         public virtual bool HandleCanReduceLives(ref bool result) => true;
 
-        /// <summary>Called when the bro dies or is gibbed and `CanReduceLives` allows a life to be lost, which can happen twice for one death and on clients that don't control the bro. Only the first call on the client that controls the bro can cost the player a life.</summary>
+        /// <summary>
+        /// Called when the bro dies or is gibbed and `CanReduceLives` allows a life to be lost, which can happen twice for one death and on clients that don't control the bro.
+        /// Only the first call on the client that controls the bro can cost the player a life.
+        /// </summary>
         /// <returns>True to run original, false to skip.</returns>
         public virtual bool HandleReduceLives(bool destroyed) => true;
 
@@ -494,7 +535,10 @@ namespace BroMakerLib.Abilities
         /// <returns>True to run original, false to use the provided `result`.</returns>
         public virtual bool HandleIsAlive(ref bool result) => true;
 
-        /// <summary>Called when a revive reaches this bro while it is dead, the bro's own revive included, before the game decides whether it comes back to life. Pair with `HandleAfterRevive`.</summary>
+        /// <summary>
+        /// Called when a revive reaches this bro while it is dead, the bro's own revive included, before the game decides whether it comes back to life. Pair with
+        /// `HandleAfterRevive`.
+        /// </summary>
         /// <returns>True to run original, false to skip.</returns>
         public virtual bool HandleRevive(int playerNum, bool isUnderPlayerControl, TestVanDammeAnim reviveSource) => true;
 
@@ -528,15 +572,14 @@ namespace BroMakerLib.Abilities
         /// <returns>True to run original, false to skip.</returns>
         public virtual bool HandleResetSpecialAmmo() => true;
 
-        /// <summary>Called to check whether the bro's special ammo is full, which makes an ammo pickup refuse to be collected. Write to `result` and return false to override.</summary>
+        /// <summary>
+        /// Called to check whether the bro's special ammo is full, which makes an ammo pickup refuse to be collected. Write to `result` and return false to override.
+        /// </summary>
         /// <returns>True to run original, false to use the provided `result`.</returns>
         public virtual bool HandleIsAmmoFull(ref bool result) => true;
 
 
-        /// <summary>
-        /// Called to check whether the bro is currently in stealth mode.
-        /// Write into `result` and return false to override the wrapper's return value.
-        /// </summary>
+        /// <summary>Called to check whether the bro is currently in stealth mode. Write into `result` and return false to override the wrapper's return value.</summary>
         public virtual bool HandleIsInStealthMode(ref bool result) => true;
 
         /// <summary>Called to alert nearby enemies to the bro's presence.</summary>
@@ -582,7 +625,9 @@ namespace BroMakerLib.Abilities
         /// <returns>True to run original, false to skip.</returns>
         public virtual bool HandleFindNearbyMook() => true;
 
-        /// <summary>Called after the base velocity for a thrown mook is computed. Write to `xI`/`yI` to change it; return false to stop later abilities from adjusting it further.</summary>
+        /// <summary>
+        /// Called after the base velocity for a thrown mook is computed. Write to `xI`/`yI` to change it; return false to stop later abilities from adjusting it further.
+        /// </summary>
         /// <returns>True to let the remaining abilities adjust the velocity, false to stop.</returns>
         public virtual bool HandleSetupThrownMookVelocity(ref float xI, ref float yI) => true;
         #endregion
